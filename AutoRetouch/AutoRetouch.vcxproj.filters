@@ -27,10 +27,19 @@
     <ClInclude Include="AutoRetouchExport.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PointCloudPCLScene.h">
+    <ClInclude Include="PointCloudAutoRetouchScene.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="AutoRetouchCommon.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandQueue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCluster.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,8 +53,20 @@
     <ClCompile Include="AutoRetouchInterface.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PointCloudPCLScene.cpp">
+    <ClCompile Include="PointCloudAutoRetouchScene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="CommandQueue.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCluster.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

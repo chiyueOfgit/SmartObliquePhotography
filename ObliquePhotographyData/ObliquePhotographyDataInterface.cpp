@@ -1,10 +1,14 @@
+#include "pch.h"
 #include "ObliquePhotographyDataInterface.h"
+#include "PointCloudScene.h"
 
 using namespace hiveObliquePhotography;
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::hiveInitPointCloudScene(const std::vector<std::string>& vFileNameSet, const std::string& vDataLoaderSig)
+pcl::PointCloud<pcl::PointSurfel>* hiveObliquePhotography::hiveInitPointCloudScene(const std::vector<std::string>& vFileNameSet)
 {
-	return true;
+	_ASSERTE(!vFileNameSet.empty());
+
+	return CPointCloudScene::getInstance()->loadScene(vFileNameSet);
 }

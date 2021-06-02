@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "PointCloudPCLScene.h"
+#include "PointCloudAutoRetouchScene.h"
 
 using namespace hiveObliquePhotography::AutoRetouch;
 

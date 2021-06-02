@@ -10,4 +10,14 @@
 // 添加要在此处预编译的标头
 #include "framework.h"
 
+#include <vector>
+#include <string>
+#include <map>
+
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
+#include "common/Product.h"
+#include "common/Singleton.h"
+
 #endif //PCH_H

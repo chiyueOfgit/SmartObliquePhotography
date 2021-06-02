@@ -36,7 +36,10 @@
     <ClInclude Include="..\ObliquePhotographyData\PointCloudTile.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\ObliquePhotographyData\PointCloudTileLoader.h">
+    <ClInclude Include="..\ObliquePhotographyData\PointCloudPLYLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\PointCloudLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -53,8 +56,14 @@
     <ClCompile Include="..\ObliquePhotographyData\PointCloudTile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\ObliquePhotographyData\PointCloudTileLoader.cpp">
+    <ClCompile Include="..\ObliquePhotographyData\PointCloudPLYLoader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\ObliquePhotographyData\PointCloudLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

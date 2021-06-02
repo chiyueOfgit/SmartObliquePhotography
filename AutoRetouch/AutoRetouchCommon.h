@@ -12,5 +12,12 @@ namespace hiveObliquePhotography
 			UNDETERMINED,
 			FILLED,
 		};
+
+		struct SPointLabelChange
+		{
+			std::uint64_t Index;
+			EPointLabel SrcLabel;
+			EPointLabel DstLabel;
+		};
 	}
 }

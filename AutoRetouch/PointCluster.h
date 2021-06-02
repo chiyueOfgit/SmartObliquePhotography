@@ -4,16 +4,10 @@ namespace hiveObliquePhotography
 {
 	namespace AutoRetouch
 	{
-		class CPointCloudPCLScene
+		class CPointCluster
 		{
 		public:
-			CPointCloudPCLScene();
-			~CPointCloudPCLScene();
-
 		private:
-
 		};
 	}
 }
-
-

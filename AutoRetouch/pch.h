@@ -10,4 +10,15 @@
 // 添加要在此处预编译的标头
 #include "framework.h"
 
+#include <cstdint>
+#include <deque>
+
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <pcl/search/kdtree.h>
+
+#include "common/EventLoggerInterface.h"
+#include "common/Subject.h"
+#include "common/Singleton.h"
+
 #endif //PCH_H
