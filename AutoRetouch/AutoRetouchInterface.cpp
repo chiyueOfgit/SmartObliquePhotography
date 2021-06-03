@@ -3,6 +3,3 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-void hiveObliquePhotography::hiveExecuteRegionGrow()
-{
-}

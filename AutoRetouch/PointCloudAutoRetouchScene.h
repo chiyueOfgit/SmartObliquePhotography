@@ -3,6 +3,8 @@
 
 namespace hiveObliquePhotography
 {
+	class CNeighborhood;
+
 	namespace AutoRetouch
 	{
 		class CPointCloudAutoRetouchScene : public hiveDesignPattern::CSingleton<CPointCloudAutoRetouchScene>
@@ -10,14 +12,13 @@ namespace hiveObliquePhotography
 		public:
 			~CPointCloudAutoRetouchScene();
 
-			void changePointLabel(const std::vector<SPointLabelChange>& vPointLabelChangeRecord);
-			void resetPointLabel(const std::vector<SPointLabelChange>& vPointLabelChangeRecord);
+			CNeighborhood* buildNeighborhood(std::uint64_t vSeed, const std::string& vBuilderSig);
+			CNeighborhood* buildNeighborhood(std::uint64_t vSeed, const std::vector<std::uint64_t>& vRestrictedSet, const std::string& vBuilderSig);
 
 		private:
 			CPointCloudAutoRetouchScene();
 
 			pcl::PointCloud<pcl::PointSurfel>* m_pPointCloudScenen = nullptr;
-			std::vector<EPointLabel> m_PointLabelSet;
 			pcl::search::KdTree<pcl::PointSurfel>* m_pGlobalKdTree = nullptr;
 
 		friend class hiveDesignPattern::CSingleton<CPointCloudAutoRetouchScene>;
