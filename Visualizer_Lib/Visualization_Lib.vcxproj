@@ -152,6 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Visualizer\framework.h" />
+    <ClInclude Include="..\Visualizer\InteractionCallback.h" />
     <ClInclude Include="..\Visualizer\pch.h" />
     <ClInclude Include="..\Visualizer\PointCloudVisualizer.h" />
     <ClInclude Include="..\Visualizer\VisualizerExport.h" />
@@ -159,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Visualizer\dllmain.cpp" />
+    <ClCompile Include="..\Visualizer\InteractionCallback.cpp" />
     <ClCompile Include="..\Visualizer\pch.cpp" />
     <ClCompile Include="..\Visualizer\PointCloudVisualizer.cpp" />
     <ClCompile Include="..\Visualizer\VisualizerInterface.cpp" />

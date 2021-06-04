@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="InteractionCallback.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PointCloudVisualizer.h" />
     <ClInclude Include="VisualizerExport.h" />
@@ -167,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="InteractionCallback.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="PointCloudVisualizer.cpp" />
     <ClCompile Include="VisualizerInterface.cpp" />

@@ -1,32 +1,56 @@
 #include "pch.h"
 #include "PointCloudVisualizer.h"
-#include "pcl/io/pcd_io.h"
+#include "InteractionCallback.h"
 //#include "PointCloudAutoRetouchScene.h"
 
 using namespace hiveObliquePhotography::visualizer;
 
 CPointCloudVisualizer::CPointCloudVisualizer()
 {
-	setBackgroundColor(0.2, 0.2, 0.2);
 }
 
 CPointCloudVisualizer::~CPointCloudVisualizer()
 {
+	delete m_pPCLVisualizer;
+	delete m_pCallback;
+}
 
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
+{
+	_ASSERTE(vPointCloud);
+	m_pSceneCloud = vPointCloud;
+
+	m_pPCLVisualizer = new pcl::visualization::PCLVisualizer("Visualizer", true);
+	_ASSERTE(m_pPCLVisualizer);
+
+	m_pCallback = new CInteractionCallback(m_pPCLVisualizer);
+	_ASSERTE(m_pCallback);
+
+	m_pPCLVisualizer->setBackgroundColor(0.2, 0.2, 0.2);
+
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudVisualizer::reset(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
+{
+	_ASSERTE(vPointCloud);
+	m_pSceneCloud = vPointCloud;
+	
 }
 
 //*****************************************************************
 //FUNCTION: 
 void CPointCloudVisualizer::refresh(bool vResetCamera)
 {
-	pcl::PointCloud<pcl::PointSurfel>::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
+	m_pPCLVisualizer->removeAllPointClouds();
 
-	pcl::io::loadPCDFile("Panda.pcd", *pCloud);
-
-	addPointCloud<pcl::PointSurfel>(pCloud);
+	m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(m_pSceneCloud);
 
 	if (vResetCamera)
-		resetCamera();
+		m_pPCLVisualizer->resetCamera();
 	else
-		updateCamera();
+		m_pPCLVisualizer->updateCamera();
 }
