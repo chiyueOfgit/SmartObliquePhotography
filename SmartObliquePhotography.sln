@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_002 (load_point_c
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ObliquePhotographyData_Lib", "ObliquePhotographyData_Lib\ObliquePhotographyData_Lib.vcxproj", "{3757D1FB-EDDB-4D14-803B-4D692A7D175B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_003 (classifier_region_grow)", "UnitTests\Unit_Test_003\Unit_Test_003.vcxproj", "{EF9F273A-2303-44AB-9485-B9FD4071663D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -73,6 +75,14 @@ Global
 		{3757D1FB-EDDB-4D14-803B-4D692A7D175B}.Release|x64.Build.0 = Release|x64
 		{3757D1FB-EDDB-4D14-803B-4D692A7D175B}.Release|x86.ActiveCfg = Release|Win32
 		{3757D1FB-EDDB-4D14-803B-4D692A7D175B}.Release|x86.Build.0 = Release|Win32
+		{EF9F273A-2303-44AB-9485-B9FD4071663D}.Debug|x64.ActiveCfg = Debug|x64
+		{EF9F273A-2303-44AB-9485-B9FD4071663D}.Debug|x64.Build.0 = Debug|x64
+		{EF9F273A-2303-44AB-9485-B9FD4071663D}.Debug|x86.ActiveCfg = Debug|Win32
+		{EF9F273A-2303-44AB-9485-B9FD4071663D}.Debug|x86.Build.0 = Debug|Win32
+		{EF9F273A-2303-44AB-9485-B9FD4071663D}.Release|x64.ActiveCfg = Release|x64
+		{EF9F273A-2303-44AB-9485-B9FD4071663D}.Release|x64.Build.0 = Release|x64
+		{EF9F273A-2303-44AB-9485-B9FD4071663D}.Release|x86.ActiveCfg = Release|Win32
+		{EF9F273A-2303-44AB-9485-B9FD4071663D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,6 +90,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8061989D-DF11-496C-AF50-3A380FAB436A} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{E8249999-AA67-4E04-ACB5-ADAA038CE589} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
+		{EF9F273A-2303-44AB-9485-B9FD4071663D} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39CBE48C-AE02-4207-8AE0-74B21A939B18}

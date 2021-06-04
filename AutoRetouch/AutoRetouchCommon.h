@@ -4,6 +4,9 @@ namespace hiveObliquePhotography
 {
 	namespace AutoRetouch
 	{
+		const std::string CLASSIFIER_BINARY = "Binary";
+		const std::string CLASSIFIER_REGION_GROW = "RegionGrow";
+
 		enum class EPointLabel : unsigned char
 		{
 			DISCARDED,
@@ -15,9 +18,12 @@ namespace hiveObliquePhotography
 
 		struct SPointLabelChange
 		{
-			std::uint64_t Index;
+			std::uint64_t Index = UINT_MAX;
 			EPointLabel SrcLabel;
 			EPointLabel DstLabel;
+			float Confidence = 1.0f;
+
+			friend bool operator < (const SPointLabelChange& vLeft, const SPointLabelChange& vRight) { return vLeft.Index < vRight.Index; }
 		};
 	}
 }

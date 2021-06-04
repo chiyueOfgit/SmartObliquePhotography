@@ -12,13 +12,23 @@
 
 #include <cstdint>
 #include <deque>
+#include <vector>
+#include <string>
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/search/kdtree.h>
 
-#include "common/EventLoggerInterface.h"
-#include "common/Subject.h"
+#include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
+
+#include "common/Product.h"
+#include "common/Factory.h"
 #include "common/Singleton.h"
+#include "common/CommonInterface.h"
+#include "common/EventLoggerInterface.h"
+#include "common/DesignPatternInterface.h"
+
+#include "AutoRetouchCommon.h"
 
 #endif //PCH_H

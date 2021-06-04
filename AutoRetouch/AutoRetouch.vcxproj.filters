@@ -4,11 +4,11 @@
     <Filter Include="Neighborhood">
       <UniqueIdentifier>{9068969e-ad50-4462-bd3e-513e33235718}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ClutterEraser">
-      <UniqueIdentifier>{1450fe09-043e-46f1-b3ff-11c8a65f6653}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common">
+    <Filter Include="Scene">
       <UniqueIdentifier>{28b40934-5660-4cd6-8023-5dbe95077e0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PointClassfier">
+      <UniqueIdentifier>{1450fe09-043e-46f1-b3ff-11c8a65f6653}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -18,48 +18,70 @@
     <ClInclude Include="Neighborhood.h">
       <Filter>Neighborhood</Filter>
     </ClInclude>
-    <ClInclude Include="ClutterEraser.h">
-      <Filter>ClutterEraser</Filter>
-    </ClInclude>
-    <ClInclude Include="AutoRetouchCommon.h">
-      <Filter>Common</Filter>
+    <ClInclude Include="PointClassifier.h">
+      <Filter>PointClassfier</Filter>
     </ClInclude>
     <ClInclude Include="PointCloudAutoRetouchScene.h">
-      <Filter>Common</Filter>
+      <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Command.h">
-      <Filter>Common</Filter>
+    <ClInclude Include="OpResult.h">
+      <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="CommandQueue.h">
-      <Filter>Common</Filter>
+    <ClInclude Include="OpResultQueue.h">
+      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="PointCluster.h">
-      <Filter>ClutterEraser</Filter>
+      <Filter>PointClassfier</Filter>
     </ClInclude>
     <ClInclude Include="AutoRetouchExport.h" />
     <ClInclude Include="AutoRetouchInterface.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PointLabel4Classfier.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoRetouchCommon.h" />
+    <ClInclude Include="PointLabelChangeRecord.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="RegionGrowingAlg.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
+    <ClInclude Include="BinaryClassifierAlg.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeClassifier.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neighborhood.cpp">
       <Filter>Neighborhood</Filter>
     </ClCompile>
-    <ClCompile Include="PointCluster.cpp">
-      <Filter>ClutterEraser</Filter>
-    </ClCompile>
     <ClCompile Include="PointCloudAutoRetouchScene.cpp">
-      <Filter>Common</Filter>
+      <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Command.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="CommandQueue.cpp">
-      <Filter>Common</Filter>
+    <ClCompile Include="OpResultQueue.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="AutoRetouchInterface.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="PointLabel4Classfier.cpp">
+      <Filter>PointClassfier</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLabelChangeRecord.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="RegionGrowingAlg.cpp">
+      <Filter>PointClassfier</Filter>
+    </ClCompile>
+    <ClCompile Include="BinaryClassifierAlg.cpp">
+      <Filter>PointClassfier</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeClassifier.cpp">
+      <Filter>PointClassfier</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

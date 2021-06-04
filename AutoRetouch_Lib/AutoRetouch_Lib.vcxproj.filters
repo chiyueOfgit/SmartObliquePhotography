@@ -27,12 +27,75 @@
     <ClInclude Include="..\AutoRetouch\pch.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\AutoRetouch\AutoRetouchCommon.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\BinaryClassifierAlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\CompositeClassifier.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\Neighborhood.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\NeighborhoodBuilder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\OpResult.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\OpResultQueue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\PointClassifier.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\PointCloudAutoRetouchScene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\PointCluster.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\PointLabel4Classfier.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\PointLabelChangeRecord.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\RegionGrowingAlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\pch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\BinaryClassifierAlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\CompositeClassifier.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\Neighborhood.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\OpResultQueue.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\PointCloudAutoRetouchScene.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\PointLabel4Classfier.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\PointLabelChangeRecord.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\RegionGrowingAlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
