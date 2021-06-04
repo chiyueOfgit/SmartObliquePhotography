@@ -49,9 +49,6 @@
     <ProjectReference Include="..\..\AutoRetouch_Lib\AutoRetouch_Lib.vcxproj">
       <Project>{c343c23f-c156-407f-a1e9-3bfb59a4989a}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\ObliquePhotographyData_Lib\ObliquePhotographyData_Lib.vcxproj">
-      <Project>{3757d1fb-eddb-4d14-803b-4d692a7d175b}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

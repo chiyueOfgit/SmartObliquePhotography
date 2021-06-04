@@ -18,6 +18,10 @@
 #include <pcl/point_cloud.h>
 
 #include "common/Product.h"
+#include "common/Factory.h"
 #include "common/Singleton.h"
+#include "common/CommonInterface.h"
+#include "common/EventLoggerInterface.h"
+#include "common/DesignPatternInterface.h"
 
 #endif //PCH_H

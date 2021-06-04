@@ -7,12 +7,12 @@ namespace hiveObliquePhotography
 	class IPointCloudLoader : public hiveDesignPattern::IProduct
 	{
 	public:
-		IPointCloudLoader();
-		~IPointCloudLoader();
+		IPointCloudLoader() = default;
+		~IPointCloudLoader() = default;
 
 		pcl::PointCloud<pcl::PointSurfel>* loadDataFromFile(const std::string& vFileName);
 
 	private:
-		virtual bool __loadDataFromFileV(const std::string& vFileName, pcl::PointCloud<pcl::PointSurfel>& voPointCloud);
+		virtual bool __loadDataFromFileV(const std::string& vFileName, pcl::PointCloud<pcl::PointSurfel>& voPointCloud) = 0;
 	};
 }

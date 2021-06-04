@@ -31,7 +31,7 @@ pcl::PointCloud<pcl::PointSurfel>* CPointCloudScene::loadScene(const std::vector
 
 	for (const auto& e : vFileNameSet)
 	{
-		pTileLoader = static_cast<IPointCloudLoader*>(hiveDesignPattern::hiveGetOrCreateProduct(hiveUtility::hiveGetFileSuffix(e)));
+		pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(e));
 		if (pTileLoader)
 		{
 			pcl::PointCloud<pcl::PointSurfel>* pTile = pTileLoader->loadDataFromFile(e);
