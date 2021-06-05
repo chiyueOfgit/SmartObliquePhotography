@@ -24,4 +24,6 @@
 #include "common/EventLoggerInterface.h"
 #include "common/DesignPatternInterface.h"
 
+#include "ObliquePhotographyDataCommon.h"
+
 #endif //PCH_H

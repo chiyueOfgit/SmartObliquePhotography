@@ -9,6 +9,8 @@
 #include "PointCloudLoader.h"
 #include "PointCloudTile.h"
 
+#include "PointCloudPLYLoader.h"
+
 using namespace hiveObliquePhotography;
 
 CPointCloudScene::~CPointCloudScene()
@@ -27,11 +29,11 @@ pcl::PointCloud<pcl::PointSurfel>* CPointCloudScene::loadScene(const std::vector
 
 	_ASSERTE(m_PointCloudScene.empty() && m_PointCloudTileMap.empty());
 
-	IPointCloudLoader* pTileLoader = nullptr;
+	CPointCloudPLYLoader Temp;
 
 	for (const auto& e : vFileNameSet)
 	{
-		pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(e));
+		auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(e));
 		if (pTileLoader)
 		{
 			pcl::PointCloud<pcl::PointSurfel>* pTile = pTileLoader->loadDataFromFile(e);
