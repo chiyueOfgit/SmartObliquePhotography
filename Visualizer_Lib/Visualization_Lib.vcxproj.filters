@@ -27,13 +27,13 @@
     <ClInclude Include="..\Visualizer\PointCloudVisualizer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\Visualizer\VisualizerInterface.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Visualizer\VisualizerExport.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\Visualizer\InteractionCallback.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Visualizer\VisualizationExport.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Visualizer\VisualizationInterface.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,11 +47,11 @@
     <ClCompile Include="..\Visualizer\PointCloudVisualizer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\Visualizer\VisualizerInterface.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\Visualizer\InteractionCallback.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Visualizer\VisualizationInterface.cpp">
+      <Filter>头文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "PointCloudVisualizer.h"
 #include "InteractionCallback.h"
-//#include "PointCloudAutoRetouchScene.h"
+#include "AutoRetouchInterface.h"
 
-using namespace hiveObliquePhotography::visualizer;
+using namespace hiveObliquePhotography::Visualization;
 
 CPointCloudVisualizer::CPointCloudVisualizer()
 {
@@ -17,7 +17,7 @@ CPointCloudVisualizer::~CPointCloudVisualizer()
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
+void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>* vPointCloud)
 {
 	_ASSERTE(vPointCloud);
 	m_pSceneCloud = vPointCloud;
@@ -34,7 +34,7 @@ void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCl
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudVisualizer::reset(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
+void CPointCloudVisualizer::reset(pcl::PointCloud<pcl::PointSurfel>* vPointCloud)
 {
 	_ASSERTE(vPointCloud);
 	m_pSceneCloud = vPointCloud;
@@ -45,9 +45,58 @@ void CPointCloudVisualizer::reset(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointC
 //FUNCTION: 
 void CPointCloudVisualizer::refresh(bool vResetCamera)
 {
+	_ASSERTE(!m_pSceneCloud->empty());
+
 	m_pPCLVisualizer->removeAllPointClouds();
 
-	m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(m_pSceneCloud);
+	std::vector<AutoRetouch::EPointLabel> GlobalLabel;
+	AutoRetouch::hiveGetGlobalPointLabelSet(GlobalLabel);
+	
+	_ASSERTE(GlobalLabel.size() == m_pSceneCloud->size());
+
+	pcl::PointCloud<pcl::PointSurfel> Cloud2Show;
+	Cloud2Show.resize(m_pSceneCloud->size());
+	std::memcpy(Cloud2Show.data(), m_pSceneCloud->data(), m_pSceneCloud->size() * sizeof(pcl::PointSurfel));
+
+	for (int i = 0; i < m_pSceneCloud->size(); i++)
+	{
+		switch (GlobalLabel[i])
+		{
+		case AutoRetouch::EPointLabel::DISCARDED:
+		{
+			Cloud2Show.points[i].a = 0;
+			break;
+		}
+		case AutoRetouch::EPointLabel::UNWANTED:
+		{
+			unsigned char StandardRed[4] = { 0, 0, 255, 255 };	//gbr
+			std::memcpy(&Cloud2Show.points[i].rgba, StandardRed, sizeof(StandardRed));
+			break;
+		}
+		case AutoRetouch::EPointLabel::KEPT:
+		{
+			unsigned char StandardBlue[4] = { 255, 0, 0, 255 };
+			std::memcpy(&Cloud2Show.points[i].rgba, StandardBlue, sizeof(StandardBlue));
+			break;
+		}
+		case AutoRetouch::EPointLabel::FILLED:
+		{
+			unsigned char StandardGreen[4] = { 0, 255, 0, 255 };
+			std::memcpy(&Cloud2Show.points[i].rgba, StandardGreen, sizeof(StandardGreen));
+			break;
+		}
+		case AutoRetouch::EPointLabel::UNDETERMINED:
+		{
+			Cloud2Show.points[i].a = 255;
+			break;
+		}
+		}
+	}
+
+	auto pCloud = Cloud2Show.makeShared();
+	pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PointSurfel> RGBAColor(pCloud);
+	m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(pCloud, RGBAColor, "Cloud2Show");
+	m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "Cloud2Show");
 
 	if (vResetCamera)
 		m_pPCLVisualizer->resetCamera();

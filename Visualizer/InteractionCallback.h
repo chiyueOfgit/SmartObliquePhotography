@@ -2,7 +2,7 @@
 
 namespace hiveObliquePhotography
 {
-	namespace visualizer
+	namespace Visualization
 	{
 		class CInteractionCallback
 		{

@@ -123,6 +123,14 @@ void CGlobalPointLabelSet::applyPointLabelChange(const std::vector<SPointLabelCh
 
 //*****************************************************************
 //FUNCTION: 
+void CGlobalPointLabelSet::init(std::size_t vSize, EPointLabel vLabel)
+{
+	_ASSERTE(vSize != 0);
+	m_PointLabelSet.resize(vSize, vLabel);
+}
+
+//*****************************************************************
+//FUNCTION: 
 CLocalPointLabelSet* CGlobalPointLabelSet::clone() const
 {
 	CLocalPointLabelSet* pCloned = new CLocalPointLabelSet;

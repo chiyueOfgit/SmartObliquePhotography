@@ -121,10 +121,10 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;NOMINMAX;VISUALIZER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);NOMINMAX;VISUALIZER_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;NOMINMAX;VISUALIZATION_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../visualization/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../visualization/include;E:\repos\SmartObliquePhotography\AutoRetouch</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -143,10 +143,10 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);VISUALIZER_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);VISUALIZATION_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../visualization/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../visualization/include;E:\repos\SmartObliquePhotography\AutoRetouch</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -163,20 +163,23 @@
     <ClInclude Include="InteractionCallback.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PointCloudVisualizer.h" />
-    <ClInclude Include="VisualizerExport.h" />
-    <ClInclude Include="VisualizerInterface.h" />
+    <ClInclude Include="VisualizationExport.h" />
+    <ClInclude Include="VisualizationInterface.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="InteractionCallback.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="PointCloudVisualizer.cpp" />
-    <ClCompile Include="VisualizerInterface.cpp" />
+    <ClCompile Include="VisualizationInterface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AutoRetouch\AutoRetouch.vcxproj">
+      <Project>{a8f8e3db-1ace-4584-9acd-f180cbac22ee}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\visualization\pcl_visualization.vcxproj">
       <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
     </ProjectReference>

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "InteractionCallback.h"
 
-using namespace hiveObliquePhotography::visualizer;
+using namespace hiveObliquePhotography::Visualization;
 
 CInteractionCallback::CInteractionCallback(pcl::visualization::PCLVisualizer* vVisualizer)
 {

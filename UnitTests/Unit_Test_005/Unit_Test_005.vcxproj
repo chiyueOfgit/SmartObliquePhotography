@@ -44,6 +44,9 @@
     <ClInclude Include="..\..\Visualizer\pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AutoRetouch_Lib\AutoRetouch_Lib.vcxproj">
+      <Project>{c343c23f-c156-407f-a1e9-3bfb59a4989a}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Visualizer_Lib\Visualization_Lib.vcxproj">
       <Project>{75dd450f-ca6d-415d-808d-b5ff6751daeb}</Project>
     </ProjectReference>
@@ -94,7 +97,8 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>../../visualization\include;../../Visualizer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../visualization\include;../../Visualizer;../../AutoRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,7 +130,9 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>../../visualization\include;../../Visualizer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../visualization\include;../../Visualizer;../../AutoRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

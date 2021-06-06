@@ -68,6 +68,8 @@ namespace hiveObliquePhotography
 			CGlobalPointLabelSet() { m_Timestamp = hiveCommon::hiveGetGlobalTimestamp(); }
 			~CGlobalPointLabelSet() = default;
 	
+			void init(std::size_t, EPointLabel);
+
 			CLocalPointLabelSet* clone() const;
 
 			void applyPointLabelChange(const std::vector<SPointLabelChange>& vChangeRecord);

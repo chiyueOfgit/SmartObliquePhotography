@@ -16,3 +16,10 @@ void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(pcl::PointClou
 {
 	CPointCloudAutoRetouchScene::getInstance()->init(vPointCloud);
 }
+
+//*****************************************************************
+//FUNCTION: 
+void hiveObliquePhotography::AutoRetouch::hiveGetGlobalPointLabelSet(std::vector<EPointLabel>& voGlobalLabel)
+{
+	voGlobalLabel = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->getPointLabelSet();
+}
