@@ -8,7 +8,7 @@ namespace hiveObliquePhotography
 	{
 	public:
 		IPointCloudLoader() = default;
-		~IPointCloudLoader() = default;
+		~IPointCloudLoader() override = default;
 
 		pcl::PointCloud<pcl::PointSurfel>* loadDataFromFile(const std::string& vFileName);
 

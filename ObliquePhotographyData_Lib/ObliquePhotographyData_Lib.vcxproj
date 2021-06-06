@@ -182,8 +182,6 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="d:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets" Condition="Exists('d:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets')" />
     <Import Project="d:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets" Condition="Exists('d:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets')" />
-    <Import Project="d:\vc_packages\boost.1.74.0.0\build\boost.targets" Condition="Exists('d:\vc_packages\boost.1.74.0.0\build\boost.targets')" />
-    <Import Project="d:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets" Condition="Exists('d:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets')" />
     <Import Project="d:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets" Condition="Exists('d:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets')" />
     <Import Project="d:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets" Condition="Exists('d:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets')" />
     <Import Project="d:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets" Condition="Exists('d:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets')" />
@@ -193,6 +191,11 @@
     <Import Project="d:\vc_packages\PCL.1.11.1\build\native\PCL.targets" Condition="Exists('d:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" />
     <Import Project="d:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets" Condition="Exists('d:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" />
     <Import Project="d:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets" Condition="Exists('d:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets')" />
+    <Import Project="D:\vc_packages\boost.1.76.0.0\build\boost.targets" Condition="Exists('D:\vc_packages\boost.1.76.0.0\build\boost.targets')" />
+    <Import Project="D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets" Condition="Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets" Condition="Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets" Condition="Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets" Condition="Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -200,8 +203,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('d:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets'))" />
-    <Error Condition="!Exists('d:\vc_packages\boost.1.74.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\boost.1.74.0.0\build\boost.targets'))" />
-    <Error Condition="!Exists('d:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets'))" />
@@ -211,5 +212,10 @@
     <Error Condition="!Exists('d:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\PCL.1.11.1\build\native\PCL.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost.1.76.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost.1.76.0.0\build\boost.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets'))" />
   </Target>
 </Project>
