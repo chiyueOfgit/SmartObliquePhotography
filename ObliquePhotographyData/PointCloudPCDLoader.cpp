@@ -5,7 +5,7 @@
 
 using namespace hiveObliquePhotography;
 
-//_REGISTER_NORMAL_PRODUCT(CPointCloudPCDLoader, PCD_LOADER)
+//_REGISTER_EXCLUSIVE_PRODUCT(CPointCloudPCDLoader, PCD_LOADER)
 
 //*****************************************************************
 //FUNCTION: 
