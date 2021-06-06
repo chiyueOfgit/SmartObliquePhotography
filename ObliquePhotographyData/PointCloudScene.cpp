@@ -1,15 +1,9 @@
 #include "pch.h"
 #include "PointCloudScene.h"
-#include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
-#include "common/CommonMicro.h"
-#include "common/DesignPatternInterface.h"
 #include "common/UtilityInterface.h"
-#include "common/EventLoggerInterface.h"
-#include "PointCloudLoader.h"
 #include "PointCloudTile.h"
-
-#include "PointCloudPLYLoader.h"
+#include "PointCloudLoader.h"
 
 using namespace hiveObliquePhotography;
 
@@ -28,8 +22,6 @@ pcl::PointCloud<pcl::PointSurfel>* CPointCloudScene::loadScene(const std::vector
 	clear();
 
 	_ASSERTE(m_PointCloudScene.empty() && m_PointCloudTileMap.empty());
-
-	CPointCloudPLYLoader Temp;
 
 	for (const auto& e : vFileNameSet)
 	{

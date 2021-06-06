@@ -5,7 +5,7 @@
 
 using namespace hiveObliquePhotography;
 
-_REGISTER_EXCLUSIVE_PRODUCT(CPointCloudPLYLoader, PLY_LOADER)
+//_REGISTER_EXCLUSIVE_PRODUCT(CPointCloudPLYLoader, PLY_LOADER)
 
 //*****************************************************************
 //FUNCTION:
