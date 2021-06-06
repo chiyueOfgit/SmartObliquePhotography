@@ -13,7 +13,7 @@ bool CPointCloudPCDLoader::__loadDataFromFileV(const std::string& vFileName, pcl
 {
 	if (pcl::io::loadPCDFile<pcl::PointSurfel>(vFileName, voPointCloud) == -1)
 	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load file [%1%] .", vFileName));
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load file [%1%] due to inexistent file.", vFileName));
 		return false;
 	}
 	return true;

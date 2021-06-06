@@ -17,33 +17,47 @@ CPointCloudScene::~CPointCloudScene()
 pcl::PointCloud<pcl::PointSurfel>* CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
 {
 	_ASSERTE(!vFileNameSet.empty());
-//TODO：要保证vFileNameSet里面没有重复文件名
 
 	clear();
+	_ASSERTE(m_PointCloudScene->empty() && m_PointCloudTileMap.empty());
 
-	_ASSERTE(m_PointCloudScene.empty() && m_PointCloudTileMap.empty());
-
-	for (const auto& e : vFileNameSet)
+	std::vector<std::string> LoadedFiles;
+	
+	for (const auto& FileName : vFileNameSet)
 	{
-		auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(e));
+		if (find(LoadedFiles.begin(), LoadedFiles.end(), FileName) != LoadedFiles.end())
+		{
+			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("[%1%] has already been loaded.", FileName));
+			continue;
+		}
+		auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(FileName));
 		if (pTileLoader)
 		{
-			pcl::PointCloud<pcl::PointSurfel>* pTile = pTileLoader->loadDataFromFile(e);
-			m_PointCloudTileMap.insert(std::make_pair(e, new CPointCloudTile(pTile)));
-			m_PointCloudScene += *pTile;
+			pcl::PointCloud<pcl::PointSurfel>* pTile = pTileLoader->loadDataFromFile(FileName);
+			if(!pTile)
+				continue;;
+			m_PointCloudTileMap.insert(std::make_pair(FileName, new CPointCloudTile(pTile)));
+			*m_PointCloudScene += *pTile;
+			LoadedFiles.emplace_back(FileName);
 		}
 		else
 		{
-			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load tile [%1%] due to unknown format.", e));
+			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load tile [%1%] due to unknown format.", FileName));
 		}
 	}
-
-	return &m_PointCloudScene;
+	return m_PointCloudScene;
 }
 
 //*****************************************************************
 //FUNCTION: 
 void CPointCloudScene::clear()
 {
+	for (auto Iter = m_PointCloudTileMap.begin(); Iter != m_PointCloudTileMap.end(); )
+	{
+		delete Iter->second;
+		m_PointCloudTileMap.erase(Iter++);
+	}
 
+	//_SAFE_DELETE(m_PointCloudScene);
+	m_PointCloudScene = new pcl::PointCloud<pcl::PointSurfel>;
 }

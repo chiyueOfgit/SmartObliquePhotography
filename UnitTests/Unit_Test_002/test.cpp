@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "PointCloudScene.h"
-#include "ObliquePhotographyDataInterface.h"
+#include "ObliquePhotographyDataCommon.h"
+#include "PointCloudPCDLoader.h"
+#include "PointCloudPLYLoader.h"
 
 using namespace hiveObliquePhotography;
 
@@ -8,6 +10,10 @@ using namespace hiveObliquePhotography;
 //  * LoadScene: 能够正常的载入一堆点云文件
 //  * DeathTest_LoadDuplicatedFile：载入的点云文件中有重复
 //  * DeathTest_LoadPartiallyIncorrectFileSet: 载入的点云文件中，有部分文件错误（不存在，格式不支持...）
+
+_REGISTER_EXCLUSIVE_PRODUCT(CPointCloudPCDLoader, PCD_LOADER)
+_REGISTER_EXCLUSIVE_PRODUCT(CPointCloudPLYLoader, PLY_LOADER)
+
 
 TEST(Test_LoadPointCloudScene, LoadScene)
 {
@@ -17,8 +23,7 @@ TEST(Test_LoadPointCloudScene, LoadScene)
 		"TestModel/slice 3.pcd", //227563
 		"TestModel/slice 4.pcd"  //225220
 	};
-
-	auto PointCloud = hiveInitPointCloudScene(FilePaths);
+	auto PointCloud = CPointCloudScene::getInstance()->loadScene(FilePaths);
 	
 	GTEST_ASSERT_EQ(CPointCloudScene::getInstance()->getNumTiles(), 4);
 	GTEST_ASSERT_EQ(PointCloud->size(), 826500);
@@ -34,7 +39,8 @@ TEST(Test_LoadPointCloudScene, DeathTest_LoadDuplicatedFile)
 		"TestModel/slice 3.pcd"
 	};
 	
-	auto PointCloud = hiveInitPointCloudScene(FilePaths);
+	auto PointCloud = CPointCloudScene::getInstance()->loadScene(FilePaths);
+	
 	GTEST_ASSERT_EQ(CPointCloudScene::getInstance()->getNumTiles(), 3);
 	GTEST_ASSERT_EQ(PointCloud->size(), 601280);
 }
@@ -48,8 +54,12 @@ TEST(Test_LoadPointCloudScene, DeathTest_LoadPartiallyIncorrectFileSet)
 		"TestModel/slice 5.pcd",
 		"TestModel/slice 1.txt",
 	};
-	auto PointCloud = hiveInitPointCloudScene(FilePaths);
+	auto PointCloud = CPointCloudScene::getInstance()->loadScene(FilePaths);
+	
 	GTEST_ASSERT_EQ(CPointCloudScene::getInstance()->getNumTiles(), 3);
 	GTEST_ASSERT_EQ(PointCloud->size(), 601280);
 }
+
+
+
 

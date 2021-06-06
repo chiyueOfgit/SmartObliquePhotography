@@ -19,7 +19,7 @@ namespace hiveObliquePhotography
 		CPointCloudScene() = default;
 
 		std::map<std::string, CPointCloudTile*> m_PointCloudTileMap;
-		pcl::PointCloud<pcl::PointSurfel> m_PointCloudScene;
+		pcl::PointCloud<pcl::PointSurfel> *m_PointCloudScene;
 
 	friend class hiveDesignPattern::CSingleton<CPointCloudScene>;
 	};
