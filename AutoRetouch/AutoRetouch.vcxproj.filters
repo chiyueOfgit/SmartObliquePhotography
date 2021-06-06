@@ -53,6 +53,12 @@
     <ClInclude Include="CompositeClassifier.h">
       <Filter>PointClassfier</Filter>
     </ClInclude>
+    <ClInclude Include="PointCluster4VFH.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
+    <ClInclude Include="BinaryClassifierByVFHAlg.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neighborhood.cpp">
@@ -80,6 +86,12 @@
       <Filter>PointClassfier</Filter>
     </ClCompile>
     <ClCompile Include="CompositeClassifier.cpp">
+      <Filter>PointClassfier</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCluster4VFH.cpp">
+      <Filter>PointClassfier</Filter>
+    </ClCompile>
+    <ClCompile Include="BinaryClassifierByVFHAlg.cpp">
       <Filter>PointClassfier</Filter>
     </ClCompile>
   </ItemGroup>

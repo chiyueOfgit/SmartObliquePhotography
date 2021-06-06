@@ -2,8 +2,8 @@
 #include "gtest/gtest.h"
 #include "PointCloudAutoRetouchScene.h"
 #include "PointCloudVisualizer.h"
-//#include "AutoRetouchInterface.h"
-//#include "VisualizationInterface.h"
+#include "AutoRetouchInterface.h"
+#include "VisualizationInterface.h"
 #include "pcl/io/pcd_io.h"
 
 using namespace hiveObliquePhotography::Visualization;

@@ -5,6 +5,7 @@ namespace hiveObliquePhotography
 	namespace AutoRetouch
 	{
 		const std::string CLASSIFIER_BINARY = "Binary";
+		const std::string CLASSIFIER_BINARY_VFH = "Binary_vfh";
 		const std::string CLASSIFIER_REGION_GROW = "RegionGrow";
 
 		enum class EPointLabel : unsigned char

@@ -3,6 +3,8 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
+_REGISTER_EXCLUSIVE_PRODUCT(CBinaryClassifierByVFHAlg, CLASSIFIER_BINARY_VFH)
+
 //*****************************************************************
 //FUNCTION: 
 void hiveObliquePhotography::AutoRetouch::hiveUndoLastOp()

@@ -23,6 +23,7 @@
     <ClInclude Include="..\AutoRetouch\AutoRetouchExport.h" />
     <ClInclude Include="..\AutoRetouch\AutoRetouchInterface.h" />
     <ClInclude Include="..\AutoRetouch\BinaryClassifierAlg.h" />
+    <ClInclude Include="..\AutoRetouch\BinaryClassifierByVFHAlg.h" />
     <ClInclude Include="..\AutoRetouch\CompositeClassifier.h" />
     <ClInclude Include="..\AutoRetouch\framework.h" />
     <ClInclude Include="..\AutoRetouch\Neighborhood.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="..\AutoRetouch\PointClassifier.h" />
     <ClInclude Include="..\AutoRetouch\PointCloudAutoRetouchScene.h" />
     <ClInclude Include="..\AutoRetouch\PointCluster.h" />
+    <ClInclude Include="..\AutoRetouch\PointCluster4VFH.h" />
     <ClInclude Include="..\AutoRetouch\PointLabel4Classfier.h" />
     <ClInclude Include="..\AutoRetouch\PointLabelChangeRecord.h" />
     <ClInclude Include="..\AutoRetouch\RegionGrowingAlg.h" />
@@ -40,11 +42,13 @@
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp" />
     <ClCompile Include="..\AutoRetouch\BinaryClassifierAlg.cpp" />
+    <ClCompile Include="..\AutoRetouch\BinaryClassifierByVFHAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\CompositeClassifier.cpp" />
     <ClCompile Include="..\AutoRetouch\Neighborhood.cpp" />
     <ClCompile Include="..\AutoRetouch\OpResultQueue.cpp" />
     <ClCompile Include="..\AutoRetouch\pch.cpp" />
     <ClCompile Include="..\AutoRetouch\PointCloudAutoRetouchScene.cpp" />
+    <ClCompile Include="..\AutoRetouch\PointCluster4VFH.cpp" />
     <ClCompile Include="..\AutoRetouch\PointLabel4Classfier.cpp" />
     <ClCompile Include="..\AutoRetouch\PointLabelChangeRecord.cpp" />
     <ClCompile Include="..\AutoRetouch\RegionGrowingAlg.cpp" />
@@ -153,7 +157,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;HIVE_STATIC_LIBRARY;_UNIT_TEST;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -170,11 +174,13 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;HIVE_STATIC_LIBRARY;_UNIT_TEST;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <Optimization>MaxSpeed</Optimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>
