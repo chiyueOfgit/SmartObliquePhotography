@@ -59,12 +59,6 @@ void CPointCluster4VFH::__computeVFHDescriptor(const std::vector<std::uint64_t>&
 	Estimation.setSearchMethod(pTreePtr);
 	Estimation.compute(Result);
 
-	if (Result.empty())
-	{
-		voVFHDescriptor = Eigen::ArrayXf::Zero(pcl::VFHSignature308::descriptorSize());
-	}
-	else
-	{
+	voVFHDescriptor = Result.empty() ? voVFHDescriptor = Eigen::ArrayXf::Zero(pcl::VFHSignature308::descriptorSize()) :
 		voVFHDescriptor = Result.getMatrixXfMap(pcl::VFHSignature308::descriptorSize(), pcl::VFHSignature308::descriptorSize(), 0).col(0);
-	}
 }
