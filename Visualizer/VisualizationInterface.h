@@ -1,0 +1,12 @@
+#pragma once
+#include "VisualizationExport.h"
+
+namespace hiveObliquePhotography
+{
+	namespace Visualization
+	{
+		VISUALIZATION_DECLSPEC void hiveInitVisualizer(pcl::PointCloud<pcl::PointSurfel>* vPointCloud);
+
+		VISUALIZATION_DECLSPEC void hiveRefreshVisualizer(bool vResetCamera = false);
+	}
+}

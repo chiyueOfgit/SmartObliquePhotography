@@ -24,6 +24,9 @@ namespace hiveObliquePhotography
 
 			std::size_t getNumPoint() const { _ASSERTE(m_pPointCloudScene); return m_pPointCloudScene->size(); }
 
+			const pcl::PointCloud<pcl::PointSurfel>* getPointCloudScene() const { return m_pPointCloudScene; }
+			const pcl::search::KdTree<pcl::PointSurfel>* getGlobalKdTree() const { return m_pGlobalKdTree; }
+
 			CGlobalPointLabelSet* fetchPointLabelSet() { return &m_PointLabelSet; }
 
 		private:

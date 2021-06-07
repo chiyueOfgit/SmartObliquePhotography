@@ -35,4 +35,6 @@ void CPointCloudAutoRetouchScene::init(pcl::PointCloud<pcl::PointSurfel>* vPoint
 	_ASSERTE(vPointCloudScene);
 	m_pPointCloudScene = vPointCloudScene;
 	m_pGlobalKdTree = new pcl::search::KdTree<pcl::PointSurfel>();
+
+	m_PointLabelSet.init(m_pPointCloudScene->size(), EPointLabel::UNDETERMINED);
 }

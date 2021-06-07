@@ -9,7 +9,7 @@ pcl::PointCloud<pcl::PointSurfel>* IPointCloudLoader::loadDataFromFile(const std
 {
 	_ASSERTE(!vFileName.empty());
 
-	pcl::PointCloud<pcl::PointSurfel>* pPointCloud = new pcl::PointCloud<pcl::PointSurfel>;
+	auto* pPointCloud = new pcl::PointCloud<pcl::PointSurfel>;
 
 	if (!__loadDataFromFileV(vFileName, *pPointCloud))
 	{

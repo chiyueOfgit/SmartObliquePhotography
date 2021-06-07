@@ -11,11 +11,11 @@ namespace hiveObliquePhotography
 		{
 		public:
 			CBinaryClassifierAlg() = default;
-			~CBinaryClassifierAlg() = default;
+			virtual ~CBinaryClassifierAlg() = default;
 
 			virtual void runV(std::vector<IPointCluster*> vInputClusterSet);
 
-		private:
+		protected:
 			std::vector<IPointCluster*> m_ClusterSet;
 		};
 	}

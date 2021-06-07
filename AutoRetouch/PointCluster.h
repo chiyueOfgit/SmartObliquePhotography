@@ -12,7 +12,9 @@ namespace hiveObliquePhotography
 			IPointCluster(EPointLabel vLabel) : m_Label(vLabel) {}
 			virtual ~IPointCluster() = default;
 
-			virtual double computeDistanceV(std::uint64_t vPointIndex) const;
+			EPointLabel getClusterLabel() const { return m_Label; }
+
+			virtual double computeDistanceV(std::uint64_t vPointIndex) const = 0;
 
 		private:
 			EPointLabel m_Label = EPointLabel::UNDETERMINED;

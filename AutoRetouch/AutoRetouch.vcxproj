@@ -119,7 +119,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;AUTORETOUCH_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -136,11 +136,13 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;AUTORETOUCH_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <Optimization>Disabled</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,6 +157,7 @@
     <ClInclude Include="AutoRetouchExport.h" />
     <ClInclude Include="AutoRetouchInterface.h" />
     <ClInclude Include="BinaryClassifierAlg.h" />
+    <ClInclude Include="BinaryClassifierByVFHAlg.h" />
     <ClInclude Include="CompositeClassifier.h" />
     <ClInclude Include="PointClassifier.h" />
     <ClInclude Include="OpResult.h" />
@@ -165,6 +168,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PointCloudAutoRetouchScene.h" />
     <ClInclude Include="PointCluster.h" />
+    <ClInclude Include="PointCluster4VFH.h" />
     <ClInclude Include="PointLabel4Classfier.h" />
     <ClInclude Include="PointLabelChangeRecord.h" />
     <ClInclude Include="RegionGrowingAlg.h" />
@@ -172,6 +176,7 @@
   <ItemGroup>
     <ClCompile Include="AutoRetouchInterface.cpp" />
     <ClCompile Include="BinaryClassifierAlg.cpp" />
+    <ClCompile Include="BinaryClassifierByVFHAlg.cpp" />
     <ClCompile Include="CompositeClassifier.cpp" />
     <ClCompile Include="OpResultQueue.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -183,6 +188,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PointCloudAutoRetouchScene.cpp" />
+    <ClCompile Include="PointCluster4VFH.cpp" />
     <ClCompile Include="PointLabel4Classfier.cpp" />
     <ClCompile Include="PointLabelChangeRecord.cpp" />
     <ClCompile Include="RegionGrowingAlg.cpp" />
@@ -239,14 +245,14 @@
     <Import Project="d:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets" Condition="Exists('d:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets')" />
     <Import Project="d:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets" Condition="Exists('d:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets')" />
     <Import Project="d:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets" Condition="Exists('d:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets')" />
-    <Import Project="d:\vc_packages\VTK.redist.8.2.0\build\native\VTK.redist.targets" Condition="Exists('d:\vc_packages\VTK.redist.8.2.0\build\native\VTK.redist.targets')" />
-    <Import Project="d:\vc_packages\VTK.8.2.0\build\native\VTK.targets" Condition="Exists('d:\vc_packages\VTK.8.2.0\build\native\VTK.targets')" />
     <Import Project="d:\vc_packages\PCL.1.11.1\build\native\PCL.targets" Condition="Exists('d:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" />
     <Import Project="d:\vc_packages\boost_serialization-vc141.1.74.0.0\build\boost_serialization-vc141.targets" Condition="Exists('d:\vc_packages\boost_serialization-vc141.1.74.0.0\build\boost_serialization-vc141.targets')" />
     <Import Project="d:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets" Condition="Exists('d:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets')" />
     <Import Project="d:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets" Condition="Exists('d:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets')" />
     <Import Project="d:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets" Condition="Exists('d:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" />
     <Import Project="d:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets" Condition="Exists('d:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets')" />
+    <Import Project="D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets" Condition="Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" />
+    <Import Project="D:\vc_packages\VTK.8.2.1\build\native\VTK.targets" Condition="Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -299,13 +305,13 @@
     <Error Condition="!Exists('d:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets'))" />
-    <Error Condition="!Exists('d:\vc_packages\VTK.redist.8.2.0\build\native\VTK.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\VTK.redist.8.2.0\build\native\VTK.redist.targets'))" />
-    <Error Condition="!Exists('d:\vc_packages\VTK.8.2.0\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\VTK.8.2.0\build\native\VTK.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\PCL.1.11.1\build\native\PCL.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\boost_serialization-vc141.1.74.0.0\build\boost_serialization-vc141.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\boost_serialization-vc141.1.74.0.0\build\boost_serialization-vc141.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.8.2.1\build\native\VTK.targets'))" />
   </Target>
 </Project>
