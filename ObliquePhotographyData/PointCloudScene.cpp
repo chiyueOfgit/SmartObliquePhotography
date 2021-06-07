@@ -21,11 +21,11 @@ pcl::PointCloud<pcl::PointSurfel>* CPointCloudScene::loadScene(const std::vector
 	clear();
 	_ASSERTE(m_PointCloudScene->empty() && m_PointCloudTileMap.empty());
 
-	std::vector<std::string> LoadedFiles;
+	std::vector<std::string> LoadedFileSet;
 	
 	for (const auto& FileName : vFileNameSet)
 	{
-		if (find(LoadedFiles.begin(), LoadedFiles.end(), FileName) != LoadedFiles.end())
+		if (find(LoadedFileSet.begin(), LoadedFileSet.end(), FileName) != LoadedFileSet.end())
 		{
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("[%1%] has already been loaded.", FileName));
 			continue;
@@ -34,11 +34,10 @@ pcl::PointCloud<pcl::PointSurfel>* CPointCloudScene::loadScene(const std::vector
 		if (pTileLoader)
 		{
 			pcl::PointCloud<pcl::PointSurfel>* pTile = pTileLoader->loadDataFromFile(FileName);
-			if(!pTile)
-				continue;
+			if(!pTile) continue;
 			m_PointCloudTileMap.insert(std::make_pair(FileName, new CPointCloudTile(pTile)));
 			*m_PointCloudScene += *pTile;
-			LoadedFiles.emplace_back(FileName);
+			LoadedFileSet.emplace_back(FileName);
 		}
 		else
 		{
