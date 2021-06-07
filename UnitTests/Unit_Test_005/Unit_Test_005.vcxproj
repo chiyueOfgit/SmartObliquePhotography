@@ -59,8 +59,6 @@
     <Import Project="D:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets" Condition="Exists('D:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets')" />
     <Import Project="D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets" Condition="Exists('D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets')" />
     <Import Project="D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets" Condition="Exists('D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets')" />
-    <Import Project="D:\vc_packages\VTK.redist.8.2.0\build\native\VTK.redist.targets" Condition="Exists('D:\vc_packages\VTK.redist.8.2.0\build\native\VTK.redist.targets')" />
-    <Import Project="D:\vc_packages\VTK.8.2.0\build\native\VTK.targets" Condition="Exists('D:\vc_packages\VTK.8.2.0\build\native\VTK.targets')" />
     <Import Project="D:\vc_packages\PCL.1.11.1\build\native\PCL.targets" Condition="Exists('D:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" />
     <Import Project="D:\vc_packages\boost.1.74.0.0\build\boost.targets" Condition="Exists('D:\vc_packages\boost.1.74.0.0\build\boost.targets')" />
     <Import Project="D:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets" Condition="Exists('D:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets')" />
@@ -71,6 +69,8 @@
     <Import Project="D:\vc_packages\boost_date_time-vc142.1.74.0.0\build\boost_date_time-vc142.targets" Condition="Exists('D:\vc_packages\boost_date_time-vc142.1.74.0.0\build\boost_date_time-vc142.targets')" />
     <Import Project="D:\vc_packages\boost_filesystem-vc142.1.74.0.0\build\boost_filesystem-vc142.targets" Condition="Exists('D:\vc_packages\boost_filesystem-vc142.1.74.0.0\build\boost_filesystem-vc142.targets')" />
     <Import Project="D:\vc_packages\boost_iostreams-vc142.1.74.0.0\build\boost_iostreams-vc142.targets" Condition="Exists('D:\vc_packages\boost_iostreams-vc142.1.74.0.0\build\boost_iostreams-vc142.targets')" />
+    <Import Project="D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets" Condition="Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" />
+    <Import Project="D:\vc_packages\VTK.8.2.1\build\native\VTK.targets" Condition="Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" />
   </ImportGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -150,8 +150,6 @@
     <Error Condition="!Exists('D:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets'))" />
-    <Error Condition="!Exists('D:\vc_packages\VTK.redist.8.2.0\build\native\VTK.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.redist.8.2.0\build\native\VTK.redist.targets'))" />
-    <Error Condition="!Exists('D:\vc_packages\VTK.8.2.0\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.8.2.0\build\native\VTK.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\PCL.1.11.1\build\native\PCL.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\boost.1.74.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost.1.74.0.0\build\boost.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets'))" />
@@ -162,5 +160,7 @@
     <Error Condition="!Exists('D:\vc_packages\boost_date_time-vc142.1.74.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_date_time-vc142.1.74.0.0\build\boost_date_time-vc142.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\boost_filesystem-vc142.1.74.0.0\build\boost_filesystem-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_filesystem-vc142.1.74.0.0\build\boost_filesystem-vc142.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\boost_iostreams-vc142.1.74.0.0\build\boost_iostreams-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_iostreams-vc142.1.74.0.0\build\boost_iostreams-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.8.2.1\build\native\VTK.targets'))" />
   </Target>
 </Project>
