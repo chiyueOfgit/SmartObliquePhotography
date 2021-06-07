@@ -4,7 +4,7 @@
 	#if defined(OPDATA_EXPORTS)
 	#define OPDATA_DECLSPEC __declspec(dllexport)
 	#elif defined(HIVE_STATIC_LIBRARY)
-	#define OPDATA_DECLSPEC
+	#define OPDATA_DECLSPEC /*sb*/
 	#else
 	#define OPDATA_DECLSPEC __declspec(dllimport)
 	#endif
