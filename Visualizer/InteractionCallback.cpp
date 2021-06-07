@@ -22,7 +22,6 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	{
 		m_KeyPressStatus[vEvent.getKeyCode()] = vEvent.keyDown() ? true : false;
 	}
-
 }
 
 //*****************************************************************
@@ -36,7 +35,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_MousePressStatus[0] = PressStatus;
 	else if (Button == pcl::visualization::MouseEvent::RightButton)
 		m_MousePressStatus[1] = PressStatus;
-	
 }
 
 //*****************************************************************
