@@ -1,5 +1,4 @@
 #pragma once
-#include "AutoRetouchCommon.h"
 
 namespace hiveObliquePhotography
 {
