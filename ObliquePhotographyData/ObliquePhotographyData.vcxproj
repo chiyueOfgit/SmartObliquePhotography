@@ -121,7 +121,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;OPDATA_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;OPDATA_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -139,7 +139,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;OPDATA_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;OPDATA_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -198,6 +198,9 @@
     <Import Project="D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets" Condition="Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" />
     <Import Project="D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets" Condition="Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" />
     <Import Project="D:\vc_packages\VTK.8.2.1\build\native\VTK.targets" Condition="Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" />
+    <Import Project="..\..\..\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets" Condition="Exists('..\..\..\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" />
+    <Import Project="..\..\..\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets" Condition="Exists('..\..\..\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" />
+    <Import Project="..\..\..\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets" Condition="Exists('..\..\..\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -216,5 +219,8 @@
     <Error Condition="!Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.8.2.1\build\native\VTK.targets'))" />
+    <Error Condition="!Exists('..\..\..\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets'))" />
+    <Error Condition="!Exists('..\..\..\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets'))" />
+    <Error Condition="!Exists('..\..\..\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets'))" />
   </Target>
 </Project>

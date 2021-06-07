@@ -35,7 +35,7 @@ pcl::PointCloud<pcl::PointSurfel>* CPointCloudScene::loadScene(const std::vector
 		{
 			pcl::PointCloud<pcl::PointSurfel>* pTile = pTileLoader->loadDataFromFile(FileName);
 			if(!pTile)
-				continue;;
+				continue;
 			m_PointCloudTileMap.insert(std::make_pair(FileName, new CPointCloudTile(pTile)));
 			*m_PointCloudScene += *pTile;
 			LoadedFiles.emplace_back(FileName);
@@ -59,5 +59,5 @@ void CPointCloudScene::clear()
 	}
 
 	//_SAFE_DELETE(m_PointCloudScene);
-	m_PointCloudScene = new pcl::PointCloud<pcl::PointSurfel>;
+	m_PointCloudScene = new pcl::PointCloud<pcl::PointSurfel>;  //todo:ÐÞ¸Ä
 }

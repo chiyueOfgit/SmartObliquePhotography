@@ -1,9 +1,6 @@
 #include "pch.h"
 #include <common/UtilityInterface.h>
-#include "ObliquePhotographyDataCommon.h"
 #include "PointCloudLoader.h"
-#include "PointCloudPCDLoader.h"
-#include "PointCloudPLYLoader.h"
 
 using namespace hiveObliquePhotography;
 
@@ -17,12 +14,9 @@ const std::string g_ValidPCDFileName = "TestModel/slice 1.pcd";
 const std::string g_InexistentFileName = "TestModel/slice 5.pcd";
 const std::string g_UnsupportedFileName = "TestModel/slice 1.txt";
 
-_REGISTER_EXCLUSIVE_PRODUCT(CPointCloudPCDLoader, PCD_LOADER)
-_REGISTER_EXCLUSIVE_PRODUCT(CPointCloudPLYLoader, PLY_LOADER)
-
 TEST(Test_LoadPointCloudTile, LoadTilePly)
 {	
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPointCloudPLYLoader>(hiveUtility::hiveGetFileSuffix(g_ValidPLYFileName));
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(g_ValidPLYFileName));
 	pcl::PointCloud<pcl::PointSurfel>* pTile = pTileLoader->loadDataFromFile(g_ValidPLYFileName);
 	GTEST_ASSERT_EQ(pTile->size(), 148701);
 
