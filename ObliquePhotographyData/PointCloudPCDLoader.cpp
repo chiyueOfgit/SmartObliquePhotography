@@ -9,9 +9,9 @@ using namespace hiveObliquePhotography;
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudPCDLoader::__loadDataFromFileV(const std::string& vFileName, PointCloud_t::Ptr voPointCloud)
+bool CPointCloudPCDLoader::__loadDataFromFileV(const std::string& vFileName, PointCloud_t& voPointCloud)
 {
-	if (pcl::io::loadPCDFile<PointCloud_t::PointType>(vFileName, *voPointCloud) < 0)
+	if (pcl::io::loadPCDFile<PointCloud_t::PointType>(vFileName, voPointCloud) < 0)
 	{
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load file [%1%] due to inexistent file.", vFileName));
 		return false;

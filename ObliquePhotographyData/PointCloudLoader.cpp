@@ -16,7 +16,7 @@ PointCloud_t::Ptr IPointCloudLoader::loadDataFromFile(const std::string& vFileNa
 
 	PointCloud_t::Ptr pPointCloud(new PointCloud_t);
 	
-	if (!__loadDataFromFileV(vFileName, pPointCloud))
+	if (!__loadDataFromFileV(vFileName, *pPointCloud))
 		pPointCloud = nullptr;
 	return pPointCloud;
 }

@@ -8,6 +8,6 @@ namespace hiveObliquePhotography
 	class CPointCloudPLYLoader : public IPointCloudLoader
 	{
 	private:
-		bool __loadDataFromFileV(const std::string& vFileName, PointCloud_t::Ptr voPointCloud) override;
+		bool __loadDataFromFileV(const std::string& vFileName, PointCloud_t& voPointCloud) override;
 	};
 }
