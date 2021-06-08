@@ -3,7 +3,6 @@
 #include "PointCloudAutoRetouchScene.h"
 #include "RegionGrowingAlg.h"
 #include "BinaryClassifierAlg.h"
-#include "BinaryClassifierByVFHAlg.h"
 #include "SpatialClusteringAlg.h"
 #include "MaxVisibilityClusterAlg.h"
 #include "BinaryClassifierAlgByVFH.h"
