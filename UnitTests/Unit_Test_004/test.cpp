@@ -4,7 +4,6 @@
 #include "PointCloudAutoRetouchScene.h"
 #include "PointCloudVisualizer.h"
 #include "pcl/io/pcd_io.h"
-#include "PointCluster4VFH.h"
 
 #include <fstream>
 #include <boost/archive/text_oarchive.hpp> 
@@ -48,6 +47,8 @@ TEST(Test_Binary, BinaryByVFH)
 
 	hiveObliquePhotography::Visualization::hiveInitVisualizer(pCloud);
 	hiveObliquePhotography::Visualization::hiveRefreshVisualizer();
+
+	//hiveObliquePhotography::Visualization::hiveRunVisualizerLoop();
 
 //	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->init(pCloud);
 //	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->refresh();

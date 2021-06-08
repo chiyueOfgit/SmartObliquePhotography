@@ -44,18 +44,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AutoRetouch\AutoRetouch.vcxproj">
-      <Project>{a8f8e3db-1ace-4584-9acd-f180cbac22ee}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\visualization\pcl_visualization.vcxproj">
-      <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Visualizer\Visualization.vcxproj">
-      <Project>{6673a1f9-724d-47a0-8159-6ca26b818506}</Project>
-    </ProjectReference>
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
+    <ProjectReference Include="..\..\AutoRetouch_Lib\AutoRetouch_Lib.vcxproj">
+      <Project>{c343c23f-c156-407f-a1e9-3bfb59a4989a}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
