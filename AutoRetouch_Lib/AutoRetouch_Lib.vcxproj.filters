@@ -72,6 +72,12 @@
     <ClInclude Include="..\AutoRetouch\PointCluster4VFH.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\AutoRetouch\MaxVisibilityClusterAlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\SpatialClusteringAlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp">
@@ -108,6 +114,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\PointCluster4VFH.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\MaxVisibilityClusterAlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\SpatialClusteringAlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

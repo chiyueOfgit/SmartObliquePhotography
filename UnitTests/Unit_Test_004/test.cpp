@@ -29,7 +29,7 @@ const std::string g_KeptGroundPoints = "SomeGroundPoints.txt";
 
 TEST(Test_Binary, BinaryByVFH)
 {
-	pcl::PointCloud<pcl::PointSurfel>* pCloud = new pcl::PointCloud<pcl::PointSurfel>;
+	pcl::PointCloud<pcl::PointSurfel>::Ptr pCloud (new pcl::PointCloud<pcl::PointSurfel>);
 	pcl::io::loadPCDFile(g_Folder + g_CloudFile, *pCloud);
 
 	hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(pCloud);
