@@ -3,8 +3,7 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-_REGISTER_EXCLUSIVE_PRODUCT(CBinaryClassifierByVFHAlg, CLASSIFIER_BINARY_VFH)
-_REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COLOR)
+
 
 //*****************************************************************
 //FUNCTION: 

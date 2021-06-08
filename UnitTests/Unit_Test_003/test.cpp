@@ -28,7 +28,7 @@ const std::string g_UnwantedTreePoints = "SomeBigTreePoints.txt";
 
 TEST(Test_RegionGrowing, RegionGrowingByColor)
 {
-	pcl::PointCloud<pcl::PointSurfel>* pCloud = new pcl::PointCloud<pcl::PointSurfel>;
+	pcl::PointCloud<pcl::PointSurfel>::Ptr pCloud = nullptr;
 	pcl::io::loadPCDFile(g_Folder + g_CloudFile, *pCloud);
 
 	hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(pCloud);
