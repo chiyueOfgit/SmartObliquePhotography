@@ -10,8 +10,6 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COL
 
 SRegionGrowingSetting RegionGrowingSetting;
 
-
-
 void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, EPointLabel vSeedLabel) //SeedLabel « ≤√¥£ø
 {
 
