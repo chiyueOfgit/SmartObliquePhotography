@@ -15,7 +15,6 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 		return;
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
 	auto pCloud = pScene->getPointCloudScene();
-	pcl::search::KdTree<pcl::PointSurfel>::Ptr pTree(new pcl::search::KdTree<pcl::PointSurfel>);
 	
 	const int Resolution = 64;
 	const Eigen::Vector3f ViewDir(vCamera.focal[0] - vCamera.pos[0], vCamera.focal[1] - vCamera.pos[1], vCamera.focal[2] - vCamera.pos[2]);
@@ -25,45 +24,37 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 	vCamera.computeViewMatrix(ViewMatrix);
 	vCamera.computeProjectionMatrix(ProjectMatrix);
 
-	pcl::PointCloud<pcl::PointSurfel>::Ptr pCloudWithIndex(new pcl::PointCloud<pcl::PointSurfel>);
-	for (auto Index : vioInputSet)
-	{
-		pcl::PointSurfel& Point = pCloud->points[Index];
-		Point.curvature = Index;
-		pCloudWithIndex->push_back(Point);
-	}
-
-	pTree->setInputCloud(pCloudWithIndex);
 	std::vector<pcl::PointIndices> ClusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointSurfel> Ec;
 	Ec.setClusterTolerance(0.5);
 	Ec.setMinClusterSize(3);
 	Ec.setMaxClusterSize(10000);
-	Ec.setSearchMethod(pTree);
-	Ec.setInputCloud(pCloudWithIndex);
+	Ec.setInputCloud(CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene());
+	Ec.setSearchMethod(CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree());
+	Ec.setIndices(pcl::make_shared<pcl::Indices>(vioInputSet.begin(), vioInputSet.end()));
 	Ec.extract(ClusterIndices);
 
-	std::map<float, pcl::PointCloud<pcl::PointSurfel>::Ptr> CloudMap;
+	std::map<float, pcl::PointCloud<pcl::PointSurfel>::Ptr> CloudMap;//TODO: 改为MinDistance与Indices的pair
 	for (auto& [Header, Indices] : ClusterIndices)
 	{
-		float Min = FLT_MAX;
-		pcl::PointCloud<pcl::PointSurfel>::Ptr CloudCluster(new pcl::PointCloud<pcl::PointSurfel>);
+		float MinDistance = FLT_MAX;
+		pcl::PointCloud<pcl::PointSurfel>::Ptr pCloudCluster(new pcl::PointCloud<pcl::PointSurfel>);
 		for (auto Index : Indices)
 		{
-			CloudCluster->points.push_back(pCloudWithIndex->points[Index]);
-			Eigen::Vector3f TempPoint{ pCloudWithIndex->points[Index].x, pCloudWithIndex->points[Index].y, pCloudWithIndex->points[Index].z };
-			Eigen::Vector3f TempNormal{ pCloudWithIndex->points[Index].normal_x, pCloudWithIndex->points[Index].normal_y, pCloudWithIndex->points[Index].normal_z };
-			Min = Min < (TempPoint - ViewPos).norm() ? Min : (TempPoint - ViewPos).norm();
+			pCloudCluster->push_back(pCloud->at(Index));
+
+			const float ViewDistance = ((Eigen::Vector3f)(pCloud->at(Index).getArray3fMap()) - ViewPos).norm();
+			MinDistance = std::min(ViewDistance, MinDistance);
 		}
-		CloudMap.insert(std::pair<float, pcl::PointCloud<pcl::PointSurfel>::Ptr>(Min, CloudCluster));
+		CloudMap.emplace(MinDistance, pCloudCluster);
 	}
 
 	std::vector<std::vector<bool>> Flag(Resolution, std::vector<bool>(Resolution, true));
 	std::vector<int> ValidSet{};
-	for (auto& CloudPair : CloudMap)
+	for (auto& [MinDistance, pCloudCluster] : CloudMap)
 	{
 		int Num = 0;
-		for (auto& Point : CloudPair.second->points)
+		for (auto& Point : pCloudCluster->points)
 		{
 			Eigen::Vector4d TempPoint(Point.x, Point.y, Point.z, 1.0);
 			TempPoint = ProjectMatrix * ViewMatrix * TempPoint;
