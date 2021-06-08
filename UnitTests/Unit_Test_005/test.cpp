@@ -19,8 +19,9 @@ TEST(Test_PointCloudVisualizer, TestInitAndRefresh)
 	
 	auto pCloud = hiveObliquePhotography::CPointCloudScene::getInstance()->loadScene(FilePaths);
 
-	hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(pCloud);
-	CPointCloudVisualizer::getInstance()->init(pCloud);
+	//TODO: Visualizer内pcl对象也需用智能指针管理
+	hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(pCloud.get());
+	CPointCloudVisualizer::getInstance()->init(pCloud.get());
 	CPointCloudVisualizer::getInstance()->refresh();
 	
 	system("pause");
