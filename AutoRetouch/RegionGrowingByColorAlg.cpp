@@ -11,6 +11,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COL
 SRegionGrowingSetting RegionGrowingSetting;
 
 
+
 void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, EPointLabel vSeedLabel) //SeedLabel是什么？
 {
 
@@ -61,6 +62,7 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 		int KNN = 0;
 
 		const int CurrentSeed = Seeds.back();
+		Seeds.pop_back();
 
 		std::vector<int> NeighborIndices;
 		std::vector<float> NeighborDistances;
@@ -77,7 +79,7 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 			}
 
 			//这里认为半径内其中一个测试点代表所有测试点是否直接通过
-			if (__validatePoint(NeighborIndex))
+			if (__validatePoint(NeighborIndex, pScene))
 			{
 				KNN = 0;
 				while (KNN < NeighborIndices.size())
@@ -101,18 +103,18 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 
 }
 
-bool CRegionGrowingByColorAlg::__validatePoint(int vTestPoint) const
+bool CRegionGrowingByColorAlg::__validatePoint(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const
 {
 	if (RegionGrowingSetting.bColorFlag)
 	{
 		switch (RegionGrowingSetting.ColorMode)
 		{
 		case SRegionGrowingSetting::EColorMode::Mean:
-			if (!__colorTestByAverage(vTestPoint))
+			if (!__colorTestByAverage(vTestPoint, vCloud))
 				return false;
 			break;
 		case SRegionGrowingSetting::EColorMode::Median:
-			if (!__colorTestByMedian(vTestPoint))
+			if (!__colorTestByMedian(vTestPoint, vCloud))
 				return false;
 			break;
 		}
@@ -120,13 +122,13 @@ bool CRegionGrowingByColorAlg::__validatePoint(int vTestPoint) const
 
 	if (RegionGrowingSetting.bGroundFlag)
 	{
-		if (!__groundTest(vTestPoint))
+		if (!__groundTest(vTestPoint, vCloud))
 			return false;
 	}
 
 	if (RegionGrowingSetting.bNormalFlag)
 	{
-		if (!__normalTest(vTestPoint))
+		if (!__normalTest(vTestPoint, vCloud))
 			return false;
 	}
 
@@ -142,12 +144,8 @@ float CRegionGrowingByColorAlg::__calculateColorimetricalDifference(std::vector<
 	return sqrtf(Difference);
 }
 
-bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestPoint) const
+bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const
 {
-
-	auto pPointCloudScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pScene = pPointCloudScene->getPointCloudScene();
-	auto pKdTree = pPointCloudScene->getGlobalKdTree();
 	//应该需要动态更新阈值
 	float ColorThreshold = RegionGrowingSetting.ColorThreshold;
 
@@ -160,14 +158,15 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestPoint) const
 	//用测试点的邻居平均颜色代表该测试点的颜色
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
-	pKdTree->radiusSearch((*pScene)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
+	auto pKdTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
+	pKdTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3);
 	for (auto Index : NeighborIndices)
 	{
-		NeighborColor[0] += (*pScene)[Index].r;
-		NeighborColor[1] += (*pScene)[Index].g;
-		NeighborColor[2] += (*pScene)[Index].b;
+		NeighborColor[0] += (*vCloud)[Index].r;
+		NeighborColor[1] += (*vCloud)[Index].g;
+		NeighborColor[2] += (*vCloud)[Index].b;
 	}
 
 	NeighborColor[0] = NeighborColor[0] / (float)NeighborIndices.size();
@@ -192,26 +191,23 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestPoint) const
 	return true;
 }
 
-bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestPoint) const
+bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const
 {
-
-	auto pPointCloudScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pScene = pPointCloudScene->getPointCloudScene();
-	auto pKdTree = pPointCloudScene->getGlobalKdTree();
 	//应该需要动态更新阈值
 	float ColorThreshold = RegionGrowingSetting.ColorThreshold;
 
 	//用测试点的邻居平均颜色代表该测试点的颜色
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
-	pKdTree->radiusSearch((*pScene)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
+	auto pKdTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
+	pKdTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3);
 	for (auto Index : NeighborIndices)
 	{
-		NeighborColor[0] += (*pScene)[Index].r;
-		NeighborColor[1] += (*pScene)[Index].g;
-		NeighborColor[2] += (*pScene)[Index].b;
+		NeighborColor[0] += (*vCloud)[Index].r;
+		NeighborColor[1] += (*vCloud)[Index].g;
+		NeighborColor[2] += (*vCloud)[Index].b;
 	}
 
 	NeighborColor[0] = NeighborColor[0] / (float)NeighborIndices.size();
@@ -225,7 +221,7 @@ bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestPoint) const
 	}
 	else
 	{
-		m_MortonCode.insert(m_MortonCode.end(), Morton_3d(pScene->points[vTestPoint].r, pScene->points[vTestPoint].g, pScene->points[vTestPoint].b));
+		m_MortonCode.insert(m_MortonCode.end(), Morton_3d(vCloud->points[vTestPoint].r, vCloud->points[vTestPoint].g, vCloud->points[vTestPoint].b));
 		sort(m_MortonCode.begin(), m_MortonCode.end());
 		inverse_Morton_3d(m_MedianColor[0], m_MedianColor[1], m_MedianColor[2], m_MortonCode[m_MortonCode.size() / 2]);
 	}
@@ -233,34 +229,28 @@ bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestPoint) const
 	return true;
 }
 
-bool CRegionGrowingByColorAlg::__groundTest(int vTestPoint) const
+bool CRegionGrowingByColorAlg::__groundTest(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const
 {
-
-	auto pPointCloudScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pScene = pPointCloudScene->getPointCloudScene();
-	if ((*pScene)[vTestPoint].z < RegionGrowingSetting.GroundHeight)
+	if ((*vCloud)[vTestPoint].z < RegionGrowingSetting.GroundHeight)
 		return false;
 	else
 		return true;
 }
 
-bool CRegionGrowingByColorAlg::__normalTest(int vTestPoint) const
+bool CRegionGrowingByColorAlg::__normalTest(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const
 {
-
-	auto pPointCloudScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pScene = pPointCloudScene->getPointCloudScene();
-	auto pKdTree = pPointCloudScene->getGlobalKdTree();
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
 
 	float OuterRadius = 2.0f;
 	float InnerRadius = 1.0f;
-	pKdTree->radiusSearch((*pScene)[vTestPoint], OuterRadius, NeighborIndices, NeighborDistances);
+	auto pKdTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
+	pKdTree->radiusSearch((*vCloud)[vTestPoint], OuterRadius, NeighborIndices, NeighborDistances);
 	std::set<int> OutIndices(NeighborIndices.begin(), NeighborIndices.end());
 
 	NeighborIndices.clear();
 	NeighborDistances.clear();
-	pKdTree->radiusSearch((*pScene)[vTestPoint], InnerRadius, NeighborIndices, NeighborDistances);
+	pKdTree->radiusSearch((*vCloud)[vTestPoint], InnerRadius, NeighborIndices, NeighborDistances);
 	std::set<int> InIndices(NeighborIndices.begin(), NeighborIndices.end());
 
 	std::vector<int> Difference(OutIndices.size() - InIndices.size(), -1);
@@ -273,7 +263,7 @@ bool CRegionGrowingByColorAlg::__normalTest(int vTestPoint) const
 	while (Iter != Difference.end() && *Iter != -1)
 	{
 		std::size_t Index = *Iter;
-		float Dot = (*pScene)[Index].normal_x * (*pScene)[vTestPoint].normal_x + (*pScene)[Index].normal_y * (*pScene)[vTestPoint].normal_y + (*pScene)[Index].normal_z * (*pScene)[vTestPoint].normal_z;
+		float Dot = (*vCloud)[Index].normal_x * (*vCloud)[vTestPoint].normal_x + (*vCloud)[Index].normal_y * (*vCloud)[vTestPoint].normal_y + (*vCloud)[Index].normal_z * (*vCloud)[vTestPoint].normal_z;
 		NeighborDot.push_back(Dot);
 		SumDot += Dot;
 
