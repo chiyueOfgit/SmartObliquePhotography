@@ -58,11 +58,19 @@ namespace hiveObliquePhotography
 					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to execute to classifier [%1%] due to unexpected error.", m_Name));
 				}
 				m_pLocalLabelSet->stopRecord();
-				m_pLocalLabelSet->reset();
+				m_pLocalLabelSet->reset(m_PointLabelChangeRecord);
 				return false;
 			}
 
 			const std::vector<SPointLabelChange>& getResult() const { return m_PointLabelChangeRecord; }
+			const std::vector<std::uint64_t>& getResultIndices() const
+			{
+				std::vector<std::uint64_t> ResultIndices;
+				ResultIndices.reserve(m_PointLabelChangeRecord.size());
+				for (auto& LabelChange : m_PointLabelChangeRecord)
+					ResultIndices.push_back(LabelChange.Index);
+				return ResultIndices;
+			}
 
 		protected:
 			CGlobalPointLabelSet* m_pGlobalLabelSet = nullptr;

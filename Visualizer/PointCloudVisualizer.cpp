@@ -97,3 +97,11 @@ void CPointCloudVisualizer::refresh(bool vResetCamera)
 	else
 		m_pPCLVisualizer->updateCamera();
 }
+
+void CPointCloudVisualizer::run()
+{
+	while (!m_pPCLVisualizer->wasStopped())
+	{
+		m_pPCLVisualizer->spinOnce(16);
+	}
+}

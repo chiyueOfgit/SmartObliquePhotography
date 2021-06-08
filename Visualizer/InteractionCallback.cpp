@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "InteractionCallback.h"
+#include "AutoRetouchInterface.h"
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -22,6 +23,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	{
 		m_KeyPressStatus[vEvent.getKeyCode()] = vEvent.keyDown() ? true : false;
 	}
+
+	if (KeyString == "v" && vEvent.keyDown())
+	{
+		AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY_VFH);
+	}
 }
 
 //*****************************************************************
@@ -41,5 +47,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 //FUNCTION: 
 void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEvent& vEvent)
 {
+	std::vector<int> Indices;
+	vEvent.getPointsIndices(Indices);
 
+	AutoRetouch::hiveExecuteClusterAlg2CreateCluster(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT);
 }

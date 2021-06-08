@@ -13,3 +13,8 @@ void hiveObliquePhotography::Visualization::hiveRefreshVisualizer(bool vResetCam
 {
 	CPointCloudVisualizer::getInstance()->refresh(vResetCamera);
 }
+
+void hiveObliquePhotography::Visualization::hiveRunVisualizerLoop()
+{
+	CPointCloudVisualizer::getInstance()->run();
+}

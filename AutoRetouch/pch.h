@@ -24,7 +24,6 @@
 #include <boost/format.hpp>
 
 #include "common/Product.h"
-#include "common/Factory.h"
 #include "common/Singleton.h"
 #include "common/CommonInterface.h"
 #include "common/EventLoggerInterface.h"
