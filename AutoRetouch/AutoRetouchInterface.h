@@ -25,11 +25,9 @@ namespace hiveObliquePhotography
 
 			return pClassifier->execute<CRegionGrowingAlg>(true, std::forward<TArgs>(vArgs)...);
 		}
-
+		
 		AUTORETOUCH_DECLSPEC bool hiveExecuteBinaryClassifier(const std::string& vClassifierSig);
-
-			return pClassifier->execute<CBinaryClassifierByVFHAlg>(true, std::forward<TArgs>(vArgs)...);
-		}
+		bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(const std::vector<int>& vPointIndices, EPointLabel vExpectLabel);
 
 		template<class... TArgs>
 		bool hiveExecuteClusteringClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)
