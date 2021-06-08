@@ -15,6 +15,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/search/kdtree.h>
 
+#include <pcl/visualization/pcl_visualizer.h>
 #include "common/CommonInterface.h"
 #include "common/DesignPatternInterface.h"
 #include "common/EventLoggerInterface.h"
