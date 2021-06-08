@@ -18,8 +18,7 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 	_ASSERTE(!vFileNameSet.empty());
 
 	clear();
-	if (!m_pPointCloudScene)
-		m_pPointCloudScene.reset(new PointCloud_t);
+	m_pPointCloudScene.reset(new PointCloud_t);
 	
 	_ASSERTE(m_pPointCloudScene->empty() && m_PointCloudTileMap.empty());
 
