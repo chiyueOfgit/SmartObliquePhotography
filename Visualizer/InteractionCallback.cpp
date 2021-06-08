@@ -32,6 +32,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY_VFH);
 		m_pVisualizer->refresh();
 	}
+
+	if (KeyString == "space" && vEvent.keyDown())
+	{
+		m_UnwantedMode = !m_UnwantedMode;
+	}
 }
 
 //*****************************************************************

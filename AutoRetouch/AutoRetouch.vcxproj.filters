@@ -10,6 +10,18 @@
     <Filter Include="PointClassfier">
       <UniqueIdentifier>{1450fe09-043e-46f1-b3ff-11c8a65f6653}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PointClassfier\BinaryClassifierAlg">
+      <UniqueIdentifier>{92edc354-72c6-48ab-bf58-2431d81bf79b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PointClassfier\SpatialClusteringAlg">
+      <UniqueIdentifier>{06422865-b59d-4faf-9ff1-6831e81c0c98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PointClassfier\RegionGrowingAlg">
+      <UniqueIdentifier>{17666b75-d24b-4196-ac46-df9f5f44747c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PointClassfier\OutlierDetectingAlg">
+      <UniqueIdentifier>{422f9770-32ed-41db-b2b5-380be957ea8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NeighborhoodBuilder.h">
@@ -44,26 +56,32 @@
     <ClInclude Include="PointLabelChangeRecord.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="RegionGrowingAlg.h">
-      <Filter>PointClassfier</Filter>
-    </ClInclude>
-    <ClInclude Include="BinaryClassifierAlg.h">
-      <Filter>PointClassfier</Filter>
-    </ClInclude>
     <ClInclude Include="CompositeClassifier.h">
       <Filter>PointClassfier</Filter>
     </ClInclude>
-    <ClInclude Include="PointCluster4VFH.h">
-      <Filter>PointClassfier</Filter>
+    <ClInclude Include="BinaryClassifierAlg.h">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClInclude>
     <ClInclude Include="BinaryClassifierAlgByVFH.h">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClInclude>
     <ClInclude Include="SpatialClusteringAlg.h">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\SpatialClusteringAlg</Filter>
     </ClInclude>
     <ClInclude Include="MaxVisibilityClusterAlg.h">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\SpatialClusteringAlg</Filter>
+    </ClInclude>
+    <ClInclude Include="RegionGrowingAlg.h">
+      <Filter>PointClassfier\RegionGrowingAlg</Filter>
+    </ClInclude>
+    <ClInclude Include="OutlierDetectingAlg.h">
+      <Filter>PointClassfier\OutlierDetectingAlg</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCluster4VFH.h">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+    </ClInclude>
+    <ClInclude Include="StatisticalOutlierAlg.h">
+      <Filter>PointClassfier\OutlierDetectingAlg</Filter>
     </ClInclude>
     <ClInclude Include="Common.h">
       <Filter>PointClassfier</Filter>
@@ -91,26 +109,32 @@
     <ClCompile Include="PointLabelChangeRecord.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="RegionGrowingAlg.cpp">
-      <Filter>PointClassfier</Filter>
-    </ClCompile>
-    <ClCompile Include="BinaryClassifierAlg.cpp">
-      <Filter>PointClassfier</Filter>
-    </ClCompile>
     <ClCompile Include="CompositeClassifier.cpp">
       <Filter>PointClassfier</Filter>
     </ClCompile>
-    <ClCompile Include="PointCluster4VFH.cpp">
-      <Filter>PointClassfier</Filter>
+    <ClCompile Include="BinaryClassifierAlg.cpp">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClCompile>
     <ClCompile Include="BinaryClassifierAlgByVFH.cpp">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClCompile>
     <ClCompile Include="SpatialClusteringAlg.cpp">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\SpatialClusteringAlg</Filter>
     </ClCompile>
     <ClCompile Include="MaxVisibilityClusterAlg.cpp">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\SpatialClusteringAlg</Filter>
+    </ClCompile>
+    <ClCompile Include="RegionGrowingAlg.cpp">
+      <Filter>PointClassfier\RegionGrowingAlg</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlierDetectingAlg.cpp">
+      <Filter>PointClassfier\OutlierDetectingAlg</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCluster4VFH.cpp">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+    </ClCompile>
+    <ClCompile Include="StatisticalOutlierAlg.cpp">
+      <Filter>PointClassfier\OutlierDetectingAlg</Filter>
     </ClCompile>
     <ClCompile Include="RegionGrowingByColorAlg.cpp">
       <Filter>PointClassfier</Filter>

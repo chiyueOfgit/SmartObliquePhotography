@@ -14,9 +14,9 @@ TEST(Test_PointCloudVisualizer, TestInitAndRefresh)
 
 	const std::vector<std::string> FilePaths{
 		"TestModel/slice 1.pcd", 
-		"TestModel/slice 2.pcd", 
-		"TestModel/slice 3.pcd", 
-		"TestModel/slice 4.pcd"  
+		//"TestModel/slice 2.pcd", 
+		//"TestModel/slice 3.pcd", 
+		//"TestModel/slice 4.pcd"  
 	};
 	//
 	//auto pCloud = hiveObliquePhotography::CPointCloudScene::getInstance()->loadScene(FilePaths);

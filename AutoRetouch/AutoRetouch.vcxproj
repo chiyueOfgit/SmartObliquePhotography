@@ -171,6 +171,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="CompositeClassifier.h" />
     <ClInclude Include="MaxVisibilityClusterAlg.h" />
+    <ClInclude Include="OutlierDetectingAlg.h" />
     <ClInclude Include="PointClassifier.h" />
     <ClInclude Include="OpResult.h" />
     <ClInclude Include="OpResultQueue.h" />
@@ -186,6 +187,7 @@
     <ClInclude Include="RegionGrowingAlg.h" />
     <ClInclude Include="RegionGrowingByColorAlg.h" />
     <ClInclude Include="SpatialClusteringAlg.h" />
+    <ClInclude Include="StatisticalOutlierAlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoRetouchInterface.cpp" />
@@ -196,6 +198,7 @@
     <ClCompile Include="OpResultQueue.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Neighborhood.cpp" />
+    <ClCompile Include="OutlierDetectingAlg.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -209,6 +212,7 @@
     <ClCompile Include="RegionGrowingAlg.cpp" />
     <ClCompile Include="RegionGrowingByColorAlg.cpp" />
     <ClCompile Include="SpatialClusteringAlg.cpp" />
+    <ClCompile Include="StatisticalOutlierAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
