@@ -37,13 +37,13 @@ namespace hiveObliquePhotography
 
 			ColorDifferences m_ColorDifferenceCalculator;
 
-			bool __validatePoint(int vTestPoint) const;
+			bool __validatePoint(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const;
 			float __calculateColorimetricalDifference(std::vector<unsigned int>& vFirstColor, std::vector<unsigned int>& vSecondColor) const;
 
-			bool __colorTestByAverage(int vTestPoint) const;
-			bool __colorTestByMedian(int vTestPoint) const;
-			bool __groundTest(int vTestPoint) const;
-			bool __normalTest(int vTestPoint) const;
+			bool __colorTestByAverage(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const;
+			bool __colorTestByMedian(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const;
+			bool __groundTest(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const;
+			bool __normalTest(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const;
 		};
 	}
 }
