@@ -157,7 +157,7 @@
     <ClInclude Include="AutoRetouchExport.h" />
     <ClInclude Include="AutoRetouchInterface.h" />
     <ClInclude Include="BinaryClassifierAlg.h" />
-    <ClInclude Include="BinaryClassifierByVFHAlg.h" />
+    <ClInclude Include="BinaryClassifierAlgByVFH.h" />
     <ClInclude Include="CompositeClassifier.h" />
     <ClInclude Include="PointClassifier.h" />
     <ClInclude Include="OpResult.h" />
@@ -176,7 +176,7 @@
   <ItemGroup>
     <ClCompile Include="AutoRetouchInterface.cpp" />
     <ClCompile Include="BinaryClassifierAlg.cpp" />
-    <ClCompile Include="BinaryClassifierByVFHAlg.cpp" />
+    <ClCompile Include="BinaryClassifierAlgByVFH.cpp" />
     <ClCompile Include="CompositeClassifier.cpp" />
     <ClCompile Include="OpResultQueue.cpp" />
     <ClCompile Include="dllmain.cpp" />

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "BinaryClassifierByVFHAlg.h"
+#include "BinaryClassifierAlgByVFH.h"
 #include "PointCloudAutoRetouchScene.h"
 #include "PointCluster4VFH.h"
 

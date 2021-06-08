@@ -66,10 +66,10 @@
     <ClInclude Include="..\AutoRetouch\RegionGrowingAlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\AutoRetouch\BinaryClassifierByVFHAlg.h">
+    <ClInclude Include="..\AutoRetouch\PointCluster4VFH.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\AutoRetouch\PointCluster4VFH.h">
+    <ClInclude Include="..\AutoRetouch\BinaryClassifierAlgByVFH.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -104,10 +104,10 @@
     <ClCompile Include="..\AutoRetouch\RegionGrowingAlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\AutoRetouch\BinaryClassifierByVFHAlg.cpp">
+    <ClCompile Include="..\AutoRetouch\PointCluster4VFH.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\AutoRetouch\PointCluster4VFH.cpp">
+    <ClCompile Include="..\AutoRetouch\BinaryClassifierAlgByVFH.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

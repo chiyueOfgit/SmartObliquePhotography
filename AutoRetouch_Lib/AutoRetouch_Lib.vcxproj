@@ -23,7 +23,7 @@
     <ClInclude Include="..\AutoRetouch\AutoRetouchExport.h" />
     <ClInclude Include="..\AutoRetouch\AutoRetouchInterface.h" />
     <ClInclude Include="..\AutoRetouch\BinaryClassifierAlg.h" />
-    <ClInclude Include="..\AutoRetouch\BinaryClassifierByVFHAlg.h" />
+    <ClInclude Include="..\AutoRetouch\BinaryClassifierAlgByVFH.h" />
     <ClInclude Include="..\AutoRetouch\CompositeClassifier.h" />
     <ClInclude Include="..\AutoRetouch\framework.h" />
     <ClInclude Include="..\AutoRetouch\Neighborhood.h" />
@@ -42,7 +42,7 @@
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp" />
     <ClCompile Include="..\AutoRetouch\BinaryClassifierAlg.cpp" />
-    <ClCompile Include="..\AutoRetouch\BinaryClassifierByVFHAlg.cpp" />
+    <ClCompile Include="..\AutoRetouch\BinaryClassifierAlgByVFH.cpp" />
     <ClCompile Include="..\AutoRetouch\CompositeClassifier.cpp" />
     <ClCompile Include="..\AutoRetouch\Neighborhood.cpp" />
     <ClCompile Include="..\AutoRetouch\OpResultQueue.cpp" />
