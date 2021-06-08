@@ -26,6 +26,7 @@
     <ClInclude Include="..\AutoRetouch\BinaryClassifierAlgByVFH.h" />
     <ClInclude Include="..\AutoRetouch\CompositeClassifier.h" />
     <ClInclude Include="..\AutoRetouch\framework.h" />
+    <ClInclude Include="..\AutoRetouch\MaxVisibilityClusterAlg.h" />
     <ClInclude Include="..\AutoRetouch\Neighborhood.h" />
     <ClInclude Include="..\AutoRetouch\NeighborhoodBuilder.h" />
     <ClInclude Include="..\AutoRetouch\OpResult.h" />
@@ -38,12 +39,14 @@
     <ClInclude Include="..\AutoRetouch\PointLabel4Classfier.h" />
     <ClInclude Include="..\AutoRetouch\PointLabelChangeRecord.h" />
     <ClInclude Include="..\AutoRetouch\RegionGrowingAlg.h" />
+    <ClInclude Include="..\AutoRetouch\SpatialClusteringAlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp" />
     <ClCompile Include="..\AutoRetouch\BinaryClassifierAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\BinaryClassifierAlgByVFH.cpp" />
     <ClCompile Include="..\AutoRetouch\CompositeClassifier.cpp" />
+    <ClCompile Include="..\AutoRetouch\MaxVisibilityClusterAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\Neighborhood.cpp" />
     <ClCompile Include="..\AutoRetouch\OpResultQueue.cpp" />
     <ClCompile Include="..\AutoRetouch\pch.cpp" />
@@ -52,9 +55,15 @@
     <ClCompile Include="..\AutoRetouch\PointLabel4Classfier.cpp" />
     <ClCompile Include="..\AutoRetouch\PointLabelChangeRecord.cpp" />
     <ClCompile Include="..\AutoRetouch\RegionGrowingAlg.cpp" />
+    <ClCompile Include="..\AutoRetouch\SpatialClusteringAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\visualization\pcl_visualization.vcxproj">
+      <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -128,6 +137,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -145,6 +156,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -162,6 +175,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -181,6 +196,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MaxSpeed</Optimization>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>

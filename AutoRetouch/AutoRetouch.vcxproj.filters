@@ -59,6 +59,12 @@
     <ClInclude Include="BinaryClassifierAlgByVFH.h">
       <Filter>PointClassfier</Filter>
     </ClInclude>
+    <ClInclude Include="SpatialClusteringAlg.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxVisibilityClusterAlg.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neighborhood.cpp">
@@ -92,6 +98,12 @@
       <Filter>PointClassfier</Filter>
     </ClCompile>
     <ClCompile Include="BinaryClassifierAlgByVFH.cpp">
+      <Filter>PointClassfier</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialClusteringAlg.cpp">
+      <Filter>PointClassfier</Filter>
+    </ClCompile>
+    <ClCompile Include="MaxVisibilityClusterAlg.cpp">
       <Filter>PointClassfier</Filter>
     </ClCompile>
   </ItemGroup>

@@ -90,6 +90,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>..\visualization\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,6 +109,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>..\visualization\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,6 +128,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\visualization\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,6 +149,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\visualization\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,6 +167,7 @@
     <ClInclude Include="BinaryClassifierAlg.h" />
     <ClInclude Include="BinaryClassifierAlgByVFH.h" />
     <ClInclude Include="CompositeClassifier.h" />
+    <ClInclude Include="MaxVisibilityClusterAlg.h" />
     <ClInclude Include="PointClassifier.h" />
     <ClInclude Include="OpResult.h" />
     <ClInclude Include="OpResultQueue.h" />
@@ -172,12 +181,14 @@
     <ClInclude Include="PointLabel4Classfier.h" />
     <ClInclude Include="PointLabelChangeRecord.h" />
     <ClInclude Include="RegionGrowingAlg.h" />
+    <ClInclude Include="SpatialClusteringAlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoRetouchInterface.cpp" />
     <ClCompile Include="BinaryClassifierAlg.cpp" />
     <ClCompile Include="BinaryClassifierAlgByVFH.cpp" />
     <ClCompile Include="CompositeClassifier.cpp" />
+    <ClCompile Include="MaxVisibilityClusterAlg.cpp" />
     <ClCompile Include="OpResultQueue.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Neighborhood.cpp" />
@@ -192,9 +203,15 @@
     <ClCompile Include="PointLabel4Classfier.cpp" />
     <ClCompile Include="PointLabelChangeRecord.cpp" />
     <ClCompile Include="RegionGrowingAlg.cpp" />
+    <ClCompile Include="SpatialClusteringAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\visualization\pcl_visualization.vcxproj">
+      <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
