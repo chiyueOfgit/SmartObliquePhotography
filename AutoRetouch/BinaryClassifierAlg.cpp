@@ -7,7 +7,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CBinaryClassifierAlg, CLASSIFIER_BINARY)
 
 //*****************************************************************
 //FUNCTION: 
-void CBinaryClassifierAlg::runV(std::vector<IPointCluster*> vInputClusterSet)
+void CBinaryClassifierAlg::runV(const std::vector<IPointCluster*>& vInputClusterSet)
 {
 	_ASSERTE(vInputClusterSet.empty() || (vInputClusterSet.size() > 1));
 }

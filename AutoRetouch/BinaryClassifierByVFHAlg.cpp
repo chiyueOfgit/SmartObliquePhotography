@@ -5,9 +5,11 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
+_REGISTER_EXCLUSIVE_PRODUCT(CBinaryClassifierByVFHAlg, CLASSIFIER_BINARY_VFH)
+
 //*****************************************************************
 //FUNCTION: 
-void CBinaryClassifierByVFHAlg::runV(std::vector<IPointCluster*> vInputClusterSet)
+void CBinaryClassifierByVFHAlg::runV(const std::vector<IPointCluster*>& vInputClusterSet)
 {
 	_ASSERTE(vInputClusterSet.empty() || (vInputClusterSet.size() > 1));
 

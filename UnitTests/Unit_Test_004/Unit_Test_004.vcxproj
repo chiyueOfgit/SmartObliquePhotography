@@ -44,14 +44,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AutoRetouch_Lib\AutoRetouch_Lib.vcxproj">
-      <Project>{c343c23f-c156-407f-a1e9-3bfb59a4989a}</Project>
+    <ProjectReference Include="..\..\AutoRetouch\AutoRetouch.vcxproj">
+      <Project>{a8f8e3db-1ace-4584-9acd-f180cbac22ee}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\visualization\pcl_visualization.vcxproj">
       <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\Visualizer_Lib\Visualization_Lib.vcxproj">
-      <Project>{75dd450f-ca6d-415d-808d-b5ff6751daeb}</Project>
+    <ProjectReference Include="..\..\Visualizer\Visualization.vcxproj">
+      <Project>{6673a1f9-724d-47a0-8159-6ca26b818506}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +106,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <AdditionalOptions>/WHOLEARCHIVE:AutoRetouch_Lib.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

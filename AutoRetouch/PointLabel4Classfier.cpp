@@ -68,11 +68,11 @@ void CLocalPointLabelSet::__cleanPointLabelChangeRecord()
 
 //*****************************************************************
 //FUNCTION: 
-// bool CLocalPointLabelSet::reset(const std::vector<SPointLabelChange>& vChangeRecord)
-// {
-// 	_HIVE_EARLY_RETURN(m_IsRecording, "Fail to undo the specified operation because another operation is active.", false);
-// 	return _reset(vChangeRecord);
-// }
+ bool CLocalPointLabelSet::reset(const std::vector<SPointLabelChange>& vChangeRecord)
+ {
+ 	_HIVE_EARLY_RETURN(m_IsRecording, "Fail to undo the specified operation because another operation is active.", false);
+ 	return _reset(vChangeRecord);
+ }
 
 //*****************************************************************
 //FUNCTION: 
