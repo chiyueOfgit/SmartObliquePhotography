@@ -14,7 +14,7 @@ CPointCloudScene::~CPointCloudScene()
 
 //*****************************************************************
 //FUNCTION: 
-pcl::PointCloud<pcl::PointSurfel>* CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
+pcl::PointCloud<pcl::PointSurfel>::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
 {
 	_ASSERTE(!vFileNameSet.empty());
 
@@ -58,5 +58,5 @@ void CPointCloudScene::clear()
 	}
 
 	//_SAFE_DELETE(m_PointCloudScene);
-	m_PointCloudScene = new pcl::PointCloud<pcl::PointSurfel>;  //todo:ÐÞ¸Ä
+	m_PointCloudScene.reset(new pcl::PointCloud<pcl::PointSurfel>);  //todo:ÐÞ¸Ä
 }

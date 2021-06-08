@@ -33,7 +33,7 @@ protected:
 		m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
 		pcl::io::loadPCDFile(g_Folder + g_CloudFile, *m_pCloud);
 
-		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud.get());
+		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);
 
 		//if (bIsEnableVisualizer)
 		//{

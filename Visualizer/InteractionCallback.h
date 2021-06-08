@@ -4,6 +4,8 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
+		class CPointCloudVisualizer;
+
 		class CInteractionCallback
 		{
 		public:
@@ -22,6 +24,8 @@ namespace hiveObliquePhotography
 			bool m_MousePressStatus[2] = { false };
 
 			bool m_UnwantedMode = true;
+
+			CPointCloudVisualizer* m_pVisualizer;
 		};
 	}
 }

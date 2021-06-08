@@ -3,10 +3,9 @@
 #include "PointCloudAutoRetouchScene.h"
 #include "RegionGrowingAlg.h"
 #include "BinaryClassifierAlg.h"
-#include "BinaryClassifierByVFHAlg.h"
+#include "BinaryClassifierAlgByVFH.h"
 #include "SpatialClusteringAlg.h"
 #include "MaxVisibilityClusterAlg.h"
-#include "BinaryClassifierAlgByVFH.h"
 #include "PointCluster4VFH.h"
 
 namespace hiveObliquePhotography
@@ -28,7 +27,8 @@ namespace hiveObliquePhotography
 		}
 		
 		AUTORETOUCH_DECLSPEC bool hiveExecuteBinaryClassifier(const std::string& vClassifierSig);
-		bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(const std::vector<int>& vPointIndices, EPointLabel vExpectLabel);
+
+		AUTORETOUCH_DECLSPEC bool hiveExecuteClusterAlg2CreateCluster(const std::vector<int>& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera);
 
 		template<class... TArgs>
 		bool hiveExecuteClusteringClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)

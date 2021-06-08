@@ -50,6 +50,12 @@
     <ProjectReference Include="..\..\AutoRetouch_Lib\AutoRetouch_Lib.vcxproj">
       <Project>{c343c23f-c156-407f-a1e9-3bfb59a4989a}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\visualization\pcl_visualization.vcxproj">
+      <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Visualizer_Lib\Visualization_Lib.vcxproj">
+      <Project>{75dd450f-ca6d-415d-808d-b5ff6751daeb}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -96,6 +102,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>../../AutoRetouch;../../Visualizer;../../visualization/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -131,6 +138,7 @@
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

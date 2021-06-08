@@ -4,7 +4,7 @@
 
 using namespace hiveObliquePhotography::Visualization;
 
-void hiveObliquePhotography::Visualization::hiveInitVisualizer(pcl::PointCloud<pcl::PointSurfel>* vPointCloud)
+void hiveObliquePhotography::Visualization::hiveInitVisualizer(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
 {
 	CPointCloudVisualizer::getInstance()->init(vPointCloud);
 }

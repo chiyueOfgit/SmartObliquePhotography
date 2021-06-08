@@ -1,11 +1,14 @@
 #include "pch.h"
 #include "InteractionCallback.h"
+#include "PointCloudVisualizer.h"
 #include "AutoRetouchInterface.h"
 
 using namespace hiveObliquePhotography::Visualization;
 
 CInteractionCallback::CInteractionCallback(pcl::visualization::PCLVisualizer* vVisualizer)
 {
+	m_pVisualizer = CPointCloudVisualizer::getInstance();
+
 	_ASSERTE(vVisualizer);
 	vVisualizer->registerKeyboardCallback([&](const auto& vEvent) { keyboardCallback(vEvent); });
 	vVisualizer->registerMouseCallback([&](const auto& vEvent) { mouseCallback(vEvent); });
@@ -27,6 +30,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	if (KeyString == "v" && vEvent.keyDown())
 	{
 		AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY_VFH);
+		m_pVisualizer->refresh();
 	}
 }
 
@@ -50,5 +54,10 @@ void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEven
 	std::vector<int> Indices;
 	vEvent.getPointsIndices(Indices);
 
-	AutoRetouch::hiveExecuteClusterAlg2CreateCluster(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT);
+	pcl::visualization::Camera Camera;
+	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+
+	AutoRetouch::hiveExecuteClusterAlg2CreateCluster(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+
+	m_pVisualizer->refresh();
 }

@@ -63,7 +63,7 @@ namespace hiveObliquePhotography
 			}
 
 			const std::vector<SPointLabelChange>& getResult() const { return m_PointLabelChangeRecord; }
-			const std::vector<std::uint64_t>& getResultIndices() const
+			std::vector<std::uint64_t> getResultIndices() const
 			{
 				std::vector<std::uint64_t> ResultIndices;
 				ResultIndices.reserve(m_PointLabelChangeRecord.size());

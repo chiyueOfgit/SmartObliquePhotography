@@ -31,7 +31,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Visualizer_Lib", "Visualize
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_004 (classifier_binary_partition)", "UnitTests\Unit_Test_004\Unit_Test_004.vcxproj", "{6F95DC3E-5F82-478E-B5A4-76341D53AE7F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_006", "UnitTests\Unit_Test_006\Unit_Test_006.vcxproj", "{5B01D9D8-B48E-4A81-87E4-B4D5EC9A2849}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_006 (classifier_spatial_cluster)", "UnitTests\Unit_Test_006\Unit_Test_006.vcxproj", "{5B01D9D8-B48E-4A81-87E4-B4D5EC9A2849}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
