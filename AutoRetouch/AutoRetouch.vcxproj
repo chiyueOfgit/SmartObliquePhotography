@@ -158,6 +158,7 @@
     <ClInclude Include="AutoRetouchInterface.h" />
     <ClInclude Include="BinaryClassifierAlg.h" />
     <ClInclude Include="BinaryClassifierByVFHAlg.h" />
+    <ClInclude Include="Common.h" />
     <ClInclude Include="CompositeClassifier.h" />
     <ClInclude Include="PointClassifier.h" />
     <ClInclude Include="OpResult.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="PointLabel4Classfier.h" />
     <ClInclude Include="PointLabelChangeRecord.h" />
     <ClInclude Include="RegionGrowingAlg.h" />
+    <ClInclude Include="RegionGrowingByColorAlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoRetouchInterface.cpp" />
@@ -192,6 +194,7 @@
     <ClCompile Include="PointLabel4Classfier.cpp" />
     <ClCompile Include="PointLabelChangeRecord.cpp" />
     <ClCompile Include="RegionGrowingAlg.cpp" />
+    <ClCompile Include="RegionGrowingByColorAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

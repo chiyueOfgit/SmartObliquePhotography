@@ -7,6 +7,7 @@ namespace hiveObliquePhotography
 		const std::string CLASSIFIER_BINARY = "Binary";
 		const std::string CLASSIFIER_BINARY_VFH = "Binary_vfh";
 		const std::string CLASSIFIER_REGION_GROW = "RegionGrow";
+		const std::string CLASSIFIER_REGION_GROW_COLOR = "RegionGrow_color";
 
 		enum class EPointLabel : unsigned char
 		{

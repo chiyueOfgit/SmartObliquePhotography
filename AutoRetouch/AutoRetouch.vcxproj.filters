@@ -59,6 +59,12 @@
     <ClInclude Include="BinaryClassifierByVFHAlg.h">
       <Filter>PointClassfier</Filter>
     </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
+    <ClInclude Include="RegionGrowingByColorAlg.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neighborhood.cpp">
@@ -92,6 +98,9 @@
       <Filter>PointClassfier</Filter>
     </ClCompile>
     <ClCompile Include="BinaryClassifierByVFHAlg.cpp">
+      <Filter>PointClassfier</Filter>
+    </ClCompile>
+    <ClCompile Include="RegionGrowingByColorAlg.cpp">
       <Filter>PointClassfier</Filter>
     </ClCompile>
   </ItemGroup>
