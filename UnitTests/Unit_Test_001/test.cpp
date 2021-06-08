@@ -35,9 +35,3 @@ TEST(Test_LoadPointCloudTile, DeathTest_LoadInexistentTile)
 
 	GTEST_ASSERT_EQ(pTile, nullptr);
 }
-
-TEST(Test_LoadPointCloudTile, DeathTest_LoadUnsupportedFormat)
-{
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(g_UnsupportedFileName));
-	GTEST_ASSERT_EQ(pTileLoader, nullptr);
-}

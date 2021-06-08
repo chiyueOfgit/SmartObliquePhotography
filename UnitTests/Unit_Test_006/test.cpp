@@ -15,23 +15,6 @@ using namespace hiveObliquePhotography::AutoRetouch;
 class TestAreaPicking : public testing::Test
 {
 protected:
-	std::string m_Paths[3] =
-	{
-		//较近的聚类可见面积最大
-		"testcase/LeftBigTree.indices.txt\n"
-		"testcase/LeftBigTree.camera.txt\n"
-		"groundtruth/LeftBigTree.txt\n",
-
-		//较远的聚类可见面积最大
-		"testcase/Road.indices.txt\n"
-		"testcase/Road.camera.txt\n"
-		"groundtruth/Road.txt\n",
-
-		//不可见的聚类面积最大
-		"testcase/RightFourTrees.indices.txt\n"
-		"testcase/RightFourTrees.camera.txt\n"
-		"groundtruth/RightFourTrees.txt\n",
-	};
 	std::string m_Sinple_Paths[3] =
 	{
 		//较近的聚类可见面积最大
@@ -117,7 +100,6 @@ TEST_F(TestAreaPicking, 实用测试1，较近的聚类可见面积最大)
 	auto [InputSet, Camera, GroundTruth] = _loadTestcase(Path);
 
 	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, InputSet, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT,Camera);
-
 	std::vector<size_t> Difference;
 	std::set_difference(InputSet.begin(), InputSet.end(),
 		GroundTruth.begin(), GroundTruth.end(),
@@ -131,9 +113,7 @@ TEST_F(TestAreaPicking, 实用测试2，较远的聚类可见面积最大)
 	const auto& Path = m_Sinple_Paths[1];
 
 	auto [InputSet, Camera, GroundTruth] = _loadTestcase(Path);
-
 	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, InputSet, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT, Camera);
-
 	std::vector<size_t> Difference;
 	std::set_difference(InputSet.begin(), InputSet.end(),
 		GroundTruth.begin(), GroundTruth.end(),
@@ -148,9 +128,7 @@ TEST_F(TestAreaPicking, 实用测试3，不可见的聚类面积最大)
 	const auto& Path = m_Sinple_Paths[2];
 
 	auto [InputSet, Camera, GroundTruth] = _loadTestcase(Path);
-
 	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, InputSet, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT, Camera);
-
 	std::vector<size_t> Difference;
 	std::set_difference(InputSet.begin(), InputSet.end(),
 		GroundTruth.begin(), GroundTruth.end(),
