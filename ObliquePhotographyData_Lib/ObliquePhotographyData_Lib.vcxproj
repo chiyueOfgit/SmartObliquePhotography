@@ -28,7 +28,6 @@
     <ClInclude Include="..\ObliquePhotographyData\PointCloudPCDLoader.h" />
     <ClInclude Include="..\ObliquePhotographyData\PointCloudPLYLoader.h" />
     <ClInclude Include="..\ObliquePhotographyData\PointCloudScene.h" />
-    <ClInclude Include="..\ObliquePhotographyData\PointCloudTile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.cpp" />
@@ -37,7 +36,6 @@
     <ClCompile Include="..\ObliquePhotographyData\PointCloudPCDLoader.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\PointCloudPLYLoader.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\PointCloudScene.cpp" />
-    <ClCompile Include="..\ObliquePhotographyData\PointCloudTile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -197,6 +195,9 @@
     <Import Project="D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets" Condition="Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" />
     <Import Project="D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets" Condition="Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" />
     <Import Project="D:\vc_packages\VTK.8.2.1\build\native\VTK.targets" Condition="Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" />
+    <Import Project="D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets" Condition="Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets" Condition="Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets" Condition="Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -215,5 +216,8 @@
     <Error Condition="!Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.8.2.1\build\native\VTK.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets'))" />
   </Target>
 </Project>

@@ -2,14 +2,14 @@
 
 namespace hiveObliquePhotography
 {
-	class CPointCloudTile;
-
+	using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+	
 	class CPointCloudScene : public hiveDesignPattern::CSingleton<CPointCloudScene>
 	{
 	public:
-		~CPointCloudScene();
+		~CPointCloudScene() override;
 
-		pcl::PointCloud<pcl::PointSurfel>::Ptr loadScene(const std::vector<std::string>& vFileNameSet);
+		PointCloud_t::Ptr loadScene(const std::vector<std::string>& vFileNameSet);
 
 		std::size_t getNumTiles() const { return m_PointCloudTileMap.size(); }
 
@@ -18,8 +18,8 @@ namespace hiveObliquePhotography
 	private:
 		CPointCloudScene() = default;
 
-		std::map<std::string, CPointCloudTile*> m_PointCloudTileMap;
-		pcl::PointCloud<pcl::PointSurfel>::Ptr m_PointCloudScene;
+		std::map<std::string, PointCloud_t::Ptr> m_PointCloudTileMap;
+		PointCloud_t::Ptr m_pPointCloudScene;
 
 	friend class hiveDesignPattern::CSingleton<CPointCloudScene>;
 	};

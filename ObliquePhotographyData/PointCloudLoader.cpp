@@ -10,15 +10,13 @@ _REGISTER_EXCLUSIVE_PRODUCT(CPointCloudPLYLoader, PLY_LOADER)
 
 //*****************************************************************
 //FUNCTION: 
-pcl::PointCloud<pcl::PointSurfel>* IPointCloudLoader::loadDataFromFile(const std::string& vFileName)
+PointCloud_t::Ptr IPointCloudLoader::loadDataFromFile(const std::string& vFileName)
 {
 	_ASSERTE(!vFileName.empty());
 
-	auto* pPointCloud = new pcl::PointCloud<pcl::PointSurfel>;
-
+	PointCloud_t::Ptr pPointCloud(new PointCloud_t);
+	
 	if (!__loadDataFromFileV(vFileName, *pPointCloud))
-	{
-		_SAFE_DELETE(pPointCloud);
-	}
+		pPointCloud = nullptr;
 	return pPointCloud;
 }
