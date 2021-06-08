@@ -28,12 +28,13 @@ const std::string g_UnwantedTreePoints = "SomeBigTreePoints.txt";
 
 TEST(Test_RegionGrowing, RegionGrowingByColor)
 {
-	pcl::PointCloud<pcl::PointSurfel>* pCloud = new pcl::PointCloud<pcl::PointSurfel>;
+	pcl::PointCloud<pcl::PointSurfel>::Ptr pCloud = nullptr;
+	pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
 	pcl::io::loadPCDFile(g_Folder + g_CloudFile, *pCloud);
 
 	hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(pCloud);
 
-	std::vector<std::uint64_t> pClusters = { 18,69};
+	std::vector<std::uint64_t> pClusters = { 18,69 };
 
 	hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_REGION_GROW_COLOR, pClusters, EPointLabel::UNWANTED);
 

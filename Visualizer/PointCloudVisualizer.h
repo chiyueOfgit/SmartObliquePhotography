@@ -10,9 +10,9 @@ namespace hiveObliquePhotography
 		public:
 			~CPointCloudVisualizer();
 
-			void init(pcl::PointCloud<pcl::PointSurfel>* vPointCloud);
+			void init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud);
 
-			void reset(pcl::PointCloud<pcl::PointSurfel>* vPointCloud);
+			void reset(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud);
 
 			void refresh(bool vResetCamera = false);
 
@@ -22,7 +22,7 @@ namespace hiveObliquePhotography
 			pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 			CInteractionCallback* m_pCallback = nullptr;
 
-			pcl::PointCloud<pcl::PointSurfel>* m_pSceneCloud = nullptr;
+			pcl::PointCloud<pcl::PointSurfel>::Ptr m_pSceneCloud = nullptr;
 
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
 		};

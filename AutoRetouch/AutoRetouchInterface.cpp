@@ -15,7 +15,7 @@ void hiveObliquePhotography::AutoRetouch::hiveUndoLastOp()
 
 //*****************************************************************
 //FUNCTION: 
-void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(pcl::PointCloud<pcl::PointSurfel>* vPointCloud)
+void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
 {
 	CPointCloudAutoRetouchScene::getInstance()->init(vPointCloud);
 }

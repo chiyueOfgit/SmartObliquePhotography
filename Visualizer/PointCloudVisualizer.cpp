@@ -17,7 +17,7 @@ CPointCloudVisualizer::~CPointCloudVisualizer()
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>* vPointCloud)
+void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
 {
 	_ASSERTE(vPointCloud);
 	m_pSceneCloud = vPointCloud;
@@ -29,7 +29,7 @@ void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>* vPointCloud)
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudVisualizer::reset(pcl::PointCloud<pcl::PointSurfel>* vPointCloud)
+void CPointCloudVisualizer::reset(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
 {
 	_ASSERTE(vPointCloud);
 	m_pSceneCloud = vPointCloud;
