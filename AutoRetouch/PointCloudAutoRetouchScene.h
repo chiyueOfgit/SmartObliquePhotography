@@ -5,10 +5,11 @@
 
 namespace hiveObliquePhotography
 {
-	class CNeighborhood;
-
 	namespace AutoRetouch
 	{
+		class CNeighborhood;
+		class IPointCluster;
+
 		class CPointCloudAutoRetouchScene : public hiveDesignPattern::CSingleton<CPointCloudAutoRetouchScene>
 		{
 		public:
@@ -22,6 +23,10 @@ namespace hiveObliquePhotography
 			void recordCurrentOp(IOpResult* vResult);
 			void init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloudScene);
 
+			void addPointCluster(IPointCluster* vPointCluster) { m_pPointClusterSet.push_back(vPointCluster); }
+
+			const std::vector<IPointCluster*>& getPointClusters() const { return m_pPointClusterSet; }
+
 			std::size_t getNumPoint() const { _ASSERTE(m_pPointCloudScene); return m_pPointCloudScene->size(); }
 
 			const pcl::PointCloud<pcl::PointSurfel>::Ptr getPointCloudScene() const { return m_pPointCloudScene; }
@@ -34,6 +39,7 @@ namespace hiveObliquePhotography
 
 			COpResultQueue m_OpResultQueue;
 			CGlobalPointLabelSet m_PointLabelSet;
+			std::vector<IPointCluster*> m_pPointClusterSet;
 
 			pcl::PointCloud<pcl::PointSurfel>::Ptr m_pPointCloudScene = nullptr;
 			pcl::search::KdTree<pcl::PointSurfel>* m_pGlobalKdTree = nullptr;

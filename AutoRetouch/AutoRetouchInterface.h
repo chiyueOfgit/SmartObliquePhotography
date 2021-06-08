@@ -6,6 +6,7 @@
 #include "BinaryClassifierByVFHAlg.h"
 #include "SpatialClusteringAlg.h"
 #include "MaxVisibilityClusterAlg.h"
+#include "PointCluster4VFH.h"
 
 namespace hiveObliquePhotography
 {
@@ -25,11 +26,7 @@ namespace hiveObliquePhotography
 			return pClassifier->execute<CRegionGrowingAlg>(true, std::forward<TArgs>(vArgs)...);
 		}
 
-		template<class... TArgs>
-		bool hiveExecuteBinaryClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)
-		{
-			IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-			_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", vClassifierSig), false);
+		AUTORETOUCH_DECLSPEC bool hiveExecuteBinaryClassifier(const std::string& vClassifierSig);
 
 			return pClassifier->execute<CBinaryClassifierByVFHAlg>(true, std::forward<TArgs>(vArgs)...);
 		}
