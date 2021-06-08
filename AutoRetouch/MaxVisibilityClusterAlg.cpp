@@ -28,7 +28,7 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 	pcl::PointCloud<pcl::PointSurfel>::Ptr pCloudWithIndex(new pcl::PointCloud<pcl::PointSurfel>);
 	for (auto Index : vioInputSet)
 	{
-		pcl::PointSurfel Point = pCloud->points[Index];
+		pcl::PointSurfel& Point = pCloud->points[Index];
 		Point.curvature = Index;
 		pCloudWithIndex->push_back(Point);
 	}
@@ -40,7 +40,7 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 	Ec.setMinClusterSize(3);
 	Ec.setMaxClusterSize(10000);
 	Ec.setSearchMethod(pTree);
-	Ec.setInputCloud(pCloud);
+	Ec.setInputCloud(pCloudWithIndex);
 	Ec.extract(ClusterIndices);
 
 	std::map<float, pcl::PointCloud<pcl::PointSurfel>::Ptr> CloudMap;
@@ -50,9 +50,9 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 		pcl::PointCloud<pcl::PointSurfel>::Ptr CloudCluster(new pcl::PointCloud<pcl::PointSurfel>);
 		for (auto Index : Indices)
 		{
-			CloudCluster->points.push_back(pCloud->points[Index]);
-			Eigen::Vector3f TempPoint{ pCloud->points[Index].x, pCloud->points[Index].y, pCloud->points[Index].z };
-			Eigen::Vector3f TempNormal{ pCloud->points[Index].normal_x, pCloud->points[Index].normal_y, pCloud->points[Index].normal_z };
+			CloudCluster->points.push_back(pCloudWithIndex->points[Index]);
+			Eigen::Vector3f TempPoint{ pCloudWithIndex->points[Index].x, pCloudWithIndex->points[Index].y, pCloudWithIndex->points[Index].z };
+			Eigen::Vector3f TempNormal{ pCloudWithIndex->points[Index].normal_x, pCloudWithIndex->points[Index].normal_y, pCloudWithIndex->points[Index].normal_z };
 			Min = Min < (TempPoint - ViewPos).norm() ? Min : (TempPoint - ViewPos).norm();
 		}
 		CloudMap.insert(std::pair<float, pcl::PointCloud<pcl::PointSurfel>::Ptr>(Min, CloudCluster));

@@ -37,7 +37,6 @@ void CPointCluster4VFH::__computeVFHDescriptor(const std::vector<std::uint64_t>&
 
 	_ASSERTE(pScene && pCloud && pKdTree);
 
-	static pcl::PointCloud<pcl::PointSurfel>::Ptr pCloudPtr = pCloud->makeShared();
 	static pcl::search::KdTree<pcl::PointSurfel>::Ptr pTreePtr = std::make_shared<pcl::search::KdTree<pcl::PointSurfel>>(pKdTree);
 
 	std::set<std::uint64_t> IndicesUnique(vPointIndices.begin(), vPointIndices.end());
@@ -53,8 +52,8 @@ void CPointCluster4VFH::__computeVFHDescriptor(const std::vector<std::uint64_t>&
 
 	pcl::VFHEstimation<pcl::PointSurfel, pcl::PointSurfel> Estimation;
 	pcl::PointCloud<pcl::VFHSignature308> Result;
-	Estimation.setInputCloud(pCloudPtr);
-	Estimation.setInputNormals(pCloudPtr);
+	Estimation.setInputCloud(pCloud);
+	Estimation.setInputNormals(pCloud);
 	Estimation.setIndices(Indices);
 	Estimation.setSearchMethod(pTreePtr);
 	Estimation.compute(Result);
