@@ -37,6 +37,7 @@
     <ClInclude Include="..\AutoRetouch\PointCloudAutoRetouchScene.h" />
     <ClInclude Include="..\AutoRetouch\PointCluster.h" />
     <ClInclude Include="..\AutoRetouch\PointCluster4VFH.h" />
+    <ClInclude Include="..\AutoRetouch\PointClusterSet.h" />
     <ClInclude Include="..\AutoRetouch\PointLabel4Classfier.h" />
     <ClInclude Include="..\AutoRetouch\PointLabelChangeRecord.h" />
     <ClInclude Include="..\AutoRetouch\RegionGrowingAlg.h" />
@@ -54,6 +55,7 @@
     <ClCompile Include="..\AutoRetouch\pch.cpp" />
     <ClCompile Include="..\AutoRetouch\PointCloudAutoRetouchScene.cpp" />
     <ClCompile Include="..\AutoRetouch\PointCluster4VFH.cpp" />
+    <ClCompile Include="..\AutoRetouch\PointClusterSet.cpp" />
     <ClCompile Include="..\AutoRetouch\PointLabel4Classfier.cpp" />
     <ClCompile Include="..\AutoRetouch\PointLabelChangeRecord.cpp" />
     <ClCompile Include="..\AutoRetouch\RegionGrowingAlg.cpp" />

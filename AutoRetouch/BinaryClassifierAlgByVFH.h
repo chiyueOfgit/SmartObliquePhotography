@@ -13,8 +13,10 @@ namespace hiveObliquePhotography
 			CBinaryClassifierByVFHAlg() = default;
 			~CBinaryClassifierByVFHAlg() = default;
 
-			virtual void runV(const std::vector<IPointCluster*>& vInputClusterSet) override;
+			virtual void runV() override;
 
+		private:
+			inline std::set<std::uint64_t> __getRemainIndex();
 		};
 	}
 }

@@ -33,7 +33,7 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std:
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", vClassifierSig), false);
 
-	return pClassifier->execute<CBinaryClassifierAlg>(true, CPointCloudAutoRetouchScene::getInstance()->getPointClusters());
+	return pClassifier->execute<CBinaryClassifierAlg>(true);
 }
 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(const std::vector<int>& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera)
@@ -45,7 +45,8 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(co
 	std::vector<uint64_t> PointIndices(vPointIndices.begin(), vPointIndices.end());
 	if (pClassifier->execute<CMaxVisibilityClusterAlg>(true, PointIndices, vExpectLabel, vCamera))
 	{
-		CPointCloudAutoRetouchScene::getInstance()->addPointCluster(new CPointCluster4VFH(pClassifier->getResultIndices(), vExpectLabel));
+		static std::size_t ClusterId = 0;
+		CPointClusterSet::getInstance()->addPointCluster(std::to_string(ClusterId++), new CPointCluster4VFH(pClassifier->getResultIndices(), vExpectLabel));
 
 		return true;
 	}

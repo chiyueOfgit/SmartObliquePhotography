@@ -11,6 +11,13 @@ CPointCluster4VFH::CPointCluster4VFH(const std::vector<std::uint64_t>& vPointInd
 	_ASSERTE(!vPointIndices.empty());
 	__computeVFHDescriptor(vPointIndices, m_VFHDescriptor);
 	m_PointIndices = std::set<std::uint64_t>(vPointIndices.begin(), vPointIndices.end());
+	
+	auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
+
+	SBox AABB;
+	for (auto Index : m_PointIndices)
+		AABB.update((*pCloud)[Index].x, (*pCloud)[Index].y, (*pCloud)[Index].z);
+	setClusterAABB(AABB);
 }
 
 //*****************************************************************

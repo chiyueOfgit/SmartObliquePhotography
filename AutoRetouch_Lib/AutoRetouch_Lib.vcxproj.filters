@@ -84,6 +84,9 @@
     <ClInclude Include="..\AutoRetouch\RegionGrowingByColorAlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\AutoRetouch\PointClusterSet.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp">
@@ -129,6 +132,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\RegionGrowingByColorAlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\PointClusterSet.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

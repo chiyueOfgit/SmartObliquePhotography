@@ -3,12 +3,12 @@
 #include "PointCloudAutoRetouchScene.h"
 #include "RegionGrowingAlg.h"
 #include "RegionGrowingByColorAlg.h"
+#include "PointClusterSet.h"
 #include "BinaryClassifierAlg.h"
 #include "BinaryClassifierAlgByVFH.h"
+#include "PointCluster4VFH.h"
 #include "SpatialClusteringAlg.h"
 #include "MaxVisibilityClusterAlg.h"
-#include "PointCluster4VFH.h"
-
 
 namespace hiveObliquePhotography
 {

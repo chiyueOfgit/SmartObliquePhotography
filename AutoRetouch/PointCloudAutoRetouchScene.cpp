@@ -34,6 +34,8 @@ void CPointCloudAutoRetouchScene::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vP
 {
 	_ASSERTE(vPointCloudScene);
 	m_pPointCloudScene = vPointCloudScene;
+	for (auto& Point : *m_pPointCloudScene)
+		m_PointCloudSceneAABB.update(Point.x, Point.y, Point.z);
 	m_pGlobalKdTree->setInputCloud(m_pPointCloudScene);
 	m_PointLabelSet.init(m_pPointCloudScene->size(), EPointLabel::UNDETERMINED);
 }
