@@ -34,7 +34,7 @@ TEST(Test_RegionGrowing, RegionGrowingByColor)
 
 	hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(pCloud);
 
-	std::vector<std::uint64_t> pClusters = { 18,69 };
+	std::vector<std::uint64_t> pClusters = { 18,19,20,21,22,23,24,25 };
 
 	hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_REGION_GROW_COLOR, pClusters, EPointLabel::UNWANTED);
 

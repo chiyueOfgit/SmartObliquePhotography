@@ -6,7 +6,7 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-_REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COLOR)
+
 
 SRegionGrowingSetting RegionGrowingSetting;
 
