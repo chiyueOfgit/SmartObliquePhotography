@@ -14,7 +14,7 @@ namespace hiveObliquePhotography
 			CMaxVisibilityClusterAlg() = default;
 			~CMaxVisibilityClusterAlg() = default;
 
-			virtual void  runV(std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera) ;
+			void  runV(std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera) ;
 		};
 	}
 }

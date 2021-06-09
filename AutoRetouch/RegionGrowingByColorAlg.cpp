@@ -153,8 +153,8 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestPoint, const pcl::P
 	//用测试点的邻居平均颜色代表该测试点的颜色
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
-	auto pKdTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pKdTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
+	auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
+	pTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3);
 	for (auto Index : NeighborIndices)
@@ -194,8 +194,8 @@ bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestPoint, const pcl::Po
 	//用测试点的邻居平均颜色代表该测试点的颜色
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
-	auto pKdTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pKdTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
+	auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
+	pTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3);
 	for (auto Index : NeighborIndices)
@@ -239,13 +239,13 @@ bool CRegionGrowingByColorAlg::__normalTest(int vTestPoint, const pcl::PointClou
 
 	float OuterRadius = 2.0f;
 	float InnerRadius = 1.0f;
-	auto pKdTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pKdTree->radiusSearch((*vCloud)[vTestPoint], OuterRadius, NeighborIndices, NeighborDistances);
+	auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
+	pTree->radiusSearch((*vCloud)[vTestPoint], OuterRadius, NeighborIndices, NeighborDistances);
 	std::set<int> OutIndices(NeighborIndices.begin(), NeighborIndices.end());
 
 	NeighborIndices.clear();
 	NeighborDistances.clear();
-	pKdTree->radiusSearch((*vCloud)[vTestPoint], InnerRadius, NeighborIndices, NeighborDistances);
+	pTree->radiusSearch((*vCloud)[vTestPoint], InnerRadius, NeighborIndices, NeighborDistances);
 	std::set<int> InIndices(NeighborIndices.begin(), NeighborIndices.end());
 
 	std::vector<int> Difference(OutIndices.size() - InIndices.size(), -1);

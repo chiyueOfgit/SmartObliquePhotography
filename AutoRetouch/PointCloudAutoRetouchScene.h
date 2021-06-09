@@ -39,7 +39,7 @@ namespace hiveObliquePhotography
 
 			COpResultQueue m_OpResultQueue;
 			CGlobalPointLabelSet m_PointLabelSet;
-			std::vector<IPointCluster*> m_pPointClusterSet;
+			std::vector<IPointCluster*> m_pPointClusterSet; //TODO: 如何管理Cluster
 
 			pcl::PointCloud<pcl::PointSurfel>::Ptr m_pPointCloudScene = nullptr;
 			pcl::search::KdTree<pcl::PointSurfel>::Ptr m_pGlobalKdTree = nullptr;
