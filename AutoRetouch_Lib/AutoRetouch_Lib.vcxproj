@@ -23,9 +23,10 @@
     <ClInclude Include="..\AutoRetouch\AutoRetouchExport.h" />
     <ClInclude Include="..\AutoRetouch\AutoRetouchInterface.h" />
     <ClInclude Include="..\AutoRetouch\BinaryClassifierAlg.h" />
-    <ClInclude Include="..\AutoRetouch\BinaryClassifierByVFHAlg.h" />
+    <ClInclude Include="..\AutoRetouch\BinaryClassifierAlgByVFH.h" />
     <ClInclude Include="..\AutoRetouch\CompositeClassifier.h" />
     <ClInclude Include="..\AutoRetouch\framework.h" />
+    <ClInclude Include="..\AutoRetouch\MaxVisibilityClusterAlg.h" />
     <ClInclude Include="..\AutoRetouch\Neighborhood.h" />
     <ClInclude Include="..\AutoRetouch\NeighborhoodBuilder.h" />
     <ClInclude Include="..\AutoRetouch\OpResult.h" />
@@ -38,12 +39,14 @@
     <ClInclude Include="..\AutoRetouch\PointLabel4Classfier.h" />
     <ClInclude Include="..\AutoRetouch\PointLabelChangeRecord.h" />
     <ClInclude Include="..\AutoRetouch\RegionGrowingAlg.h" />
+    <ClInclude Include="..\AutoRetouch\SpatialClusteringAlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp" />
     <ClCompile Include="..\AutoRetouch\BinaryClassifierAlg.cpp" />
-    <ClCompile Include="..\AutoRetouch\BinaryClassifierByVFHAlg.cpp" />
+    <ClCompile Include="..\AutoRetouch\BinaryClassifierAlgByVFH.cpp" />
     <ClCompile Include="..\AutoRetouch\CompositeClassifier.cpp" />
+    <ClCompile Include="..\AutoRetouch\MaxVisibilityClusterAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\Neighborhood.cpp" />
     <ClCompile Include="..\AutoRetouch\OpResultQueue.cpp" />
     <ClCompile Include="..\AutoRetouch\pch.cpp" />
@@ -52,9 +55,15 @@
     <ClCompile Include="..\AutoRetouch\PointLabel4Classfier.cpp" />
     <ClCompile Include="..\AutoRetouch\PointLabelChangeRecord.cpp" />
     <ClCompile Include="..\AutoRetouch\RegionGrowingAlg.cpp" />
+    <ClCompile Include="..\AutoRetouch\SpatialClusteringAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\visualization\pcl_visualization.vcxproj">
+      <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -128,6 +137,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -145,6 +156,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -162,6 +175,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -181,6 +196,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>MaxSpeed</Optimization>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -194,8 +211,6 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="d:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets" Condition="Exists('d:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets')" />
     <Import Project="d:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets" Condition="Exists('d:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets')" />
-    <Import Project="d:\vc_packages\boost.1.74.0.0\build\boost.targets" Condition="Exists('d:\vc_packages\boost.1.74.0.0\build\boost.targets')" />
-    <Import Project="d:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets" Condition="Exists('d:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets')" />
     <Import Project="d:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets" Condition="Exists('d:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" />
     <Import Project="d:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets" Condition="Exists('d:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets')" />
     <Import Project="d:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets" Condition="Exists('d:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets')" />
@@ -205,6 +220,11 @@
     <Import Project="d:\vc_packages\PCL.1.11.1\build\native\PCL.targets" Condition="Exists('d:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" />
     <Import Project="D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets" Condition="Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" />
     <Import Project="D:\vc_packages\VTK.8.2.1\build\native\VTK.targets" Condition="Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" />
+    <Import Project="D:\vc_packages\boost.1.76.0.0\build\boost.targets" Condition="Exists('D:\vc_packages\boost.1.76.0.0\build\boost.targets')" />
+    <Import Project="D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets" Condition="Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets" Condition="Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets" Condition="Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets" Condition="Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -212,8 +232,6 @@
     </PropertyGroup>
     <Error Condition="!Exists('d:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets'))" />
-    <Error Condition="!Exists('d:\vc_packages\boost.1.74.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\boost.1.74.0.0\build\boost.targets'))" />
-    <Error Condition="!Exists('d:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\boost_serialization-vc142.1.74.0.0\build\boost_serialization-vc142.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets'))" />
     <Error Condition="!Exists('d:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets'))" />
@@ -223,5 +241,10 @@
     <Error Condition="!Exists('d:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" Text="$([System.String]::Format('$(ErrorText)', 'd:\vc_packages\PCL.1.11.1\build\native\PCL.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.8.2.1\build\native\VTK.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost.1.76.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost.1.76.0.0\build\boost.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets'))" />
   </Target>
 </Project>

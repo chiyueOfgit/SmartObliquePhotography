@@ -1,6 +1,5 @@
 #pragma once
 #include "PointCluster.h"
-#include <set>
 
 namespace hiveObliquePhotography
 {
@@ -24,4 +23,3 @@ namespace hiveObliquePhotography
 		};
 	}
 }
-

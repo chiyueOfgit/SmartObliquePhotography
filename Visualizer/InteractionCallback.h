@@ -20,6 +20,8 @@ namespace hiveObliquePhotography
 		private:
 			bool m_KeyPressStatus[256] = { false };
 			bool m_MousePressStatus[2] = { false };
+
+			bool m_UnwantedMode = true;
 		};
 	}
 }

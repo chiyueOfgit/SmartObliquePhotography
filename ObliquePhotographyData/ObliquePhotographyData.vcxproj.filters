@@ -27,9 +27,6 @@
     <ClInclude Include="ObliquePhotographyDataExport.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PointCloudTile.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="PointCloudScene.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -54,9 +51,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ObliquePhotographyDataInterface.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="PointCloudTile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PointCloudScene.cpp">

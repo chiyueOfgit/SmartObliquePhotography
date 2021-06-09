@@ -1,5 +1,4 @@
 #pragma once
-#include "AutoRetouchCommon.h"
 
 namespace hiveObliquePhotography
 {
@@ -45,7 +44,7 @@ namespace hiveObliquePhotography
 
 			bool changePointLabel(std::uint64_t vPointIndex, EPointLabel vDstLabel);
 			bool isRecording() const { return m_IsRecording; }
-//			bool reset(const std::vector<SPointLabelChange>& vChangeRecord);
+			bool reset(const std::vector<SPointLabelChange>& vChangeRecord);
 			bool update(CGlobalPointLabelSet *vGlobalLabelSet);
 
 		private:

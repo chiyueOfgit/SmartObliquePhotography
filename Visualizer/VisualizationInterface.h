@@ -8,5 +8,7 @@ namespace hiveObliquePhotography
 		VISUALIZATION_DECLSPEC void hiveInitVisualizer(pcl::PointCloud<pcl::PointSurfel>* vPointCloud);
 
 		VISUALIZATION_DECLSPEC void hiveRefreshVisualizer(bool vResetCamera = false);
+
+		VISUALIZATION_DECLSPEC void hiveRunVisualizerLoop();
 	}
 }

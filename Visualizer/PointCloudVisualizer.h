@@ -18,6 +18,8 @@ namespace hiveObliquePhotography
 
 			void refresh(bool vResetCamera = false);
 
+			void run();
+
 		private:
 			CPointCloudVisualizer();
 

@@ -33,9 +33,6 @@
     <ClInclude Include="..\ObliquePhotographyData\PointCloudScene.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\ObliquePhotographyData\PointCloudTile.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\ObliquePhotographyData\PointCloudPLYLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -54,9 +51,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\ObliquePhotographyData\PointCloudScene.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ObliquePhotographyData\PointCloudTile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\ObliquePhotographyData\PointCloudPLYLoader.cpp">

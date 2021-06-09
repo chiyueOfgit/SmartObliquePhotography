@@ -23,13 +23,8 @@ void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>* vPointCloud)
 	m_pSceneCloud = vPointCloud;
 
 	m_pPCLVisualizer = new pcl::visualization::PCLVisualizer("Visualizer", true);
-	_ASSERTE(m_pPCLVisualizer);
-
 	m_pCallback = new CInteractionCallback(m_pPCLVisualizer);
-	_ASSERTE(m_pCallback);
-
 	m_pPCLVisualizer->setBackgroundColor(0.2, 0.2, 0.2);
-
 }
 
 //*****************************************************************
@@ -38,7 +33,6 @@ void CPointCloudVisualizer::reset(pcl::PointCloud<pcl::PointSurfel>* vPointCloud
 {
 	_ASSERTE(vPointCloud);
 	m_pSceneCloud = vPointCloud;
-	
 }
 
 //*****************************************************************
@@ -102,4 +96,12 @@ void CPointCloudVisualizer::refresh(bool vResetCamera)
 		m_pPCLVisualizer->resetCamera();
 	else
 		m_pPCLVisualizer->updateCamera();
+}
+
+void CPointCloudVisualizer::run()
+{
+	while (!m_pPCLVisualizer->wasStopped())
+	{
+		m_pPCLVisualizer->spinOnce(16);
+	}
 }
