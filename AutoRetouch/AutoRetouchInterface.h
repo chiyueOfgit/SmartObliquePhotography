@@ -34,7 +34,7 @@ namespace hiveObliquePhotography
 
 		//FIXME:使用模板会发生重定义
 		template<class... TArgs>
-		AUTORETOUCH_DECLSPEC bool hiveExecuteClusteringClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)
+		bool hiveExecuteClusteringClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)
 		{
 			IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 			_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", vClassifierSig), false);

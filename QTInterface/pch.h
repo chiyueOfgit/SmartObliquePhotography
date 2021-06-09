@@ -12,7 +12,11 @@
 #include <string>
 #include <map>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
+
 #include "pcl/visualization/pcl_visualizer.h"
+#include <pcl/search/kdtree.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 

@@ -51,8 +51,4 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(co
 	}
 	else
 		return false;
-
-	std::vector<std::uint64_t> Indices(vPointIndices.begin(), vPointIndices.end());
-	CPointCloudAutoRetouchScene::getInstance()->addPointCluster(new CPointCluster4VFH(Indices, vExpectLabel));
-	return true;
 }

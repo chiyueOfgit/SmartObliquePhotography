@@ -10,5 +10,7 @@ namespace hiveObliquePhotography
 		VISUALIZATION_DECLSPEC void hiveRefreshVisualizer(bool vResetCamera = false);
 
 		VISUALIZATION_DECLSPEC void hiveRunVisualizerLoop();
+
+		VISUALIZATION_DECLSPEC void* hiveGetPCLVisualizer();
 	}
 }
