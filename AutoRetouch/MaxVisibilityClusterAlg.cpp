@@ -17,7 +17,7 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 	auto pCloud = pScene->getPointCloudScene();
 	
 	const int Resolution = 64;
-	const Eigen::Vector3f ViewDir(vCamera.focal[0] - vCamera.pos[0], vCamera.focal[1] - vCamera.pos[1], vCamera.focal[2] - vCamera.pos[2]);
+	//const Eigen::Vector3f ViewDir(vCamera.focal[0] - vCamera.pos[0], vCamera.focal[1] - vCamera.pos[1], vCamera.focal[2] - vCamera.pos[2]);
 	const Eigen::Vector3f ViewPos(vCamera.pos[0], vCamera.pos[1], vCamera.pos[2]);
 	Eigen::Matrix4d ViewMatrix;
 	Eigen::Matrix4d ProjectMatrix;
@@ -34,47 +34,51 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 	Ec.setIndices(pcl::make_shared<pcl::Indices>(vioInputSet.begin(), vioInputSet.end()));
 	Ec.extract(ClusterIndices);
 
-	std::map<float, pcl::PointIndices*> CloudMap;
+	std::vector<std::pair<float, pcl::PointIndices*>> ClusterIndicesWithDistances;
 	for (auto& Indices : ClusterIndices)
 	{
 		float MinDistance = FLT_MAX;
 		for (auto Index : Indices.indices)
 		{
-			const float ViewDistance = ((Eigen::Vector3f)(pCloud->at(Index).getArray3fMap()) - ViewPos).norm();
-			MinDistance = std::min(ViewDistance, MinDistance);
+			const Eigen::Vector3f Position = pCloud->at(Index).getArray3fMap();
+			MinDistance = std::min(MinDistance, (Position - ViewPos).norm());
 		}
-		CloudMap.emplace(MinDistance, &Indices);
+		ClusterIndicesWithDistances.emplace_back(MinDistance, &Indices);
+	}
+	std::sort(ClusterIndicesWithDistances.begin(), ClusterIndicesWithDistances.end());
+
+	std::vector Flag(Resolution, std::vector(Resolution, true));
+	int MaxValidCount = 0;
+	pcl::PointIndices* pMaxValidCluster = ClusterIndicesWithDistances.front().second;
+	for (auto& [MinDistance, pClusterIndices] : ClusterIndicesWithDistances)
+	{
+		int ValidCount = 0;
+		for (auto Index : pClusterIndices->indices)
+		{
+			Eigen::Vector4d Position = pCloud->at(Index).getVector4fMap().cast<double>();
+			//w?
+			Position.w() = 1.0;
+			
+			Position = ProjectMatrix * ViewMatrix * Position;
+			Position /= Position.eval().w();//»ìÏý£¿
+			Position += Eigen::Vector4d(1.0, 1.0, 1.0, 1.0);
+			Position *= Resolution / 1.0;
+
+			Eigen::Vector2i Coord{ Position.x(), Position.y() };
+			if (Coord[0] > 0 && Coord[0] < Resolution && Coord[1] > 0 && Coord[1] < Resolution && Flag[Coord[0]][Coord[1]])
+			{
+				Flag[Coord[0]][Coord[1]] = false;
+				++ValidCount;
+			}
+		}
+		if (ValidCount > MaxValidCount)
+		{
+			MaxValidCount = ValidCount;
+			pMaxValidCluster = pClusterIndices;
+		}
 	}
 
-	//std::vector<std::vector<bool>> Flag(Resolution, std::vector<bool>(Resolution, true));
-	//std::vector<int> ValidSet{};
-	//for (auto& [MinDistance, pCloudCluster] : CloudMap)
-	//{
-	//	int Num = 0;
-	//	for (auto& Point : pCloudCluster->points)
-	//	{
-	//		Eigen::Vector4d TempPoint(Point.x, Point.y, Point.z, 1.0);
-	//		TempPoint = ProjectMatrix * ViewMatrix * TempPoint;
-	//		Eigen::Vector2i Coord{ (TempPoint[0] / TempPoint[3] + 1) * Resolution / 2, (TempPoint[1] / TempPoint[3] + 1) * Resolution / 2 };
-	//		if (Coord[0] > 0 && Coord[0] < Resolution && Coord[1] > 0 && Coord[1] < Resolution && Flag[Coord[0]][Coord[1]])
-	//		{
-	//			Flag[Coord[0]][Coord[1]] = false;
-	//			Num++;
-	//		}
-	//	}
-	//	ValidSet.emplace_back(Num);
-	//}
-	//auto offset = distance(ValidSet.begin(), max_element(ValidSet.begin(), ValidSet.end()));
-	//auto MaxPosition = CloudMap.begin();
-	//advance(MaxPosition, offset);
-
-	//std::vector<std::size_t> OutIndex;
-	//if (!CloudMap.size())return;
-	//pcl::PointCloud<pcl::PointSurfel>::Ptr FinalCloud = MaxPosition->second;
-	//for (auto& Point : FinalCloud->points)
-	//{
-	//	m_pLocalLabelSet->changePointLabel(Point.curvature, vFinalLabel);
-	//	OutIndex.emplace_back(Point.curvature);
-	//}
-	//vioInputSet.swap(OutIndex);
+	for (auto Index : pMaxValidCluster->indices)
+		m_pLocalLabelSet->changePointLabel(Index, vFinalLabel);
+	vioInputSet= std::vector<std::uint64_t>(pMaxValidCluster->indices.begin(), pMaxValidCluster->indices.end());;
 }
