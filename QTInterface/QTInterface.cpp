@@ -16,6 +16,9 @@
 #include "DisplayOptionsSettingDialog.h"
 #include <QMainWindow>
 #include <vtkAutoInit.h>
+#include "ObliquePhotographyDataInterface.h"
+#include "AutoRetouchInterface.h"
+#include "VisualizationInterface.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -28,7 +31,6 @@ QTInterface::QTInterface(QWidget * vParent)
     ui.setupUi(this);
 
     __connectSignals();
-
 
 }
 
@@ -51,26 +53,17 @@ void QTInterface::onActionOpen()
         FileNameSet.push_back(str.toStdString());
     }
     
-    //auto pCloud = hiveObliquePhotography::CPointCloudScene::getInstance()->loadScene(FileNameSet);
-    
-    //auto pCloud = hiveInitPointCloudScene(FilePaths);
-    //AutoRetouch::hiveInitPointCloudScene(pCloud);
-    //Visualization::hiveInitVisualizer(pCloud);
-    //Visualization::hiveRefreshVisualizer();
-    //Visualization::hiveRunVisualizerLoop();
-
+    auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FileNameSet);
+    AutoRetouch::hiveInitPointCloudScene(pCloud);
+    Visualization::hiveInitVisualizer(pCloud);
     __initialVTKWidget();
+    Visualization::hiveRefreshVisualizer();
 }
 
 void QTInterface::__initialVTKWidget()
 {
-    //m_pInteractionManager.reset(new CInteractionManager);
-    //m_pInteractionManager->init(this);
-    //m_pManager = getContext()->getCloudManager();
-    //m_pViewer = getContext()->getVisualizer();
-    //m_pCommandQueue = getContext()->getCommandQueue();
-
-    //ui.VTKWidget->SetRenderWindow(m_pViewer->getRenderWindow());
-    //m_pViewer->setupInteractor(ui.VTKWidget->GetInteractor(), ui.VTKWidget->GetRenderWindow());
-    //ui.VTKWidget->update();
+    auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
+    ui.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
+    pViewer->setupInteractor(ui.VTKWidget->GetInteractor(), ui.VTKWidget->GetRenderWindow());
+    ui.VTKWidget->update();
 }

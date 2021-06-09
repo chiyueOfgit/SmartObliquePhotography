@@ -1,15 +1,11 @@
 #pragma once
 #include "ui_QTInterface.h"
-#include "PointCloudVisualizer.h"
-#include "PointCloudScene.h"
 
 namespace hiveObliquePhotography
 {
     namespace 
 
     {
-        class CInteractionManager;
-
         class QTInterface : public QMainWindow
         {
             Q_OBJECT

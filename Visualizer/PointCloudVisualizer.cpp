@@ -22,7 +22,7 @@ void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCl
 	_ASSERTE(vPointCloud);
 	m_pSceneCloud = vPointCloud;
 
-	m_pPCLVisualizer = new pcl::visualization::PCLVisualizer("Visualizer", true);
+	m_pPCLVisualizer = new pcl::visualization::PCLVisualizer("Visualizer", false);
 	m_pCallback = new CInteractionCallback(m_pPCLVisualizer);
 	m_pPCLVisualizer->setBackgroundColor(0.2, 0.2, 0.2);
 }

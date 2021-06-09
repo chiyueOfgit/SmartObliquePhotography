@@ -1,4 +1,5 @@
 #pragma once
+
 namespace hiveObliquePhotography
 {
 	namespace Visualization
@@ -18,6 +19,8 @@ namespace hiveObliquePhotography
 
 			void run();
 
+
+
 		private:
 			CPointCloudVisualizer();
 
@@ -28,6 +31,7 @@ namespace hiveObliquePhotography
 
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
 			friend class CInteractionCallback;
+			friend void* hiveGetPCLVisualizer();
 		};
 	}
 }
