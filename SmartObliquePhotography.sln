@@ -31,6 +31,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Visualizer_Lib", "Visualize
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_004 (classifier_binary_partition)", "UnitTests\Unit_Test_004\Unit_Test_004.vcxproj", "{6F95DC3E-5F82-478E-B5A4-76341D53AE7F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTInterface", "QTInterface\QTInterface.vcxproj", "{77CAF16E-827E-4982-87D6-FA2348B29B21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -133,6 +135,12 @@ Global
 		{6F95DC3E-5F82-478E-B5A4-76341D53AE7F}.Release|x64.Build.0 = Release|x64
 		{6F95DC3E-5F82-478E-B5A4-76341D53AE7F}.Release|x86.ActiveCfg = Release|Win32
 		{6F95DC3E-5F82-478E-B5A4-76341D53AE7F}.Release|x86.Build.0 = Release|Win32
+		{77CAF16E-827E-4982-87D6-FA2348B29B21}.Debug|x64.ActiveCfg = Debug|x64
+		{77CAF16E-827E-4982-87D6-FA2348B29B21}.Debug|x64.Build.0 = Debug|x64
+		{77CAF16E-827E-4982-87D6-FA2348B29B21}.Debug|x86.ActiveCfg = Debug|x64
+		{77CAF16E-827E-4982-87D6-FA2348B29B21}.Release|x64.ActiveCfg = Release|x64
+		{77CAF16E-827E-4982-87D6-FA2348B29B21}.Release|x64.Build.0 = Release|x64
+		{77CAF16E-827E-4982-87D6-FA2348B29B21}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QTInterfaceClass</class>
+ <widget class="QMainWindow" name="QTInterfaceClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>832</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QTInterface</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QVTKWidget" name="VTKWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>960</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <widget class="QMenu" name="menu">
+     <property name="title">
+      <string>在这里输入</string>
+     </property>
+    </widget>
+    <addaction name="actionPointPicking"/>
+    <addaction name="actionAreaPicking"/>
+    <addaction name="actionRegion_Growing"/>
+    <addaction name="actionSetting"/>
+    <addaction name="menu"/>
+   </widget>
+   <widget class="QMenu" name="menuDisplay">
+    <property name="title">
+     <string>Display</string>
+    </property>
+    <addaction name="actionRollerBall"/>
+    <addaction name="actionTwist"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuDisplay"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionPointPicking"/>
+   <addaction name="actionPointListPicking"/>
+   <addaction name="actionTraceAPolylineByPointPicking"/>
+   <addaction name="actioncloneSelectedEntries"/>
+   <addaction name="actionMergeMultipleClouds"/>
+   <addaction name="actionDelete"/>
+   <addaction name="separator"/>
+   <addaction name="actionRectangleAreaPicking"/>
+   <addaction name="actionCircleAreaPicking"/>
+   <addaction name="separator"/>
+   <addaction name="actionRollerBall"/>
+   <addaction name="actionTwist"/>
+   <addaction name="separator"/>
+   <addaction name="actionFilter"/>
+   <addaction name="actionSetting"/>
+   <addaction name="separator"/>
+   <addaction name="actionTestFunction"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QDockWidget" name="resourceDockWidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 255, 255);</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QTreeView" name="resourceTreeView">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 0px;
+background-color: rgb(255, 255, 255);</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="messageDockWidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 255, 255);</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QTextBrowser" name="textBrowser">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border:0px;
+background-color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="workSpaceDockWidget">
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 255, 255);</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout_4">
+     <item row="0" column="0">
+      <widget class="QTreeView" name="workSpaceTreeView">
+       <property name="styleSheet">
+        <string notr="true">border: 0px;
+background-color: rgb(255, 255, 255);</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/open.png</normaloff>:/QTInterface/Icon/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/save.png</normaloff>:/QTInterface/Icon/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionPointPicking">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/pointPicking.png</normaloff>:/QTInterface/Icon/pointPicking.png</iconset>
+   </property>
+   <property name="text">
+    <string>PointPicking</string>
+   </property>
+  </action>
+  <action name="actionRectangleAreaPicking">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/rectangleAreaPicking.png</normaloff>:/QTInterface/Icon/rectangleAreaPicking.png</iconset>
+   </property>
+   <property name="text">
+    <string>rectangleAreaPicking</string>
+   </property>
+  </action>
+  <action name="actionCircleAreaPicking">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/circleAreaPicking.png</normaloff>:/QTInterface/Icon/circleAreaPicking.png</iconset>
+   </property>
+   <property name="text">
+    <string>circleAreaPicking</string>
+   </property>
+  </action>
+  <action name="actionRollerBall">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/rollerBall.png</normaloff>:/QTInterface/Icon/rollerBall.png</iconset>
+   </property>
+   <property name="text">
+    <string>RollerBall</string>
+   </property>
+  </action>
+  <action name="actionSetting">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/setting.png</normaloff>:/QTInterface/Icon/setting.png</iconset>
+   </property>
+   <property name="text">
+    <string>Setting</string>
+   </property>
+  </action>
+  <action name="actionTwist">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/twist.png</normaloff>:/QTInterface/Icon/twist.png</iconset>
+   </property>
+   <property name="text">
+    <string>Twist</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionAreaPicking">
+   <property name="text">
+    <string>AreaPicking</string>
+   </property>
+  </action>
+  <action name="actionRegion_Growing">
+   <property name="text">
+    <string>Region Growing</string>
+   </property>
+  </action>
+  <action name="actionPointListPicking">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/list.png</normaloff>:/QTInterface/Icon/list.png</iconset>
+   </property>
+   <property name="text">
+    <string>PointListPicking</string>
+   </property>
+  </action>
+  <action name="actionTraceAPolylineByPointPicking">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/polyline.png</normaloff>:/QTInterface/Icon/polyline.png</iconset>
+   </property>
+   <property name="text">
+    <string>Trace a polyline by point picking</string>
+   </property>
+  </action>
+  <action name="actioncloneSelectedEntries">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/entry.png</normaloff>:/QTInterface/Icon/entry.png</iconset>
+   </property>
+   <property name="text">
+    <string>clone selected entries</string>
+   </property>
+  </action>
+  <action name="actionMergeMultipleClouds">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/merge.png</normaloff>:/QTInterface/Icon/merge.png</iconset>
+   </property>
+   <property name="text">
+    <string>merge multiple clouds</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/delete.png</normaloff>:/QTInterface/Icon/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionFilter">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/filter.png</normaloff>:/QTInterface/Icon/filter.png</iconset>
+   </property>
+   <property name="text">
+    <string>Filter</string>
+   </property>
+  </action>
+  <action name="actionTestFunction">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/test.png</normaloff>:/QTInterface/Icon/test.png</iconset>
+   </property>
+   <property name="text">
+    <string>Test Function</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QVTKWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">qvtkwidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="QTInterface.qrc"/>
+ </resources>
+ <connections/>
+</ui>
