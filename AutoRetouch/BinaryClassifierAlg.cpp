@@ -3,7 +3,7 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-_REGISTER_EXCLUSIVE_PRODUCT(CBinaryClassifierAlg, CLASSIFIER_BINARY)
+//_REGISTER_EXCLUSIVE_PRODUCT(CBinaryClassifierAlg, CLASSIFIER_BINARY)
 
 //*****************************************************************
 //FUNCTION: 

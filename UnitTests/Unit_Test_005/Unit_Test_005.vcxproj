@@ -62,7 +62,7 @@
     <Import Project="D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets" Condition="Exists('D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets')" />
     <Import Project="D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets" Condition="Exists('D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets')" />
     <Import Project="D:\vc_packages\PCL.1.11.1\build\native\PCL.targets" Condition="Exists('D:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" />
-     <Import Project="D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets" Condition="Exists('D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" />
+    <Import Project="D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets" Condition="Exists('D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" />
     <Import Project="D:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets" Condition="Exists('D:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets')" />
     <Import Project="D:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets" Condition="Exists('D:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets')" />
     <Import Project="D:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets" Condition="Exists('D:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets')" />
@@ -129,19 +129,21 @@
     <ClCompile>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>../../visualization/include;../../Visualizer;../../AutoRetouch;..\..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalOptions>/WHOLEARCHIVE:AutoRetouch_Lib.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

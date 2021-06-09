@@ -45,7 +45,7 @@ namespace hiveObliquePhotography
 
 					if (vApplyChange2GlobalLabelIntermediate)
 					{
-						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord);
+						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord);//TODO: 除LabelChange以外的其他结果记录无法添加
 					}
 					return true;
 				}
@@ -63,7 +63,7 @@ namespace hiveObliquePhotography
 			}
 
 			const std::vector<SPointLabelChange>& getResult() const { return m_PointLabelChangeRecord; }
-			const std::vector<std::uint64_t>& getResultIndices() const
+			std::vector<std::uint64_t> getResultIndices() const
 			{
 				std::vector<std::uint64_t> ResultIndices;
 				ResultIndices.reserve(m_PointLabelChangeRecord.size());

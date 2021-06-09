@@ -15,9 +15,9 @@ void CBinaryClassifierByVFHAlg::runV(const std::vector<IPointCluster*>& vInputCl
 
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
 	auto pCloud = pScene->getPointCloudScene();
-	auto pKdTree = pScene->getGlobalKdTree();
+	auto pTree = pScene->getGlobalKdTree();
 
-	_ASSERTE(pScene && pCloud && pKdTree);
+	_ASSERTE(pScene && pCloud && pTree);
 
 	std::set<std::uint64_t> CloudIndex;
 	for (std::uint64_t i = 0; i < pCloud->size(); i++)
