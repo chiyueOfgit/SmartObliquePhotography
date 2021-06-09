@@ -87,7 +87,7 @@
       <Filter>PointClassfier</Filter>
     </ClInclude>
     <ClInclude Include="RegionGrowingByColorAlg.h">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\RegionGrowingAlg</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,7 +137,7 @@
       <Filter>PointClassfier\OutlierDetectingAlg</Filter>
     </ClCompile>
     <ClCompile Include="RegionGrowingByColorAlg.cpp">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\RegionGrowingAlg</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
