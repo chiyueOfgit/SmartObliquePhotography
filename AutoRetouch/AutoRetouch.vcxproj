@@ -169,6 +169,7 @@
     <ClInclude Include="BinaryClassifierAlg.h" />
     <ClInclude Include="BinaryClassifierAlgByVFH.h" />
     <ClInclude Include="CompositeClassifier.h" />
+    <ClInclude Include="ConfigCommon.h" />
     <ClInclude Include="MaxVisibilityClusterAlg.h" />
     <ClInclude Include="OutlierDetectingAlg.h" />
     <ClInclude Include="PointClassifier.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="PointLabel4Classfier.h" />
     <ClInclude Include="PointLabelChangeRecord.h" />
     <ClInclude Include="RegionGrowingAlg.h" />
+    <ClInclude Include="SpatialClusterConfig.h" />
     <ClInclude Include="SpatialClusteringAlg.h" />
     <ClInclude Include="StatisticalOutlierAlg.h" />
   </ItemGroup>
@@ -218,6 +220,9 @@
     <ProjectReference Include="..\visualization\pcl_visualization.vcxproj">
       <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="SpatialClusterConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

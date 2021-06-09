@@ -2,6 +2,10 @@
 #include "MaxVisibilityClusterAlg.h"
 #include "PointCloudAutoRetouchScene.h"
 #include <pcl/segmentation/impl/extract_clusters.hpp>
+#include "SpatialClusterConfig.h"
+#include <common/ConfigInterface.h>
+#include <common/FileSystem.h>
+#include <common/CommonMicro.h>
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
@@ -11,13 +15,21 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMaxVisibilityClusterAlg, CLASSIFIER_MaxVisibilityCl
 //FUNCTION:
 void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera)
 {
+	hiveConfig::EParseResult IsParsedDisplayConfig = hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CDisplayConfig::getInstance());
+	if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
+	{
+		std::cout << "Failed to parse config file." << std::endl;
+		system("pause");
+		return;
+	}
+
 	if (vioInputSet.empty())
 		return;
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
 	auto pCloud = pScene->getPointCloudScene();
 	pcl::search::KdTree<pcl::PointSurfel>::Ptr pTree(new pcl::search::KdTree<pcl::PointSurfel>);
 	
-	const int Resolution = 64;
+	const int  Resolution = *CDisplayConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
 	const Eigen::Vector3f ViewDir(vCamera.focal[0] - vCamera.pos[0], vCamera.focal[1] - vCamera.pos[1], vCamera.focal[2] - vCamera.pos[2]);
 	const Eigen::Vector3f ViewPos(vCamera.pos[0], vCamera.pos[1], vCamera.pos[2]);
 	Eigen::Matrix4d ViewMatrix = Eigen::Matrix4d::Identity();
@@ -36,9 +48,9 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 	pTree->setInputCloud(pCloudWithIndex);
 	std::vector<pcl::PointIndices> ClusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointSurfel> Ec;
-	Ec.setClusterTolerance(0.5);
-	Ec.setMinClusterSize(3);
-	Ec.setMaxClusterSize(10000);
+	Ec.setClusterTolerance(*CDisplayConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
+	Ec.setMinClusterSize(*CDisplayConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
+	Ec.setMaxClusterSize(*CDisplayConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
 	Ec.setSearchMethod(pTree);
 	Ec.setInputCloud(pCloudWithIndex);
 	Ec.extract(ClusterIndices);

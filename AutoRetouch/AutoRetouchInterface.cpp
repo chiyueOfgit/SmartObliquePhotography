@@ -31,7 +31,7 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std:
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", vClassifierSig), false);
 
-	return pClassifier->execute<CBinaryClassifierByVFHAlg>(true, CPointCloudAutoRetouchScene::getInstance()->getPointClusters());
+	return pClassifier->execute<CBinaryClassifierAlg>(true, CPointCloudAutoRetouchScene::getInstance()->getPointClusters());
 }
 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(const std::vector<int>& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera)
