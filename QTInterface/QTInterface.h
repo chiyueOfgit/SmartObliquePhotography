@@ -5,7 +5,8 @@
 
 namespace hiveObliquePhotography
 {
-    namespace QTInterface
+    namespace 
+
     {
         class CInteractionManager;
 

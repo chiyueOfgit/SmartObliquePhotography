@@ -20,7 +20,7 @@
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
 
-using namespace hiveObliquePhotography::QTInterface;
+using namespace hiveObliquePhotography;
 
 QTInterface::QTInterface(QWidget * vParent)
     : QMainWindow(vParent)
@@ -51,8 +51,13 @@ void QTInterface::onActionOpen()
         FileNameSet.push_back(str.toStdString());
     }
     
-    auto pCloud = hiveObliquePhotography::CPointCloudScene::getInstance()->loadScene(FileNameSet);
-
+    //auto pCloud = hiveObliquePhotography::CPointCloudScene::getInstance()->loadScene(FileNameSet);
+    
+    //auto pCloud = hiveInitPointCloudScene(FilePaths);
+    //AutoRetouch::hiveInitPointCloudScene(pCloud);
+    //Visualization::hiveInitVisualizer(pCloud);
+    //Visualization::hiveRefreshVisualizer();
+    //Visualization::hiveRunVisualizerLoop();
 
     __initialVTKWidget();
 }
