@@ -45,7 +45,7 @@ namespace hiveObliquePhotography
 
 					if (vApplyChange2GlobalLabelIntermediate)
 					{
-						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord);
+						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord);//TODO: 除LabelChange以外的其他结果记录无法添加
 					}
 					return true;
 				}

@@ -22,6 +22,9 @@
     <Filter Include="PointClassfier\OutlierDetectingAlg">
       <UniqueIdentifier>{422f9770-32ed-41db-b2b5-380be957ea8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PointClassfier\SpatialClusteringAlg\Config">
+      <UniqueIdentifier>{1d7d4503-3620-430e-8170-b94078201c37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NeighborhoodBuilder.h">
@@ -83,11 +86,17 @@
     <ClInclude Include="StatisticalOutlierAlg.h">
       <Filter>PointClassfier\OutlierDetectingAlg</Filter>
     </ClInclude>
+    <ClInclude Include="SpatialClusterConfig.h">
+      <Filter>PointClassfier\SpatialClusteringAlg\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigCommon.h">
+      <Filter>PointClassfier\SpatialClusteringAlg\Config</Filter>
+    </ClInclude>
     <ClInclude Include="Common.h">
       <Filter>PointClassfier</Filter>
     </ClInclude>
     <ClInclude Include="RegionGrowingByColorAlg.h">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\RegionGrowingAlg</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -137,10 +146,15 @@
       <Filter>PointClassfier\OutlierDetectingAlg</Filter>
     </ClCompile>
     <ClCompile Include="RegionGrowingByColorAlg.cpp">
-      <Filter>PointClassfier</Filter>
+      <Filter>PointClassfier\RegionGrowingAlg</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="SpatialClusterConfig.xml">
+      <Filter>PointClassfier\SpatialClusteringAlg\Config</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
