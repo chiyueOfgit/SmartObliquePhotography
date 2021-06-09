@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "QTInterface.h"
 #include <QtWidgets/QApplication>
 #include <vtkOutputWindow.h>

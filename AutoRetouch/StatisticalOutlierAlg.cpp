@@ -8,7 +8,7 @@ using namespace hiveObliquePhotography::AutoRetouch;
 
 //*****************************************************************
 //FUNCTION:
-void  CMaxVisibilityClusterAlg::runV(const std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel)
+void  CStaOutlierDetectingAlg::runV(const std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel)
 {
 	
 }

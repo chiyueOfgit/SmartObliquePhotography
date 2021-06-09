@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "QTInterface.h"
 #include "QTDockWidgetTitleBar.h"
 #include <QtWidgets/qmdisubwindow.h>

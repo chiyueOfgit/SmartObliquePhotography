@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "FloatSlider.h"
 
 QFloatSlider::QFloatSlider(QWidget* pParent /*= NULL*/) :

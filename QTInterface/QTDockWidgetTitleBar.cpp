@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "QTDockWidgetTitleBar.h"
 #include <qbitmap.h>
 

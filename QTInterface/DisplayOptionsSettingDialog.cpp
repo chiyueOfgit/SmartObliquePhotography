@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "DisplayOptionsSettingDialog.h"
 
 using namespace hiveQTInterface;
