@@ -41,11 +41,6 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 	Ec.setClusterTolerance(*CDisplayConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
 	Ec.setMinClusterSize(*CDisplayConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
 	Ec.setMaxClusterSize(*CDisplayConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
-	Ec.setSearchMethod(pTree);
-	Ec.setInputCloud(pCloudWithIndex);
-	Ec.setClusterTolerance(0.5);
-	Ec.setMinClusterSize(3);
-	Ec.setMaxClusterSize(10000);
 	Ec.setInputCloud(pCloud);
 	Ec.setSearchMethod(pScene->getGlobalKdTree());
 	Ec.setIndices(pcl::make_shared<pcl::Indices>(vioInputSet.begin(), vioInputSet.end()));
