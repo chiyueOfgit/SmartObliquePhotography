@@ -4,9 +4,6 @@
 using namespace hiveObliquePhotography::AutoRetouch;
 
 
-//注册在AutoRetouchInterface.cpp就可以，注册在RegionGrowingByColorAlg就不行，为啥？？？？？？？
-_REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COLOR)
-
 //*****************************************************************
 //FUNCTION: 
 void hiveObliquePhotography::AutoRetouch::hiveUndoLastOp()
