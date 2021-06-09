@@ -37,8 +37,6 @@ void CPointCluster4VFH::__computeVFHDescriptor(const std::vector<std::uint64_t>&
 
 	_ASSERTE(pScene && pCloud && pKdTree);
 
-	static pcl::search::KdTree<pcl::PointSurfel>::Ptr pTreePtr = std::make_shared<pcl::search::KdTree<pcl::PointSurfel>>(pKdTree);
-
 	std::set<std::uint64_t> IndicesUnique(vPointIndices.begin(), vPointIndices.end());
 	_ASSERTE(IndicesUnique.size() == vPointIndices.size());
 
@@ -55,7 +53,7 @@ void CPointCluster4VFH::__computeVFHDescriptor(const std::vector<std::uint64_t>&
 	Estimation.setInputCloud(pCloud);
 	Estimation.setInputNormals(pCloud);
 	Estimation.setIndices(Indices);
-	Estimation.setSearchMethod(pTreePtr);
+	Estimation.setSearchMethod(pKdTree);
 	Estimation.compute(Result);
 
 	voVFHDescriptor = Result.empty() ? voVFHDescriptor = Eigen::ArrayXf::Zero(pcl::VFHSignature308::descriptorSize()) :

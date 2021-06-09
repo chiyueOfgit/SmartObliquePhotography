@@ -23,6 +23,7 @@
     <ClInclude Include="..\AutoRetouch\AutoRetouchExport.h" />
     <ClInclude Include="..\AutoRetouch\AutoRetouchInterface.h" />
     <ClInclude Include="..\AutoRetouch\BinaryClassifierAlg.h" />
+    <ClInclude Include="..\AutoRetouch\Common.h" />
     <ClInclude Include="..\AutoRetouch\BinaryClassifierAlgByVFH.h" />
     <ClInclude Include="..\AutoRetouch\CompositeClassifier.h" />
     <ClInclude Include="..\AutoRetouch\framework.h" />
@@ -39,6 +40,7 @@
     <ClInclude Include="..\AutoRetouch\PointLabel4Classfier.h" />
     <ClInclude Include="..\AutoRetouch\PointLabelChangeRecord.h" />
     <ClInclude Include="..\AutoRetouch\RegionGrowingAlg.h" />
+    <ClInclude Include="..\AutoRetouch\RegionGrowingByColorAlg.h" />
     <ClInclude Include="..\AutoRetouch\SpatialClusteringAlg.h" />
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +57,7 @@
     <ClCompile Include="..\AutoRetouch\PointLabel4Classfier.cpp" />
     <ClCompile Include="..\AutoRetouch\PointLabelChangeRecord.cpp" />
     <ClCompile Include="..\AutoRetouch\RegionGrowingAlg.cpp" />
+    <ClCompile Include="..\AutoRetouch\RegionGrowingByColorAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\SpatialClusteringAlg.cpp" />
   </ItemGroup>
   <ItemGroup>

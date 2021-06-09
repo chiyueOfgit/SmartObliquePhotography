@@ -2,11 +2,13 @@
 #include "AutoRetouchExport.h"
 #include "PointCloudAutoRetouchScene.h"
 #include "RegionGrowingAlg.h"
+#include "RegionGrowingByColorAlg.h"
 #include "BinaryClassifierAlg.h"
 #include "BinaryClassifierAlgByVFH.h"
 #include "SpatialClusteringAlg.h"
 #include "MaxVisibilityClusterAlg.h"
 #include "PointCluster4VFH.h"
+
 
 namespace hiveObliquePhotography
 {
@@ -39,6 +41,14 @@ namespace hiveObliquePhotography
 
 			return pClassifier->execute<CMaxVisibilityClusterAlg>(true, std::forward<TArgs>(vArgs)...);
 		}
-		
+
+		template<class... TArgs>
+		bool hiveExecuteRegionGrowClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)
+		{
+			IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+			_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", vClassifierSig), false);
+
+			return pClassifier->execute<CRegionGrowingByColorAlg>(true, std::forward<TArgs>(vArgs)...);
+		}
 	}
 }

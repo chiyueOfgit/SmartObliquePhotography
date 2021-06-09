@@ -92,6 +92,12 @@
     <ClInclude Include="ConfigCommon.h">
       <Filter>PointClassfier\SpatialClusteringAlg\Config</Filter>
     </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>PointClassfier</Filter>
+    </ClInclude>
+    <ClInclude Include="RegionGrowingByColorAlg.h">
+      <Filter>PointClassfier\RegionGrowingAlg</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neighborhood.cpp">
@@ -138,6 +144,9 @@
     </ClCompile>
     <ClCompile Include="StatisticalOutlierAlg.cpp">
       <Filter>PointClassfier\OutlierDetectingAlg</Filter>
+    </ClCompile>
+    <ClCompile Include="RegionGrowingByColorAlg.cpp">
+      <Filter>PointClassfier\RegionGrowingAlg</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
