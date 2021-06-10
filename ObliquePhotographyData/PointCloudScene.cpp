@@ -15,8 +15,9 @@ CPointCloudScene::~CPointCloudScene()
 //FUNCTION: 
 PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
 {
-	_ASSERTE(!vFileNameSet.empty());
-
+	if (vFileNameSet.empty())
+		return nullptr;
+	
 	clear();
 	m_pPointCloudScene.reset(new PointCloud_t);
 	
