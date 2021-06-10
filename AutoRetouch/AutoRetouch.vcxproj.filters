@@ -159,7 +159,4 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Xml Include="AutoRetouchConfig.xml" />
-  </ItemGroup>
 </Project>

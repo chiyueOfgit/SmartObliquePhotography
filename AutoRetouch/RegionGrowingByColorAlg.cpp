@@ -20,14 +20,14 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 	int i = CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value();
 	const auto ColorMode = static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value());
 
-	std::vector Seeds(vSeedSet);
+	std::vector<uint64_t> Seeds(vSeedSet);
 
 	auto pPointCloudScene = CPointCloudAutoRetouchScene::getInstance();
 	auto pScene = pPointCloudScene->getPointCloudScene();
 	auto pTree = pPointCloudScene->getGlobalKdTree();
 
 	std::vector<int> PointLabels;
-	constexpr int InitLabelValue = -1;
+	const int InitLabelValue = -1;
 	PointLabels.resize(pScene->size(), InitLabelValue);
 
 	if (CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST").value())
@@ -35,7 +35,7 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 		m_AverageColor.first.resize(3);
 		for (auto Index : Seeds)
 		{
-			PointLabels.at(Index) = 0;
+			PointLabels[Index] = 0;
 			m_pLocalLabelSet->changePointLabel(Index, vSeedLabel);
 
 			if (ColorMode == EColorMode::Mean)
@@ -86,9 +86,9 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 				KNN = 0;
 				while (KNN < NeighborIndices.size())
 				{
+					int NeighborIndex = NeighborIndices[KNN];
 					if (PointLabels[NeighborIndex] == -1)
 					{
-						int NeighborIndex = NeighborIndices[KNN];
 						Seeds.push_back(NeighborIndex);
 						PointLabels[NeighborIndex] = 0;
 						m_pLocalLabelSet->changePointLabel(NeighborIndex, vSeedLabel);
