@@ -23,7 +23,7 @@
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
 
-using namespace hiveObliquePhotography;
+using namespace hiveObliquePhotography::QTInterface;
 
 QTInterface::QTInterface(QWidget * vParent)
     : QMainWindow(vParent)
