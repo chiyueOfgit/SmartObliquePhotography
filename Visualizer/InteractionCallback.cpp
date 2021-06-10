@@ -38,6 +38,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		m_PartitionMode = !m_PartitionMode;
 	}
 
+	if (KeyString == "m" && vEvent.keyDown())
+	{
+		
+	}
+	
 	if (KeyString == "space" && vEvent.keyDown())
 	{
 		m_UnwantedMode = !m_UnwantedMode;
