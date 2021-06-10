@@ -18,7 +18,7 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 		//system("pause");
 		//return EXIT_FAILURE;
 	}
-	const auto ColorMode = CAutoRetouchConfig::getInstance()->getAttribute<EColorMode>("COLOR_TEST_MODE").value();
+	const auto ColorMode = static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value());
 
 	std::vector Seeds(vSeedSet);
 
@@ -110,7 +110,7 @@ bool CRegionGrowingByColorAlg::__validatePoint(int vTestPoint, const pcl::PointC
 {
 	if (CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST").value())
 	{
-		switch (CAutoRetouchConfig::getInstance()->getAttribute<EColorMode>("COLOR_TEST_MODE").value())
+		switch (static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value()))
 		{
 		case EColorMode::Mean:
 			if (!__colorTestByAverage(vTestPoint, vCloud))
