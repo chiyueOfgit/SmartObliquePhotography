@@ -11,23 +11,20 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COL
 
 void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, EPointLabel vSeedLabel) //SeedLabelÊÇÊ²Ã´£¿
 {
-	hiveConfig::EParseResult IsParsedAutoRetouchConfig = hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance());
-	if (IsParsedAutoRetouchConfig != hiveConfig::EParseResult::SUCCEED)
+	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
 		return;
 	}
-	int i = CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value();
 	const auto ColorMode = static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value());
 
-	std::vector Seeds(vSeedSet);
+	std::vector<uint64_t> Seeds(vSeedSet);
 
-	auto pPointCloudScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pScene = pPointCloudScene->getPointCloudScene();
-	auto pTree = pPointCloudScene->getGlobalKdTree();
+	auto pScene = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
+	auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
 
 	std::vector<int> PointLabels;
-	constexpr int InitLabelValue = -1;
+	const int InitLabelValue = -1;
 	PointLabels.resize(pScene->size(), InitLabelValue);
 
 	if (CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST").value())
@@ -35,7 +32,7 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 		m_AverageColor.first.resize(3);
 		for (auto Index : Seeds)
 		{
-			PointLabels.at(Index) = 0;
+			PointLabels[Index] = 0;
 			m_pLocalLabelSet->changePointLabel(Index, vSeedLabel);
 
 			if (ColorMode == EColorMode::Mean)
@@ -86,9 +83,9 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 				KNN = 0;
 				while (KNN < NeighborIndices.size())
 				{
+					int NeighborIndex = NeighborIndices[KNN];
 					if (PointLabels[NeighborIndex] == -1)
 					{
-						int NeighborIndex = NeighborIndices[KNN];
 						Seeds.push_back(NeighborIndex);
 						PointLabels[NeighborIndex] = 0;
 						m_pLocalLabelSet->changePointLabel(NeighborIndex, vSeedLabel);

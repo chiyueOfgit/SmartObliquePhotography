@@ -11,6 +11,7 @@
 #include <qlabel.h>
 #include <iostream>
 #include <string>
+#include <QtWidgets/qmainwindow.h>
 #include <QMainWindow>
 #include <vtkAutoInit.h>
 #include <common/ConfigCommon.h>

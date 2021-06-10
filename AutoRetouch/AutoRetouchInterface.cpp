@@ -63,7 +63,7 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(co
 	std::vector<uint64_t> PointIndices(vPointIndices.begin(), vPointIndices.end());
 	if (pClassifier->execute<CMaxVisibilityClusterAlg>(true, PointIndices, vExpectLabel, vCamera))
 	{
-		hiveExecuteRegionGrowClassifier( CLASSIFIER_REGION_GROW_COLOR,PointIndices,vExpectLabel);
+		hiveExecuteRegionGrowClassifier( CLASSIFIER_REGION_GROW_COLOR, PointIndices, vExpectLabel);
 		return true;
 	}
 	else
