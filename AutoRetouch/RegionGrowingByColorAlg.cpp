@@ -28,7 +28,7 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 
 	std::vector<int> PointLabels;
 	constexpr int InitLabelValue = -1;
-	PointLabels.resize(pCloud->size(), InitLabelValue);
+	PointLabels.resize(pScene->size(), InitLabelValue);
 
 	if (CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST").value())
 	{
@@ -40,15 +40,15 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 
 			if (ColorMode == EColorMode::Mean)
 			{
-				m_AverageColor.first[0] += (*pCloud)[Index].r;
-				m_AverageColor.first[1] += (*pCloud)[Index].g;
-				m_AverageColor.first[2] += (*pCloud)[Index].b;
+				m_AverageColor.first[0] += (*pScene)[Index].r;
+				m_AverageColor.first[1] += (*pScene)[Index].g;
+				m_AverageColor.first[2] += (*pScene)[Index].b;
 
 				m_AverageColor.second++;
 			}
 			else
 			{
-				m_MortonCode.insert(m_MortonCode.end(), Morton_3d(pCloud->points[Index].r, pCloud->points[Index].g, pCloud->points[Index].b));
+				m_MortonCode.insert(m_MortonCode.end(), Morton_3d(pScene->points[Index].r, pScene->points[Index].g, pScene->points[Index].b));
 			}
 		}
 		if (ColorMode == EColorMode::Median)
