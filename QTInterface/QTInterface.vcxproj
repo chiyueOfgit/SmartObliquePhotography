@@ -152,6 +152,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\AutoRetouch\AutoRetouchConfig.xml" />
     <Xml Include="SpatialClusterConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
