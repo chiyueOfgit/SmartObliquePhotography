@@ -54,18 +54,18 @@ private:
 };
 
 
-TEST_F(CTestRegionGrow, DeathTest_EmptyPoint)
-{
-	std::vector<std::uint64_t> SeedSet = { };
-	EXPECT_DEATH(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_REGION_GROW_COLOR, SeedSet, EPointLabel::UNWANTED), ".*");
-}
-
-TEST_F(CTestRegionGrow, DeathTest_OverIndexIndices)
-{
-	std::vector<std::uint64_t> SeedSet = {170000,180000 };
-	EXPECT_DEATH(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_REGION_GROW_COLOR, SeedSet, EPointLabel::UNWANTED), ".*");
-
-}
+//TEST_F(CTestRegionGrow, DeathTest_EmptyPoint)
+//{
+//	std::vector<std::uint64_t> SeedSet = { };
+//	EXPECT_DEATH(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_REGION_GROW_COLOR, SeedSet, EPointLabel::UNWANTED), ".*");
+//}
+//
+//TEST_F(CTestRegionGrow, DeathTest_OverIndexIndices)
+//{
+//	std::vector<std::uint64_t> SeedSet = {170000,180000 };
+//	EXPECT_DEATH(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_REGION_GROW_COLOR, SeedSet, EPointLabel::UNWANTED), ".*");
+//
+//}
 
 TEST_F(CTestRegionGrow, RegionGrowingByColor)
 {
