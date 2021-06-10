@@ -42,6 +42,8 @@ namespace hiveObliquePhotography
         private slots:
             void onActionOpen();
             void onActionSetting();
+            void onResourceSpaceItemDoubleClick(const QModelIndex& vIndex);
+
         };
     }
 }
