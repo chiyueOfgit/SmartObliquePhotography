@@ -3,13 +3,13 @@
 #include "common/Singleton.h"
 #include "ConfigCommon.h"
 
-class CDisplayConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CDisplayConfig>
+class CSpatialClusterConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CSpatialClusterConfig>
 {
 public:
-	virtual ~CDisplayConfig() = default;
+	virtual ~CSpatialClusterConfig() = default;
 
 private:
-	CDisplayConfig() { __defineAttributesV(); }
+	CSpatialClusterConfig() { __defineAttributesV(); }
 
 	void __defineAttributesV()
 	{
@@ -18,5 +18,5 @@ private:
 		_defineAttribute(KEY_WORDS::MINCLUSTERSIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 		_defineAttribute(KEY_WORDS::MAXCLUSTERSIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	}
-	friend class hiveDesignPattern::CSingleton<CDisplayConfig>;
+	friend class hiveDesignPattern::CSingleton<CSpatialClusterConfig>;
 };

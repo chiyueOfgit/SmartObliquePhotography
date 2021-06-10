@@ -15,7 +15,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMaxVisibilityClusterAlg, CLASSIFIER_MaxVisibilityCl
 //FUNCTION:
 void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera)
 {
-	hiveConfig::EParseResult IsParsedDisplayConfig = hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CDisplayConfig::getInstance());
+	hiveConfig::EParseResult IsParsedDisplayConfig = hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance());
 	if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
 	{
 		std::cout << "Failed to parse config file." << std::endl;
@@ -28,7 +28,7 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
 	auto pCloud = pScene->getPointCloudScene();
 	
-	const int  Resolution = *CDisplayConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
+	const int  Resolution = *CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
 	const Eigen::Vector3f ViewDir(vCamera.focal[0] - vCamera.pos[0], vCamera.focal[1] - vCamera.pos[1], vCamera.focal[2] - vCamera.pos[2]);
 	const Eigen::Vector3f ViewPos(vCamera.pos[0], vCamera.pos[1], vCamera.pos[2]);
 	Eigen::Matrix4d ViewMatrix;
@@ -38,9 +38,9 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 
 	std::vector<pcl::PointIndices> ClusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointSurfel> Ec;
-	Ec.setClusterTolerance(*CDisplayConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
-	Ec.setMinClusterSize(*CDisplayConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
-	Ec.setMaxClusterSize(*CDisplayConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
+	Ec.setClusterTolerance(*CSpatialClusterConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
+	Ec.setMinClusterSize(*CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
+	Ec.setMaxClusterSize(*CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
 	Ec.setInputCloud(pCloud);
 	Ec.setSearchMethod(pScene->getGlobalKdTree());
 	Ec.setIndices(pcl::make_shared<pcl::Indices>(vioInputSet.begin(), vioInputSet.end()));
