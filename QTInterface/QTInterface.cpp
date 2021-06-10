@@ -54,10 +54,13 @@ void QTInterface::onActionOpen()
     }
     
     auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FileNameSet);
-    AutoRetouch::hiveInitPointCloudScene(pCloud);
-    Visualization::hiveInitVisualizer(pCloud);
-    __initialVTKWidget();
-    Visualization::hiveRefreshVisualizer();
+    if (pCloud)
+    {
+        AutoRetouch::hiveInitPointCloudScene(pCloud);
+        Visualization::hiveInitVisualizer(pCloud);
+        __initialVTKWidget();
+        Visualization::hiveRefreshVisualizer();
+    }
 }
 
 void QTInterface::__initialVTKWidget()
