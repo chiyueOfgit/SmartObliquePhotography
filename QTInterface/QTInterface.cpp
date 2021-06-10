@@ -19,6 +19,7 @@
 #include <common/ConfigCommon.h>
 #include <common/ConfigInterface.h>
 #include "AutoRetouchConfig.h"
+#include "SpatialClusterConfig.h"
 #include "ObliquePhotographyDataInterface.h"
 #include "AutoRetouchInterface.h"
 #include "VisualizationInterface.h"
@@ -37,10 +38,17 @@ QTInterface::QTInterface(QWidget * vParent)
 
     hiveConfig::EParseResult IsParsedDisplayConfig = hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance());
     if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
+    { 
+    	std::cout << "Failed to parse config file." << std::endl;
+        return;
+    }
+
+    /*hiveConfig::EParseResult IsParsedDisplayConfig2 = hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance());
+    if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
     {
         std::cout << "Failed to parse config file." << std::endl;
         return;
-    }
+    }*/
 }
 
 QTInterface::~QTInterface()
