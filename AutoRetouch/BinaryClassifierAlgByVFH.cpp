@@ -45,7 +45,8 @@ void CBinaryClassifierByVFHAlg::runV()
 						}
 				}
 
-			m_pLocalLabelSet->changePointLabel(Index, dynamic_cast<CPointCluster4VFH*>(m_ClusterSet[MaxRecord.second])->getClusterLabel());
+			if (m_ClusterSet[MaxRecord.second]->getClusterLabel() == EPointLabel::UNWANTED)
+				m_pLocalLabelSet->changePointLabel(Index, dynamic_cast<CPointCluster4VFH*>(m_ClusterSet[MaxRecord.second])->getClusterLabel());
 		}
 	}
 }
