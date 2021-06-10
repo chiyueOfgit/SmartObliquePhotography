@@ -101,6 +101,7 @@
     <ClInclude Include="PointClusterSet.h">
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClInclude>
+    <ClInclude Include="AutoRetouchConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neighborhood.cpp">
@@ -157,5 +158,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="AutoRetouchConfig.xml" />
   </ItemGroup>
 </Project>
