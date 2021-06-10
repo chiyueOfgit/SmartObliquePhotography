@@ -2,18 +2,15 @@
 #include "PointCloudAutoRetouchScene.h"
 #include "RegionGrowingByColorAlg.h"
 #include <set>
-
+#include "AutoRetouchConfig.h"
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
 _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COLOR)
 
-SRegionGrowingSetting RegionGrowingSetting;
-
 void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, EPointLabel vSeedLabel) //SeedLabel是什么？
 {
-
-	std::vector<std::uint64_t> Seeds(vSeedSet.begin(), vSeedSet.end());
+	std::vector Seeds(vSeedSet);
 
 	auto pPointCloudScene = CPointCloudAutoRetouchScene::getInstance();
 	auto pScene = pPointCloudScene->getPointCloudScene();
@@ -23,6 +20,8 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 	constexpr int InitLabelValue = -1;
 	PointLabels.resize(pScene->size(), InitLabelValue);
 
+	CAutoRetouchConfig Config;
+	auto flag = Config.getAttribute<bool>("ENABLE_COLOR_TEST");
 	//calculate average color and median color
 	bool bColorFlag = true;   //下一步写到配置文件里
 	if (bColorFlag)
@@ -33,7 +32,7 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 			PointLabels.at(Index) = 0;
 			m_pLocalLabelSet->changePointLabel(Index, vSeedLabel);
 
-			if (SRegionGrowingSetting::EColorMode::Mean == SRegionGrowingSetting::EColorMode::Mean)// 下一步改写到配置文件获取
+			//if (SRegionGrowingSetting::EColorMode::Mean == SRegionGrowingSetting::EColorMode::Mean)// 下一步改写到配置文件获取
 			{
 				m_AverageColor.first[0] += (*pScene)[Index].r;
 				m_AverageColor.first[1] += (*pScene)[Index].g;
@@ -41,12 +40,12 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 
 				m_AverageColor.second++;
 			}
-			else
+			//else
 			{
 				m_MortonCode.insert(m_MortonCode.end(), Morton_3d(pScene->points[Index].r, pScene->points[Index].g, pScene->points[Index].b));
 			}
 		}
-		if (SRegionGrowingSetting::EColorMode::Mean == SRegionGrowingSetting::EColorMode::Median)// 下一步改写到配置文件获取
+		//f (SRegionGrowingSetting::EColorMode::Mean == SRegionGrowingSetting::EColorMode::Median)// 下一步改写到配置文件获取
 		{
 			//initialization median
 			sort(m_MortonCode.begin(), m_MortonCode.end());
@@ -59,13 +58,13 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 	{
 		int KNN = 0;
 
-		const int CurrentSeed = Seeds.back();
+		const auto CurrentSeed = Seeds.back();
 		Seeds.pop_back();
 
 		std::vector<int> NeighborIndices;
 		std::vector<float> NeighborDistances;
 
-		pTree->radiusSearch(pScene->points[CurrentSeed], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
+		//pTree->radiusSearch(pScene->points[CurrentSeed], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
 		while (KNN < NeighborIndices.size())
 		{
 			int NeighborIndex = NeighborIndices[KNN];
@@ -103,32 +102,32 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 
 bool CRegionGrowingByColorAlg::__validatePoint(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const
 {
-	if (RegionGrowingSetting.bColorFlag)
-	{
-		switch (RegionGrowingSetting.ColorMode)
-		{
-		case SRegionGrowingSetting::EColorMode::Mean:
-			if (!__colorTestByAverage(vTestPoint, vCloud))
-				return false;
-			break;
-		case SRegionGrowingSetting::EColorMode::Median:
-			if (!__colorTestByMedian(vTestPoint, vCloud))
-				return false;
-			break;
-		}
-	}
+	//if (RegionGrowingSetting.bColorFlag)
+	//{
+	//	switch (RegionGrowingSetting.ColorMode)
+	//	{
+	//	case SRegionGrowingSetting::EColorMode::Mean:
+	//		if (!__colorTestByAverage(vTestPoint, vCloud))
+	//			return false;
+	//		break;
+	//	case SRegionGrowingSetting::EColorMode::Median:
+	//		if (!__colorTestByMedian(vTestPoint, vCloud))
+	//			return false;
+	//		break;
+	//	}
+	//}
 
-	if (RegionGrowingSetting.bGroundFlag)
-	{
-		if (!__groundTest(vTestPoint, vCloud))
-			return false;
-	}
+	//if (RegionGrowingSetting.bGroundFlag)
+	//{
+	//	if (!__groundTest(vTestPoint, vCloud))
+	//		return false;
+	//}
 
-	if (RegionGrowingSetting.bNormalFlag)
-	{
-		if (!__normalTest(vTestPoint, vCloud))
-			return false;
-	}
+	//if (RegionGrowingSetting.bNormalFlag)
+	//{
+	//	if (!__normalTest(vTestPoint, vCloud))
+	//		return false;
+	//}
 
 	return true;
 }
@@ -145,7 +144,7 @@ float CRegionGrowingByColorAlg::__calculateColorimetricalDifference(std::vector<
 bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const
 {
 	//应该需要动态更新阈值
-	float ColorThreshold = RegionGrowingSetting.ColorThreshold;
+	//float ColorThreshold = RegionGrowingSetting.ColorThreshold;
 
 	//用平均颜色代表整体颜色
 	std::vector<unsigned int> OverallColor(3);
@@ -157,7 +156,7 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestPoint, const pcl::P
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
 	auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
+	//pTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3);
 	for (auto Index : NeighborIndices)
@@ -171,12 +170,12 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestPoint, const pcl::P
 	NeighborColor[1] = NeighborColor[1] / (float)NeighborIndices.size();
 	NeighborColor[2] = NeighborColor[2] / (float)NeighborIndices.size();
 
-	if (m_ColorDifferenceCalculator.calcColorDifferences(OverallColor, NeighborColor) > ColorThreshold)
+	//if (m_ColorDifferenceCalculator.calcColorDifferences(OverallColor, NeighborColor) > ColorThreshold)
 	{
 		//		ColorThreshold--;
 		return false;
 	}
-	else
+	//else
 	{
 		//通过的更新平均颜色
 		m_AverageColor.first[0] += NeighborColor[0];
@@ -191,47 +190,47 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestPoint, const pcl::P
 
 bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const
 {
-	//应该需要动态更新阈值
-	float ColorThreshold = RegionGrowingSetting.ColorThreshold;
+	////应该需要动态更新阈值
+	//float ColorThreshold = RegionGrowingSetting.ColorThreshold;
 
-	//用测试点的邻居平均颜色代表该测试点的颜色
-	std::vector<int> NeighborIndices;
-	std::vector<float> NeighborDistances;
-	auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
+	////用测试点的邻居平均颜色代表该测试点的颜色
+	//std::vector<int> NeighborIndices;
+	//std::vector<float> NeighborDistances;
+	//auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
+	//pTree->radiusSearch((*vCloud)[vTestPoint], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
 
-	std::vector<unsigned int> NeighborColor(3);
-	for (auto Index : NeighborIndices)
-	{
-		NeighborColor[0] += (*vCloud)[Index].r;
-		NeighborColor[1] += (*vCloud)[Index].g;
-		NeighborColor[2] += (*vCloud)[Index].b;
-	}
+	//std::vector<unsigned int> NeighborColor(3);
+	//for (auto Index : NeighborIndices)
+	//{
+	//	NeighborColor[0] += (*vCloud)[Index].r;
+	//	NeighborColor[1] += (*vCloud)[Index].g;
+	//	NeighborColor[2] += (*vCloud)[Index].b;
+	//}
 
-	NeighborColor[0] = NeighborColor[0] / (float)NeighborIndices.size();
-	NeighborColor[1] = NeighborColor[1] / (float)NeighborIndices.size();
-	NeighborColor[2] = NeighborColor[2] / (float)NeighborIndices.size();
+	//NeighborColor[0] = NeighborColor[0] / (float)NeighborIndices.size();
+	//NeighborColor[1] = NeighborColor[1] / (float)NeighborIndices.size();
+	//NeighborColor[2] = NeighborColor[2] / (float)NeighborIndices.size();
 
-	if (m_ColorDifferenceCalculator.calcColorDifferences(m_MedianColor, NeighborColor) > ColorThreshold)
-	{
-		//		ColorThreshold--;
-		return false;
-	}
-	else
-	{
-		m_MortonCode.insert(m_MortonCode.end(), Morton_3d(vCloud->points[vTestPoint].r, vCloud->points[vTestPoint].g, vCloud->points[vTestPoint].b));
-		sort(m_MortonCode.begin(), m_MortonCode.end());
-		inverse_Morton_3d(m_MedianColor[0], m_MedianColor[1], m_MedianColor[2], m_MortonCode[m_MortonCode.size() / 2]);
-	}
+	//if (m_ColorDifferenceCalculator.calcColorDifferences(m_MedianColor, NeighborColor) > ColorThreshold)
+	//{
+	//	//		ColorThreshold--;
+	//	return false;
+	//}
+	//else
+	//{
+	//	m_MortonCode.insert(m_MortonCode.end(), Morton_3d(vCloud->points[vTestPoint].r, vCloud->points[vTestPoint].g, vCloud->points[vTestPoint].b));
+	//	sort(m_MortonCode.begin(), m_MortonCode.end());
+	//	inverse_Morton_3d(m_MedianColor[0], m_MedianColor[1], m_MedianColor[2], m_MortonCode[m_MortonCode.size() / 2]);
+	//}
 
 	return true;
 }
 
 bool CRegionGrowingByColorAlg::__groundTest(int vTestPoint, const pcl::PointCloud<pcl::PointSurfel>::Ptr& vCloud) const
 {
-	if ((*vCloud)[vTestPoint].z < RegionGrowingSetting.GroundHeight)
-		return false;
-	else
+	//if ((*vCloud)[vTestPoint].z < RegionGrowingSetting.GroundHeight)
+	//	return false;
+	//else
 		return true;
 }
 
