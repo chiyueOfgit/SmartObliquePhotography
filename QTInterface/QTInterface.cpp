@@ -36,6 +36,9 @@ QTInterface::QTInterface(QWidget * vParent)
     ui.setupUi(this);
 
     __connectSignals();
+    __initialResourceDockWidget();
+    __initialWorkSpaceDockWidget();
+    __initialMessageDockWidget();
 
     hiveConfig::EParseResult IsParsedDisplayConfig = hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance());
     if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
@@ -84,13 +87,13 @@ void QTInterface::__initialResourceDockWidget()
 
 void QTInterface::__initialWorkSpaceDockWidget()
 {
-    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.resourceDockWidget);
+    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceDockWidget);
     ui.resourceTreeView->setModel(m_pResourceSpaceStandardItemModels);
     m_pResourceSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.resourceDockWidget);
+    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.workSpaceDockWidget);
     dockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "Resource Space");
-    ui.resourceDockWidget->setTitleBarWidget(dockWidgetTitleBar);
+    ui.workSpaceDockWidget->setTitleBarWidget(dockWidgetTitleBar);
 }
 
 void QTInterface::__initialMessageDockWidget()
