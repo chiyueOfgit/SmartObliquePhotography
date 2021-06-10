@@ -10,22 +10,21 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COL
 
 SRegionGrowingSetting RegionGrowingSetting;
 
-void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, EPointLabel vSeedLabel) //SeedLabel是什么？
+void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, EPointLabel vSeedLabel) 
 {
 
 	std::vector<std::uint64_t> Seeds(vSeedSet.begin(), vSeedSet.end());
 
-	auto pPointCloudScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pScene = pPointCloudScene->getPointCloudScene();
-	auto pTree = pPointCloudScene->getGlobalKdTree();
+	auto pScene = CPointCloudAutoRetouchScene::getInstance();
+	auto pCloud = pScene->getPointCloudScene();
+	auto pKdTree = pScene->getGlobalKdTree();
 
 	std::vector<int> PointLabels;
 	constexpr int InitLabelValue = -1;
-	PointLabels.resize(pScene->size(), InitLabelValue);
+	PointLabels.resize(pCloud->size(), InitLabelValue);
 
 	//calculate average color and median color
-	bool bColorFlag = true;   //下一步写到配置文件里
-	if (bColorFlag)
+	if (RegionGrowingSetting.bColorFlag) //下一步写到配置文件里
 	{
 		m_AverageColor.first.resize(3);
 		for (auto Index : Seeds)
@@ -35,15 +34,15 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 
 			if (SRegionGrowingSetting::EColorMode::Mean == SRegionGrowingSetting::EColorMode::Mean)// 下一步改写到配置文件获取
 			{
-				m_AverageColor.first[0] += (*pScene)[Index].r;
-				m_AverageColor.first[1] += (*pScene)[Index].g;
-				m_AverageColor.first[2] += (*pScene)[Index].b;
+				m_AverageColor.first[0] += (*pCloud)[Index].r;
+				m_AverageColor.first[1] += (*pCloud)[Index].g;
+				m_AverageColor.first[2] += (*pCloud)[Index].b;
 
 				m_AverageColor.second++;
 			}
 			else
 			{
-				m_MortonCode.insert(m_MortonCode.end(), Morton_3d(pScene->points[Index].r, pScene->points[Index].g, pScene->points[Index].b));
+				m_MortonCode.insert(m_MortonCode.end(), Morton_3d(pCloud->points[Index].r, pCloud->points[Index].g, pCloud->points[Index].b));
 			}
 		}
 		if (SRegionGrowingSetting::EColorMode::Mean == SRegionGrowingSetting::EColorMode::Median)// 下一步改写到配置文件获取
@@ -58,14 +57,13 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 	while (!Seeds.empty())
 	{
 		int KNN = 0;
-
 		const int CurrentSeed = Seeds.back();
 		Seeds.pop_back();
 
 		std::vector<int> NeighborIndices;
 		std::vector<float> NeighborDistances;
 
-		pTree->radiusSearch(pScene->points[CurrentSeed], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
+		pKdTree->radiusSearch(pCloud->points[CurrentSeed], RegionGrowingSetting.SearchSize, NeighborIndices, NeighborDistances);
 		while (KNN < NeighborIndices.size())
 		{
 			int NeighborIndex = NeighborIndices[KNN];
@@ -77,7 +75,7 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 			}
 
 			//这里认为半径内其中一个测试点代表所有测试点是否直接通过
-			if (__validatePoint(NeighborIndex, pScene))
+			if (__validatePoint(NeighborIndex, pCloud))
 			{
 				KNN = 0;
 				while (KNN < NeighborIndices.size())
@@ -94,7 +92,6 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 
 				break;
 			}
-
 			KNN++;
 		}
 	}

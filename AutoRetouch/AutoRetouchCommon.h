@@ -10,6 +10,7 @@ namespace hiveObliquePhotography
 		const std::string CLASSIFIER_MaxVisibilityCluster = "MaxVisibilityCluster";
 		const std::string CLASSIFIER_REGION_GROW = "RegionGrow";
 		const std::string CLASSIFIER_REGION_GROW_COLOR = "RegionGrow_color";
+		const std::string CLASSIFIER_OUTLIER_DETECTION = "OutlierDetection";
 
 		enum class EPointLabel : unsigned char
 		{
