@@ -11,20 +11,17 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COL
 
 void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, EPointLabel vSeedLabel) //SeedLabelÊÇÊ²Ã´£¿
 {
-	hiveConfig::EParseResult IsParsedAutoRetouchConfig = hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance());
-	if (IsParsedAutoRetouchConfig != hiveConfig::EParseResult::SUCCEED)
+	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
 		return;
 	}
-	int i = CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value();
 	const auto ColorMode = static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value());
 
 	std::vector<uint64_t> Seeds(vSeedSet);
 
-	auto pPointCloudScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pScene = pPointCloudScene->getPointCloudScene();
-	auto pTree = pPointCloudScene->getGlobalKdTree();
+	auto pScene = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
+	auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
 
 	std::vector<int> PointLabels;
 	const int InitLabelValue = -1;
