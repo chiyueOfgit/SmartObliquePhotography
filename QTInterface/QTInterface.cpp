@@ -40,9 +40,10 @@ QTInterface::QTInterface(QWidget * vParent)
     if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
     { 
     	std::cout << "Failed to parse config file." << std::endl;
-        return;
     }
-
+    
+    auto pConfig = CAutoRetouchConfig::getInstance();
+    std::cout << "Failed to parse config file." << std::endl;
     /*hiveConfig::EParseResult IsParsedDisplayConfig2 = hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance());
     if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
     {
