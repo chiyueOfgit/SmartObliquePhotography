@@ -42,6 +42,17 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	{
 		m_UnwantedMode = !m_UnwantedMode;
 	}
+
+	if (KeyString == "r" && vEvent.keyDown())
+	{
+		static int i = 0;
+		i++;
+		if (i % 2)
+			AutoRetouch::hiveSwitchPointLabel(AutoRetouch::EPointLabel::DISCARDED, AutoRetouch::EPointLabel::UNWANTED);
+		else
+			AutoRetouch::hiveSwitchPointLabel(AutoRetouch::EPointLabel::UNWANTED, AutoRetouch::EPointLabel::DISCARDED);
+		m_pVisualizer->refresh();
+	}
 }
 
 //*****************************************************************

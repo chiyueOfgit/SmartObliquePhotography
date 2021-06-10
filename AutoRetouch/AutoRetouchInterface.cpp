@@ -25,6 +25,19 @@ void hiveObliquePhotography::AutoRetouch::hiveGetGlobalPointLabelSet(std::vector
 	voGlobalLabel = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->getPointLabelSet();
 }
 
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(EPointLabel vTo, EPointLabel vFrom)
+{
+	_ASSERTE(CPointCloudAutoRetouchScene::getInstance() && CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	auto& PointLabelSet = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->fetchPointLabelSet();
+
+	for (auto& PointLabel : PointLabelSet)
+		if (PointLabel == vFrom)
+			PointLabel = vTo;
+	return true;
+}
+
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std::string& vClassifierSig)
 {
 	_ASSERTE(vClassifierSig.find(CLASSIFIER_BINARY_VFH) != std::string::npos);
