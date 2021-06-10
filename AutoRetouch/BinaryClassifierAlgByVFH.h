@@ -16,7 +16,7 @@ namespace hiveObliquePhotography
 			virtual void runV() override;
 
 		private:
-			inline std::set<std::uint64_t> __getRemainIndex();
+			inline std::vector<std::uint64_t> __getRemainIndex();
 		};
 	}
 }
