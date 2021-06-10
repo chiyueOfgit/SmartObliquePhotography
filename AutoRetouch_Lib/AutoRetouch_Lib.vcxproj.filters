@@ -84,6 +84,12 @@
     <ClInclude Include="..\AutoRetouch\RegionGrowingByColorAlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\AutoRetouch\StatisticalOutlierAlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\OutlierDetectingAlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="..\AutoRetouch\PointClusterSet.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -132,6 +138,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\RegionGrowingByColorAlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\StatisticalOutlierAlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\OutlierDetectingAlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\PointClusterSet.cpp">

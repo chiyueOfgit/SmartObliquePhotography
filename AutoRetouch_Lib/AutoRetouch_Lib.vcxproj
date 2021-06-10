@@ -32,6 +32,7 @@
     <ClInclude Include="..\AutoRetouch\NeighborhoodBuilder.h" />
     <ClInclude Include="..\AutoRetouch\OpResult.h" />
     <ClInclude Include="..\AutoRetouch\OpResultQueue.h" />
+    <ClInclude Include="..\AutoRetouch\OutlierDetectingAlg.h" />
     <ClInclude Include="..\AutoRetouch\pch.h" />
     <ClInclude Include="..\AutoRetouch\PointClassifier.h" />
     <ClInclude Include="..\AutoRetouch\PointCloudAutoRetouchScene.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="..\AutoRetouch\RegionGrowingAlg.h" />
     <ClInclude Include="..\AutoRetouch\RegionGrowingByColorAlg.h" />
     <ClInclude Include="..\AutoRetouch\SpatialClusteringAlg.h" />
+    <ClInclude Include="..\AutoRetouch\StatisticalOutlierAlg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp" />
@@ -52,6 +54,7 @@
     <ClCompile Include="..\AutoRetouch\MaxVisibilityClusterAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\Neighborhood.cpp" />
     <ClCompile Include="..\AutoRetouch\OpResultQueue.cpp" />
+    <ClCompile Include="..\AutoRetouch\OutlierDetectingAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\pch.cpp" />
     <ClCompile Include="..\AutoRetouch\PointCloudAutoRetouchScene.cpp" />
     <ClCompile Include="..\AutoRetouch\PointCluster4VFH.cpp" />
@@ -61,6 +64,7 @@
     <ClCompile Include="..\AutoRetouch\RegionGrowingAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\RegionGrowingByColorAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\SpatialClusteringAlg.cpp" />
+    <ClCompile Include="..\AutoRetouch\StatisticalOutlierAlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

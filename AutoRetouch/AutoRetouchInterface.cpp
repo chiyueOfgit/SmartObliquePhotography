@@ -4,7 +4,6 @@
 using namespace hiveObliquePhotography::AutoRetouch;
 
 
-
 //*****************************************************************
 //FUNCTION: 
 void hiveObliquePhotography::AutoRetouch::hiveUndoLastOp()

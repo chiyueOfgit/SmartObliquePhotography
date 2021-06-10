@@ -4,6 +4,7 @@
 namespace hiveObliquePhotography
 {
     namespace QTInterface
+
     {
         class QTInterface : public QMainWindow
         {
