@@ -6,25 +6,6 @@
 #include "AutoRetouchConfig.h"
 #include "FloatSlider.h"
 
-namespace hivePointClouds::command
-{
-	struct SRegionGrowingSetting
-	{
-		enum class EColorMode
-		{
-			Mean,
-			Median,
-		};
-		float GroundHeight = 446.2f;
-		bool bColorFlag = true;
-		bool bGroundFlag = true;
-		bool bNormalFlag = false;
-		EColorMode ColorMode = EColorMode::Mean;
-		float SearchSize = 0.5f;
-		float ColorThreshold = 5.0f;
-	};
-}
-
 namespace hiveQTInterface
 {
 	class CInteractionManager;
@@ -101,8 +82,6 @@ namespace hiveQTInterface
 
 		std::shared_ptr<QFloatSlider> m_SearchSizeSlider;
 		std::shared_ptr<QFloatSlider> m_ColorThresholdSlider;
-
-		static hivePointClouds::command::SRegionGrowingSetting m_GrowingSetting;
 
 	public slots:
 		void onActionColorTest();
