@@ -25,6 +25,19 @@ void hiveObliquePhotography::AutoRetouch::hiveGetGlobalPointLabelSet(std::vector
 	voGlobalLabel = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->getPointLabelSet();
 }
 
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(EPointLabel vTo, EPointLabel vFrom)
+{
+	_ASSERTE(CPointCloudAutoRetouchScene::getInstance() && CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	auto& PointLabelSet = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->fetchPointLabelSet();
+
+	for (auto& PointLabel : PointLabelSet)
+		if (PointLabel == vFrom)
+			PointLabel = vTo;
+	return true;
+}
+
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std::string& vClassifierSig)
 {
 	_ASSERTE(vClassifierSig.find(CLASSIFIER_BINARY_VFH) != std::string::npos);
@@ -63,7 +76,7 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(co
 	std::vector<uint64_t> PointIndices(vPointIndices.begin(), vPointIndices.end());
 	if (pClassifier->execute<CMaxVisibilityClusterAlg>(true, PointIndices, vExpectLabel, vCamera))
 	{
-		hiveExecuteRegionGrowClassifier( CLASSIFIER_REGION_GROW_COLOR,PointIndices,vExpectLabel);
+		hiveExecuteRegionGrowClassifier( CLASSIFIER_REGION_GROW_COLOR, PointIndices, vExpectLabel);
 		return true;
 	}
 	else
