@@ -23,7 +23,7 @@ const std::string g_UnwantedTreePoints = "SomeBigTreePoints.txt";
 
 class CTestRegionGrow :public testing::Test
 {
-public:
+protected:
 	void SetUp() override
 	{
 		m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
