@@ -227,6 +227,9 @@
       <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="AutoRetouchConfig.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="d:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets" Condition="Exists('d:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets')" />

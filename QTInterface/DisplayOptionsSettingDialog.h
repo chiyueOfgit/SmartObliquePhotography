@@ -23,10 +23,11 @@ namespace hiveQTInterface
 
 			this->setWindowFlag(Qt::WindowType::WindowContextHelpButtonHint, false);
 			
-			m_pUi->ColorTest->setCheckState(*CAutoRetouchConfig::getInstance()->getAttribute<float>("ENABLE_COLOR_TEST") ? Qt::Checked : Qt::Unchecked);
-			m_pUi->GroundTest->setCheckState(*CAutoRetouchConfig::getInstance()->getAttribute<float>("ENABLE_GROUND_TEST") ? Qt::Checked : Qt::Unchecked);
-			m_pUi->NormalTest->setCheckState(*CAutoRetouchConfig::getInstance()->getAttribute<float>("ENABLE_NORMAL_TEST") ? Qt::Checked : Qt::Unchecked);
-			if (*CAutoRetouchConfig::getInstance()->getAttribute<float>("ENABLE_COLOR_TEST") == *CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_MODE"))
+			m_pUi->ColorTest->setCheckState(*CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST") ? Qt::Checked : Qt::Unchecked);
+			bool sd = *CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_NORMAL_TEST");
+			m_pUi->GroundTest->setCheckState(*CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_GROUND_TEST") ? Qt::Checked : Qt::Unchecked);
+			m_pUi->NormalTest->setCheckState(*CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_NORMAL_TEST") ? Qt::Checked : Qt::Unchecked);
+			if (*CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE") == 0 )
 				m_pUi->AverageButton->setChecked(true);
 			else
 				m_pUi->MedianButton->setChecked(true);

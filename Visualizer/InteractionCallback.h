@@ -24,6 +24,7 @@ namespace hiveObliquePhotography
 			bool m_MousePressStatus[2] = { false };
 
 			bool m_UnwantedMode = true;
+			bool m_PartitionMode = true;
 
 			CPointCloudVisualizer* m_pVisualizer;
 		};

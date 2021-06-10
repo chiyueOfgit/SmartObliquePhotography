@@ -33,6 +33,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		m_pVisualizer->refresh();
 	}
 
+	if (KeyString == "z" && vEvent.keyDown())
+	{
+		m_PartitionMode = !m_PartitionMode;
+	}
+
 	if (KeyString == "space" && vEvent.keyDown())
 	{
 		m_UnwantedMode = !m_UnwantedMode;
@@ -62,7 +67,10 @@ void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEven
 	pcl::visualization::Camera Camera;
 	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
 
-	AutoRetouch::hiveExecuteClusterAlg2CreateCluster(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+	if (m_PartitionMode)
+		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+	else
+		AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
 
 	m_pVisualizer->refresh();
 }

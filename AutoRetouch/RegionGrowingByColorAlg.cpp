@@ -11,13 +11,13 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COL
 
 void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, EPointLabel vSeedLabel) //SeedLabel « ≤√¥£ø
 {
-	hiveConfig::EParseResult IsParsedAutoRetouchConfig = hiveConfig::hiveParseConfig("AutoRetouch.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance());
+	hiveConfig::EParseResult IsParsedAutoRetouchConfig = hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance());
 	if (IsParsedAutoRetouchConfig != hiveConfig::EParseResult::SUCCEED)
 	{
-		//std::cout << "Failed to parse config file." << std::endl;
-		//system("pause");
-		//return EXIT_FAILURE;
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
+		return;
 	}
+	int i = CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value();
 	const auto ColorMode = static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value());
 
 	std::vector Seeds(vSeedSet);
