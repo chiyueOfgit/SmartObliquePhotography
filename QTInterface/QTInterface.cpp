@@ -37,7 +37,7 @@ QTInterface::QTInterface(QWidget * vParent)
     ui.setupUi(this);
 
     __connectSignals();
-    __initialResourceDockWidget();
+    __initialResourceSpaceDockWidget();
     __initialWorkSpaceDockWidget();
     __initialMessageDockWidget();
 
@@ -75,7 +75,7 @@ void QTInterface::__initialVTKWidget()
     ui.VTKWidget->update();
 }
 
-void QTInterface::__initialResourceDockWidget()
+void QTInterface::__initialResourceSpaceDockWidget()
 {
     m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceTreeView);
     ui.workSpaceTreeView->setModel(m_pResourceSpaceStandardItemModels);
@@ -112,9 +112,9 @@ void QTInterface::__initialDockWidgetTitleBar()
 }
 
 // TODO::ÅäÖÃÎÄ¼þ
-void QTInterface::__initialSlider(const QStringList& vFileNameList)
+void QTInterface::__initialSlider(const QStringList& vFilePathList)
 {
-    const std::string& FirstCloudFilePath = vFileNameList[0].toStdString();
+    const std::string& FirstCloudFilePath = vFilePathList[0].toStdString();
     auto FileCloudFileName = QTInterface::__getFileName(FirstCloudFilePath);
 
     auto pSubWindow = new QMdiSubWindow(ui.VTKWidget);
@@ -136,22 +136,65 @@ void QTInterface::__initialSlider(const QStringList& vFileNameList)
     pSubWindow->show();
 }
 
-std::string QTInterface::__getFileName(const std::string& vPath)
+bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
 {
-    return vPath.substr(vPath.find_last_of('/') + 1, vPath.find_last_of('.') - vPath.find_last_of('/') - 1);
+    const auto& FileName = QTInterface::__getFileName(vFilePath);
+
+    QStandardItem* StandardItem = new QStandardItem(QString::fromStdString(FileName));
+    StandardItem->setCheckable(true);
+    StandardItem->setCheckState(Qt::Checked);
+    StandardItem->setEditable(false);
+    m_pResourceSpaceStandardItemModels->appendRow(StandardItem);
+
+    m_CurrentCloud = FileName;
+    QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(vFilePath + " is opened."));
+
+    return true;
+}
+
+bool QTInterface::__deleteResourceSpaceCloudItem(const std::string& vFilePath)
+{
+    auto FileName = m_pResourceSpaceStandardItemModels->findItems(QString::fromStdString(QTInterface::__getFileName(vFilePath)));
+    if (!FileName.empty())
+    {
+        auto row = FileName.first()->index().row();
+        m_pResourceSpaceStandardItemModels->removeRow(row);
+    }
+    else
+    {
+        
+    }
+
+
+    return true;
+}
+
+bool QTInterface::__MessageDockWidgetOutputText(QString vString)
+{
+    QDateTime CurrentDateTime = QDateTime::currentDateTime();
+    QString CurrentDateTimeString = CurrentDateTime.toString("[yyyy-MM-dd hh:mm:ss] ");
+    ui.textBrowser->append(CurrentDateTimeString + vString);
+
+    return true;
+}
+
+
+std::string QTInterface::__getFileName(const std::string& vFilePath)
+{
+    return vFilePath.substr(vFilePath.find_last_of('/') + 1, vFilePath.find_last_of('.') - vFilePath.find_last_of('/') - 1);
 }
 
 void QTInterface::onActionOpen()
 {
-    QStringList FileNameList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), ".", tr("Open PointCloud files(*.pcd)"));
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), ".", tr("Open PointCloud files(*.pcd)"));
     std::vector<std::string> FileNameSet;
     bool FileOpenSuccessFlag = true;
 
-    _ASSERT(FileNameList);
-    if (FileNameList.empty())
+    _ASSERT(FilePathList);
+    if (FilePathList.empty())
         return;
 
-    foreach(QString str, FileNameList)
+    foreach(QString str, FilePathList)
     {
         FileNameSet.push_back(str.toStdString());
     }
@@ -168,8 +211,16 @@ void QTInterface::onActionOpen()
         Visualization::hiveInitVisualizer(pCloud);
         QTInterface::__initialVTKWidget();
         Visualization::hiveRefreshVisualizer();
+        QTInterface::__initialSlider(FilePathList);
 
-        QTInterface::__initialSlider(FileNameList);
+        if (FileNameSet.size() == 1)
+        {
+            QTInterface::__addResourceSpaceCloudItem(FileNameSet[0]);
+        }
+        else
+        {
+            QTInterface::__addResourceSpaceCloudItem("Scene 0");
+        }
     }
 }
 
