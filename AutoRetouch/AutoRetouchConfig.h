@@ -2,13 +2,14 @@
 #include <common/HiveConfig.h>
 #include <common/Singleton.h>
 
-class CAutoRetouchConfig final : public hiveConfig::CHiveConfig, hiveDesignPattern::CSingleton<CAutoRetouchConfig>
+class CAutoRetouchConfig : public hiveConfig::CHiveConfig, hiveDesignPattern::CSingleton<CAutoRetouchConfig>
 {
 public:
-	CAutoRetouchConfig() { CAutoRetouchConfig::__defineAttributesV(); }
 	~CAutoRetouchConfig() override = default;
 
 private:
+	CAutoRetouchConfig() { CAutoRetouchConfig::__defineAttributesV(); }
+	
 	void __defineAttributesV() override
 	{
 		_defineAttribute("ENABLE_COLOR_TEST", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);

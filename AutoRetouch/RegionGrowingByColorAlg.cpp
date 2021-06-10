@@ -20,11 +20,8 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 	constexpr int InitLabelValue = -1;
 	PointLabels.resize(pScene->size(), InitLabelValue);
 
-	CAutoRetouchConfig Config;
-	auto flag = Config.getAttribute<bool>("ENABLE_COLOR_TEST");
-	//calculate average color and median color
-	bool bColorFlag = true;   //下一步写到配置文件里
-	if (bColorFlag)
+	auto bColorFlag = CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST");
+	if (bColorFlag.value())
 	{
 		m_AverageColor.first.resize(3);
 		for (auto Index : Seeds)
