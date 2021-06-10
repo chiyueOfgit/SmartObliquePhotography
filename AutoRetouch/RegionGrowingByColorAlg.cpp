@@ -17,7 +17,6 @@ void CRegionGrowingByColorAlg::runV(const std::vector<std::uint64_t>& vSeedSet, 
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
 		return;
 	}
-	int i = CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value();
 	const auto ColorMode = static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value());
 
 	std::vector Seeds(vSeedSet);
