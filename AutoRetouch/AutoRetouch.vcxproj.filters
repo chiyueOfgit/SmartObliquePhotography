@@ -98,6 +98,9 @@
     <ClInclude Include="RegionGrowingByColorAlg.h">
       <Filter>PointClassfier\RegionGrowingAlg</Filter>
     </ClInclude>
+    <ClInclude Include="PointClusterSet.h">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neighborhood.cpp">
@@ -148,13 +151,11 @@
     <ClCompile Include="RegionGrowingByColorAlg.cpp">
       <Filter>PointClassfier\RegionGrowingAlg</Filter>
     </ClCompile>
+    <ClCompile Include="PointClusterSet.cpp">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="SpatialClusterConfig.xml">
-      <Filter>PointClassfier\SpatialClusteringAlg\Config</Filter>
-    </Xml>
   </ItemGroup>
 </Project>

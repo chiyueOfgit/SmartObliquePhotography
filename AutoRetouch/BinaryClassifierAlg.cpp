@@ -7,7 +7,7 @@ using namespace hiveObliquePhotography::AutoRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-void CBinaryClassifierAlg::runV(const std::vector<IPointCluster*>& vInputClusterSet)
+void CBinaryClassifierAlg::runV()
 {
 	_ASSERTE(vInputClusterSet.empty() || (vInputClusterSet.size() > 1));
 }
