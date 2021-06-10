@@ -9,7 +9,6 @@ namespace hiveObliquePhotography
 		class CPointClusterSet : public hiveDesignPattern::CSingleton<CPointClusterSet>
 		{
 		public:
-			CPointClusterSet() = default;
 			~CPointClusterSet() = default;
 
 			bool addPointCluster(const std::string& vName, IPointCluster* vPointCluster);
@@ -21,11 +20,13 @@ namespace hiveObliquePhotography
 			const SBox& getAreaBox() const { return m_BinaryAreaAABB; }
 
 		private:
+			CPointClusterSet() = default;
+
 			std::map<std::string, IPointCluster*> m_PointClusterMap;
 
 			SBox m_BinaryAreaAABB;
 
-			friend class CSingleton<CPointClusterSet>;
+			friend class hiveDesignPattern::CSingleton<CPointClusterSet>;
 		};
 	}
 }

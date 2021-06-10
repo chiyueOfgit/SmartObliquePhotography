@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AutoRetouchCommon.h" />
+    <ClInclude Include="AutoRetouchConfig.h" />
     <ClInclude Include="AutoRetouchExport.h" />
     <ClInclude Include="AutoRetouchInterface.h" />
     <ClInclude Include="BinaryClassifierAlg.h" />

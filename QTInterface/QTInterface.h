@@ -18,6 +18,7 @@ namespace hiveObliquePhotography
         public:
             QTInterface(QWidget* vParent = Q_NULLPTR);
             ~QTInterface();
+            void closeEvent(QCloseEvent* vEvent) override;
 
         private:
             Ui::QTInterfaceClass ui;
@@ -40,8 +41,7 @@ namespace hiveObliquePhotography
 
         private slots:
             void onActionOpen();
-            void onResourceSpaceItemDoubleClick(const QModelIndex& vIndex);
-
+            void onActionSetting();
         };
     }
 }

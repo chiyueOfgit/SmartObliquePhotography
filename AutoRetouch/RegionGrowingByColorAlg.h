@@ -6,20 +6,10 @@ namespace hiveObliquePhotography
 {
 	namespace AutoRetouch
 	{
-		struct SRegionGrowingSetting
+		enum class EColorMode : unsigned char
 		{
-			enum class EColorMode
-			{
-				Mean,
-				Median,
-			};
-			float GroundHeight = 446.2f;
-			bool bColorFlag = true;
-			bool bGroundFlag = true;
-			bool bNormalFlag = false;
-			EColorMode ColorMode = EColorMode::Mean;
-			float SearchSize = 0.5f;
-			float ColorThreshold = 15.0f;
+			Mean = 0,
+			Median,
 		};
 
 		class CRegionGrowingByColorAlg :public CRegionGrowingAlg

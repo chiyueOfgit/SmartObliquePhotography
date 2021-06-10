@@ -13,7 +13,7 @@ namespace hiveObliquePhotography
 			CStaOutlierDetectingAlg() = default;
 			~CStaOutlierDetectingAlg() = default;
 
-			virtual void runV(const std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel);
+			virtual void runV(std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel);
 		};
 	}
 }
