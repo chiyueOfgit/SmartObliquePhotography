@@ -2,6 +2,8 @@
 #include "InteractionCallback.h"
 #include "PointCloudVisualizer.h"
 #include "AutoRetouchInterface.h"
+#include "VisualizationConfig.h"
+#include <common/ConfigInterface.h>
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -13,6 +15,12 @@ CInteractionCallback::CInteractionCallback(pcl::visualization::PCLVisualizer* vV
 	vVisualizer->registerKeyboardCallback([&](const auto& vEvent) { keyboardCallback(vEvent); });
 	vVisualizer->registerMouseCallback([&](const auto& vEvent) { mouseCallback(vEvent); });
 	vVisualizer->registerAreaPickingCallback([&](const auto& vEvent) { areaPicking(vEvent); });
+
+	if (hiveConfig::hiveParseConfig("VisualizationConfig.xml", hiveConfig::EConfigType::XML, CVisualizationConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+		std::cout << "Failed to parse config file." << std::endl;
+	else
+		m_pVisualizationConfig = CVisualizationConfig::getInstance();
+
 }
 
 //*****************************************************************
@@ -27,26 +35,36 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		m_KeyPressStatus[vEvent.getKeyCode()] = vEvent.keyDown() ? true : false;
 	}
 
-	if (KeyString == "v" && vEvent.keyDown())
+	if (vEvent.keyDown())
 	{
-		AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY_VFH);
-		m_pVisualizer->refresh();
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(VIEW_BINARY_RESULT).value())
+		{
+			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY_VFH);
+			m_pVisualizer->refresh();
+		}
+
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_BINARY_GROWING).value())
+		{
+			m_PartitionMode = !m_PartitionMode;
+		}
+
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_BINARY_CLUSTER_LABEL).value())
+		{
+			m_UnwantedMode = !m_UnwantedMode;
+		}
+
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
+		{
+			static int i = 0;
+			i++;
+			if (i % 2)
+				AutoRetouch::hiveSwitchPointLabel(AutoRetouch::EPointLabel::DISCARDED, AutoRetouch::EPointLabel::UNWANTED);
+			else
+				AutoRetouch::hiveSwitchPointLabel(AutoRetouch::EPointLabel::UNWANTED, AutoRetouch::EPointLabel::DISCARDED);
+			m_pVisualizer->refresh();
+		}
 	}
 
-	if (KeyString == "z" && vEvent.keyDown())
-	{
-		m_PartitionMode = !m_PartitionMode;
-	}
-
-	if (KeyString == "m" && vEvent.keyDown())
-	{
-		
-	}
-	
-	if (KeyString == "space" && vEvent.keyDown())
-	{
-		m_UnwantedMode = !m_UnwantedMode;
-	}
 }
 
 //*****************************************************************
