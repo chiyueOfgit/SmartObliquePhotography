@@ -16,6 +16,7 @@
 #include <vtkAutoInit.h>
 #include <common/ConfigCommon.h>
 #include <common/ConfigInterface.h>
+#include <algorithm>
 
 #include "QTDockWidgetTitleBar.h"
 #include "ui_DisplayOptionsSettingDialog.h"
@@ -122,18 +123,23 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     m_pPointSizeSlider = new QSlider(Qt::Horizontal);
     m_pPointSizeSlider->setMinimum(1);
     m_pPointSizeSlider->setMaximum(7);
-    //m_pPointSizeSlider->setValue(m_pManager->getCloud(FirstCloudName)->PointSize);
+    m_pPointSizeSlider->setValue(m_PointSize);
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
         {
-            //m_pManager->fetchCloud(m_CurrentCloud)->PointSize = m_pPointSizeSlider->value();    //自己
+            m_PointSize = m_pPointSizeSlider->value();          // TODO::配置文件
         }
     );
 
     pSubWindow->setWidget(m_pPointSizeSlider);
-    pSubWindow->resize(200, 50);
+    pSubWindow->resize(200, 50);                // magic
     pSubWindow->setWindowFlag(Qt::FramelessWindowHint);
     pSubWindow->show();
+}
+
+void QTInterface::__checkFileOpenRepeatedly()
+{
+
 }
 
 bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
@@ -178,7 +184,6 @@ bool QTInterface::__MessageDockWidgetOutputText(QString vString)
     return true;
 }
 
-
 std::string QTInterface::__getFileName(const std::string& vFilePath)
 {
     return vFilePath.substr(vFilePath.find_last_of('/') + 1, vFilePath.find_last_of('.') - vFilePath.find_last_of('/') - 1);
@@ -187,19 +192,32 @@ std::string QTInterface::__getFileName(const std::string& vFilePath)
 void QTInterface::onActionOpen()
 {
     QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), ".", tr("Open PointCloud files(*.pcd)"));
-    std::vector<std::string> FileNameSet;
+    std::vector<std::string> FilePathSet;
     bool FileOpenSuccessFlag = true;
 
     _ASSERT(FilePathList);
     if (FilePathList.empty())
         return;
 
-    foreach(QString str, FilePathList)
+    foreach(QString FilePathQString, FilePathList)
     {
-        FileNameSet.push_back(str.toStdString());
+        std::string FilePathString = FilePathQString.toStdString();
+        if (std::find(m_FilePathList.begin(), m_FilePathList.end(), FilePathString) == m_FilePathList.end())
+        {
+            m_FilePathList.push_back(FilePathString);
+            FilePathSet.push_back(FilePathString);
+        }
+        else
+        {
+            QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(FilePathString + " has been opened yet! It won't be loaded again!"));
+        }
     }
 
-    auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FileNameSet);
+    _ASSERT(FilePathSet);
+    if (FilePathSet.empty())
+        return;
+
+    auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
 
     _ASSERT(pCloud);
     if (pCloud == nullptr)
@@ -213,13 +231,14 @@ void QTInterface::onActionOpen()
         Visualization::hiveRefreshVisualizer();
         QTInterface::__initialSlider(FilePathList);
 
-        if (FileNameSet.size() == 1)
+        if (FilePathSet.size() == 1)
         {
-            QTInterface::__addResourceSpaceCloudItem(FileNameSet[0]);
+            QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
         }
         else
         {
-            QTInterface::__addResourceSpaceCloudItem("Scene 0");
+            m_SceneIndex++;
+            QTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
         }
     }
 }
