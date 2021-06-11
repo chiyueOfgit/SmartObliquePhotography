@@ -150,6 +150,9 @@
       <AdditionalIncludeDirectories>../visualization/include;../AutoRetouch</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -165,6 +168,7 @@
     <ClInclude Include="InteractionCallback.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PointCloudVisualizer.h" />
+    <ClInclude Include="VisualizationConfig.h" />
     <ClInclude Include="VisualizationExport.h" />
     <ClInclude Include="VisualizationInterface.h" />
   </ItemGroup>

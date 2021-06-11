@@ -16,9 +16,6 @@ using namespace hiveObliquePhotography::AutoRetouch;
 //	测试用例列表：
 //	* StaOutlierDetectingAlg：测试离群点检测功能能否正确运行;
 //	* calculatePercentage:计算输出结果占GroundTruth的比率；
-//	* DeathTest_EmptyPoint:尝试输入空的种子点集合；
-//	* DeathTest_OverIndexIndices:尝试输入越界的种子点集；
-//	* DeathTest_AllPoints:尝试输入整个点云作为种子点；
 
 const std::string g_Folder = "groundtruth/";
 const std::string g_CloudFile = "test.pcd";
@@ -67,7 +64,6 @@ protected:
 		}
 
 		return m_pOutlierSet;
-
 	}
 
 	pcl::PointCloud<pcl::PointSurfel>::Ptr getCloud() { return m_pCloud; }
@@ -123,7 +119,7 @@ TEST_F(CTestOutlierDetection, StaOutlierDetectingAlg)
 	}
 	testOutlierDetection(GroundTruthPointSets);
 
-	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->init(getCloud());
+	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->init(getCloud(),false);
 	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->refresh();
 }
 

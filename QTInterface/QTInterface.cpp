@@ -11,10 +11,12 @@
 #include <qlabel.h>
 #include <iostream>
 #include <string>
+#include <QtWidgets/qmainwindow.h>
 #include <QMainWindow>
 #include <vtkAutoInit.h>
 #include <common/ConfigCommon.h>
 #include <common/ConfigInterface.h>
+#include <algorithm>
 
 #include "QTDockWidgetTitleBar.h"
 #include "ui_DisplayOptionsSettingDialog.h"
@@ -35,25 +37,11 @@ QTInterface::QTInterface(QWidget * vParent)
 {
     ui.setupUi(this);
 
+    __parseConfigFile();
     __connectSignals();
-    __initialResourceDockWidget();
+    __initialResourceSpaceDockWidget();
     __initialWorkSpaceDockWidget();
     __initialMessageDockWidget();
-
-    hiveConfig::EParseResult IsParsedDisplayConfig = hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance());
-    if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
-    { 
-    	std::cout << "Failed to parse config file." << std::endl;
-    }
-    
-    auto pConfig = CAutoRetouchConfig::getInstance();
-    std::cout << "Failed to parse config file." << std::endl;
-    /*hiveConfig::EParseResult IsParsedDisplayConfig2 = hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance());
-    if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
-    {
-        std::cout << "Failed to parse config file." << std::endl;
-        return;
-    }*/
 }
 
 QTInterface::~QTInterface()
@@ -64,6 +52,7 @@ void QTInterface::__connectSignals()
 {
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
     QObject::connect(ui.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
+    QObject::connect(ui.actionTestFunction, SIGNAL(triggered()), this, SLOT(onActionTest()));
 }
 
 void QTInterface::__initialVTKWidget()
@@ -74,7 +63,7 @@ void QTInterface::__initialVTKWidget()
     ui.VTKWidget->update();
 }
 
-void QTInterface::__initialResourceDockWidget()
+void QTInterface::__initialResourceSpaceDockWidget()
 {
     m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceTreeView);
     ui.workSpaceTreeView->setModel(m_pResourceSpaceStandardItemModels);
@@ -111,9 +100,9 @@ void QTInterface::__initialDockWidgetTitleBar()
 }
 
 // TODO::配置文件
-void QTInterface::__initialSlider(const QStringList& vFileNameList)
+void QTInterface::__initialSlider(const QStringList& vFilePathList)
 {
-    const std::string& FirstCloudFilePath = vFileNameList[0].toStdString();
+    const std::string& FirstCloudFilePath = vFilePathList[0].toStdString();
     auto FileCloudFileName = QTInterface::__getFileName(FirstCloudFilePath);
 
     auto pSubWindow = new QMdiSubWindow(ui.VTKWidget);
@@ -121,41 +110,119 @@ void QTInterface::__initialSlider(const QStringList& vFileNameList)
     m_pPointSizeSlider = new QSlider(Qt::Horizontal);
     m_pPointSizeSlider->setMinimum(1);
     m_pPointSizeSlider->setMaximum(7);
-    //m_pPointSizeSlider->setValue(m_pManager->getCloud(FirstCloudName)->PointSize);
+    m_pPointSizeSlider->setValue(m_PointSize);
+    m_pPointSizeSlider->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>("POINT_SHOW_SIZE") ? m_PointSize : m_PointSize);
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
         {
-            //m_pManager->fetchCloud(m_CurrentCloud)->PointSize = m_pPointSizeSlider->value();    //自己
+            m_PointSize = m_pPointSizeSlider->value();
+            hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->overwriteAttribute("POINT_SHOW_SIZE", m_PointSize);
         }
     );
 
     pSubWindow->setWidget(m_pPointSizeSlider);
-    pSubWindow->resize(200, 50);
+    pSubWindow->resize(200, 50);                // magic
     pSubWindow->setWindowFlag(Qt::FramelessWindowHint);
     pSubWindow->show();
 }
 
-std::string QTInterface::__getFileName(const std::string& vPath)
+void QTInterface::__checkFileOpenRepeatedly()
 {
-    return vPath.substr(vPath.find_last_of('/') + 1, vPath.find_last_of('.') - vPath.find_last_of('/') - 1);
+
+}
+
+bool QTInterface::__parseConfigFile()
+{
+    bool AutoRetouchConfigParseSuccess = false;
+    if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file AutoRetouchConfig.xml."));
+        AutoRetouchConfigParseSuccess = true;
+    }   
+    else
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file AutoRetouchConfig.xml."));
+    }
+    return AutoRetouchConfigParseSuccess;
+}
+
+bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
+{
+    const auto& FileName = QTInterface::__getFileName(vFilePath);
+
+    QStandardItem* StandardItem = new QStandardItem(QString::fromStdString(FileName));
+    StandardItem->setCheckable(true);
+    StandardItem->setCheckState(Qt::Checked);
+    StandardItem->setEditable(false);
+    m_pResourceSpaceStandardItemModels->appendRow(StandardItem);
+
+    m_CurrentCloud = FileName;
+    QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(vFilePath + " is opened."));
+
+    return true;
+}
+
+bool QTInterface::__deleteResourceSpaceCloudItem(const std::string& vFilePath)
+{
+    auto FileName = m_pResourceSpaceStandardItemModels->findItems(QString::fromStdString(QTInterface::__getFileName(vFilePath)));
+    if (!FileName.empty())
+    {
+        auto row = FileName.first()->index().row();
+        m_pResourceSpaceStandardItemModels->removeRow(row);
+
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(vFilePath + "is deleted."));
+        return true;
+    }
+    else
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(vFilePath + "is not deleted."));
+        return false;
+    }
+}
+
+bool QTInterface::__MessageDockWidgetOutputText(QString vString)
+{
+    QDateTime CurrentDateTime = QDateTime::currentDateTime();
+    QString CurrentDateTimeString = CurrentDateTime.toString("[yyyy-MM-dd hh:mm:ss] ");
+    ui.textBrowser->append(CurrentDateTimeString + vString);
+
+    return true;
+}
+
+std::string QTInterface::__getFileName(const std::string& vFilePath)
+{
+    return vFilePath.substr(vFilePath.find_last_of('/') + 1, vFilePath.find_last_of('.') - vFilePath.find_last_of('/') - 1);
 }
 
 void QTInterface::onActionOpen()
 {
-    QStringList FileNameList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), ".", tr("Open PointCloud files(*.pcd)"));
-    std::vector<std::string> FileNameSet;
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), ".", tr("Open PointCloud files(*.pcd)"));
+    std::vector<std::string> FilePathSet;
     bool FileOpenSuccessFlag = true;
 
-    _ASSERT(FileNameList);
-    if (FileNameList.empty())
+    _ASSERT(FilePathList);
+    if (FilePathList.empty())
         return;
 
-    foreach(QString str, FileNameList)
+    foreach(QString FilePathQString, FilePathList)
     {
-        FileNameSet.push_back(str.toStdString());
+        std::string FilePathString = FilePathQString.toStdString();
+        if (std::find(m_FilePathList.begin(), m_FilePathList.end(), FilePathString) == m_FilePathList.end())
+        {
+            m_FilePathList.push_back(FilePathString);
+            FilePathSet.push_back(FilePathString);
+        }
+        else
+        {
+            QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(FilePathString + " has been opened yet! It won't be loaded again!"));
+        }
     }
 
-    auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FileNameSet);
+    _ASSERT(FilePathSet);
+    if (FilePathSet.empty())
+        return;
+
+    auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
 
     _ASSERT(pCloud);
     if (pCloud == nullptr)
@@ -166,12 +233,21 @@ void QTInterface::onActionOpen()
         AutoRetouch::hiveInitPointCloudScene(pCloud);
         Visualization::hiveInitVisualizer(pCloud);
         QTInterface::__initialVTKWidget();
-        Visualization::hiveRefreshVisualizer();
+        Visualization::hiveRefreshVisualizer(true);
+        QTInterface::__initialSlider(FilePathList);
 
-        QTInterface::__initialSlider(FileNameList);
+        if (FilePathSet.size() == 1)
+        {
+            QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
+        }
+        else
+        {
+            m_SceneIndex++;
+            QTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
+        }
     }
 }
-
+ 
 void QTInterface::onActionSetting()
 {
     std::shared_ptr<hiveQTInterface::CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<hiveQTInterface::CDisplayOptionsSettingDialog>(this);
@@ -241,4 +317,11 @@ void QTInterface::closeEvent(QCloseEvent* vEvent)
     {
         vEvent->ignore();
     }
+}
+
+void QTInterface::onActionTest()
+{
+    auto pointsize = *hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS");
+
+    int a;
 }
