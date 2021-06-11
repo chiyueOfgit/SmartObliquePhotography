@@ -1,5 +1,11 @@
 #pragma once
 
+#define RECORD_TIME_BEGIN clock_t StartTime, FinishTime;\
+StartTime = clock();
+
+#define RECORD_TIME_END(Name) FinishTime = clock();\
+std::cout << "\n" << #Name << "花费时间: " << (int)(FinishTime - StartTime) << " ms\n";
+
 namespace hiveObliquePhotography
 {
 	namespace AutoRetouch

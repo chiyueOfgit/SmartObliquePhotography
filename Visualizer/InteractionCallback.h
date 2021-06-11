@@ -6,6 +6,8 @@ namespace hiveObliquePhotography
 	{
 		class CPointCloudVisualizer;
 
+		class CVisualizationConfig;
+
 		class CInteractionCallback
 		{
 		public:
@@ -26,7 +28,9 @@ namespace hiveObliquePhotography
 			bool m_UnwantedMode = true;
 			bool m_PartitionMode = true;
 
-			CPointCloudVisualizer* m_pVisualizer;
+			CPointCloudVisualizer* m_pVisualizer = nullptr;
+
+			CVisualizationConfig* m_pVisualizationConfig = nullptr;
 		};
 	}
 }

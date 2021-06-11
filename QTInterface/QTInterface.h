@@ -30,13 +30,16 @@ namespace hiveObliquePhotography
             std::string m_CurrentCloud = "";
 
             void __initialVTKWidget();
-            void __initialResourceDockWidget();
+            void __initialResourceSpaceDockWidget();
             void __initialWorkSpaceDockWidget();
             void __initialMessageDockWidget();
             void __initialDockWidgetTitleBar();
-            void __initialSlider(const QStringList& vFileNameList);
+            void __initialSlider(const QStringList& vFilePathList);
+            bool __addResourceSpaceCloudItem(const std::string& vFilePath);
+            bool __deleteResourceSpaceCloudItem(const std::string& vFilePath);
+            bool __MessageDockWidgetOutputText(QString vString);
             void __connectSignals();
-            std::string __getFileName(const std::string& vPath);
+            std::string __getFileName(const std::string& vFilePath);
 
 
         private slots:
