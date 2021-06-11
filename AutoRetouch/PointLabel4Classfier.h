@@ -42,7 +42,7 @@ namespace hiveObliquePhotography
 			[[nodiscard]] bool startRecord();
 			[[nodiscard]] bool stopRecord();
 
-			bool changePointLabel(std::uint64_t vPointIndex, EPointLabel vDstLabel);
+			bool changePointLabel(pcl::index_t vPointIndex, EPointLabel vDstLabel);
 			bool isRecording() const { return m_IsRecording; }
 			bool reset(const std::vector<SPointLabelChange>& vChangeRecord);
 			bool update(CGlobalPointLabelSet *vGlobalLabelSet);

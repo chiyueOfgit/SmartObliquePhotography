@@ -21,7 +21,7 @@ private:
 		
 		_defineAttribute("ENABLE_NORMAL_TEST", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 		
-		_defineAttribute("SEARCH_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+		_defineAttribute("SEARCH_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 	}
 	
 	friend class hiveDesignPattern::CSingleton<CAutoRetouchConfig>;

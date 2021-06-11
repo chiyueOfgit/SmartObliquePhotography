@@ -25,7 +25,7 @@ void CBinaryClassifierByVFHAlg::runV()
 	auto RemainIndex = __getRemainIndex();
 
 	m_AABB = CPointClusterSet::getInstance()->getAreaBox();
-	auto SceneAABB = pScene->getSceneAABB();
+	auto& SceneAABB = pScene->getSceneAABB();
 
 	const Eigen::Vector3f Padding = (SceneAABB.Max - SceneAABB.Min) * 0.15f;
 	SBox ExecuteAreaWithDelta({ m_AABB.Min - Padding, m_AABB.Max + Padding });
