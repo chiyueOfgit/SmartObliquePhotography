@@ -42,20 +42,8 @@ QTInterface::QTInterface(QWidget * vParent)
     __initialWorkSpaceDockWidget();
     __initialMessageDockWidget();
 
-    hiveConfig::EParseResult IsParsedDisplayConfig = hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance());
-    if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
-    { 
+    if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()); != hiveConfig::EParseResult::SUCCEED)
     	std::cout << "Failed to parse config file." << std::endl;
-    }
-    
-    auto pConfig = CAutoRetouchConfig::getInstance();
-    std::cout << "Failed to parse config file." << std::endl;
-    /*hiveConfig::EParseResult IsParsedDisplayConfig2 = hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance());
-    if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
-    {
-        std::cout << "Failed to parse config file." << std::endl;
-        return;
-    }*/
 }
 
 QTInterface::~QTInterface()
@@ -228,7 +216,7 @@ void QTInterface::onActionOpen()
         AutoRetouch::hiveInitPointCloudScene(pCloud);
         Visualization::hiveInitVisualizer(pCloud);
         QTInterface::__initialVTKWidget();
-        Visualization::hiveRefreshVisualizer();
+        Visualization::hiveRefreshVisualizer(true);
         QTInterface::__initialSlider(FilePathList);
 
         if (FilePathSet.size() == 1)
