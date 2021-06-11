@@ -28,15 +28,22 @@ namespace hiveObliquePhotography
             QTDockWidgetTitleBar* m_pDockWidgetTitleBar = nullptr;
             QSlider* m_pPointSizeSlider = nullptr;
             std::string m_CurrentCloud = "";
+            size_t m_SceneIndex = -1;
+            double m_PointSize = 3;             // magic
+            std::vector<std::string> m_FilePathList;
 
             void __initialVTKWidget();
-            void __initialResourceDockWidget();
+            void __initialResourceSpaceDockWidget();
             void __initialWorkSpaceDockWidget();
             void __initialMessageDockWidget();
             void __initialDockWidgetTitleBar();
-            void __initialSlider(const QStringList& vFileNameList);
+            void __initialSlider(const QStringList& vFilePathList);
+            bool __addResourceSpaceCloudItem(const std::string& vFilePath);
+            bool __deleteResourceSpaceCloudItem(const std::string& vFilePath);
+            bool __MessageDockWidgetOutputText(QString vString);
             void __connectSignals();
-            std::string __getFileName(const std::string& vPath);
+            void __checkFileOpenRepeatedly();
+            std::string __getFileName(const std::string& vFilePath);
 
 
         private slots:
