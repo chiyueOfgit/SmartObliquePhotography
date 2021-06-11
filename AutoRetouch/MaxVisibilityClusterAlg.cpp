@@ -15,11 +15,9 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMaxVisibilityClusterAlg, CLASSIFIER_MaxVisibilityCl
 //FUNCTION:
 void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera)
 {
-	hiveConfig::EParseResult IsParsedDisplayConfig = hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance());
-	if (IsParsedDisplayConfig != hiveConfig::EParseResult::SUCCEED)
+	if (hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
-		std::cout << "Failed to parse config file." << std::endl;
-		system("pause");
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
 		return;
 	}
 
@@ -45,6 +43,8 @@ void  CMaxVisibilityClusterAlg::runV(std::vector<std::uint64_t>& vioInputSet, EP
 	Ec.setSearchMethod(pScene->getGlobalKdTree());
 	Ec.setIndices(pcl::make_shared<pcl::Indices>(vioInputSet.begin(), vioInputSet.end()));
 	Ec.extract(ClusterIndices);
+	if (ClusterIndices.empty())
+		return;
 
 	std::vector<std::pair<float, pcl::PointIndices*>> ClusterIndicesWithDistances;
 	for (auto& Indices : ClusterIndices)

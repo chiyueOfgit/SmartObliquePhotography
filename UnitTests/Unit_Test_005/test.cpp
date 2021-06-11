@@ -12,7 +12,8 @@ using namespace hiveObliquePhotography;
 TEST(Test_PointCloudVisualizer, TestInitAndRefresh)
 {
 
-	const std::vector<std::string> FilePaths{
+	const std::vector<std::string> FilePaths
+	{
 		"TestModel/Tile_1_L19_Down_normal.pcd",
 		//"TestModel/slice 1.pcd", 
 		//"TestModel/slice 2.pcd", 
@@ -31,6 +32,6 @@ TEST(Test_PointCloudVisualizer, TestInitAndRefresh)
 	auto pCloud = hiveInitPointCloudScene(FilePaths);
 	AutoRetouch::hiveInitPointCloudScene(pCloud);
 	Visualization::hiveInitVisualizer(pCloud, false);
-	Visualization::hiveRefreshVisualizer();
+	Visualization::hiveRefreshVisualizer(true);
 	Visualization::hiveRunVisualizerLoop();
 }

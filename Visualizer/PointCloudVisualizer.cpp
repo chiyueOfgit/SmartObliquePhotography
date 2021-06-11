@@ -32,6 +32,7 @@ void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCl
 	m_pPCLVisualizer = new pcl::visualization::PCLVisualizer("Visualizer", !vIsInQt);
 	m_pCallback = new CInteractionCallback(m_pPCLVisualizer);
 	m_pPCLVisualizer->setBackgroundColor(0.2, 0.2, 0.2);
+	m_pPCLVisualizer->setShowFPS(false);
 }
 
 //*****************************************************************
@@ -50,6 +51,8 @@ void CPointCloudVisualizer::refresh(bool vResetCamera)
 
 	_ASSERTE(!m_pSceneCloud->empty());
 
+	//pcl::visualization::Camera RecordCamera;
+	//m_pPCLVisualizer->saveCameraParameters("RecordCamera");
 	m_pPCLVisualizer->removeAllPointClouds();
 
 	std::vector<AutoRetouch::EPointLabel> GlobalLabel;
@@ -104,7 +107,10 @@ void CPointCloudVisualizer::refresh(bool vResetCamera)
 	if (vResetCamera)
 		m_pPCLVisualizer->resetCamera();
 	else
+	{
+		//auto Success = m_pPCLVisualizer->loadCameraParameters("RecordCamera");
 		m_pPCLVisualizer->updateCamera();
+	}
 
 	RECORD_TIME_END(œ‘ æ)
 }
