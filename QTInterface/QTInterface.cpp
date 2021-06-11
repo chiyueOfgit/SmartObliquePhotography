@@ -37,13 +37,11 @@ QTInterface::QTInterface(QWidget * vParent)
 {
     ui.setupUi(this);
 
+    __parseConfigFile();
     __connectSignals();
     __initialResourceSpaceDockWidget();
     __initialWorkSpaceDockWidget();
     __initialMessageDockWidget();
-
-    if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-    	std::cout << "Failed to parse config file." << std::endl;
 }
 
 QTInterface::~QTInterface()
@@ -54,6 +52,7 @@ void QTInterface::__connectSignals()
 {
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
     QObject::connect(ui.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
+    QObject::connect(ui.actionTestFunction, SIGNAL(triggered()), this, SLOT(onActionTest()));
 }
 
 void QTInterface::__initialVTKWidget()
@@ -112,10 +111,12 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     m_pPointSizeSlider->setMinimum(1);
     m_pPointSizeSlider->setMaximum(7);
     m_pPointSizeSlider->setValue(m_PointSize);
+    m_pPointSizeSlider->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>("POINT_SHOW_SIZE") ? m_PointSize : m_PointSize);
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
         {
-            m_PointSize = m_pPointSizeSlider->value();          // TODO::ÅäÖÃÎÄ¼þ
+            m_PointSize = m_pPointSizeSlider->value();
+            hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->overwriteAttribute("POINT_SHOW_SIZE", m_PointSize);
         }
     );
 
@@ -128,6 +129,21 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
 void QTInterface::__checkFileOpenRepeatedly()
 {
 
+}
+
+bool QTInterface::__parseConfigFile()
+{
+    bool AutoRetouchConfigParseSuccess = false;
+    if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file AutoRetouchConfig.xml."));
+        AutoRetouchConfigParseSuccess = true;
+    }   
+    else
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file AutoRetouchConfig.xml."));
+    }
+    return AutoRetouchConfigParseSuccess;
 }
 
 bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
@@ -231,7 +247,7 @@ void QTInterface::onActionOpen()
         }
     }
 }
-
+ 
 void QTInterface::onActionSetting()
 {
     std::shared_ptr<hiveQTInterface::CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<hiveQTInterface::CDisplayOptionsSettingDialog>(this);
@@ -301,4 +317,11 @@ void QTInterface::closeEvent(QCloseEvent* vEvent)
     {
         vEvent->ignore();
     }
+}
+
+void QTInterface::onActionTest()
+{
+    auto pointsize = *hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS");
+
+    int a;
 }
