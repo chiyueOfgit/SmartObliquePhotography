@@ -28,6 +28,9 @@ namespace hiveObliquePhotography
             QTDockWidgetTitleBar* m_pDockWidgetTitleBar = nullptr;
             QSlider* m_pPointSizeSlider = nullptr;
             std::string m_CurrentCloud = "";
+            size_t m_SceneIndex = -1;
+            double m_PointSize = 3;             // magic
+            std::vector<std::string> m_FilePathList;
 
             void __initialVTKWidget();
             void __initialResourceSpaceDockWidget();
@@ -39,6 +42,7 @@ namespace hiveObliquePhotography
             bool __deleteResourceSpaceCloudItem(const std::string& vFilePath);
             bool __MessageDockWidgetOutputText(QString vString);
             void __connectSignals();
+            void __checkFileOpenRepeatedly();
             std::string __getFileName(const std::string& vFilePath);
 
 
