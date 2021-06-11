@@ -141,6 +141,7 @@
       <AdditionalIncludeDirectories>../Visualizer;../visualization/include;../AutoRetouch</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

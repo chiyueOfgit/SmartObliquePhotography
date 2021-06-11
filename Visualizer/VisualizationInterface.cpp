@@ -4,9 +4,9 @@
 
 using namespace hiveObliquePhotography::Visualization;
 
-void hiveObliquePhotography::Visualization::hiveInitVisualizer(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
+void hiveObliquePhotography::Visualization::hiveInitVisualizer(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud, bool vIsInQt)
 {
-	CPointCloudVisualizer::getInstance()->init(vPointCloud);
+	CPointCloudVisualizer::getInstance()->init(vPointCloud, vIsInQt);
 }
 
 void hiveObliquePhotography::Visualization::hiveRefreshVisualizer(bool vResetCamera)
