@@ -23,10 +23,11 @@ namespace hiveQTInterface
 
 			this->setWindowFlag(Qt::WindowType::WindowContextHelpButtonHint, false);
 			
-			m_pUi->ColorTest->setCheckState(*CAutoRetouchConfig::getInstance()->getAttribute<float>("ENABLE_COLOR_TEST") ? Qt::Checked : Qt::Unchecked);
-			m_pUi->GroundTest->setCheckState(*CAutoRetouchConfig::getInstance()->getAttribute<float>("ENABLE_GROUND_TEST") ? Qt::Checked : Qt::Unchecked);
-			m_pUi->NormalTest->setCheckState(*CAutoRetouchConfig::getInstance()->getAttribute<float>("ENABLE_NORMAL_TEST") ? Qt::Checked : Qt::Unchecked);
-			if (*CAutoRetouchConfig::getInstance()->getAttribute<float>("ENABLE_COLOR_TEST") == *CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_MODE"))
+			m_pUi->ColorTest->setCheckState(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST") ? Qt::Checked : Qt::Unchecked);
+			bool sd = *hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_NORMAL_TEST");
+			m_pUi->GroundTest->setCheckState(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_GROUND_TEST") ? Qt::Checked : Qt::Unchecked);
+			m_pUi->NormalTest->setCheckState(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_NORMAL_TEST") ? Qt::Checked : Qt::Unchecked);
+			if (*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE") == 0 )
 				m_pUi->AverageButton->setChecked(true);
 			else
 				m_pUi->MedianButton->setChecked(true);
@@ -37,7 +38,7 @@ namespace hiveQTInterface
 			m_pUi->SizeBox->setMinimum(MinSize);
 			m_pUi->SizeBox->setMaximum(MaxSize);
 			m_pUi->SizeBox->setSingleStep(0.2f);
-			m_pUi->SizeBox->setValue(*CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"));
+			m_pUi->SizeBox->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"));
 			QObject::connect(m_pUi->SizeBox, SIGNAL(valueChanged(double)), this, SLOT(onActionInputSize()));
 
 			//滑条
@@ -47,7 +48,7 @@ namespace hiveQTInterface
 			m_SearchSizeSlider->setOrientation(Qt::Horizontal);
 			m_SearchSizeSlider->setMinimum(MinSize);
 			m_SearchSizeSlider->setMaximum(MaxSize);
-			m_SearchSizeSlider->setValue(*CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"));
+			m_SearchSizeSlider->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"));
 			QObject::connect(m_SearchSizeSlider.get(), SIGNAL(valueChanged(int)), this, SLOT(onActionChangeSize()));
 
 			//输入
@@ -56,7 +57,7 @@ namespace hiveQTInterface
 			m_pUi->ThresholdBox->setMinimum(MinThreshold);
 			m_pUi->ThresholdBox->setMaximum(MaxThreshold);
 			m_pUi->ThresholdBox->setSingleStep(2.0f);
-			m_pUi->ThresholdBox->setValue(*CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_THRESHOLD"));
+			m_pUi->ThresholdBox->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_THRESHOLD"));
 			QObject::connect(m_pUi->ThresholdBox, SIGNAL(valueChanged(double)), this, SLOT(onActionInputThreshold()));
 
 			//滑条
@@ -66,7 +67,7 @@ namespace hiveQTInterface
 			m_ColorThresholdSlider->setOrientation(Qt::Horizontal);
 			m_ColorThresholdSlider->setMinimum(MinThreshold);
 			m_ColorThresholdSlider->setMaximum(MaxThreshold);
-			m_ColorThresholdSlider->setValue(*CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_THRESHOLD"));
+			m_ColorThresholdSlider->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_THRESHOLD"));
 			QObject::connect(m_ColorThresholdSlider.get(), SIGNAL(valueChanged(int)), this, SLOT(onActionChangeThreshold()));
 
 			QObject::connect(m_pUi->ColorTest, SIGNAL(stateChanged(int)), this, SLOT(onActionColorTest()));

@@ -15,6 +15,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <ctime>
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>

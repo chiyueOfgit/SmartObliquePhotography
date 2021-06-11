@@ -19,6 +19,7 @@ namespace hiveObliquePhotography
 			EPointLabel getPointLabel(std::uint64_t vIndex) const { _ASSERTE(vIndex < m_PointLabelSet.size()); return m_PointLabelSet[vIndex]; }
 
 			const std::vector<EPointLabel>& getPointLabelSet() const { return m_PointLabelSet; }
+			std::vector<EPointLabel>& fetchPointLabelSet() { return m_PointLabelSet; }
 
 		protected:
 			bool _reset(const std::vector<SPointLabelChange>& vChangeRecord);
