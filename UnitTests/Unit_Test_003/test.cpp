@@ -75,7 +75,9 @@ TEST_F(CTestRegionGrow, RegionGrowingByColor)
 	
 	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->init(getCloud());
 	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->refresh();
-}
+
+	system("pause");
+ }
 
 
 
