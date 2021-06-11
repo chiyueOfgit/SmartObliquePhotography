@@ -42,7 +42,7 @@ QTInterface::QTInterface(QWidget * vParent)
     __initialWorkSpaceDockWidget();
     __initialMessageDockWidget();
 
-    if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()); != hiveConfig::EParseResult::SUCCEED)
+    if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
     	std::cout << "Failed to parse config file." << std::endl;
 }
 
@@ -153,14 +153,15 @@ bool QTInterface::__deleteResourceSpaceCloudItem(const std::string& vFilePath)
     {
         auto row = FileName.first()->index().row();
         m_pResourceSpaceStandardItemModels->removeRow(row);
+
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(vFilePath + "is deleted."));
+        return true;
     }
     else
     {
-        
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(vFilePath + "is not deleted."));
+        return false;
     }
-
-
-    return true;
 }
 
 bool QTInterface::__MessageDockWidgetOutputText(QString vString)
