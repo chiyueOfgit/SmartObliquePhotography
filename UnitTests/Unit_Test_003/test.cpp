@@ -43,9 +43,9 @@ protected:
 
 	}
 
-	std::vector<std::size_t> loadPointIndices(std::string vPath)
+	pcl::Indices loadPointIndices(std::string vPath)
 	{
-		std::vector<std::size_t> Indices;
+		pcl::Indices Indices;
 		std::ifstream File(vPath.c_str());
 		boost::archive::text_iarchive ia(File);
 		ia >> BOOST_SERIALIZATION_NVP(Indices);
@@ -53,7 +53,7 @@ protected:
 		return Indices;
 	}
 
-	std::vector<std::uint64_t> testRegionGrowByColor(std::vector<std::uint64_t>& vSeedSet)
+	pcl::Indices testRegionGrowByColor(const pcl::Indices& vSeedSet)
 	{
 		clock_t StartTime, FinishTime;
 		StartTime = clock();
@@ -80,18 +80,18 @@ protected:
 private:
 	pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
 
-	std::vector<std::uint64_t> m_pResult;
+	pcl::Indices m_pResult;
 };
 
 void CTestRegionGrow::executeRegionGrowingPercentageTest(std::string vGroundTruthPath, float vExpectedCorrect, float vExpectedError)
 {
-	std::vector<std::uint64_t> GroundTruthPointSets;
-	std::vector<std::uint64_t> Result;
+	pcl::Indices GroundTruthPointSets;
+	pcl::Indices Result;
 
 	auto calculatePercentage = [&](float vExpectedCorrectRate,float vExpectedErrorRate)
 	{
-		std::vector<std::uint64_t> ResultIndices = Result;
-		std::vector<std::uint64_t> GroundTruthIndices = GroundTruthPointSets;
+		pcl::Indices ResultIndices = Result;
+		pcl::Indices GroundTruthIndices = GroundTruthPointSets;
 
 		// correct
 		std::vector<int> Intersection(GroundTruthIndices.size(), -1);
@@ -116,7 +116,7 @@ void CTestRegionGrow::executeRegionGrowingPercentageTest(std::string vGroundTrut
 
 	const std::size_t InputCount = 10;
 
-	std::vector<std::uint64_t> InputIndices;
+	pcl::Indices InputIndices;
 	{
 		auto Iter = GroundTruthPointSets.begin();
 		for (int i = 0; i < InputCount && Iter != GroundTruthPointSets.end(); i++, Iter++)
@@ -133,13 +133,13 @@ void CTestRegionGrow::executeRegionGrowingPercentageTest(std::string vGroundTrut
 
 //TEST_F(CTestRegionGrow, DeathTest_EmptyPoint)
 //{
-//	std::vector<std::uint64_t> SeedSet = { };
+//	pcl::Indices SeedSet = { };
 //	EXPECT_DEATH(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_REGION_GROW_COLOR, SeedSet, EPointLabel::UNWANTED), ".*");
 //}
 //
 //TEST_F(CTestRegionGrow, DeathTest_OverIndexIndices)
 //{
-//	std::vector<std::uint64_t> SeedSet = {170000,180000 };
+//	pcl::Indices SeedSet = {170000,180000 };
 //	EXPECT_DEATH(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_REGION_GROW_COLOR, SeedSet, EPointLabel::UNWANTED), ".*");
 //
 //}
@@ -171,7 +171,7 @@ TEST_F(CTestRegionGrow, Test5)
 
 TEST_F(CTestRegionGrow, RegionGrowingByColor)
 {
-	std::vector<std::uint64_t> SeedSet = { 18,19,20,21,22,23,24,25 };
+	pcl::Indices SeedSet = { 18,19,20,21,22,23,24,25 };
 
 	hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_REGION_GROW_COLOR, SeedSet, EPointLabel::UNWANTED);
 	

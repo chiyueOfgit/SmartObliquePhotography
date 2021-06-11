@@ -19,8 +19,8 @@ namespace hiveObliquePhotography
 			template<typename T>
 			static bool __testAndUpdateMask(T& vioSubject, const T& vMask);//TODO: move to Common£¿
 			
-			virtual void __initValidation(const pcl::Indices& vSeeds, PointCloud_t::ConstPtr vCloud) = 0;
-			virtual bool __validatePointV(pcl::index_t vTestIndex, PointCloud_t::ConstPtr vCloud) const = 0;
+			virtual void __initValidation(const pcl::Indices& vSeeds, PointCloud_t::ConstPtr vCloud);
+			virtual bool __validatePointV(pcl::index_t vTestIndex, PointCloud_t::ConstPtr vCloud) const;
 		};
 	}
 }

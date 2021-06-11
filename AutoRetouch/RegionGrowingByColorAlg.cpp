@@ -31,18 +31,21 @@ void CRegionGrowingByColorAlg::__initValidation(const pcl::Indices& vSeeds, Poin
 		switch (m_ColorTestMode)
 		{
 		case EColorMode::MEAN:
-			const auto ColorMap = vCloud->getMatrixXfMap(1, 
-				sizeof(PointCloud_t::PointType) / sizeof(float),
-				offsetof(PointCloud_t::PointType, data_c)/ sizeof(float));
-			m_SeedsAverageColor = *reinterpret_cast<const std::uint32_t*>(ColorMap.rowwise().mean().eval().data());
+			{
+				const auto ColorMap = vCloud->getMatrixXfMap(1,
+					sizeof(PointCloud_t::PointType) / sizeof(float),
+					offsetof(PointCloud_t::PointType, data_c) / sizeof(float));
+				m_SeedsAverageColor = *reinterpret_cast<const std::uint32_t*>(ColorMap.rowwise().mean().eval().data());
+			}
 			break;
-			
 		case EColorMode::MEDIAN:
-			for (auto Index : vSeeds)
-				m_MortonCodes.push_back(__morton4(vCloud->at(Index).rgba));
-			std::sort(m_MortonCodes.begin(), m_MortonCodes.end());
-			if (!m_MortonCodes.empty())
-				m_MedianColor = __inverseMorton4(m_MortonCodes[m_MortonCodes.size() / 2]);
+			{
+				for (auto Index : vSeeds)
+					m_MortonCodes.push_back(__morton4(vCloud->at(Index).rgba));
+				std::sort(m_MortonCodes.begin(), m_MortonCodes.end());
+				if (!m_MortonCodes.empty())
+					m_MedianColor = __inverseMorton4(m_MortonCodes[m_MortonCodes.size() / 2]);
+			}
 			break;
 		}
 	}
