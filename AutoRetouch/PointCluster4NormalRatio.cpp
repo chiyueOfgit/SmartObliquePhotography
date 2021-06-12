@@ -5,7 +5,7 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-CPointCluster4NormalRatio::CPointCluster4NormalRatio(const pcl::IndicesPtr& vPointIndices, EPointLabel vLabel) : IPointCluster(vLabel)
+CPointCluster4NormalRatio::CPointCluster4NormalRatio(const pcl::IndicesPtr& vPointIndices, EPointLabel vLabel) : IPointCluster(vPointIndices, vLabel)
 {	
 	_ASSERTE(vPointIndices != nullptr);
 	_ASSERTE(!vPointIndices->empty());
@@ -15,14 +15,9 @@ CPointCluster4NormalRatio::CPointCluster4NormalRatio(const pcl::IndicesPtr& vPoi
 	
 	m_pPointCloud.reset(new PointCloud_t);
 	pcl::ExtractIndices<PointCloud_t::PointType> Extract;
-	Extract.setInputCloud(CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene());
+	Extract.setInputCloud(pCloud);
 	Extract.setIndices(vPointIndices);
 	Extract.filter(*m_pPointCloud);
-
-	SBox Box;
-	for (auto Index : *vPointIndices)
-		Box.update(pCloud->at(Index).x, pCloud->at(Index).y, pCloud->at(Index).z);
-	setClusterAABB(Box);
 }
 
 //*****************************************************************
