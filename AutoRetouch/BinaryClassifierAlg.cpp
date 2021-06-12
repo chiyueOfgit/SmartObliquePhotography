@@ -75,7 +75,7 @@ pcl::IndicesPtr CBinaryClassifierAlg::__getUnknownIndices()
 //FUNCTION: 
 SBox CBinaryClassifierAlg::__createExecuteArea() const
 {
-	auto AreaBox = CPointClusterSet::getInstance()->getAreaBox();
+	auto& AreaBox = CPointClusterSet::getInstance()->getAreaBox();
 	auto& SceneBox = CPointCloudAutoRetouchScene::getInstance()->getSceneAABB();
 	//TODO：添加至配置文件，可执行区域外沿的宽度与场景大小的比例
 	const Eigen::Vector3f Padding = (SceneBox.Max - SceneBox.Min) * 0.15f;
