@@ -5,10 +5,10 @@
 #include "RegionGrowingByColorAlg.h"
 #include "PointClusterSet.h"
 #include "BinaryClassifierAlg.h"
-#include "BinaryClassifierAlgByVFH.h"
 #include "PointCluster4VFH.h"
 #include "SpatialClusteringAlg.h"
 #include "MaxVisibilityClusterAlg.h"
+#include "pcl/visualization/common/common.h"
 
 namespace hiveObliquePhotography
 {
