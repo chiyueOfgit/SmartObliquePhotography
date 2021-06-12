@@ -24,8 +24,10 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 	if (vInputSet.empty())
 		return;
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pCloud = pScene->getPointCloudScene();
-	
+	auto pCloud = pScene->getPointCloudScene()->makeShared();
+	pcl::search::KdTree<pcl::PointSurfel>::Ptr pTree(new pcl::search::KdTree<pcl::PointSurfel>);
+	pTree->setInputCloud(pCloud);
+
 	const int  Resolution = *CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
 	//const Eigen::Vector3f ViewDir(vCamera.focal[0] - vCamera.pos[0], vCamera.focal[1] - vCamera.pos[1], vCamera.focal[2] - vCamera.pos[2]);
 	const Eigen::Vector3f ViewPos(vCamera.pos[0], vCamera.pos[1], vCamera.pos[2]);
@@ -40,7 +42,7 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 	Ec.setMinClusterSize(*CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
 	Ec.setMaxClusterSize(*CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
 	Ec.setInputCloud(pCloud);
-	Ec.setSearchMethod(pScene->getGlobalKdTree());
+	Ec.setSearchMethod(pTree);
 	Ec.setIndices(pcl::make_shared<pcl::Indices>(vInputSet.begin(), vInputSet.end()));
 	Ec.extract(ClusterIndices);
 	if (ClusterIndices.empty())
