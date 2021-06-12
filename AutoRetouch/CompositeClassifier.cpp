@@ -33,7 +33,7 @@ void ICompositeClassifier::_ensembleResult()
 
 		if (!OverallResult4SinglePoint.empty())
 		{
-			t = {static_cast<std::uint64_t>(i), OverallResult4SinglePoint[0].SrcLabel, __ensembleSingleResultV(OverallResult4SinglePoint)};
+			t = { i, OverallResult4SinglePoint[0].SrcLabel, __ensembleSingleResultV(OverallResult4SinglePoint)};
 			EnsembledResult4GlobalLabel.emplace_back(t);
 		}
 	}

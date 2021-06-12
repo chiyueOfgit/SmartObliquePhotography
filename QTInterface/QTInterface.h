@@ -41,6 +41,7 @@ namespace hiveObliquePhotography
             bool __addResourceSpaceCloudItem(const std::string& vFilePath);
             bool __deleteResourceSpaceCloudItem(const std::string& vFilePath);
             bool __MessageDockWidgetOutputText(QString vString);
+            bool __parseConfigFile();
             void __connectSignals();
             void __checkFileOpenRepeatedly();
             std::string __getFileName(const std::string& vFilePath);
@@ -49,6 +50,7 @@ namespace hiveObliquePhotography
         private slots:
             void onActionOpen();
             void onActionSetting();
+            void onActionTest();
             void onResourceSpaceItemDoubleClick(const QModelIndex& vIndex);
 
         };
