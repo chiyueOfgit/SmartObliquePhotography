@@ -45,7 +45,7 @@ protected:
 	{
 	}
 
-	std::tuple<std::vector<size_t>, pcl::visualization::Camera, std::vector<size_t>> _loadTestcase(const std::string_view& vPaths) const
+	std::tuple<pcl::Indices, pcl::visualization::Camera, pcl::Indices> _loadTestcase(const std::string_view& vPaths) const
 	{
 		std::vector<std::string_view> Path;
 		__lines(vPaths, Path);
@@ -53,9 +53,9 @@ protected:
 		for (const auto StringView : Path)
 			std::cout << StringView << std::endl;
 
-		std::vector<size_t> InputSet;
+		pcl::Indices InputSet;
 		pcl::visualization::Camera Camera;
-		std::vector<size_t> GroundTruth;
+		pcl::Indices GroundTruth;
 
 		__loadIndices(Path[0], InputSet);
 		auto pVisualizer = new pcl::visualization::PCLVisualizer("Viewer",true);
@@ -82,7 +82,7 @@ private:
 		}
 	}
 
-	static void __loadIndices(const std::string_view& vPath, std::vector<size_t>& voIndices)
+	static void __loadIndices(const std::string_view& vPath, pcl::Indices& voIndices)
 	{
 		const std::string Path{ vPath };
 		std::ifstream File(Path);
