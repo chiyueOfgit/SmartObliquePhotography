@@ -3,7 +3,6 @@
 #include "PointCloudAutoRetouchScene.h"
 #include "RegionGrowingByColorAlg.h"
 #include "AutoRetouchConfig.h"
-#include <common/ConfigInterface.h>
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
@@ -13,11 +12,6 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COL
 //FUNCTION: 
 void CRegionGrowingByColorAlg::__initValidation(const pcl::Indices& vSeeds, PointCloud_t::ConstPtr vCloud)
 {
-	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
-		return;
-	}
 	m_ColorTestMode = static_cast<EColorMode>(*CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE"));
 	m_EnableColorTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST");
 	m_EnableGroundTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_GROUND_TEST");
@@ -55,28 +49,28 @@ void CRegionGrowingByColorAlg::__initValidation(const pcl::Indices& vSeeds, Poin
 //FUNCTION: 
 bool CRegionGrowingByColorAlg::__validatePointV(pcl::index_t vTestIndex, PointCloud_t::ConstPtr vCloud) const
 {
-	if (m_EnableColorTest)
-	{
-		switch (static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value()))
-		{
-		case EColorMode::MEAN:
-			if (!__colorTestByAverage(vTestIndex, vCloud))
-				return false;
-			break;
-		case EColorMode::MEDIAN:
-			if (!__colorTestByMedian(vTestIndex, vCloud))
-				return false;
-			break;
-		}
-	}
-	
-	if (m_EnableGroundTest)
-		if (!__groundTest(vTestIndex, vCloud))
-			return false;
-	
-	if (m_EnableNormalTest)
-		if (!__normalTest(vTestIndex, vCloud))
-			return false;
+	//if (m_EnableColorTest)
+	//{
+	//	switch (static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value()))
+	//	{
+	//	case EColorMode::MEAN:
+	//		if (!__colorTestByAverage(vTestIndex, vCloud))
+	//			return false;
+	//		break;
+	//	case EColorMode::MEDIAN:
+	//		if (!__colorTestByMedian(vTestIndex, vCloud))
+	//			return false;
+	//		break;
+	//	}
+	//}
+	//
+	//if (m_EnableGroundTest)
+	//	if (!__groundTest(vTestIndex, vCloud))
+	//		return false;
+	//
+	//if (m_EnableNormalTest)
+	//	if (!__normalTest(vTestIndex, vCloud))
+	//		return false;
 
 	return true;
 }
