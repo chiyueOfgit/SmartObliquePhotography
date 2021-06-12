@@ -184,6 +184,7 @@
     <ClInclude Include="PointCloudAutoRetouchScene.h" />
     <ClInclude Include="PointCluster.h" />
     <ClInclude Include="PointCluster4NormalRatio.h" />
+    <ClInclude Include="PointCluster4Score.h" />
     <ClInclude Include="PointCluster4VFH.h" />
     <ClInclude Include="PointClusterSet.h" />
     <ClInclude Include="PointLabel4Classfier.h" />
@@ -211,6 +212,7 @@
     </ClCompile>
     <ClCompile Include="PointCloudAutoRetouchScene.cpp" />
     <ClCompile Include="PointCluster4NormalRatio.cpp" />
+    <ClCompile Include="PointCluster4Score.cpp" />
     <ClCompile Include="PointCluster4VFH.cpp" />
     <ClCompile Include="PointClusterSet.cpp" />
     <ClCompile Include="PointLabel4Classfier.cpp" />
