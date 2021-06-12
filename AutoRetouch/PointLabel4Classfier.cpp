@@ -12,9 +12,12 @@ bool CLocalPointLabelSet::changePointLabel(pcl::index_t vPointIndex, EPointLabel
 	if (!m_IsRecording) return false;
 //TODO: 检查vPointIndex是否有效，检查当前的label变为vDstLabel是否合法
 
-	const SPointLabelChange TempPointLabel = { vPointIndex, m_PointLabelSet[vPointIndex], vDstLabel };
-	m_PointLabelChangeRecord.push_back(TempPointLabel);
-	m_PointLabelSet[vPointIndex] = vDstLabel;
+	if (m_PointLabelSet[vPointIndex] != vDstLabel)
+	{
+		const SPointLabelChange TempPointLabel = { vPointIndex, m_PointLabelSet[vPointIndex], vDstLabel };
+		m_PointLabelChangeRecord.push_back(TempPointLabel);
+		m_PointLabelSet[vPointIndex] = vDstLabel;
+	}
 	return true;
 }
 
