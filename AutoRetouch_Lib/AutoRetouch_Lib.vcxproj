@@ -26,6 +26,7 @@
     <ClInclude Include="..\AutoRetouch\BinaryClassifierAlg.h" />
     <ClInclude Include="..\AutoRetouch\Common.h" />
     <ClInclude Include="..\AutoRetouch\CompositeClassifier.h" />
+    <ClInclude Include="..\AutoRetouch\ConfigCommon.h" />
     <ClInclude Include="..\AutoRetouch\framework.h" />
     <ClInclude Include="..\AutoRetouch\MaxVisibilityClusterAlg.h" />
     <ClInclude Include="..\AutoRetouch\Neighborhood.h" />
@@ -37,12 +38,15 @@
     <ClInclude Include="..\AutoRetouch\PointClassifier.h" />
     <ClInclude Include="..\AutoRetouch\PointCloudAutoRetouchScene.h" />
     <ClInclude Include="..\AutoRetouch\PointCluster.h" />
+    <ClInclude Include="..\AutoRetouch\PointCluster4NormalRatio.h" />
+    <ClInclude Include="..\AutoRetouch\PointCluster4Score.h" />
     <ClInclude Include="..\AutoRetouch\PointCluster4VFH.h" />
     <ClInclude Include="..\AutoRetouch\PointClusterSet.h" />
     <ClInclude Include="..\AutoRetouch\PointLabel4Classfier.h" />
     <ClInclude Include="..\AutoRetouch\PointLabelChangeRecord.h" />
     <ClInclude Include="..\AutoRetouch\RegionGrowingAlg.h" />
     <ClInclude Include="..\AutoRetouch\RegionGrowingByColorAlg.h" />
+    <ClInclude Include="..\AutoRetouch\SpatialClusterConfig.h" />
     <ClInclude Include="..\AutoRetouch\SpatialClusteringAlg.h" />
     <ClInclude Include="..\AutoRetouch\StatisticalOutlierAlg.h" />
   </ItemGroup>
@@ -50,6 +54,7 @@
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp" />
     <ClCompile Include="..\AutoRetouch\BinaryClassifierAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\CompositeClassifier.cpp" />
+    <ClCompile Include="..\AutoRetouch\dllmain.cpp" />
     <ClCompile Include="..\AutoRetouch\MaxVisibilityClusterAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\Neighborhood.cpp" />
     <ClCompile Include="..\AutoRetouch\OpResultQueue.cpp" />
@@ -58,6 +63,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\PointCloudAutoRetouchScene.cpp" />
+    <ClCompile Include="..\AutoRetouch\PointCluster4NormalRatio.cpp" />
+    <ClCompile Include="..\AutoRetouch\PointCluster4Score.cpp" />
     <ClCompile Include="..\AutoRetouch\PointCluster4VFH.cpp" />
     <ClCompile Include="..\AutoRetouch\PointClusterSet.cpp" />
     <ClCompile Include="..\AutoRetouch\PointLabel4Classfier.cpp" />

@@ -93,6 +93,18 @@
     <ClInclude Include="..\AutoRetouch\AutoRetouchConfig.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\AutoRetouch\SpatialClusterConfig.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\PointCluster4Score.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\PointCluster4NormalRatio.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AutoRetouch\ConfigCommon.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp">
@@ -144,6 +156,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\PointClusterSet.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\PointCluster4Score.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\PointCluster4NormalRatio.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\dllmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
