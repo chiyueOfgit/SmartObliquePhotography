@@ -65,9 +65,6 @@
     <ClInclude Include="BinaryClassifierAlg.h">
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClInclude>
-    <ClInclude Include="BinaryClassifierAlgByVFH.h">
-      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
-    </ClInclude>
     <ClInclude Include="SpatialClusteringAlg.h">
       <Filter>PointClassfier\SpatialClusteringAlg</Filter>
     </ClInclude>
@@ -129,9 +126,6 @@
       <Filter>PointClassfier</Filter>
     </ClCompile>
     <ClCompile Include="BinaryClassifierAlg.cpp">
-      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
-    </ClCompile>
-    <ClCompile Include="BinaryClassifierAlgByVFH.cpp">
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClCompile>
     <ClCompile Include="SpatialClusteringAlg.cpp">

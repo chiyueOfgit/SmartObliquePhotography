@@ -11,11 +11,10 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-
 class TestAreaPicking : public testing::Test
 {
 protected:
-	std::string m_Sinple_Paths[3] =
+	std::string m_SamplePaths[3] =
 	{
 		//较近的聚类可见面积最大
 		"testcase/SimpleTestOne.indices.txt\n"
@@ -45,7 +44,7 @@ protected:
 	{
 	}
 
-	std::tuple<pcl::Indices, pcl::visualization::Camera, pcl::Indices> _loadTestcase(const std::string_view& vPaths) const
+	std::tuple<pcl::IndicesPtr, pcl::visualization::Camera, pcl::IndicesPtr> _loadTestcase(const std::string_view& vPaths) const
 	{
 		std::vector<std::string_view> Path;
 		__lines(vPaths, Path);
@@ -53,17 +52,17 @@ protected:
 		for (const auto StringView : Path)
 			std::cout << StringView << std::endl;
 
-		pcl::Indices InputSet;
+		pcl::IndicesPtr pTestee(new pcl::Indices);
 		pcl::visualization::Camera Camera;
-		pcl::Indices GroundTruth;
+		pcl::IndicesPtr pGroundTruth(new pcl::Indices);
 
-		__loadIndices(Path[0], InputSet);
+		__loadIndices(Path[0], *pTestee);
 		auto pVisualizer = new pcl::visualization::PCLVisualizer("Viewer",true);
 		pVisualizer->loadCameraParameters(Path[1].data());
 		pVisualizer->getCameraParameters(Camera);
-		__loadIndices(Path[2], GroundTruth);
+		__loadIndices(Path[2], *pGroundTruth);
 
-		return { InputSet, Camera, GroundTruth };
+		return { pTestee, Camera, pGroundTruth };
 	}
 
 private:
@@ -95,14 +94,14 @@ private:
 
 TEST_F(TestAreaPicking, 实用测试1，较近的聚类可见面积最大)
 {
-	const auto& Path = m_Sinple_Paths[0];
+	const auto& Path = m_SamplePaths[0];
 
-	auto [InputSet, Camera, GroundTruth] = _loadTestcase(Path);
+	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
 
-	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, InputSet, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT,Camera);
+	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, pTestee, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT,Camera);
 	std::vector<size_t> Difference;
-	std::set_difference(InputSet.begin(), InputSet.end(),
-		GroundTruth.begin(), GroundTruth.end(),
+	std::set_difference(pTestee->begin(), pTestee->end(),
+		pGroundTruth, pGroundTruth,
 		std::inserter(Difference, Difference.begin()));
 
 	GTEST_ASSERT_EQ(Difference.size(), 0u);
@@ -110,28 +109,29 @@ TEST_F(TestAreaPicking, 实用测试1，较近的聚类可见面积最大)
 
 TEST_F(TestAreaPicking, 实用测试2，较远的聚类可见面积最大)
 {
-	const auto& Path = m_Sinple_Paths[1];
+	const auto& Path = m_SamplePaths[1];
 
-	auto [InputSet, Camera, GroundTruth] = _loadTestcase(Path);
-	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, InputSet, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT, Camera);
+	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
+
+	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, pTestee, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT, Camera);
 	std::vector<size_t> Difference;
-	std::set_difference(InputSet.begin(), InputSet.end(),
-		GroundTruth.begin(), GroundTruth.end(),
+	std::set_difference(pTestee->begin(), pTestee->end(),
+		pGroundTruth, pGroundTruth,
 		std::inserter(Difference, Difference.begin()));
 
 	GTEST_ASSERT_EQ(Difference.size(), 0u);
-
 }
 
 TEST_F(TestAreaPicking, 实用测试3，不可见的聚类面积最大)
 {
-	const auto& Path = m_Sinple_Paths[2];
+	const auto& Path = m_SamplePaths[2];
 
-	auto [InputSet, Camera, GroundTruth] = _loadTestcase(Path);
-	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, InputSet, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT, Camera);
+	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
+
+	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, pTestee, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT, Camera);
 	std::vector<size_t> Difference;
-	std::set_difference(InputSet.begin(), InputSet.end(),
-		GroundTruth.begin(), GroundTruth.end(),
+	std::set_difference(pTestee->begin(), pTestee->end(),
+		pGroundTruth, pGroundTruth,
 		std::inserter(Difference, Difference.begin()));
 
 	GTEST_ASSERT_EQ(Difference.size(), 0u);
