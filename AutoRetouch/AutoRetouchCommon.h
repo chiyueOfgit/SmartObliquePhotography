@@ -61,7 +61,7 @@ namespace hiveObliquePhotography
 						Max[i] = vBox.Max[i];
 				}
 			}
-			inline void update(float vX, float vY, float vZ)
+			void update(float vX, float vY, float vZ)
 			{
 				if (vX < Min[0])
 					Min[0] = vX;

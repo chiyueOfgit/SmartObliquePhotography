@@ -102,6 +102,9 @@
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClInclude>
     <ClInclude Include="AutoRetouchConfig.h" />
+    <ClInclude Include="PointCluster4NormalRatio.h">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neighborhood.cpp">
@@ -153,6 +156,9 @@
       <Filter>PointClassfier\RegionGrowingAlg</Filter>
     </ClCompile>
     <ClCompile Include="PointClusterSet.cpp">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCluster4NormalRatio.cpp">
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClCompile>
   </ItemGroup>
