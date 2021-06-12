@@ -91,7 +91,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>D:\vc_packages\Boost\lib\libboost_filesystem-vc142-mt-gd-x64-1_74.lib;D:\vc_packages\Boost\lib\libboost_date_time-vc142-mt-gd-x64-1_74.lib;D:\vc_packages\Boost\lib\libboost_iostreams-vc142-mt-gd-x64-1_74.lib;D:\vc_packages\Boost\lib\libboost_system-vc142-mt-gd-x64-1_74.lib;D:\vc_packages\Boost\lib\libboost_regex-vc142-mt-gd-x64-1_74.lib;delayimp.lib;opengl32.lib;glu32.lib;comctl32.lib;wsock32.lib;ws2_32.lib;Psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>D:\vc_packages\boost_filesystem-vc142.1.76.0.0\lib\native\libboost_filesystem-vc142-mt-gd-x64-1_76.lib;D:\vc_packages\boost_system-vc142.1.76.0.0\lib\native\libboost_system-vc142-mt-gd-x64-1_76.lib;D:\vc_packages\boost_regex-vc142.1.76.0.0\lib\native\libboost_regex-vc142-mt-gd-x64-1_76.lib;delayimp.lib;opengl32.lib;glu32.lib;comctl32.lib;wsock32.lib;ws2_32.lib;Psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DelayLoadDLLs>VCOMP140D.dll</DelayLoadDLLs>
@@ -144,7 +144,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>D:\vc_packages\Boost\lib\libboost_filesystem-vc142-mt-x64-1_74.lib;D:\vc_packages\Boost\lib\libboost_date_time-vc142-mt-x64-1_74.lib;D:\vc_packages\Boost\lib\libboost_iostreams-vc142-mt-x64-1_74.lib;D:\vc_packages\Boost\lib\libboost_system-vc142-mt-x64-1_74.lib;D:\vc_packages\Boost\lib\libboost_regex-vc142-mt-x64-1_74.lib;delayimp.lib;opengl32.lib;glu32.lib;comctl32.lib;wsock32.lib;ws2_32.lib;Psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>D:\vc_packages\boost_filesystem-vc142.1.76.0.0\lib\native\libboost_filesystem-vc142-mt-x64-1_76.lib;D:\vc_packages\boost_system-vc142.1.76.0.0\lib\native\libboost_system-vc142-mt-x64-1_76.lib;D:\vc_packages\boost_regex-vc142.1.76.0.0\lib\native\libboost_regex-vc142-mt-x64-1_76.lib;delayimp.lib;opengl32.lib;glu32.lib;comctl32.lib;wsock32.lib;ws2_32.lib;Psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <DelayLoadDLLs>VCOMP140.dll</DelayLoadDLLs>
@@ -240,10 +240,9 @@
     <Import Project="D:\vc_packages\VTK.8.2.1\build\native\VTK.targets" Condition="Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" />
     <Import Project="D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets" Condition="Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" />
     <Import Project="D:\vc_packages\boost.1.76.0.0\build\boost.targets" Condition="Exists('D:\vc_packages\boost.1.76.0.0\build\boost.targets')" />
-    <Import Project="D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets" Condition="Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" />
     <Import Project="D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets" Condition="Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" />
-    <Import Project="D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets" Condition="Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" />
-    <Import Project="D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets" Condition="Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets" Condition="Exists('D:\vc_packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets')" />
+    <Import Project="D:\vc_packages\boost_system-vc142.1.76.0.0\build\boost_system-vc142.targets" Condition="Exists('D:\vc_packages\boost_system-vc142.1.76.0.0\build\boost_system-vc142.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -257,9 +256,8 @@
     <Error Condition="!Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.8.2.1\build\native\VTK.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.redist.8.2.1\build\native\VTK.redist.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\boost.1.76.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost.1.76.0.0\build\boost.targets'))" />
-    <Error Condition="!Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets'))" />
-    <Error Condition="!Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets'))" />
-    <Error Condition="!Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_system-vc142.1.76.0.0\build\boost_system-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_system-vc142.1.76.0.0\build\boost_system-vc142.targets'))" />
   </Target>
 </Project>
