@@ -58,7 +58,7 @@ TEST_F(TestAreaPicking, NearestClusterWithMaxVisibility)
 
 	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
 
-	hiveExecuteClusteringClassifier(CLASSIFIER_MaxVisibilityCluster, pTestee, EPointLabel::KEPT,Camera);
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT,Camera);
 	std::vector<size_t> Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
 		pGroundTruth, pGroundTruth,
@@ -73,7 +73,7 @@ TEST_F(TestAreaPicking, FurthestClusterWithMaxVisibility)
 
 	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
 
-	hiveExecuteClusteringClassifier(CLASSIFIER_MaxVisibilityCluster, pTestee, EPointLabel::KEPT, Camera);
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
 	std::vector<size_t> Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
 		pGroundTruth, pGroundTruth,
@@ -88,7 +88,7 @@ TEST_F(TestAreaPicking, InvisibleClusterWithMaxArea)
 
 	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
 
-	hiveExecuteClusteringClassifier(CLASSIFIER_MaxVisibilityCluster, pTestee, EPointLabel::KEPT, Camera);
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
 	std::vector<size_t> Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
 		pGroundTruth, pGroundTruth,
@@ -101,7 +101,7 @@ TEST_F(TestAreaPicking, DeathTest_IndicesIsNullptr)
 {
 	pcl::IndicesPtr pTestee = nullptr;
 	pcl::visualization::Camera Camera;
-	EXPECT_DEATH(hiveExecuteClusteringClassifier(CLASSIFIER_MaxVisibilityCluster, pTestee, EPointLabel::KEPT, Camera); , "");
+	EXPECT_DEATH(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera); , "");
 }
 
 //*****************************************************************
