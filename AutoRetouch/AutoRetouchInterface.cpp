@@ -97,5 +97,5 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteMaxVisibilityClustering(con
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
 
-	return pClassifier->execute<CMaxVisibilityClusterAlg>(true, vPointIndices, vFinalLabel, vCamera);
+	return pClassifier->execute<CMaxVisibilityClusterAlg>(true, *vPointIndices, vFinalLabel, vCamera);
 }

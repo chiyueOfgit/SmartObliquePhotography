@@ -191,7 +191,7 @@ TEST_F(CTestRegionGrow, RegionGrowingCorrectness)
 		}
 		auto Result = getRegionGrowingResult(InputIndices);
 	
-	
+		GTEST_ASSERT_LT(Result.size(), GroundTruthPointSets.size());
 	    pcl::Indices Residual(GroundTruthPointSets.size(), -1);
 	    auto Tail = std::set_difference(Result.begin(), Result.end(), GroundTruthPointSets.begin(), GroundTruthPointSets.end(), Residual.begin());
 	    Residual.resize(Tail - Residual.begin());
