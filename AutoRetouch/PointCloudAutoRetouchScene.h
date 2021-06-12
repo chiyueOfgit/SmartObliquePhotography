@@ -15,8 +15,8 @@ namespace hiveObliquePhotography
 		public:
 			~CPointCloudAutoRetouchScene();
 
-			CNeighborhood* buildNeighborhood(std::uint64_t vSeed, const std::string& vBuilderSig);
-			CNeighborhood* buildNeighborhood(std::uint64_t vSeed, const std::vector<std::uint64_t>& vRestrictedSet, const std::string& vBuilderSig);
+			CNeighborhood* buildNeighborhood(pcl::index_t vSeed, const std::string& vBuilderSig);
+			CNeighborhood* buildNeighborhood(pcl::index_t vSeed, const pcl::Indices& vRestrictedSet, const std::string& vBuilderSig);
 
 			bool undoLastOp();
 

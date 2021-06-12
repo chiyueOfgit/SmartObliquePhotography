@@ -14,7 +14,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CStaOutlierDetectingAlg, CLASSIFIER_OUTLIER_DETECTIO
 
 //*****************************************************************
 //FUNCTION:
-void  CStaOutlierDetectingAlg::runV(std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel)
+void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vFinalLabel)
 {
 	const auto& pScene = CPointCloudAutoRetouchScene::getInstance();
 	const auto& pCloud = pScene->getPointCloudScene();
@@ -36,7 +36,7 @@ void  CStaOutlierDetectingAlg::runV(std::vector<std::uint64_t>& vioInputSet, EPo
 	Od.setStddevMulThresh(0.50);
 	Od.filter(*pResultCloud);
 
-	std::vector<std::uint64_t> innerIndex;
+	pcl::Indices innerIndex;
 	for (auto& Point : pResultCloud->points)
 	{
 		innerIndex.push_back(Point.curvature);

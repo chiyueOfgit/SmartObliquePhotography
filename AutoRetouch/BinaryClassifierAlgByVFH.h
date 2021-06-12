@@ -16,7 +16,7 @@ namespace hiveObliquePhotography
 			void runV() override;
 
 		private:
-			inline std::vector<std::uint64_t> __getRemainIndex();
+			inline pcl::Indices __getRemainIndex();
 		};
 	}
 }

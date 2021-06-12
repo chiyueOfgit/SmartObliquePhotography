@@ -11,7 +11,7 @@ namespace hiveObliquePhotography
 			CSpatialClusteringAlg() = default;
 			~CSpatialClusteringAlg() = default;
 
-			virtual void runV(const std::vector<std::uint64_t>& vInputSet, EPointLabel vFinalLabel);  //TODO：如何抽象？
+			virtual void runV(const pcl::Indices& vInputSet, EPointLabel vFinalLabel);  //TODO：如何抽象？
 
 		private:
 		};

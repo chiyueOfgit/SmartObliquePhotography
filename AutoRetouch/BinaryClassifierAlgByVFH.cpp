@@ -57,14 +57,14 @@ void CBinaryClassifierByVFHAlg::runV()
 	}
 }
 
-std::vector<std::uint64_t> CBinaryClassifierByVFHAlg::__getRemainIndex()
+pcl::Indices CBinaryClassifierByVFHAlg::__getRemainIndex()
 {
-	std::set<std::uint64_t> CloudIndex;
-	for (std::uint64_t i = 0; i < CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene()->size(); i++)
+	std::set<pcl::index_t> CloudIndex;
+	for (pcl::index_t i = 0; i < CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene()->size(); i++)
 		CloudIndex.insert(i);
 
-	std::vector<std::uint64_t> RemainIndex;
-	std::vector<std::set<std::size_t>> WholeClusterIndices;
+	pcl::Indices RemainIndex;
+	std::vector<std::set<pcl::index_t>> WholeClusterIndices;
 	for (auto pPointCluster : m_ClusterSet)
 		WholeClusterIndices.push_back(dynamic_cast<CPointCluster4VFH*>(pPointCluster)->getClusterIndices());
 
@@ -74,14 +74,13 @@ std::vector<std::uint64_t> CBinaryClassifierByVFHAlg::__getRemainIndex()
 	}
 	else
 	{
-		std::set<std::size_t> UnionIndex = WholeClusterIndices[0];
-		for (int i = 1; i < WholeClusterIndices.size(); i++)
+		auto UnionIndex = WholeClusterIndices[0];
+		for (auto & ClusterIndices : WholeClusterIndices)
 		{
-			std::set<std::size_t> TempIndex;
-			std::set_union(UnionIndex.begin(), UnionIndex.end(), WholeClusterIndices[i].begin(), WholeClusterIndices[i].end(), std::inserter(TempIndex, TempIndex.begin()));
+			std::set<pcl::index_t> TempIndex;
+			std::set_union(UnionIndex.begin(), UnionIndex.end(), ClusterIndices.begin(), ClusterIndices.end(), std::inserter(TempIndex, TempIndex.begin()));
 			UnionIndex = TempIndex;
 		}
-
 		std::set_difference(CloudIndex.begin(), CloudIndex.end(), UnionIndex.begin(), UnionIndex.end(), std::inserter(RemainIndex, RemainIndex.begin()));
 	}
 

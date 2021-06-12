@@ -27,7 +27,7 @@ void ICompositeClassifier::_ensembleResult()
 			{
 				_ASSERTE(itr[k] < m_ClassifierSet[k]->getResult().cend());
 				OverallResult4SinglePoint.emplace_back(*itr[k]);
-				itr[k]++;
+				++itr[k];
 			}
 		}
 
