@@ -200,7 +200,6 @@ void QTInterface::onActionOpen()
     std::vector<std::string> FilePathSet;
     bool FileOpenSuccessFlag = true;
 
-    _ASSERT(FilePathList);
     if (FilePathList.empty())
         return;
 
@@ -218,7 +217,6 @@ void QTInterface::onActionOpen()
         }
     }
 
-    _ASSERT(FilePathSet);
     if (FilePathSet.empty())
         return;
 
