@@ -153,9 +153,7 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="AutoRetouchConfig.xml" />
-    <Xml Include="SpatialClusterConfig.xml" />
-    <Xml Include="VisualizationConfig.xml" />
+    <Xml Include="..\AutoRetouch\AutoRetouchConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
