@@ -37,7 +37,7 @@ protected:
 		std::string ModelPath("test_tile16/Scu_Tile16.pcd");
 		pcl::PointCloud<pcl::PointSurfel>::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
 		pcl::io::loadPCDFile(ModelPath, *pCloud);
-		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(pCloud);
+		CPointCloudAutoRetouchScene::getInstance()->init(pCloud);
 	}
 
 	void TearDown() override
@@ -92,13 +92,13 @@ private:
 };
 
 
-TEST_F(TestAreaPicking, 实用测试1，较近的聚类可见面积最大)
+TEST_F(TestAreaPicking, NearestClusterWithMaxVisibility)
 {
 	const auto& Path = m_SamplePaths[0];
 
 	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
 
-	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, pTestee, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT,Camera);
+	hiveExecuteClusteringClassifier(CLASSIFIER_MaxVisibilityCluster, pTestee, EPointLabel::KEPT,Camera);
 	std::vector<size_t> Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
 		pGroundTruth, pGroundTruth,
@@ -107,13 +107,13 @@ TEST_F(TestAreaPicking, 实用测试1，较近的聚类可见面积最大)
 	GTEST_ASSERT_EQ(Difference.size(), 0u);
 }
 
-TEST_F(TestAreaPicking, 实用测试2，较远的聚类可见面积最大)
+TEST_F(TestAreaPicking, FurthestClusterWithMaxVisibility)
 {
 	const auto& Path = m_SamplePaths[1];
 
 	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
 
-	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, pTestee, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT, Camera);
+	hiveExecuteClusteringClassifier(CLASSIFIER_MaxVisibilityCluster, pTestee, EPointLabel::KEPT, Camera);
 	std::vector<size_t> Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
 		pGroundTruth, pGroundTruth,
@@ -122,17 +122,24 @@ TEST_F(TestAreaPicking, 实用测试2，较远的聚类可见面积最大)
 	GTEST_ASSERT_EQ(Difference.size(), 0u);
 }
 
-TEST_F(TestAreaPicking, 实用测试3，不可见的聚类面积最大)
+TEST_F(TestAreaPicking, InvisibleClusterWithMaxArea)
 {
 	const auto& Path = m_SamplePaths[2];
 
 	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
 
-	hiveObliquePhotography::AutoRetouch::hiveExecuteClusteringClassifier(hiveObliquePhotography::AutoRetouch::CLASSIFIER_MaxVisibilityCluster, pTestee, hiveObliquePhotography::AutoRetouch::EPointLabel::KEPT, Camera);
+	hiveExecuteClusteringClassifier(CLASSIFIER_MaxVisibilityCluster, pTestee, EPointLabel::KEPT, Camera);
 	std::vector<size_t> Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
 		pGroundTruth, pGroundTruth,
 		std::inserter(Difference, Difference.begin()));
 
 	GTEST_ASSERT_EQ(Difference.size(), 0u);
+}
+
+TEST_F(TestAreaPicking, DeathTest_IndicesIsNullptr)
+{
+	pcl::IndicesPtr pTestee = nullptr;
+	pcl::visualization::Camera Camera;
+	EXPECT_DEATH(hiveExecuteClusteringClassifier(CLASSIFIER_MaxVisibilityCluster, pTestee, EPointLabel::KEPT, Camera); , "");
 }
