@@ -18,11 +18,6 @@ CPointCluster4NormalRatio::CPointCluster4NormalRatio(const pcl::IndicesPtr& vPoi
 	Extract.setInputCloud(pCloud);
 	Extract.setIndices(vPointIndices);
 	Extract.filter(*m_pPointCloud);
-
-	SBox Box;
-	for (auto Index : *vPointIndices)
-		Box.update(pCloud->at(Index).x, pCloud->at(Index).y, pCloud->at(Index).z);
-	setClusterAABB(Box);
 }
 
 //*****************************************************************

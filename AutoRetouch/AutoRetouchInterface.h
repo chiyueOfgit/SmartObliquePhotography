@@ -5,10 +5,10 @@
 #include "RegionGrowingByColorAlg.h"
 #include "PointClusterSet.h"
 #include "BinaryClassifierAlg.h"
-//#include "BinaryClassifierAlgByVFH.h"
 #include "PointCluster4VFH.h"
 #include "SpatialClusteringAlg.h"
 #include "MaxVisibilityClusterAlg.h"
+#include "pcl/visualization/common/common.h"
 
 namespace hiveObliquePhotography
 {
@@ -27,15 +27,7 @@ namespace hiveObliquePhotography
 
 		AUTORETOUCH_DECLSPEC bool hiveExecuteClusterAlg2RegionGrowing(const pcl::Indices& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera);
 
-		//FIXME:使用模板会发生重定义
-		template<class... TArgs>
-		bool hiveExecuteClusteringClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)
-		{
-			IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-			_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", vClassifierSig), false);
-
-			return pClassifier->execute<CMaxVisibilityClusterAlg>(true, std::forward<TArgs>(vArgs)...);
-		}
+		AUTORETOUCH_DECLSPEC bool hiveExecuteMaxVisibilityClustering(const pcl::IndicesPtr& vPointIndices, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera);
 
 		template<class... TArgs>
 		bool hiveExecuteRegionGrowClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)

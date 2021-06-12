@@ -33,7 +33,7 @@ void CBinaryClassifierAlg::runV()
 			std::size_t MaxIndex = -1;
 
 #pragma omp parallel for
-			for (std::size_t i = 0; i < m_ClusterSet.size(); i++)
+			for (int i = 0; i < m_ClusterSet.size(); i++)
 			{
 				const auto Score = m_ClusterSet[i]->computeDistanceV(Index);
 				if (Score > MaxScore)
@@ -75,7 +75,7 @@ pcl::IndicesPtr CBinaryClassifierAlg::__getUnknownIndices()
 //FUNCTION: 
 SBox CBinaryClassifierAlg::__createExecuteArea() const
 {
-	auto AreaBox = CPointClusterSet::getInstance()->getAreaBox();
+	auto& AreaBox = CPointClusterSet::getInstance()->getAreaBox();
 	auto& SceneBox = CPointCloudAutoRetouchScene::getInstance()->getSceneAABB();
 	//TODO：添加至配置文件，可执行区域外沿的宽度与场景大小的比例
 	const Eigen::Vector3f Padding = (SceneBox.Max - SceneBox.Min) * 0.15f;
