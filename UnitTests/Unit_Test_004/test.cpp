@@ -2,6 +2,7 @@
 #include "AutoRetouchInterface.h"
 #include "VisualizationInterface.h"
 #include "PointCloudAutoRetouchScene.h"
+#include "PointClusterSet.h"
 #include "PointCloudVisualizer.h"
 #include "pcl/io/pcd_io.h"
 
@@ -13,11 +14,19 @@
 using namespace hiveObliquePhotography::AutoRetouch;
 
 //测试用例列表：
-//  * Cluster4VFH: 能够正确构造并正确填充信息
-//  * BinaryAlgByVFH: 能够用提供好的cluster得到语法正确的结果
-//  * CreateClusterByClusterAlg: 能够用聚类算法的结果正确创建cluster
+//  * Cluster_Overview_Test: 对所有Cluster应该满足的约束
+//  * BinaryAlg_Overview_Test: 对二分类算法基类满足的约束
+// 
+//  * Cluster_VFH_TEST: 能够正确构造VFH的Cluster并正确填充信息
+//  * Cluster_Distribution_TEST: 能够正确构造Distribution的Cluster并正确填充信息
+//  * Cluster_Score_TEST: 能够正确构造Score的Cluster并正确填充信息
+// 
+//  * Composite_BinaryAlg_Test: 对每个使用单一种类Cluster的二分类的复合算法满足的约束
+// 
+//  * Composite_BinaryAlg_Expect_Test: 对复合算法的结果预期
+//  * DeathTest_Composite_BinaryAlg: 复合算法结果不能包含给定的约束点
 
-const bool bIsEnableVisualizer = false;
+const bool bIsEnableVisualizer = true;
 
 const std::string g_Folder = "test_tile16/";
 const std::string g_CloudFile = "Scu_Tile16.pcd";
@@ -35,22 +44,22 @@ protected:
 
 		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);
 
-		//if (bIsEnableVisualizer)
-		//{
-		//	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->init(m_pCloud);
-		//	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->refresh();
-		//}
+		if (bIsEnableVisualizer)
+		{
+			hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->init(m_pCloud, false);
+			hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->refresh();
+		}
 
 		createTestcaseContext();
 	}
 	
 	void TearDown() override
 	{
-		//if (bIsEnableVisualizer)
-		//{
-		//	hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->refresh();
-		//	system("pause");
-		//}
+		if (bIsEnableVisualizer)
+		{
+			hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->refresh();
+			system("pause");
+		}
 	}
 
 	pcl::Indices loadPointIndices(const std::string& vPath)
@@ -86,7 +95,7 @@ private:
 	pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
 };
 
-TEST_F(CTestBinary, Cluster4VFH)
+TEST_F(CTestBinary, Cluster_Overview_Test)
 {
 	ASSERT_EQ(m_pUnwantedCluster->getClusterLabel(), m_Unwanted);
 
@@ -117,22 +126,18 @@ TEST_F(CTestBinary, Cluster4VFH)
 
 }
 
-TEST_F(CTestBinary, BinaryAlgByVFH)
+TEST_F(CTestBinary, BinaryAlg_Overview_Test)
 {
 	std::vector<IPointCluster*> pClusters = { m_pUnwantedCluster, m_pKeptCluster };
 
+	for (int i = 0; i < pClusters.size(); i++)
+		CPointClusterSet::getInstance()->addPointCluster(std::to_string(i), pClusters[i]);
+
 	auto* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(CLASSIFIER_BINARY_VFH, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	ASSERT_NE(pClassifier, nullptr);
-	pClassifier->execute<CBinaryClassifierByVFHAlg>(true, pClusters);
+	pClassifier->execute<CBinaryClassifierByVFHAlg>(true);
 
 	auto LabelChanged = pClassifier->getResult();
 	ASSERT_EQ(LabelChanged.size(), getCloud()->size() - m_UnwantedIndices.size() - m_KeptIndices.size());
 
-	//hiveExecuteClusterAlg2CreateCluster(loadPointIndices(g_Folder + g_UnwantedTreePoints), EPointLabel::UNWANTED);
-	//hiveExecuteClusterAlg2CreateCluster(loadPointIndices(g_Folder + g_KeptGroundPoints), EPointLabel::KEPT);
-
-	//hiveObliquePhotography::Visualization::hiveInitVisualizer(pCloud);
-	//hiveObliquePhotography::Visualization::hiveRefreshVisualizer();
-
-	//hiveObliquePhotography::Visualization::hiveRunVisualizerLoop();
 }
