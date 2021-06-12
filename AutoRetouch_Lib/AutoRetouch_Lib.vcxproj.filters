@@ -69,9 +69,6 @@
     <ClInclude Include="..\AutoRetouch\PointCluster4VFH.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\AutoRetouch\BinaryClassifierAlgByVFH.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\AutoRetouch\MaxVisibilityClusterAlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -129,9 +126,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\PointCluster4VFH.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\AutoRetouch\BinaryClassifierAlgByVFH.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\MaxVisibilityClusterAlg.cpp">

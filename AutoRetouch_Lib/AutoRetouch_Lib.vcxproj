@@ -25,7 +25,6 @@
     <ClInclude Include="..\AutoRetouch\AutoRetouchInterface.h" />
     <ClInclude Include="..\AutoRetouch\BinaryClassifierAlg.h" />
     <ClInclude Include="..\AutoRetouch\Common.h" />
-    <ClInclude Include="..\AutoRetouch\BinaryClassifierAlgByVFH.h" />
     <ClInclude Include="..\AutoRetouch\CompositeClassifier.h" />
     <ClInclude Include="..\AutoRetouch\framework.h" />
     <ClInclude Include="..\AutoRetouch\MaxVisibilityClusterAlg.h" />
@@ -50,13 +49,14 @@
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp" />
     <ClCompile Include="..\AutoRetouch\BinaryClassifierAlg.cpp" />
-    <ClCompile Include="..\AutoRetouch\BinaryClassifierAlgByVFH.cpp" />
     <ClCompile Include="..\AutoRetouch\CompositeClassifier.cpp" />
     <ClCompile Include="..\AutoRetouch\MaxVisibilityClusterAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\Neighborhood.cpp" />
     <ClCompile Include="..\AutoRetouch\OpResultQueue.cpp" />
     <ClCompile Include="..\AutoRetouch\OutlierDetectingAlg.cpp" />
-    <ClCompile Include="..\AutoRetouch\pch.cpp" />
+    <ClCompile Include="..\AutoRetouch\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\AutoRetouch\PointCloudAutoRetouchScene.cpp" />
     <ClCompile Include="..\AutoRetouch\PointCluster4VFH.cpp" />
     <ClCompile Include="..\AutoRetouch\PointClusterSet.cpp" />
@@ -206,7 +206,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;_LIB;HIVE_STATIC_LIBRARY;_UNIT_TEST;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>

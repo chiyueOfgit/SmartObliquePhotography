@@ -63,12 +63,12 @@ namespace hiveObliquePhotography
 			}
 
 			const std::vector<SPointLabelChange>& getResult() const { return m_PointLabelChangeRecord; }
-			pcl::Indices getResultIndices() const
+			pcl::IndicesPtr getResultIndices() const
 			{
-				pcl::Indices ResultIndices;
-				ResultIndices.reserve(m_PointLabelChangeRecord.size());
+				pcl::IndicesPtr ResultIndices(new pcl::Indices);
+				ResultIndices->reserve(m_PointLabelChangeRecord.size());
 				for (auto& LabelChange : m_PointLabelChangeRecord)
-					ResultIndices.push_back(LabelChange.Index);
+					ResultIndices->push_back(LabelChange.Index);
 				return ResultIndices;
 			}
 

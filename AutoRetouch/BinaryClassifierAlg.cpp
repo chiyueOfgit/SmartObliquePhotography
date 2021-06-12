@@ -33,7 +33,7 @@ void CBinaryClassifierAlg::runV()
 			std::size_t MaxIndex = -1;
 
 #pragma omp parallel for
-			for (std::size_t i = 0; i < m_ClusterSet.size(); i++)
+			for (int i = 0; i < m_ClusterSet.size(); i++)
 			{
 				const auto Score = m_ClusterSet[i]->computeDistanceV(Index);
 				if (Score > MaxScore)
