@@ -79,15 +79,12 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="SpatialClusterConfig.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="VisualizationConfig.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="AutoRetouchConfig.xml">
+    <Xml Include="..\AutoRetouch\AutoRetouchConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>

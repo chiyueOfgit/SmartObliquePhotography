@@ -104,7 +104,7 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestIndex, PointCloud_t
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
 	const auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pTree->radiusSearch((*vCloud)[vTestIndex], *CAutoRetouchConfig::getInstance()->getAttribute<double>("SEARCH_RADIUS"), NeighborIndices, NeighborDistances);
+	pTree->radiusSearch((*vCloud)[vTestIndex], *CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"), NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3, 0);
 	for (auto Index : NeighborIndices)
