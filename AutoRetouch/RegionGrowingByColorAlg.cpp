@@ -275,7 +275,7 @@ std::uint32_t CRegionGrowingByColorAlg::__inverseMorton4(std::uint32_t vMorton)
 
 //*****************************************************************
 //FUNCTION: 
-std::tuple<std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t> __extractColor(std::uint32_t vColor)
+std::tuple<std::uint8_t, std::uint8_t, std::uint8_t, std::uint8_t> CRegionGrowingByColorAlg::__extractColor(std::uint32_t vColor)
 {
 	PointCloud_t::PointType Point;
 	std::memcpy(&Point.rgba, &vColor, sizeof(std::uint32_t));

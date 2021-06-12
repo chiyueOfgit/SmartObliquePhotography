@@ -11,6 +11,7 @@ void ICompositeClassifier::_ensembleResult()
 	_ASSERTE((m_ClassifierSet.size() > 1) && m_pGlobalLabelSet);
 
 	std::vector<std::vector<SPointLabelChange>::const_iterator> itr;
+	itr.resize(m_ClassifierSet.size());
 	for (auto i = 0; i < m_ClassifierSet.size(); i++) itr[i] = m_ClassifierSet[i]->getResult().cbegin();
 
 	std::vector<SPointLabelChange> OverallResult4SinglePoint;
@@ -32,7 +33,7 @@ void ICompositeClassifier::_ensembleResult()
 
 		if (!OverallResult4SinglePoint.empty())
 		{
-			SPointLabelChange Temp = { i, OverallResult4SinglePoint[0].SrcLabel, __ensembleSingleResultV(OverallResult4SinglePoint), 1.0f };
+			SPointLabelChange Temp = { i, OverallResult4SinglePoint[0].SrcLabel, __ensembleSingleResultV(OverallResult4SinglePoint) };
 			EnsembledResult4GlobalLabel.push_back(Temp);
 		}
 	}
