@@ -237,7 +237,6 @@ void QTInterface::onActionSetting()
     std::shared_ptr<hiveQTInterface::CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<hiveQTInterface::CDisplayOptionsSettingDialog>(this);
     pDisplayOptionsSettingDialog->show();
     pDisplayOptionsSettingDialog->exec();
-
 }
 
 void QTInterface::onResourceSpaceItemDoubleClick(const QModelIndex& vIndex)
