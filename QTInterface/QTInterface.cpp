@@ -134,7 +134,7 @@ void QTInterface::__checkFileOpenRepeatedly()
 bool QTInterface::__parseConfigFile()
 {
     bool AutoRetouchConfigParseSuccess = false;
-    if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+    if (hiveConfig::hiveParseConfig("../AutoRetouch/AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
     {
         QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file AutoRetouchConfig.xml."));
         AutoRetouchConfigParseSuccess = true;
