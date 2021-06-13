@@ -26,7 +26,7 @@ namespace hiveObliquePhotography
 			template<class TConcreteClassifier, class... TArgs>
 			bool execute(bool vApplyChange2GlobalLabelIntermediate, TArgs&&... vArgs)
 			{
-				return execute(vApplyChange2GlobalLabelIntermediate, false, std::forward<TArgs>(vArgs)...);
+				return execute<TConcreteClassifier>(vApplyChange2GlobalLabelIntermediate, false, std::forward<TArgs>(vArgs)...);
 			}
 			
 			template<class TConcreteClassifier, class... TArgs>
