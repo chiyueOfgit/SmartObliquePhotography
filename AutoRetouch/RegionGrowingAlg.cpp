@@ -25,7 +25,7 @@ void CRegionGrowingAlg::runV(const pcl::Indices& vSeeds, EPointLabel vDstLabel)
 	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
 	//TODO:使用NeighborhoodBuilder
 	const auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	const auto SearchRadius = *CAutoRetouchConfig::getInstance()->getAttribute<double>("SEARCH_RADIUS");
+	const auto SearchRadius = *CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS);
 	//TODO: 确保初始化成功？
 	
 	std::vector Traversed(pCloud->size(), DEFAULT_TRAVERSED);

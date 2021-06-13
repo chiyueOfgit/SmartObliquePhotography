@@ -12,10 +12,10 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COL
 //FUNCTION: 
 void CRegionGrowingByColorAlg::__initValidation(const pcl::Indices& vSeeds, PointCloud_t::ConstPtr vCloud)
 {
-	m_ColorTestMode = static_cast<EColorMode>(*CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE"));
-	m_EnableColorTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST");
-	m_EnableGroundTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_GROUND_TEST");
-	m_EnableNormalTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_NORMAL_TEST");
+	m_ColorTestMode = static_cast<EColorMode>(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::COLOR_TEST_MODE));
+	m_EnableColorTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>(KEY_WORDS::ENABLE_COLOR_TEST);
+	m_EnableGroundTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>(KEY_WORDS::ENABLE_GROUND_TEST);
+	m_EnableNormalTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>(KEY_WORDS::ENABLE_NORMAL_TEST);
 
 	if (m_EnableColorTest)
 	{
@@ -52,7 +52,7 @@ bool CRegionGrowingByColorAlg::__validatePointV(pcl::index_t vTestIndex, PointCl
 {
 	if (m_EnableColorTest)
 	{
-		switch (static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value()))
+		switch (static_cast<EColorMode>(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::COLOR_TEST_MODE)))
 		{
 		case EColorMode::MEAN:
 			if (!__colorTestByAverage(vTestIndex, vCloud))
@@ -92,14 +92,14 @@ float CRegionGrowingByColorAlg::__calculateColorimetricalDifference(std::uint32_
 bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestIndex, PointCloud_t::ConstPtr vCloud) const
 {
 	//应该需要动态更新阈值
-	float ColorThreshold = CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_THRESHOLD").value();
+	float ColorThreshold = CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::COLOR_TEST_THRESHOLD).value();
 
 	//用平均颜色代表整体颜色
 	//用测试点的邻居平均颜色代表该测试点的颜色
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
 	const auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pTree->radiusSearch((*vCloud)[vTestIndex], *CAutoRetouchConfig::getInstance()->getAttribute<double>("SEARCH_RADIUS"), NeighborIndices, NeighborDistances);
+	pTree->radiusSearch((*vCloud)[vTestIndex], *CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS), NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3, 0);
 	for (auto Index : NeighborIndices)
@@ -143,13 +143,13 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestIndex, PointCloud_t
 bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestIndex, PointCloud_t::ConstPtr vCloud) const
 {
 	//应该需要动态更新阈值
-	float ColorThreshold = CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_THRESHOLD").value();
+	float ColorThreshold = CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::COLOR_TEST_THRESHOLD).value();
 
 	//用测试点的邻居平均颜色代表该测试点的颜色
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
 	auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pTree->radiusSearch((*vCloud)[vTestIndex], CAutoRetouchConfig::getInstance()->getAttribute<double>("SEARCH_RADIUS").value(), NeighborIndices, NeighborDistances);
+	pTree->radiusSearch((*vCloud)[vTestIndex], CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS).value(), NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3);
 	for (auto Index : NeighborIndices)
@@ -184,7 +184,7 @@ bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestIndex, PointCloud_t:
 //FUNCTION: 
 bool CRegionGrowingByColorAlg::__groundTest(int vTestIndex, PointCloud_t::ConstPtr vCloud) const
 {
-	if ((*vCloud)[vTestIndex].z < CAutoRetouchConfig::getInstance()->getAttribute<float>("GROUND_TEST_THRESHOLD").value())
+	if ((*vCloud)[vTestIndex].z < CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::GROUND_TEST_THRESHOLD).value())
 		return false;
 	else
 		return true;
