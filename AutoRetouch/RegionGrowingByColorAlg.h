@@ -27,9 +27,8 @@ namespace hiveObliquePhotography
 			bool m_EnableGroundTest{};
 			bool m_EnableNormalTest{};
 
-			std::uint32_t m_SeedsAverageColor;
-			std::size_t m_SeedsSize;
-			mutable unsigned int m_AverageColor[4];
+			mutable unsigned int m_RgbSum[3];
+			mutable unsigned int m_SeedsCount;
 			mutable std::uint32_t m_MedianColor;
 			mutable std::vector<std::uint32_t> m_MortonCodes;
 			

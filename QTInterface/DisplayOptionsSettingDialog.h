@@ -38,7 +38,7 @@ namespace hiveQTInterface
 			m_pUi->SizeBox->setMinimum(MinSize);
 			m_pUi->SizeBox->setMaximum(MaxSize);
 			m_pUi->SizeBox->setSingleStep(0.2f);
-			m_pUi->SizeBox->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"));
+			m_pUi->SizeBox->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>("SEARCH_RADIUS"));
 			QObject::connect(m_pUi->SizeBox, SIGNAL(valueChanged(double)), this, SLOT(onActionInputSize()));
 
 			//滑条
@@ -48,7 +48,7 @@ namespace hiveQTInterface
 			m_SearchSizeSlider->setOrientation(Qt::Horizontal);
 			m_SearchSizeSlider->setMinimum(MinSize);
 			m_SearchSizeSlider->setMaximum(MaxSize);
-			m_SearchSizeSlider->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"));
+			m_SearchSizeSlider->setValue(static_cast<float>(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>("SEARCH_RADIUS")));
 			QObject::connect(m_SearchSizeSlider.get(), SIGNAL(valueChanged(int)), this, SLOT(onActionChangeSize()));
 
 			//输入

@@ -25,7 +25,7 @@ namespace hiveObliquePhotography
 
 				_defineAttribute("ENABLE_NORMAL_TEST", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 
-				_defineAttribute("SEARCH_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+				_defineAttribute("SEARCH_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 
 				_defineAttribute("POINT_SHOW_SIZE", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 			}

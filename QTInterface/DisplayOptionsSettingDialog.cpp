@@ -59,7 +59,7 @@ void CDisplayOptionsSettingDialog::onActionChangeSize()
 {
 	hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->overwriteAttribute("SEARCH_RADIUS", m_SearchSizeSlider->value());
 
-	m_pUi->SizeBox->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"));
+	m_pUi->SizeBox->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>("SEARCH_RADIUS"));
 }
 
 void CDisplayOptionsSettingDialog::onActionChangeThreshold()
@@ -73,7 +73,7 @@ void CDisplayOptionsSettingDialog::onActionChangeThreshold()
 void CDisplayOptionsSettingDialog::onActionInputSize()
 {
 	hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->overwriteAttribute("SEARCH_RADIUS", m_pUi->SizeBox->value());
-	m_SearchSizeSlider->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"));
+	m_SearchSizeSlider->setValue(static_cast<float>(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>("SEARCH_RADIUS")));
 }
 
 void CDisplayOptionsSettingDialog::onActionInputThreshold()

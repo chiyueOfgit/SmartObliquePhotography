@@ -112,16 +112,16 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 //FUNCTION: 
 void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEvent& vEvent)
 {
-	pcl::Indices Indices;
-	vEvent.getPointsIndices(Indices);
+	const pcl::IndicesPtr pIndices(new pcl::Indices);
+	vEvent.getPointsIndices(*pIndices);
 
 	pcl::visualization::Camera Camera;
 	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
 
 	if (m_PartitionMode)
-		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
 	else
-		AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+		AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
 
 	m_pVisualizer->refresh();
 }

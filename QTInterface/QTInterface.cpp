@@ -318,7 +318,7 @@ void QTInterface::closeEvent(QCloseEvent* vEvent)
 
 void QTInterface::onActionTest()
 {
-    auto pointsize = *hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS");
+    auto pointsize = *hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>("SEARCH_RADIUS");
 
     int a;
 }
