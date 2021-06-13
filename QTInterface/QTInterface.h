@@ -44,6 +44,8 @@ namespace hiveObliquePhotography
             bool __parseConfigFile();
             void __connectSignals();
             void __checkFileOpenRepeatedly();
+            template <class T>
+            bool __readConfigFile(const std::string& vFileName, T* t);
             std::string __getFileName(const std::string& vFilePath);
 
 
