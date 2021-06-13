@@ -48,6 +48,7 @@ namespace hiveObliquePhotography
 					{
 						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord, Flag);
 					}
+
 					return true;
 				}
 				catch (std::runtime_error& e)
