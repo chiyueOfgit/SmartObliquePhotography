@@ -15,7 +15,10 @@ void CCompositeBinaryClassifierAlg::addBinaryClassifiers(const std::vector<std::
 	{
 		if (Type.find(BINARY_CLUSTER_VFH) != std::string::npos || Type.find(BINARY_CLUSTER_SCORE) != std::string::npos || Type.find(BINARY_CLUSTER_NORMAL) != std::string::npos)
 		{
-			addClassifierAndExecute<CBinaryClassifierAlg>(new CBinaryClassifierAlg, Type);
+			CBinaryClassifierAlg* pClassifier = hiveDesignPattern::hiveCreateProduct<CBinaryClassifierAlg>(CLASSIFIER_BINARY, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+			_HIVE_EARLY_RETURN(!pClassifier, "Fail to execute binary classifier.");
+
+			addClassifierAndExecute<CBinaryClassifierAlg>(pClassifier, Type);
 		}
 	}
 }

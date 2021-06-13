@@ -1,5 +1,5 @@
 #pragma once
-#include <queue>
+#include <stack>
 
 namespace hiveObliquePhotography
 {
@@ -27,7 +27,7 @@ namespace hiveObliquePhotography
 
 			std::multimap<std::string, IPointCluster*> m_PointClusterMap;
 
-			std::queue<std::vector<std::string>> m_UndoQueue;
+			std::stack<std::vector<std::string>> m_UndoQueue;
 
 			SBox m_BinaryAreaAABB;
 

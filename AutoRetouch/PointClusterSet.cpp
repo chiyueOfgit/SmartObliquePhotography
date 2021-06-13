@@ -58,7 +58,7 @@ bool CPointClusterSet::undo()
 {
 	if (!m_UndoQueue.empty())
 	{
-		auto& Clusters2Delete = m_UndoQueue.back();
+		auto& Clusters2Delete = m_UndoQueue.top();
 
 		for (auto& Name : Clusters2Delete)
 		{
@@ -69,10 +69,15 @@ bool CPointClusterSet::undo()
 		for (auto& Pair : m_PointClusterMap)
 		{
 			if (Pair.second->getClusterLabel() == EPointLabel::UNWANTED)
-			m_BinaryAreaAABB.update(Pair.second->getClusterAABB());
+				m_BinaryAreaAABB.update(Pair.second->getClusterAABB());
 		}
+
+		m_UndoQueue.pop();
+		return true;
 	}
-	return true;
+	else
+		return false;
+
 }
 
 std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet(const std::string& vName) const
