@@ -39,7 +39,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	{
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(VIEW_BINARY_RESULT).value())
 		{
-			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY_VFH);
+			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY);
 			m_pVisualizer->refresh();
 		}
 
@@ -59,6 +59,12 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_LineMode);
 		}
 
+		if (vEvent.isCtrlPressed() && KeyString == "n")
+		{
+			AutoRetouch::hiveUndoLastOp();
+			m_pVisualizer->refresh();
+		}
+		
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
 		{
 			static int i = 0;
