@@ -52,15 +52,14 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std:
 	return true;
 }
 
-bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(const std::vector<int>& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera)
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(const pcl::Indices& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera)
 {
 	RECORD_TIME_BEGIN;
 	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
 
-	std::vector<uint64_t> PointIndices(vPointIndices.begin(), vPointIndices.end());
-	if (pClassifier->execute<CMaxVisibilityClusterAlg>(true, PointIndices, vExpectLabel, vCamera))
+	if (pClassifier->execute<CMaxVisibilityClusterAlg>(true, vPointIndices, vExpectLabel, vCamera))
 	{
 		RECORD_TIME_END(æ€¿‡);
 
@@ -76,16 +75,16 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(co
 		return false;
 }
 
-bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(const std::vector<int>& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera)
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(const pcl::Indices& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera)
 {
 	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
 
-	std::vector<uint64_t> PointIndices(vPointIndices.begin(), vPointIndices.end());
-	if (pClassifier->execute<CMaxVisibilityClusterAlg>(true, PointIndices, vExpectLabel, vCamera))
+	if (pClassifier->execute<CMaxVisibilityClusterAlg>(true, vPointIndices, vExpectLabel, vCamera))
 	{
-		hiveExecuteRegionGrowClassifier( CLASSIFIER_REGION_GROW_COLOR, PointIndices, vExpectLabel);
+		pcl::Indices Cluster4GrowingIndices(vPointIndices);
+		hiveExecuteRegionGrowClassifier( CLASSIFIER_REGION_GROW_COLOR, Cluster4GrowingIndices, vExpectLabel);
 		return true;
 	}
 	else

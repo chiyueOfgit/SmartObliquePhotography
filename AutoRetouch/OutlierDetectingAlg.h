@@ -11,7 +11,7 @@ namespace hiveObliquePhotography
 			COutlierDetectingAlg() = default;
 			~COutlierDetectingAlg() = default;
 
-			virtual void runV(std::vector<std::uint64_t>& vioInputSet, EPointLabel vFinalLabel);
+			virtual void runV(pcl::Indices& vioInputSet, EPointLabel vFinalLabel);
 
 		private:
 		};

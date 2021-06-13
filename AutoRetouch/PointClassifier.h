@@ -12,7 +12,7 @@ namespace hiveObliquePhotography
 		{
 		public:
 			IPointClassifier() = default;
-			~IPointClassifier() { delete m_pLocalLabelSet; };
+			~IPointClassifier() { delete m_pLocalLabelSet; }
 
 			virtual bool onProductCreatedV(CGlobalPointLabelSet* vGlobalLabelSet)
 			{
@@ -63,9 +63,9 @@ namespace hiveObliquePhotography
 			}
 
 			const std::vector<SPointLabelChange>& getResult() const { return m_PointLabelChangeRecord; }
-			std::vector<std::uint64_t> getResultIndices() const
+			pcl::Indices getResultIndices() const
 			{
-				std::vector<std::uint64_t> ResultIndices;
+				pcl::Indices ResultIndices;
 				ResultIndices.reserve(m_PointLabelChangeRecord.size());
 				for (auto& LabelChange : m_PointLabelChangeRecord)
 					ResultIndices.push_back(LabelChange.Index);

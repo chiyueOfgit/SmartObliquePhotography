@@ -16,7 +16,7 @@ namespace hiveObliquePhotography
 
 			std::uint64_t getTimestamp() const { return m_Timestamp; }
 
-			EPointLabel getPointLabel(std::uint64_t vIndex) const { _ASSERTE(vIndex < m_PointLabelSet.size()); return m_PointLabelSet[vIndex]; }
+			EPointLabel getPointLabel(pcl::index_t vIndex) const { _ASSERTE(vIndex < m_PointLabelSet.size()); return m_PointLabelSet[vIndex]; }
 
 			const std::vector<EPointLabel>& getPointLabelSet() const { return m_PointLabelSet; }
 			std::vector<EPointLabel>& fetchPointLabelSet() { return m_PointLabelSet; }
@@ -43,7 +43,7 @@ namespace hiveObliquePhotography
 			[[nodiscard]] bool startRecord();
 			[[nodiscard]] bool stopRecord();
 
-			bool changePointLabel(std::uint64_t vPointIndex, EPointLabel vDstLabel);
+			bool changePointLabel(pcl::index_t vPointIndex, EPointLabel vDstLabel);
 			bool isRecording() const { return m_IsRecording; }
 			bool reset(const std::vector<SPointLabelChange>& vChangeRecord);
 			bool update(CGlobalPointLabelSet *vGlobalLabelSet);

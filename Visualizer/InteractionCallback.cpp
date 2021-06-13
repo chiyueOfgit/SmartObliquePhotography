@@ -84,7 +84,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 //FUNCTION: 
 void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEvent& vEvent)
 {
-	std::vector<int> Indices;
+	pcl::Indices Indices;
 	vEvent.getPointsIndices(Indices);
 
 	pcl::visualization::Camera Camera;

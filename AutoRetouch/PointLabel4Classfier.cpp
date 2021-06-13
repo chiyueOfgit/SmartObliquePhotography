@@ -7,13 +7,13 @@ using namespace hiveObliquePhotography::AutoRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-bool CLocalPointLabelSet::changePointLabel(std::uint64_t vPointIndex, EPointLabel vDstLabel)
+bool CLocalPointLabelSet::changePointLabel(pcl::index_t vPointIndex, EPointLabel vDstLabel)
 {
 	if (!m_IsRecording) return false;
 //TODO: 检查vPointIndex是否有效，检查当前的label变为vDstLabel是否合法
 
-	SPointLabelChange t = { vPointIndex, m_PointLabelSet[vPointIndex], vDstLabel };
-	m_PointLabelChangeRecord.emplace_back(t);
+	const SPointLabelChange TempPointLabel = { vPointIndex, m_PointLabelSet[vPointIndex], vDstLabel };
+	m_PointLabelChangeRecord.push_back(TempPointLabel);
 	m_PointLabelSet[vPointIndex] = vDstLabel;
 	return true;
 }

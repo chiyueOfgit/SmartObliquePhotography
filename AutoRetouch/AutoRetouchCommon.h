@@ -29,7 +29,7 @@ namespace hiveObliquePhotography
 
 		struct SPointLabelChange
 		{
-			std::uint64_t Index = UINT_MAX;
+			pcl::index_t Index = INT_MAX;
 			EPointLabel SrcLabel;
 			EPointLabel DstLabel;
 			float Confidence = 1.0f;

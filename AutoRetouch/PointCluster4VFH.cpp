@@ -6,11 +6,11 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-CPointCluster4VFH::CPointCluster4VFH(const std::vector<std::uint64_t>& vPointIndices, EPointLabel vLabel) : IPointCluster(vLabel)
+CPointCluster4VFH::CPointCluster4VFH(const pcl::Indices& vPointIndices, EPointLabel vLabel) : IPointCluster(vLabel)
 {
 	_ASSERTE(!vPointIndices.empty());
 	__computeVFHDescriptor(vPointIndices, m_VFHDescriptor);
-	m_PointIndices = std::set<std::uint64_t>(vPointIndices.begin(), vPointIndices.end());
+	m_PointIndices = std::set(vPointIndices.begin(), vPointIndices.end());
 	
 	auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
 
@@ -22,7 +22,7 @@ CPointCluster4VFH::CPointCluster4VFH(const std::vector<std::uint64_t>& vPointInd
 
 //*****************************************************************
 //FUNCTION: 
-double CPointCluster4VFH::computeDistanceV(std::uint64_t vPointIndex) const
+double CPointCluster4VFH::computeDistanceV(pcl::index_t vPointIndex) const
 {
 	_ASSERTE(vPointIndex < CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene()->size());
 
@@ -36,7 +36,7 @@ double CPointCluster4VFH::computeDistanceV(std::uint64_t vPointIndex) const
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCluster4VFH::__computeVFHDescriptor(const std::vector<std::uint64_t>& vPointIndices, Eigen::Matrix<float, 308, 1>& voVFHDescriptor) const
+void CPointCluster4VFH::__computeVFHDescriptor(const pcl::Indices& vPointIndices, Eigen::Matrix<float, 308, 1>& voVFHDescriptor) const
 {
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
 	auto pCloud = pScene->getPointCloudScene();
@@ -44,13 +44,11 @@ void CPointCluster4VFH::__computeVFHDescriptor(const std::vector<std::uint64_t>&
 
 	_ASSERTE(pScene && pCloud && pTree);
 
-	std::set<std::uint64_t> IndicesUnique(vPointIndices.begin(), vPointIndices.end());
+	std::set IndicesUnique(vPointIndices.begin(), vPointIndices.end());
 	_ASSERTE(IndicesUnique.size() == vPointIndices.size());
+	_ASSERTE(*std::max_element(vPointIndices.begin(), vPointIndices.end()) < pCloud->size());
 
-	std::vector<std::uint64_t> PointIndicesSorted(vPointIndices.begin(), vPointIndices.end());
-	std::sort(PointIndicesSorted.begin(), PointIndicesSorted.end());
-	_ASSERTE(vPointIndices.back() < pCloud->size());
-
+	//TODO: 需要接收pcl::IndicesPtr而非const pcl::Indices&
 	pcl::IndicesPtr Indices(new pcl::Indices(vPointIndices.begin(), vPointIndices.end()));
 	if (vPointIndices.size() == 1)
 		Indices->push_back(Indices->front());

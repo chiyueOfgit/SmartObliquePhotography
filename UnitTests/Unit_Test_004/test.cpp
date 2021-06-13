@@ -53,10 +53,9 @@ protected:
 		//}
 	}
 
-	template<class T>
-	std::vector<T> loadPointIndices(const std::string& vPath)
+	pcl::Indices loadPointIndices(const std::string& vPath)
 	{
-		std::vector<T> Indices;
+		pcl::Indices Indices;
 		std::ifstream File(vPath.c_str());
 		boost::archive::text_iarchive ia(File);
 		ia >> BOOST_SERIALIZATION_NVP(Indices);
@@ -66,15 +65,15 @@ protected:
 
 	void createTestcaseContext()
 	{
-		m_UnwantedIndices = loadPointIndices<std::uint64_t>(g_Folder + g_UnwantedTreePoints);
+		m_UnwantedIndices = loadPointIndices(g_Folder + g_UnwantedTreePoints);
 		m_pUnwantedCluster = new CPointCluster4VFH(m_UnwantedIndices, m_Unwanted);
 
-		m_KeptIndices = loadPointIndices<std::uint64_t>(g_Folder + g_KeptGroundPoints);
+		m_KeptIndices = loadPointIndices(g_Folder + g_KeptGroundPoints);
 		m_pKeptCluster = new CPointCluster4VFH(m_KeptIndices, m_Kept);
 	}
 
-	std::vector<std::uint64_t> m_UnwantedIndices;
-	std::vector<std::uint64_t> m_KeptIndices;
+	pcl::Indices m_UnwantedIndices;
+	pcl::Indices m_KeptIndices;
 	EPointLabel m_Unwanted = EPointLabel::UNWANTED;
 	EPointLabel m_Kept = EPointLabel::KEPT;
 
@@ -93,11 +92,11 @@ TEST_F(CTestBinary, Cluster4VFH)
 
 	ASSERT_EQ(m_pKeptCluster->getClusterLabel(), m_Kept);
 
-	std::uint64_t ErrorIndex1 = -1;
-	std::uint64_t ErrorIndex2 = getCloud()->size() + 1;
+	pcl::index_t ErrorIndex1 = -1;
+	pcl::index_t ErrorIndex2 = getCloud()->size() + 1;
 
-	std::vector<std::uint64_t> ErrorIndices1 = { ErrorIndex1 };
-	std::vector<std::uint64_t> ErrorIndices2 = { ErrorIndex2 };
+	pcl::Indices ErrorIndices1 = { ErrorIndex1 };
+	pcl::Indices ErrorIndices2 = { ErrorIndex2 };
 
 	//无效的创建失败
 	EXPECT_DEATH(new CPointCluster4VFH(ErrorIndices1, m_Kept), ".*");
@@ -122,7 +121,7 @@ TEST_F(CTestBinary, BinaryAlgByVFH)
 {
 	std::vector<IPointCluster*> pClusters = { m_pUnwantedCluster, m_pKeptCluster };
 
-	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(CLASSIFIER_BINARY_VFH, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	auto* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(CLASSIFIER_BINARY_VFH, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	ASSERT_NE(pClassifier, nullptr);
 	pClassifier->execute<CBinaryClassifierByVFHAlg>(true, pClusters);
 

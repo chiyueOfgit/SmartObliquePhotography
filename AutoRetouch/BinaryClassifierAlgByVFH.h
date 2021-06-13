@@ -11,12 +11,12 @@ namespace hiveObliquePhotography
 		{
 		public:
 			CBinaryClassifierByVFHAlg() = default;
-			~CBinaryClassifierByVFHAlg() = default;
+			~CBinaryClassifierByVFHAlg() override = default;
 
-			virtual void runV() override;
+			void runV() override;
 
 		private:
-			inline std::vector<std::uint64_t> __getRemainIndex();
+			inline pcl::Indices __getRemainIndex();
 		};
 	}
 }

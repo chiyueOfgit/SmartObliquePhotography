@@ -134,7 +134,7 @@ void QTInterface::__checkFileOpenRepeatedly()
 bool QTInterface::__parseConfigFile()
 {
     bool AutoRetouchConfigParseSuccess = false;
-    if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+    if (hiveConfig::hiveParseConfig("../AutoRetouch/AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
     {
         QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file AutoRetouchConfig.xml."));
         AutoRetouchConfigParseSuccess = true;
@@ -200,7 +200,6 @@ void QTInterface::onActionOpen()
     std::vector<std::string> FilePathSet;
     bool FileOpenSuccessFlag = true;
 
-    _ASSERT(FilePathList);
     if (FilePathList.empty())
         return;
 
@@ -218,7 +217,6 @@ void QTInterface::onActionOpen()
         }
     }
 
-    _ASSERT(FilePathSet);
     if (FilePathSet.empty())
         return;
 
@@ -253,7 +251,6 @@ void QTInterface::onActionSetting()
     std::shared_ptr<hiveQTInterface::CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<hiveQTInterface::CDisplayOptionsSettingDialog>(this);
     pDisplayOptionsSettingDialog->show();
     pDisplayOptionsSettingDialog->exec();
-
 }
 
 void QTInterface::onResourceSpaceItemDoubleClick(const QModelIndex& vIndex)

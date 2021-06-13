@@ -36,9 +36,9 @@ protected:
 
 	}
 
-	std::vector<std::uint64_t> loadPointIndices(std::string vPath)
+	pcl::Indices loadPointIndices(std::string vPath)
 	{
-		std::vector<std::uint64_t> Indices;
+		pcl::Indices Indices;
 		std::ifstream File(vPath.c_str());
 		boost::archive::text_iarchive ia(File);
 		ia >> BOOST_SERIALIZATION_NVP(Indices);
@@ -46,7 +46,7 @@ protected:
 		return Indices;
 	}
 
-	std::vector<std::uint64_t> testOutlierDetection(std::vector<std::uint64_t>& vioPointSet)
+	pcl::Indices testOutlierDetection(pcl::Indices& vioPointSet)
 	{
 		clock_t StartTime, FinishTime;
 		StartTime = clock();
@@ -68,22 +68,22 @@ protected:
 
 	pcl::PointCloud<pcl::PointSurfel>::Ptr getCloud() { return m_pCloud; }
 
-	void CTestOutlierDetection::executeOutlierDetectionTest(const std::vector<std::string>& vGroundTruthPaths, const std::vector<std::uint64_t>& vOutlier, float vExpectedCorrectRate);
+	void CTestOutlierDetection::executeOutlierDetectionTest(const std::vector<std::string>& vGroundTruthPaths, const pcl::Indices& vOutlier, float vExpectedCorrectRate);
 
 private:
 	pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
-	std::vector<std::uint64_t> m_pOutlierSet;
+	pcl::Indices m_pOutlierSet;
 };
 
-void CTestOutlierDetection::executeOutlierDetectionTest(const std::vector<std::string>& vGroundTruthPaths, const std::vector<std::uint64_t>& vOutlier, float vExpectedCorrectRate)
+void CTestOutlierDetection::executeOutlierDetectionTest(const std::vector<std::string>& vGroundTruthPaths, const pcl::Indices& vOutlier, float vExpectedCorrectRate)
 {
-	std::vector<std::uint64_t> GroundTruthPointSets;
-	std::vector<std::uint64_t> Result;
+	pcl::Indices GroundTruthPointSets;
+	pcl::Indices Result;
 
-	auto calculatePercentage = [&](const std::vector<std::uint64_t>& vGroundTruth, float vExpectedCorrectRate)
+	auto calculatePercentage = [&](const pcl::Indices& vGroundTruth, float vExpectedCorrectRate)
 	{
-		std::vector<std::uint64_t> ResultIndices = Result;
-		std::vector<std::uint64_t> GroundTruthIndices = vGroundTruth;
+		auto ResultIndices = Result;
+		auto GroundTruthIndices = vGroundTruth;
 
 		// correct
 		std::vector<int> Intersection(GroundTruthIndices.size(), -1);
@@ -97,7 +97,7 @@ void CTestOutlierDetection::executeOutlierDetectionTest(const std::vector<std::s
 
 	for (auto& Path : vGroundTruthPaths)
 	{
-		std::vector<std::uint64_t> Temp = loadPointIndices(Path);
+		pcl::Indices Temp = loadPointIndices(Path);
 		GroundTruthPointSets.insert(GroundTruthPointSets.end(), Temp.begin(), Temp.end());
 	}
 
@@ -111,10 +111,10 @@ TEST_F(CTestOutlierDetection, StaOutlierDetectingAlg)
 	std::vector<std::string> GroundTruthPaths;
 	GroundTruthPaths.push_back("groundtruth/indices.txt");
 
-	std::vector<std::size_t> GroundTruthPointSets;
+	pcl::Indices GroundTruthPointSets;
 	for (auto& Path : GroundTruthPaths)
 	{
-		std::vector<std::size_t> Temp = loadPointIndices(Path);
+		pcl::Indices Temp = loadPointIndices(Path);
 		GroundTruthPointSets.insert(GroundTruthPointSets.end(), Temp.begin(), Temp.end());
 	}
 	testOutlierDetection(GroundTruthPointSets);
@@ -128,8 +128,8 @@ TEST_F(CTestOutlierDetection, calculatePercentage)
 	std::vector<std::string> GroundTruthPaths;
 	GroundTruthPaths.push_back("groundtruth/indices.txt");
 
-	std::vector<std::uint64_t> Outlier;
-	std::vector<std::uint64_t> Temp = loadPointIndices("groundtruth/Outlier.txt");
+	pcl::Indices Outlier;
+	auto Temp = loadPointIndices("groundtruth/Outlier.txt");
 	Outlier.insert(Outlier.end(), Temp.begin(), Temp.end());
 
 	executeOutlierDetectionTest(GroundTruthPaths, Outlier,30.0);
