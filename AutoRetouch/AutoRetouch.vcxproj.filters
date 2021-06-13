@@ -107,6 +107,9 @@
     <ClInclude Include="SpatialClusterConfig.h">
       <Filter>Config</Filter>
     </ClInclude>
+    <ClInclude Include="CompositeBinaryClassifierAlg.h">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Neighborhood.cpp">
@@ -161,6 +164,9 @@
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClCompile>
     <ClCompile Include="PointCluster4Score.cpp">
+      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeBinaryClassifierAlg.cpp">
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClCompile>
   </ItemGroup>

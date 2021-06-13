@@ -15,14 +15,14 @@ namespace hiveObliquePhotography
 			
 			bool deletePointCluster(const std::string& vName);
 
-			std::vector<IPointCluster*> getGlobalClusterSet() const;
+			std::vector<IPointCluster*> getGlobalClusterSet(std::string vName) const;
 
 			const SBox& getAreaBox() const { return m_BinaryAreaAABB; }
 
 		private:
 			CPointClusterSet() = default;
 
-			std::map<std::string, IPointCluster*> m_PointClusterMap;
+			std::multimap<std::string, IPointCluster*> m_PointClusterMap;
 
 			SBox m_BinaryAreaAABB;
 

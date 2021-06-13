@@ -8,38 +8,41 @@ bool CPointClusterSet::addPointCluster(const std::string& vName, IPointCluster* 
 {
 	_ASSERTE(vName != "" && vName != "\n");
 
-	if (m_PointClusterMap.find(vName) == m_PointClusterMap.end())
+	m_PointClusterMap.insert({ vName, vCluster });
+
+	if (vCluster->getClusterLabel() == EPointLabel::UNWANTED)
 	{
-		m_PointClusterMap[vName] = vCluster;
-
-		if (vCluster->getClusterLabel() == EPointLabel::UNWANTED)
-		{
-			m_BinaryAreaAABB.update(vCluster->getClusterAABB());
-		}
-
-		return true;
+		m_BinaryAreaAABB.update(vCluster->getClusterAABB());
 	}
-	else
-		return false;
+
+	return true;
 }
 
 bool CPointClusterSet::deletePointCluster(const std::string& vName)
 {
-	if (m_PointClusterMap.find(vName) != m_PointClusterMap.end())
+	auto Iter = m_PointClusterMap.find(vName);
+	if (Iter != m_PointClusterMap.end())
 	{
-		m_PointClusterMap.erase(m_PointClusterMap.find(vName));
+		for (int i = 0; i < m_PointClusterMap.count(vName); i++)
+			delete Iter->second;
+		m_PointClusterMap.erase(vName);
 		return true;
 	}
 	else
 		return false;
 }
 
-std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet() const
+std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet(std::string vName) const
 {
 	std::vector<IPointCluster*> ClusterSet;
 
 	for (auto& Pair : m_PointClusterMap)
-		ClusterSet.push_back(Pair.second);
+	{
+		if (Pair.first.find(vName) != std::string::npos)
+		{
+			ClusterSet.push_back(Pair.second);
+		}
+	}
 
 	return ClusterSet;
 }

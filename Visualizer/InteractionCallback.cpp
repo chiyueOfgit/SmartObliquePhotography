@@ -127,7 +127,7 @@ void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEven
 	if (m_PartitionMode)
 		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
 	else
-		AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+		AutoRetouch::hiveExecuteCompositeClusterAndGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
 
 	m_pVisualizer->refresh();
 }

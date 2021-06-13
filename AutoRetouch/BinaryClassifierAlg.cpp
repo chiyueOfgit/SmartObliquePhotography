@@ -13,7 +13,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CBinaryClassifierAlg, CLASSIFIER_BINARY)
 //FUNCTION:
 void CBinaryClassifierAlg::runV()
 {
-	m_ClusterSet = CPointClusterSet::getInstance()->getGlobalClusterSet();
+	m_ClusterSet = CPointClusterSet::getInstance()->getGlobalClusterSet("vfh_");
 	_ASSERTE(!m_ClusterSet.empty());
 
 	const auto pScene = CPointCloudAutoRetouchScene::getInstance();

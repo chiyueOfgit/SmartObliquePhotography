@@ -6,7 +6,7 @@ using namespace hiveObliquePhotography::AutoRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-void ICompositeClassifier::_ensembleResult()
+void CCompositeClassifier::ensembleResult()
 {
 	_ASSERTE((m_ClassifierSet.size() > 1) && m_pGlobalLabelSet);
 
@@ -21,7 +21,7 @@ void ICompositeClassifier::_ensembleResult()
 	for (auto i = 0; i < CPointCloudAutoRetouchScene::getInstance()->getNumPoint(); i++)
 	{
 		OverallResult4SinglePoint.clear();
-		for (auto k = 0; k < m_ClassifierSet.size(); i++)
+		for (auto k = 0; k < m_ClassifierSet.size(); k++)
 		{
 			if (i == itr[k]->Index)
 			{
@@ -40,12 +40,12 @@ void ICompositeClassifier::_ensembleResult()
 	m_pGlobalLabelSet->applyPointLabelChange(EnsembledResult4GlobalLabel);
 }
 
-//*****************************************************************
-//FUNCTION: 
-void ICompositeClassifier::addClassifier(IPointClassifier* vClassifer)
+EPointLabel CCompositeClassifier::__ensembleSingleResultV(const std::vector<SPointLabelChange>& vOverallResult) const
 {
-	_ASSERTE(vClassifer);
-
-//TODO：确保vClassfier以前没有被加进来过
-	m_ClassifierSet.emplace_back(vClassifer);
+	for (auto& Result : vOverallResult)
+	{
+		if (Result.DstLabel == EPointLabel::UNWANTED)
+			return EPointLabel::UNWANTED;
+	}
+	return EPointLabel::UNDETERMINED;
 }
