@@ -23,6 +23,7 @@
 #include "DisplayOptionsSettingDialog.h"
 #include "AutoRetouchConfig.h"
 #include "SpatialClusterConfig.h"
+#include "VisualizationConfig.h"
 #include "ObliquePhotographyDataInterface.h"
 #include "AutoRetouchInterface.h"
 #include "VisualizationInterface.h"
@@ -131,10 +132,12 @@ void QTInterface::__checkFileOpenRepeatedly()
 
 }
 
+// TODO::³éÏó
 bool QTInterface::__parseConfigFile()
 {
     bool AutoRetouchConfigParseSuccess = false;
-    if (hiveConfig::hiveParseConfig("../AutoRetouch/AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+    bool VisualizationConfigParseSuccess = false;
+    if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
     {
         QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file AutoRetouchConfig.xml."));
         AutoRetouchConfigParseSuccess = true;
@@ -143,7 +146,28 @@ bool QTInterface::__parseConfigFile()
     {
         QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file AutoRetouchConfig.xml."));
     }
-    return AutoRetouchConfigParseSuccess;
+
+    if (hiveConfig::hiveParseConfig("VisualizationConfig.xml", hiveConfig::EConfigType::XML, Visualization::CVisualizationConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file VisualizationConfig.xml."));
+        VisualizationConfigParseSuccess = true;
+    }
+    else
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file VisualizationConfig.xml."));
+    }
+
+    if (hiveConfig::hiveParseConfig("VisualizationConfig.xml", hiveConfig::EConfigType::XML, Visualization::CVisualizationConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file VisualizationConfig.xml."));
+        VisualizationConfigParseSuccess = true;
+    }
+    else
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file VisualizationConfig.xml."));
+    }
+
+    return true;
 }
 
 bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
@@ -318,7 +342,7 @@ void QTInterface::closeEvent(QCloseEvent* vEvent)
 
 void QTInterface::onActionTest()
 {
-    auto pointsize = *hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("POINT_SHOW_SIZE");
+    auto pointsize = *hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance()->getAttribute<double>("POINT_SHOW_SIZE");
 
     int a;
 }
