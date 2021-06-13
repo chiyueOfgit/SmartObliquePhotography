@@ -13,6 +13,12 @@ namespace hiveObliquePhotography
 
 			double computeDistanceV(pcl::index_t vPointIndex) const override;
 
+#ifdef _UNIT_TEST
+			const auto& getNormal() const { return m_Normal; }
+			const auto& getColor() const { return m_Color; }
+			const auto& getPosition() const { return m_Position; }
+#endif // _UNIT_TEST
+
 		private:
 			Eigen::Vector3f m_Normal;
 			Eigen::Vector3i m_Color;

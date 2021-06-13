@@ -35,9 +35,10 @@ double CPointCluster4Score::computeDistanceV(pcl::index_t vPointIndex) const
 
 	double Score = 10000.0;
 
-	Score /= 10.0 * (Position - m_Position).norm() + DBL_EPSILON;
-	Score /= (Normal - m_Normal).norm() + DBL_EPSILON;
-	Score /= static_cast<double>((Color - m_Color).norm()) + DBL_EPSILON;
+	//todo: bug
+	//Score /= 10.0 * (Position - m_Position).norm() + DBL_EPSILON;
+	//Score /= (Normal - m_Normal).norm() + DBL_EPSILON;
+	//Score /= static_cast<double>((Color - m_Color).norm()) + DBL_EPSILON;
 
 	return Score;
 }

@@ -13,6 +13,10 @@ namespace hiveObliquePhotography
 
 			double computeDistanceV(pcl::index_t vPointIndex) const override;
 
+#ifdef _UNIT_TEST
+			const auto& getVFHMatrix() const { return m_VFHDescriptor; }
+#endif // _UNIT_TEST
+
 		private:
 			void __computeVFHDescriptor(const pcl::Indices& vPointIndices, Eigen::Matrix<float, 308, 1>& voVFHDescriptor) const;
 
