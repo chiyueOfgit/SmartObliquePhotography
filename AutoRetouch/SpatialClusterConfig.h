@@ -11,7 +11,7 @@ public:
 private:
 	CSpatialClusterConfig() { __defineAttributesV(); }
 
-	void __defineAttributesV()
+	void __defineAttributesV() override
 	{
 		_defineAttribute(KEY_WORDS::RESOLUTION, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 		_defineAttribute(KEY_WORDS::CLUSTERTOLERANCE, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);

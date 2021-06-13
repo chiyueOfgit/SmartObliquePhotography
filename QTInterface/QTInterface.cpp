@@ -111,12 +111,12 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     m_pPointSizeSlider->setMinimum(1);
     m_pPointSizeSlider->setMaximum(7);
     m_pPointSizeSlider->setValue(m_PointSize);
-    m_pPointSizeSlider->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>("POINT_SHOW_SIZE") ? m_PointSize : m_PointSize);
+    m_pPointSizeSlider->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::POINT_SHOW_SIZE) ? m_PointSize : m_PointSize);
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
         {
             m_PointSize = m_pPointSizeSlider->value();
-            hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->overwriteAttribute("POINT_SHOW_SIZE", m_PointSize);
+            hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->overwriteAttribute(KEY_WORDS::POINT_SHOW_SIZE, m_PointSize);
         }
     );
 
@@ -318,7 +318,7 @@ void QTInterface::closeEvent(QCloseEvent* vEvent)
 
 void QTInterface::onActionTest()
 {
-    auto pointsize = *hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS");
+    auto pointsize = *hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS);
 
     int a;
 }
