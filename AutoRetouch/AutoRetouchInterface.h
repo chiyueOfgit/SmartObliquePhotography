@@ -23,11 +23,11 @@ namespace hiveObliquePhotography
 
 		AUTORETOUCH_DECLSPEC bool hiveExecuteBinaryClassifier(const std::string& vClassifierSig);
 
-		AUTORETOUCH_DECLSPEC bool hiveExecuteClusterAlg2CreateCluster(const pcl::Indices& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera);
+		AUTORETOUCH_DECLSPEC bool hiveExecuteClusterAlg2CreateCluster(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera);
 
-		AUTORETOUCH_DECLSPEC bool hiveExecuteClusterAlg2RegionGrowing(const pcl::Indices& vPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera);
+		AUTORETOUCH_DECLSPEC bool hiveExecuteClusterAlg2RegionGrowing(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera);
 
-		AUTORETOUCH_DECLSPEC bool hiveExecuteMaxVisibilityClustering(const pcl::IndicesPtr& vPointIndices, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera);
+		AUTORETOUCH_DECLSPEC bool hiveExecuteMaxVisibilityClustering(const pcl::IndicesPtr& vioPointIndices, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera);
 
 		template<class... TArgs>
 		bool hiveExecuteRegionGrowClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)

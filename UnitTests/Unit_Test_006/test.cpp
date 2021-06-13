@@ -32,8 +32,8 @@ protected:
 		
 		//不可见的聚类面积最大
 		{
-			"testcase/SimpleTestThree.indices.txt"
-			"testcase/SimpleTestThree.camera.txt"
+			"testcase/SimpleTestThree.indices.txt",
+			"testcase/SimpleTestThree.camera.txt",
 			"groundtruth/RightFourTrees.txt",
 		},
 	};
@@ -61,19 +61,20 @@ TEST_F(TestAreaPicking, NearestClusterWithMaxVisibility)
 	
 	pcl::IndicesPtr pTestee(new pcl::Indices);
 	pcl::visualization::Camera Camera;
-	pcl::IndicesPtr pGroundTruth(new pcl::Indices);
+	pcl::Indices GroundTruth;
 
 	_loadIndices(Path[0], *pTestee);
 	_loadCamera(Path[1], Camera);
-	_loadIndices(Path[2], *pGroundTruth);
+	_loadIndices(Path[2], GroundTruth);
 
 	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+
 	pcl::Indices Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
-		pGroundTruth->begin(), pGroundTruth->end(),
+		GroundTruth.begin(), GroundTruth.end(),
 		std::inserter(Difference, Difference.begin()));
 
-	GTEST_ASSERT_EQ(Difference.size(), 0u);
+	GTEST_ASSERT_LE(Difference.size(), 0);
 }
 
 TEST_F(TestAreaPicking, FurthestClusterWithMaxVisibility)
@@ -82,55 +83,67 @@ TEST_F(TestAreaPicking, FurthestClusterWithMaxVisibility)
 
 	pcl::IndicesPtr pTestee(new pcl::Indices);
 	pcl::visualization::Camera Camera;
-	pcl::IndicesPtr pGroundTruth(new pcl::Indices);
+	pcl::Indices GroundTruth;
 
 	_loadIndices(Path[0], *pTestee);
 	_loadCamera(Path[1], Camera);
-	_loadIndices(Path[2], *pGroundTruth);
+	_loadIndices(Path[2], GroundTruth);
 
 	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+
 	pcl::Indices Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
-		pGroundTruth->begin(), pGroundTruth->end(),
+		GroundTruth.begin(), GroundTruth.end(),
 		std::inserter(Difference, Difference.begin()));
 
-	GTEST_ASSERT_EQ(Difference.size(), 0u);
+	GTEST_ASSERT_LE(Difference.size(), 0);
 }
 
 TEST_F(TestAreaPicking, InvisibleClusterWithMaxArea)
 {
 	const auto& Path = m_SamplePaths[2];
-
+	
 	pcl::IndicesPtr pTestee(new pcl::Indices);
 	pcl::visualization::Camera Camera;
-	pcl::IndicesPtr pGroundTruth(new pcl::Indices);
+	pcl::Indices GroundTruth;
 
 	_loadIndices(Path[0], *pTestee);
 	_loadCamera(Path[1], Camera);
-	_loadIndices(Path[2], *pGroundTruth);
+	_loadIndices(Path[2], GroundTruth);
 
 	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+
 	pcl::Indices Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
-		pGroundTruth->begin(), pGroundTruth->end(),
+		GroundTruth.begin(), GroundTruth.end(),
 		std::inserter(Difference, Difference.begin()));
 
-	GTEST_ASSERT_EQ(Difference.size(), 0u);
+	GTEST_ASSERT_LE(Difference.size(), 0);
 }
 
 TEST_F(TestAreaPicking, DeathTest_IndicesIsNullptr)
 {
-	pcl::IndicesPtr pTestee = nullptr;
+	pcl::IndicesPtr pTestee;
 	pcl::visualization::Camera Camera;
-	EXPECT_DEATH(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera); , "");
+	ASSERT_DEATH(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera); , "");
+}
+
+
+TEST_F(TestAreaPicking, DeathTest_IndicesIsEmpty)
+{
+	pcl::IndicesPtr pTestee(new pcl::Indices);
+	pcl::visualization::Camera Camera;
+
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+	
+	GTEST_ASSERT_EQ(pTestee->size(), 0);
 }
 
 //*****************************************************************
 //FUNCTION: 
 void TestAreaPicking::_loadIndices(const std::string& vPath, pcl::Indices& voIndices)
 {
-	const std::string Path{ vPath };
-	std::ifstream File(Path);
+	std::ifstream File(vPath);
 	boost::archive::text_iarchive ia(File);
 	ia >> BOOST_SERIALIZATION_NVP(voIndices);
 	File.close();
