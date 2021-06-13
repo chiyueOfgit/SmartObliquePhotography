@@ -79,6 +79,10 @@ namespace hiveObliquePhotography
 				return ResultIndices;
 			}
 
+#ifdef _UNIT_TEST
+			auto& getGlobalLabelSet() const { return m_pGlobalLabelSet; }
+#endif
+		
 		protected:
 			CGlobalPointLabelSet* m_pGlobalLabelSet = nullptr;
 			CLocalPointLabelSet*  m_pLocalLabelSet = nullptr;
