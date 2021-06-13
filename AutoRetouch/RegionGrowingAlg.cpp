@@ -23,7 +23,6 @@ void CRegionGrowingAlg::runV(const pcl::Indices& vSeeds, EPointLabel vDstLabel)
 	}
 
 	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
-	//TODO:使用NeighborhoodBuilder
 	const auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
 	const auto SearchRadius = *CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS);
 	//TODO: 确保初始化成功？
@@ -32,20 +31,17 @@ void CRegionGrowingAlg::runV(const pcl::Indices& vSeeds, EPointLabel vDstLabel)
 	__initValidation(vSeeds, pCloud);
 
 	pcl::Indices Seeds(vSeeds);
-	//for (auto CurrentIndex : vSeeds)
-	//{
-	//	//TRAVERE
-	//}
-
-	int Num = 0;
+	for (auto CurrentIndex : Seeds)
+		if (CurrentIndex < 0 || CurrentIndex > pCloud->size())
+			_THROW_RUNTIME_ERROR("invaild index of region grow");
 
 	while (!Seeds.empty())
 	{
 		const auto CurrentIndex = Seeds.back();
 		Seeds.pop_back();
 
-		//if (__testAndUpdateMask(Traversed[CurrentIndex], NEIGHBOR_TRAVERSED))
-			//continue;
+		if (__testAndUpdateMask(Traversed[CurrentIndex], NEIGHBOR_TRAVERSED))
+			continue;
 
 		//TODO:使用NeighborhoodBuilder
 		pcl::Indices NeighborIndices;
@@ -61,17 +57,11 @@ void CRegionGrowingAlg::runV(const pcl::Indices& vSeeds, EPointLabel vDstLabel)
 				continue;
 
 			Seeds.insert(Seeds.end(), NeighborIndices.begin(), NeighborIndices.end());
-			Num++;
 			for (auto Index : NeighborIndices)
-			{
 				m_pLocalLabelSet->changePointLabel(Index, vDstLabel);
-			}
-
 			break;
 		}
 	}
-
-	Num++;
 }
 
 //*****************************************************************
