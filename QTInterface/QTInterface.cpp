@@ -17,10 +17,12 @@
 #include <common/ConfigCommon.h>
 #include <common/ConfigInterface.h>
 #include <algorithm>
+#include <tuple>
 
 #include "QTDockWidgetTitleBar.h"
 #include "ui_DisplayOptionsSettingDialog.h"
 #include "DisplayOptionsSettingDialog.h"
+#include "QTInterfaceConfig.h"
 #include "AutoRetouchConfig.h"
 #include "SpatialClusterConfig.h"
 #include "VisualizationConfig.h"
@@ -66,23 +68,29 @@ void QTInterface::__initialVTKWidget()
 
 void QTInterface::__initialResourceSpaceDockWidget()
 {
-    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceTreeView);
-    ui.workSpaceTreeView->setModel(m_pResourceSpaceStandardItemModels);
+    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.resourceTreeView);
+    ui.resourceTreeView->setModel(m_pResourceSpaceStandardItemModels);
     m_pResourceSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.workSpaceTreeView);
-    dockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "Resource Space");
+    auto BackgroundColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR");
+    auto FontColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_FONTCOLOR");
+    auto FontSize = *CQInterfaceConfig::getInstance()->getAttribute<int>("DOCKWIDGETTITLEBAR_FONTSIZE");
+
+    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.resourceDockWidget);
+    dockWidgetTitleBar->setAttr(QColor(std::get<0>(BackgroundColor), std::get<1>(BackgroundColor), std::get<2>(BackgroundColor), std::get<3>(BackgroundColor)), 
+                                QColor(std::get<0>(FontColor), std::get<1>(FontColor), std::get<2>(FontColor), std::get<3>(FontColor)), FontSize, "Resource Space");
     ui.resourceDockWidget->setTitleBarWidget(dockWidgetTitleBar);
+    
 }
 
 void QTInterface::__initialWorkSpaceDockWidget()
 {
-    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceDockWidget);
-    ui.resourceTreeView->setModel(m_pResourceSpaceStandardItemModels);
-    m_pResourceSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
+    m_pWorkSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceTreeView);
+    ui.workSpaceTreeView->setModel(m_pWorkSpaceStandardItemModels);
+    m_pWorkSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
     QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.workSpaceDockWidget);
-    dockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "Resource Space");
+    dockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "Work Space");
     ui.workSpaceDockWidget->setTitleBarWidget(dockWidgetTitleBar);
 }
 
@@ -152,12 +160,14 @@ bool QTInterface::__parseConfigFile()
     bool AutoRetouchConfigParseSuccess = false;
     bool VisualizationConfigParseSuccess = false;
     bool SpatialClusterConfigParseSuccess = false;
+    bool QTInterfaceConfigParseSuccess = false;
 
     AutoRetouchConfigParseSuccess = QTInterface::__readConfigFile("AutoRetouchConfig.xml", AutoRetouch::CAutoRetouchConfig::getInstance());
     VisualizationConfigParseSuccess = QTInterface::__readConfigFile("VisualizationConfig.xml", Visualization::CVisualizationConfig::getInstance());
     SpatialClusterConfigParseSuccess = QTInterface::__readConfigFile("SpatialClusterConfig.xml", CSpatialClusterConfig::getInstance());
+    QTInterfaceConfigParseSuccess = QTInterface::__readConfigFile("QTInterfaceConfig.xml", CQInterfaceConfig::getInstance());
 
-    return AutoRetouchConfigParseSuccess && VisualizationConfigParseSuccess && SpatialClusterConfigParseSuccess;
+    return AutoRetouchConfigParseSuccess && VisualizationConfigParseSuccess && SpatialClusterConfigParseSuccess && QTInterfaceConfigParseSuccess;
 }
 
 bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)

@@ -156,9 +156,11 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="QTInterfaceConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="AutoRetouchConfig.xml" />
+    <Xml Include="QTInterfaceConfig.xml" />
     <Xml Include="SpatialClusterConfig.xml" />
     <Xml Include="VisualizationConfig.xml" />
   </ItemGroup>

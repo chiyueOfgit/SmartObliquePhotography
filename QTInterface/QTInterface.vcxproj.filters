@@ -82,6 +82,9 @@
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="QTInterfaceConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="AutoRetouchConfig.xml">
@@ -91,6 +94,9 @@
       <Filter>Resource Files</Filter>
     </Xml>
     <Xml Include="VisualizationConfig.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="QTInterfaceConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>
