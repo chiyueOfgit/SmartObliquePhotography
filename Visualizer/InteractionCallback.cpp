@@ -104,9 +104,15 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			std::vector<int> PickedIndices;
 			pcl::visualization::Camera Camera;
 			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+            const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+			Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+			Camera.computeViewMatrix(ViewMatrix);
+			Camera.computeProjectionMatrix(ProjectionMatrix);
+			std::vector<Eigen::Matrix4d> Matrices{ ViewMatrix, ProjectionMatrix };
+			
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + DeltaX, PosY + DeltaY, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
 			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
-			AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, Camera);
+			AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, Matrices);
 
 			m_pVisualizer->refresh();
 			
@@ -123,11 +129,16 @@ void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEven
 
 	pcl::visualization::Camera Camera;
 	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-
+    const Eigen::Vector3f CameraPos = { static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	std::vector<Eigen::Matrix4d> Matrices{ViewMatrix, ProjectionMatrix };
+	
 	if (m_PartitionMode)
-		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, Matrices);
 	else
-		AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+		AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, Matrices);
 
 	m_pVisualizer->refresh();
 }

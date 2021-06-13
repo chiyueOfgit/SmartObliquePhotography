@@ -67,7 +67,12 @@ TEST_F(TestAreaPicking, NearestClusterWithMaxVisibility)
 	_loadCamera(Path[1], Camera);
 	_loadIndices(Path[2], GroundTruth);
 
-	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+	const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	std::vector<Eigen::Matrix4d> Matrices{ ViewMatrix, ProjectionMatrix };
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, CameraPos, Matrices);
 
 	pcl::Indices Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
@@ -88,8 +93,13 @@ TEST_F(TestAreaPicking, FurthestClusterWithMaxVisibility)
 	_loadIndices(Path[0], *pTestee);
 	_loadCamera(Path[1], Camera);
 	_loadIndices(Path[2], GroundTruth);
+	const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	std::vector<Eigen::Matrix4d> Matrices{ ViewMatrix, ProjectionMatrix };
 
-	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, CameraPos, Matrices);
 
 	pcl::Indices Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
@@ -110,8 +120,13 @@ TEST_F(TestAreaPicking, InvisibleClusterWithMaxArea)
 	_loadIndices(Path[0], *pTestee);
 	_loadCamera(Path[1], Camera);
 	_loadIndices(Path[2], GroundTruth);
-
-	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+	const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	std::vector<Eigen::Matrix4d> Matrices{ ViewMatrix, ProjectionMatrix };
+	
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, CameraPos, Matrices);
 
 	pcl::Indices Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
@@ -125,7 +140,13 @@ TEST_F(TestAreaPicking, DeathTest_IndicesIsNullptr)
 {
 	pcl::IndicesPtr pTestee;
 	pcl::visualization::Camera Camera;
-	ASSERT_DEATH(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera); , "");
+	const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	std::vector<Eigen::Matrix4d> Matrices{ ViewMatrix, ProjectionMatrix };
+	
+	ASSERT_DEATH(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, CameraPos, Matrices); , "");
 }
 
 
@@ -133,8 +154,13 @@ TEST_F(TestAreaPicking, DeathTest_IndicesIsEmpty)
 {
 	pcl::IndicesPtr pTestee(new pcl::Indices);
 	pcl::visualization::Camera Camera;
+	const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	std::vector<Eigen::Matrix4d> Matrices{ ViewMatrix, ProjectionMatrix };
 
-	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, CameraPos, Matrices);
 	
 	GTEST_ASSERT_EQ(pTestee->size(), 0);
 }
