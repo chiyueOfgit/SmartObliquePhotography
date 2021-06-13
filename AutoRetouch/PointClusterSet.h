@@ -20,6 +20,10 @@ namespace hiveObliquePhotography
 
 			const SBox& getAreaBox() const { return m_BinaryAreaAABB; }
 
+#ifdef _UNIT_TEST
+			auto& getPointClusterMap() const { return m_PointClusterMap; }
+#endif
+
 		private:
 			CPointClusterSet() = default;
 

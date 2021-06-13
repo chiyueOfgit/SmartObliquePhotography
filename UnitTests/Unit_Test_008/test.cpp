@@ -1,8 +1,13 @@
 #include "pch.h"
 #include "AutoRetouchInterface.h"
-#include "PointCloudAutoRetouchScene.h"
+#include "VisualizationInterface.h"
+#include "PointCluster4VFH.h"
+#include "PointCluster4Score.h"
+#include "PointCluster4NormalRatio.h"
+#include "CompositeClassifier.h"
 #include "PointCloudVisualizer.h"
-#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include "pcl/io/pcd_io.h"
 
 #include <fstream>
 #include <boost/archive/text_oarchive.hpp> 
@@ -11,217 +16,197 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-//	测试用例列表：
+//测试用例列表：
+//  * ChangeLabel_Undo_Overview_Test: 是否成功撤销对PointLabel的更改
+//  * ClusterSet_Undo_Overview_Test: 是否成功撤销对ClusterSet的更改
+//
+//  * ChangeLabel_Undo_Cleanup_Test: 对PointLabel的撤销不应该影响下次执行的结果
+//  * ClusterSet_Undo_Cleanup_Test: 对ClusterSet的撤销不应该影响下次执行的结果
+// 
+//  * Empty_ResultQueue_Expect_Test: 对空的结果队列进行撤销不应引起异常
 
-//	* DeathTest_EmptyInput:尝试输入空的种子点集合；
-//	* DeathTest_IllegalInput:尝试输入越界的种子点集；
-//	* RegionGrowingCorrectness:测试区域生长功能生长结果的逻辑正确性(通过反生长剩余点);
-//	* RegionGrowingAccuracy:测试区域生长功能生长的完整程度,用于对比算法优劣;
-//	* RegionGrowingErrorRate:测试区域生长功能生长的错误生长程度,用于对比算法优劣;
-//	* Other_DeathTest_1:
-
-// GroundTruth: tile16 左侧大树、中间两树、右侧四树、后面滑梯
-
-const std::string TestGrowingAlg = CLASSIFIER_REGION_GROW_COLOR;
+const bool bIsEnableVisualizer = false;
 
 const std::string g_Folder = "test_tile16/";
 const std::string g_CloudFile = "Scu_Tile16.pcd";
+const std::string g_UnwantedTreePoints = "SomeBigTreePoints.txt";
+const std::string g_KeptGroundPoints = "SomeGroundPoints.txt";
 
-
-class CTestRegionGrow :public testing::Test
+class CBinaryTest : public testing::Test
 {
 protected:
-
-	const std::vector<std::string> GroundTruth = {
-		"groundtruth/LeftBigTree.txt",
-		"groundtruth/MidTwoTrees.txt",
-		"groundtruth/RightFourTrees.txt",
-		"groundtruth/KinderGarten.txt"
-	};
-
-
 	void SetUp() override
 	{
+		//init scene
 		m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
 		pcl::io::loadPCDFile(g_Folder + g_CloudFile, *m_pCloud);
 
 		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);
+
+		if (bIsEnableVisualizer)
+		{
+			hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->init(m_pCloud, false);
+			hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->refresh();
+		}
+
+		createTestcaseContext();
 	}
 
 	void TearDown() override
 	{
-
+		if (bIsEnableVisualizer)
+		{
+			hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->refresh();
+			system("pause");
+		}
 	}
 
-	pcl::Indices loadPointIndices(std::string vPath)
+	pcl::IndicesPtr loadPointIndices(const std::string& vPath)
 	{
-		pcl::Indices Indices;
+		pcl::IndicesPtr pIndices(new pcl::Indices);
 		std::ifstream File(vPath.c_str());
 		boost::archive::text_iarchive ia(File);
-		ia >> BOOST_SERIALIZATION_NVP(Indices);
+		ia >> BOOST_SERIALIZATION_NVP(*pIndices);
 		File.close();	//ia后才能关闭
-		return Indices;
+		return pIndices;
 	}
 
-	pcl::Indices getRegionGrowingResult(const pcl::Indices& vSeedSet);
-	pcl::PointCloud<pcl::PointSurfel>::Ptr getCloud() { return m_pCloud; }
-	void calcRegionGrowingAccuracy(const std::vector<std::string>& vGroundTruthPath, float vExpectedCorrect);
-	void calcRegionGrowingErrorRate(const std::vector<std::string>& vGroundTruthPath, float vExpectedError);
+	void createTestcaseContext()
+	{
+		m_pUnwantedIndices = loadPointIndices(g_Folder + g_UnwantedTreePoints);
+		m_pUnwantedCluster4VFH = new CPointCluster4VFH(m_pUnwantedIndices, m_Unwanted);
+		m_pUnwantedCluster4Score = new CPointCluster4Score(m_pUnwantedIndices, m_Unwanted);
+		m_pUnwantedCluster4NormalRatio = new CPointCluster4NormalRatio(m_pUnwantedIndices, m_Unwanted);
+
+		m_pKeptIndices = loadPointIndices(g_Folder + g_KeptGroundPoints);
+		m_pKeptCluster4VFH = new CPointCluster4VFH(m_pKeptIndices, m_Kept);
+		m_pKeptCluster4Score = new CPointCluster4Score(m_pKeptIndices, m_Kept);
+		m_pKeptCluster4NormalRatio = new CPointCluster4NormalRatio(m_pKeptIndices, m_Kept);
+	}
+
+	auto* prepareExcute(const std::vector<IPointCluster*>& vClusters)
+	{
+		for (std::size_t i = 0; i < vClusters.size(); i++)
+			CPointClusterSet::getInstance()->addPointCluster("vfh_" + std::to_string(i), vClusters[i]);
+
+		auto* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(CLASSIFIER_BINARY, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+
+		return pClassifier;
+	}
+
+	void testResultSize(const IPointClassifier* vClassifier)
+	{
+		//结果数目
+		auto LabelChanged = vClassifier->getResult();
+		ASSERT_GT(LabelChanged.size(), 0);
+		ASSERT_LT(LabelChanged.size(), getCloud()->size());
+		ASSERT_LE(LabelChanged.size(), getCloud()->size() - m_pUnwantedIndices->size() - m_pKeptIndices->size());
+	}
+	
+	void testChangeLabelBeforeUndo(const IPointClassifier* vClassifier)
+	{
+		for (auto& OneChange : vClassifier->getResult())
+			ASSERT_EQ(OneChange.DstLabel, vClassifier->getGlobalLabelSet()->getPointLabel(OneChange.Index));
+	}
+
+	void testChangeLabelAfterUndo(const IPointClassifier* vClassifier)
+	{
+		for (auto& OneChange : vClassifier->getResult())
+			ASSERT_EQ(OneChange.SrcLabel, vClassifier->getGlobalLabelSet()->getPointLabel(OneChange.Index));
+	}
+
+	void testClusterSetBeforeUndo(const std::vector<IPointCluster*>& vClusters)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			auto [Name, pCluster] = *CPointClusterSet::getInstance()->getPointClusterMap().find("vfh_" + std::to_string(i));
+			auto& Left = vClusters[i]->getClusterIndices();
+			auto& Right = pCluster->getClusterIndices();
+
+			//TODO: fixme
+			//EXPECT_EQ(Left.get(), Right.get(), "redundant construction for share_ptr");
+			ASSERT_EQ(Left->size(), Right->size());
+			for (size_t k = 0; k < Left->size(); k++)
+				ASSERT_EQ(Left->at(k), Right->at(k));
+		}
+	}
+
+	void testClusterSetAfterUndo()
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			const auto& Map = CPointClusterSet::getInstance()->getPointClusterMap();
+			ASSERT_EQ(Map.find("vfh_" + std::to_string(i)), Map.end());
+		}
+	}
+	
+	pcl::IndicesPtr m_pUnwantedIndices;
+	pcl::IndicesPtr m_pKeptIndices;
+	EPointLabel m_Unwanted = EPointLabel::UNWANTED;
+	EPointLabel m_Kept = EPointLabel::KEPT;
+
+	std::vector<pcl::IndicesPtr> m_pRestrictIndices;
+
+	CPointCluster4VFH* m_pUnwantedCluster4VFH = nullptr;
+	CPointCluster4VFH* m_pKeptCluster4VFH = nullptr;
+	CPointCluster4Score* m_pUnwantedCluster4Score = nullptr;
+	CPointCluster4Score* m_pKeptCluster4Score = nullptr;
+	CPointCluster4NormalRatio* m_pUnwantedCluster4NormalRatio = nullptr;
+	CPointCluster4NormalRatio* m_pKeptCluster4NormalRatio = nullptr;
+
+	pcl::PointCloud<pcl::PointSurfel>::ConstPtr getCloud() const { return m_pCloud; }
 
 private:
 	pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
 };
 
-pcl::Indices CTestRegionGrow::getRegionGrowingResult(const pcl::Indices& vSeedSet)
+TEST_F(CBinaryTest, ChangeLabel_Undo_Overview_Test)
 {
-	pcl::Indices Result;
-	clock_t StartTime, FinishTime;
-	StartTime = clock();
-
-	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(TestGrowingAlg, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	pClassifier->execute<CRegionGrowingAlg>(true, vSeedSet, EPointLabel::UNWANTED);
-
-	FinishTime = clock();
-	std::cout << "\n区域生长花费时间：" << (int)(FinishTime - StartTime) << " ms\n";
-
-	pClassifier->getResult();
-	for (auto& Record : pClassifier->getResult())
-	{
-		Result.push_back(Record.Index);
-	}
-	return Result;
+	auto pClassifier = prepareExcute({ m_pUnwantedCluster4VFH, m_pKeptCluster4VFH });
+	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
+	testResultSize(pClassifier);
+	
+	testChangeLabelBeforeUndo(pClassifier);
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	testChangeLabelAfterUndo(pClassifier);
 }
 
-void CTestRegionGrow::calcRegionGrowingAccuracy(const std::vector<std::string>& vGroundTruthPath, float vExpectedCorrect)
+TEST_F(CBinaryTest, ClusterSet_Undo_Overview_Test)
 {
-	pcl::Indices GroundTruthPointSets;
-	pcl::Indices Result;
-
-	auto calculatePercentage = [&](float vExpectedCorrectRate)
-	{
-		pcl::Indices ResultIndices = Result;
-		pcl::Indices GroundTruthIndices = GroundTruthPointSets;
-
-		std::vector<int> Intersection(GroundTruthIndices.size(), -1);
-		std::set_intersection(ResultIndices.begin(), ResultIndices.end(), GroundTruthIndices.begin(), GroundTruthIndices.end(), Intersection.begin());
-		std::size_t NumIntersection = std::distance(Intersection.begin(), std::find(Intersection.begin(), Intersection.end(), -1));
-
-		float CorrectRate = NumIntersection / (float)GroundTruthIndices.size() * 100.0f;
-		std::cout << "\n正确率：" << CorrectRate << "\n\n";
-		EXPECT_GE(CorrectRate, vExpectedCorrectRate);
-	};
-	for (auto& GroundTruthPath : vGroundTruthPath)
-	{
-		GroundTruthPointSets = loadPointIndices(GroundTruthPath);
-		const std::size_t InputCount = 10;
-		pcl::Indices InputIndices;
-		{
-			auto Iter = GroundTruthPointSets.begin();
-			for (int i = 0; i < InputCount && Iter != GroundTruthPointSets.end(); i++, Iter++)
-			{
-				InputIndices.push_back(*Iter);
-			}
-		}
-		Result = getRegionGrowingResult(InputIndices);
-		calculatePercentage(vExpectedCorrect);
-	}
+	const std::vector<IPointCluster*> Clusters = { m_pUnwantedCluster4VFH, m_pKeptCluster4VFH };
+	auto pClassifier = prepareExcute(Clusters);
+	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
+	testResultSize(pClassifier);
+	
+	testClusterSetBeforeUndo(Clusters);
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	testClusterSetAfterUndo();
 }
 
-void CTestRegionGrow::calcRegionGrowingErrorRate(const std::vector<std::string>& vGroundTruthPath, float vExpectedError)
+TEST_F(CBinaryTest, ChangeLabel_Undo_Cleanup_Test)
 {
-	pcl::Indices GroundTruthPointSets;
-	pcl::Indices Result;
+	auto pClassifier = prepareExcute({ m_pUnwantedCluster4VFH, m_pKeptCluster4VFH });
+	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
+	testResultSize(pClassifier);
 
-	auto calculatePercentage = [&](float vExpectedErrorRate)
-	{
-		pcl::Indices ResultIndices = Result;
-		pcl::Indices GroundTruthIndices = GroundTruthPointSets;
-
-		std::vector<int> Difference(ResultIndices.size(), -1);
-		std::set_difference(ResultIndices.begin(), ResultIndices.end(), GroundTruthIndices.begin(), GroundTruthIndices.end(), Difference.begin());
-		std::size_t NumDifference = std::distance(Difference.begin(), std::find(Difference.begin(), Difference.end(), -1));
-
-		float ErrorRate = NumDifference / (float)GroundTruthIndices.size() * 100.0f;
-		std::cout << "\n错误率: " << ErrorRate << std::endl << std::endl;
-		EXPECT_LE(ErrorRate, vExpectedErrorRate);
-	};
-	for (auto& GroundTruthPath : vGroundTruthPath)
-	{
-		GroundTruthPointSets = loadPointIndices(GroundTruthPath);
-		const std::size_t InputCount = 10;
-		pcl::Indices InputIndices;
-		{
-			auto Iter = GroundTruthPointSets.begin();
-			for (int i = 0; i < InputCount && Iter != GroundTruthPointSets.end(); i++, Iter++)
-			{
-				InputIndices.push_back(*Iter);
-			}
-		}
-		Result = getRegionGrowingResult(InputIndices);
-		calculatePercentage(vExpectedError);
-	}
+	testChangeLabelBeforeUndo(pClassifier);
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	testChangeLabelAfterUndo(pClassifier);
 }
 
-TEST_F(CTestRegionGrow, DeathTest_EmptyInput)
+TEST_F(CBinaryTest, ClusterSet_Undo_Cleanup_Test)
 {
-	pcl::Indices SeedSet = { };
-	ASSERT_ANY_THROW(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(TestGrowingAlg, SeedSet, EPointLabel::UNWANTED));
+	const std::vector<IPointCluster*> Clusters = { m_pUnwantedCluster4VFH, m_pKeptCluster4VFH };
+	auto pClassifier = prepareExcute(Clusters);
+	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
+	testResultSize(pClassifier);
+
+	testClusterSetBeforeUndo(Clusters);
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	testClusterSetAfterUndo();
 }
-
-TEST_F(CTestRegionGrow, DeathTest_IllegalInput)
-{
-	pcl::Indices SeedSet = { 1700000,1800000, -1 };
-	ASSERT_ANY_THROW(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(TestGrowingAlg, SeedSet, EPointLabel::UNWANTED));
-
-}
-
-TEST_F(CTestRegionGrow, RegionGrowingCorrectness)
-{
-	for (auto& GroundTruthPath : GroundTruth)
-	{
-		auto GroundTruthPointSets = loadPointIndices(GroundTruthPath);
-		const int InputCount = 5;
-		pcl::Indices InputIndices;
-		{
-			auto Iter = GroundTruthPointSets.begin();
-			for (int i = 0; i < InputCount && Iter != GroundTruthPointSets.end(); i++, Iter++)
-			{
-				InputIndices.push_back(*Iter);
-			}
-		}
-		auto Result = getRegionGrowingResult(InputIndices);
-
-		pcl::Indices Residual(GroundTruthPointSets.size(), -1);
-		auto DTail = std::set_difference(GroundTruthPointSets.begin(), GroundTruthPointSets.end(), Result.begin(), Result.end(), Residual.begin());
-		Residual.resize(DTail - Residual.begin());
-
-		auto AntiElection = getRegionGrowingResult(Residual);
-		int Sum = 0;
-		for (auto Index : InputIndices)
-		{
-			if (find(AntiElection.begin(), AntiElection.end(), Index) != AntiElection.end())
-				Sum++;
-		}
-		GTEST_ASSERT_NE(Sum, InputIndices.size());
-	}
-
-}
-
-TEST_F(CTestRegionGrow, RegionGrowingAccuracy)
-{
-	calcRegionGrowingAccuracy(GroundTruth, 70);
-}
-
-TEST_F(CTestRegionGrow, RegionGrowingErrorRate)
-{
-	calcRegionGrowingErrorRate(GroundTruth, 10);
-}
-
-
-
-
-
-
-
-
 
