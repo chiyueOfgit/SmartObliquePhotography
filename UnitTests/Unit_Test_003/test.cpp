@@ -170,7 +170,7 @@ TEST_F(CTestRegionGrow, DeathTest_EmptyInput)
 
 TEST_F(CTestRegionGrow, DeathTest_IllegalInput)
 {
-	pcl::Indices SeedSet = {170000,180000 };
+	pcl::Indices SeedSet = {1700000,1800000, -1 };
 	ASSERT_ANY_THROW(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(TestGrowingAlg, SeedSet, EPointLabel::UNWANTED));
 
 }

@@ -31,10 +31,9 @@ void CRegionGrowingAlg::runV(const pcl::Indices& vSeeds, EPointLabel vDstLabel)
 	__initValidation(vSeeds, pCloud);
 
 	pcl::Indices Seeds(vSeeds);
-	//for (auto CurrentIndex : vSeeds)
-	//{
-	//	//TRAVERE
-	//}
+	for (auto CurrentIndex : Seeds)
+		if (CurrentIndex < 0 || CurrentIndex > pCloud->size())
+			throw std::out_of_range("invaild index of region grow)");
 
 	while (!Seeds.empty())
 	{
