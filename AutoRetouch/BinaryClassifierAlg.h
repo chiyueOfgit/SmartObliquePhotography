@@ -13,7 +13,7 @@ namespace hiveObliquePhotography
 			CBinaryClassifierAlg() = default;
 			~CBinaryClassifierAlg() override = default;
 
-			virtual void runV();
+			virtual void runV(const std::string& vClusterType);
 
 		protected:
 			std::vector<IPointCluster*> m_ClusterSet;
