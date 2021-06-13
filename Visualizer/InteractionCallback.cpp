@@ -64,6 +64,12 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			AutoRetouch::hiveUndoLastOp();
 			m_pVisualizer->refresh();
 		}
+
+		else if (KeyString == "s")
+		{
+			AutoRetouch::hiveExecuteCompositeBinaryClassifier();
+			m_pVisualizer->refresh();
+		}
 		
 		else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
 		{

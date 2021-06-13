@@ -55,11 +55,19 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std:
 
 	_ASSERTE(vClassifierSig.find(CLASSIFIER_BINARY) != std::string::npos);
 
-	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	IPointClassifier* pClassifier = hiveDesignPattern::hiveCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", vClassifierSig), false);
 
 	pClassifier->execute<CBinaryClassifierAlg>(true, vClusterType);
 	RECORD_TIME_END(二分类);
+	return true;
+}
+
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeBinaryClassifier()
+{
+	auto pCompositeClassifier = new CCompositeBinaryClassifierAlg;
+	pCompositeClassifier->addBinaryClassifiers(COMPOSITE_BINARY_CONFIG);
+	pCompositeClassifier->run();
 	return true;
 }
 
@@ -76,10 +84,30 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(co
 
 		RECORD_TIME_BEGIN;
 
+		std::vector<std::string> Names;
+		std::vector<IPointCluster*> pClusters;
+
 		static std::size_t ClusterId = 0;
-		CPointClusterSet::getInstance()->addPointCluster("vfh_" + std::to_string(ClusterId), new CPointCluster4VFH(pClassifier->getResultIndices(), vExpectLabel));
-		CPointClusterSet::getInstance()->addPointCluster("socre_" + std::to_string(ClusterId), new CPointCluster4Score(pClassifier->getResultIndices(), vExpectLabel));
-		CPointClusterSet::getInstance()->addPointCluster("normal" + std::to_string(ClusterId), new CPointCluster4NormalRatio(pClassifier->getResultIndices(), vExpectLabel));
+		for (auto& Type : COMPOSITE_BINARY_CONFIG)
+		{
+			if (Type.find(BINARY_CLUSTER_VFH) != std::string::npos)
+			{
+				Names.push_back(BINARY_CLUSTER_VFH + std::to_string(ClusterId));
+				pClusters.push_back(new CPointCluster4VFH(pClassifier->getResultIndices(), vExpectLabel));
+			}
+			else if (Type.find(BINARY_CLUSTER_SCORE) != std::string::npos)
+			{
+				Names.push_back(BINARY_CLUSTER_SCORE + std::to_string(ClusterId));
+				pClusters.push_back(new CPointCluster4Score(pClassifier->getResultIndices(), vExpectLabel));
+			}
+			else if (Type.find(BINARY_CLUSTER_NORMAL) != std::string::npos)
+			{
+				Names.push_back(BINARY_CLUSTER_NORMAL + std::to_string(ClusterId));
+				pClusters.push_back(new CPointCluster4NormalRatio(pClassifier->getResultIndices(), vExpectLabel));
+			}
+		}
+		CPointClusterSet::getInstance()->addPointClusters(Names, pClusters);
+
 		ClusterId++;
 
 		RECORD_TIME_END(添加簇);

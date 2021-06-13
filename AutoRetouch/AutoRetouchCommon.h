@@ -17,6 +17,11 @@ namespace hiveObliquePhotography
 		const std::string CLASSIFIER_REGION_GROW_COLOR = "RegionGrow_color";
 		const std::string CLASSIFIER_OUTLIER_DETECTION = "OutlierDetection";
 
+		const std::string BINARY_CLUSTER_VFH = "vfh";
+		const std::string BINARY_CLUSTER_SCORE = "score";
+		const std::string BINARY_CLUSTER_NORMAL = "normal";
+		const std::vector<std::string> COMPOSITE_BINARY_CONFIG = { BINARY_CLUSTER_VFH, BINARY_CLUSTER_SCORE, BINARY_CLUSTER_NORMAL };
+
 		enum class EPointLabel : unsigned char
 		{
 			DISCARDED,

@@ -14,9 +14,30 @@ bool CPointClusterSet::addPointCluster(const std::string& vName, IPointCluster* 
 	{
 		m_BinaryAreaAABB.update(vCluster->getClusterAABB());
 	}
-
+	
+	m_UndoQueue.push({ vName });
 	return true;
 }
+
+bool CPointClusterSet::addPointClusters(const std::vector<std::string>& vNames, const std::vector<IPointCluster*>& vPointClusters)
+{
+	_ASSERTE(vNames.size() == vPointClusters.size());
+	if (vNames.size() != vPointClusters.size())
+		_THROW_RUNTIME_ERROR("paramerter error.");
+	for (int i = 0; i < vNames.size(); i++)
+	{
+		m_PointClusterMap.insert({ vNames[i], vPointClusters[i] });
+
+		if (vPointClusters[i]->getClusterLabel() == EPointLabel::UNWANTED)
+		{
+			m_BinaryAreaAABB.update(vPointClusters[i]->getClusterAABB());
+		}
+	}
+
+	m_UndoQueue.push(vNames);
+	return true;
+}
+
 
 bool CPointClusterSet::deletePointCluster(const std::string& vName)
 {
@@ -26,24 +47,30 @@ bool CPointClusterSet::deletePointCluster(const std::string& vName)
 		for (int i = 0; i < m_PointClusterMap.count(vName); i++)
 			delete Iter->second;
 		m_PointClusterMap.erase(vName);
-		m_PointClusterMap.erase(m_PointClusterMap.find(vName));
-		m_BinaryAreaAABB.reset();
-		for (auto& Cluster : m_PointClusterMap)
-			m_BinaryAreaAABB.update(Cluster.second->getClusterAABB());
+
 		return true;
 	}
 	else
 		return false;
 }
 
-bool CPointClusterSet::deletePointCluster()
+bool CPointClusterSet::undo()
 {
-	if (!m_PointClusterMap.empty())
+	if (!m_UndoQueue.empty())
 	{
-		m_PointClusterMap.erase(--m_PointClusterMap.end());
+		auto& Clusters2Delete = m_UndoQueue.back();
+
+		for (auto& Name : Clusters2Delete)
+		{
+			deletePointCluster(Name);
+		}
+
 		m_BinaryAreaAABB.reset();
-		for (auto& Cluster : m_PointClusterMap)
-			m_BinaryAreaAABB.update(Cluster.second->getClusterAABB());
+		for (auto& Pair : m_PointClusterMap)
+		{
+			if (Pair.second->getClusterLabel() == EPointLabel::UNWANTED)
+			m_BinaryAreaAABB.update(Pair.second->getClusterAABB());
+		}
 	}
 	return true;
 }

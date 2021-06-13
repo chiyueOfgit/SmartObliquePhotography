@@ -1,4 +1,5 @@
 #pragma once
+#include <queue>
 
 namespace hiveObliquePhotography
 {
@@ -12,9 +13,10 @@ namespace hiveObliquePhotography
 			~CPointClusterSet() = default;
 
 			bool addPointCluster(const std::string& vName, IPointCluster* vPointCluster);
+			bool addPointClusters(const std::vector<std::string>& vNames, const std::vector<IPointCluster*>& vPointClusters);
 			
 			bool deletePointCluster(const std::string& vName);
-			bool deletePointCluster();
+			bool undo();
 
 			std::vector<IPointCluster*> getGlobalClusterSet(const std::string& vName) const;
 
@@ -24,6 +26,8 @@ namespace hiveObliquePhotography
 			CPointClusterSet() = default;
 
 			std::multimap<std::string, IPointCluster*> m_PointClusterMap;
+
+			std::queue<std::vector<std::string>> m_UndoQueue;
 
 			SBox m_BinaryAreaAABB;
 
