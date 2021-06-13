@@ -137,6 +137,7 @@ bool QTInterface::__parseConfigFile()
 {
     bool AutoRetouchConfigParseSuccess = false;
     bool VisualizationConfigParseSuccess = false;
+    bool SpatialClusterConfigParseSuccess = false;
     if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
     {
         QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file AutoRetouchConfig.xml."));
@@ -157,17 +158,17 @@ bool QTInterface::__parseConfigFile()
         QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file VisualizationConfig.xml."));
     }
 
-    if (hiveConfig::hiveParseConfig("VisualizationConfig.xml", hiveConfig::EConfigType::XML, Visualization::CVisualizationConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+    if (hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
     {
-        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file VisualizationConfig.xml."));
-        VisualizationConfigParseSuccess = true;
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file SpatialClusterConfig.xml."));
+        SpatialClusterConfigParseSuccess = true;
     }
     else
     {
-        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file VisualizationConfig.xml."));
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file SpatialClusterConfig.xml."));
     }
 
-    return true;
+    return AutoRetouchConfigParseSuccess && VisualizationConfigParseSuccess && SpatialClusterConfigParseSuccess;
 }
 
 bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
