@@ -30,7 +30,8 @@ namespace hiveObliquePhotography
 			const auto& getSceneAABB() const { return m_PointCloudSceneAABB; }
 
 			CGlobalPointLabelSet* fetchPointLabelSet() { return &m_PointLabelSet; }
-
+			void resetLabelSet();
+		
 		private:
 			CPointCloudAutoRetouchScene();
 

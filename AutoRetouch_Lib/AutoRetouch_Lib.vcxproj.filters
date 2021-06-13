@@ -105,6 +105,9 @@
     <ClInclude Include="..\AutoRetouch\ConfigCommon.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\AutoRetouch\CompositeBinaryClassifierAlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp">
@@ -165,6 +168,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\AutoRetouch\dllmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AutoRetouch\CompositeBinaryClassifierAlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

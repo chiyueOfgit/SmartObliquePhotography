@@ -39,3 +39,8 @@ void CPointCloudAutoRetouchScene::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vP
 	m_pGlobalKdTree->setInputCloud(m_pPointCloudScene);
 	m_PointLabelSet.init(m_pPointCloudScene->size(), EPointLabel::UNDETERMINED);
 }
+
+void CPointCloudAutoRetouchScene::resetLabelSet()
+{
+	m_PointLabelSet.init(m_pPointCloudScene->size(), EPointLabel::UNDETERMINED);
+}

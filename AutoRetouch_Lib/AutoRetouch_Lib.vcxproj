@@ -25,6 +25,7 @@
     <ClInclude Include="..\AutoRetouch\AutoRetouchInterface.h" />
     <ClInclude Include="..\AutoRetouch\BinaryClassifierAlg.h" />
     <ClInclude Include="..\AutoRetouch\Common.h" />
+    <ClInclude Include="..\AutoRetouch\CompositeBinaryClassifierAlg.h" />
     <ClInclude Include="..\AutoRetouch\CompositeClassifier.h" />
     <ClInclude Include="..\AutoRetouch\ConfigCommon.h" />
     <ClInclude Include="..\AutoRetouch\framework.h" />
@@ -53,6 +54,7 @@
   <ItemGroup>
     <ClCompile Include="..\AutoRetouch\AutoRetouchInterface.cpp" />
     <ClCompile Include="..\AutoRetouch\BinaryClassifierAlg.cpp" />
+    <ClCompile Include="..\AutoRetouch\CompositeBinaryClassifierAlg.cpp" />
     <ClCompile Include="..\AutoRetouch\CompositeClassifier.cpp" />
     <ClCompile Include="..\AutoRetouch\dllmain.cpp" />
     <ClCompile Include="..\AutoRetouch\MaxVisibilityClusterAlg.cpp" />
