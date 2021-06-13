@@ -14,22 +14,28 @@ using namespace hiveObliquePhotography::AutoRetouch;
 class TestAreaPicking : public testing::Test
 {
 protected:
-	std::string m_SamplePaths[3] =
+	std::string m_SamplePaths[3][3] =
 	{
 		//较近的聚类可见面积最大
-		"testcase/SimpleTestOne.indices.txt\n"
-		"testcase/SimpleTestOne.camera.txt\n"
-		"groundtruth/LeftBigTree.txt\n",
+		{
+			"testcase/SimpleTestOne.indices.txt",
+			"testcase/SimpleTestOne.camera.txt",
+			"groundtruth/LeftBigTree.txt",
+		},
 
 		//较远的聚类可见面积最大
-		"testcase/SimpleTestTwo.indices.txt\n"
-		"testcase/SimpleTestTwo.camera.txt\n"
-		"groundtruth/Road.txt\n",
-
+		{
+			"testcase/SimpleTestTwo.indices.txt",
+			"testcase/SimpleTestTwo.camera.txt",
+			"groundtruth/Road.txt",
+		},
+		
 		//不可见的聚类面积最大
-		"testcase/SimpleTestThree.indices.txt\n"
-		"testcase/SimpleTestThree.camera.txt\n"
-		"groundtruth/RightFourTrees.txt\n",
+		{
+			"testcase/SimpleTestThree.indices.txt",
+			"testcase/SimpleTestThree.camera.txt",
+			"groundtruth/RightFourTrees.txt",
+		},
 	};
 
 	void SetUp() override
@@ -44,113 +50,110 @@ protected:
 	{
 	}
 
-	static std::tuple<pcl::IndicesPtr, pcl::visualization::Camera, pcl::IndicesPtr> _loadTestcase(const std::string_view& vPaths);
-
-private:
-	static void __lines(const std::string_view& vStr, std::vector<std::string_view>& voStrs);
-	static void __loadIndices(const std::string_view& vPath, pcl::Indices& voIndices);
+	static void _loadIndices(const std::string& vPath, pcl::Indices& voIndices);
+	static void _loadCamera(const std::string& vPath, pcl::visualization::Camera& voCamera);
 };
 
 
 TEST_F(TestAreaPicking, NearestClusterWithMaxVisibility)
 {
 	const auto& Path = m_SamplePaths[0];
+	
+	pcl::IndicesPtr pTestee(new pcl::Indices);
+	pcl::visualization::Camera Camera;
+	pcl::Indices GroundTruth;
 
-	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
+	_loadIndices(Path[0], *pTestee);
+	_loadCamera(Path[1], Camera);
+	_loadIndices(Path[2], GroundTruth);
 
-	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT,Camera);
-	std::vector<size_t> Difference;
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+
+	pcl::Indices Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
-		pGroundTruth, pGroundTruth,
+		GroundTruth.begin(), GroundTruth.end(),
 		std::inserter(Difference, Difference.begin()));
 
-	GTEST_ASSERT_EQ(Difference.size(), 0u);
+	GTEST_ASSERT_LE(Difference.size(), 0);
 }
 
 TEST_F(TestAreaPicking, FurthestClusterWithMaxVisibility)
 {
 	const auto& Path = m_SamplePaths[1];
 
-	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
+	pcl::IndicesPtr pTestee(new pcl::Indices);
+	pcl::visualization::Camera Camera;
+	pcl::Indices GroundTruth;
+
+	_loadIndices(Path[0], *pTestee);
+	_loadCamera(Path[1], Camera);
+	_loadIndices(Path[2], GroundTruth);
 
 	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
-	std::vector<size_t> Difference;
+
+	pcl::Indices Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
-		pGroundTruth, pGroundTruth,
+		GroundTruth.begin(), GroundTruth.end(),
 		std::inserter(Difference, Difference.begin()));
 
-	GTEST_ASSERT_EQ(Difference.size(), 0u);
+	GTEST_ASSERT_LE(Difference.size(), 0);
 }
 
 TEST_F(TestAreaPicking, InvisibleClusterWithMaxArea)
 {
 	const auto& Path = m_SamplePaths[2];
+	
+	pcl::IndicesPtr pTestee(new pcl::Indices);
+	pcl::visualization::Camera Camera;
+	pcl::Indices GroundTruth;
 
-	auto [pTestee, Camera, pGroundTruth] = _loadTestcase(Path);
+	_loadIndices(Path[0], *pTestee);
+	_loadCamera(Path[1], Camera);
+	_loadIndices(Path[2], GroundTruth);
 
 	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
-	std::vector<size_t> Difference;
+
+	pcl::Indices Difference;
 	std::set_difference(pTestee->begin(), pTestee->end(),
-		pGroundTruth, pGroundTruth,
+		GroundTruth.begin(), GroundTruth.end(),
 		std::inserter(Difference, Difference.begin()));
 
-	GTEST_ASSERT_EQ(Difference.size(), 0u);
+	GTEST_ASSERT_LE(Difference.size(), 0);
 }
 
 TEST_F(TestAreaPicking, DeathTest_IndicesIsNullptr)
 {
-	pcl::IndicesPtr pTestee = nullptr;
+	pcl::IndicesPtr pTestee;
 	pcl::visualization::Camera Camera;
-	EXPECT_DEATH(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera); , "");
+	ASSERT_DEATH(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera); , "");
 }
 
-//*****************************************************************
-//FUNCTION: 
-std::tuple<pcl::IndicesPtr, pcl::visualization::Camera, pcl::IndicesPtr> TestAreaPicking::_loadTestcase(const std::string_view& vPaths)
+
+TEST_F(TestAreaPicking, DeathTest_IndicesIsEmpty)
 {
-	std::vector<std::string_view> Path;
-	__lines(vPaths, Path);
-
-	for (const auto StringView : Path)
-		std::cout << StringView << std::endl;
-
 	pcl::IndicesPtr pTestee(new pcl::Indices);
 	pcl::visualization::Camera Camera;
-	pcl::IndicesPtr pGroundTruth(new pcl::Indices);
 
-	__loadIndices(Path[0], *pTestee);
-	auto pVisualizer = new pcl::visualization::PCLVisualizer("Viewer", true);
-	pVisualizer->loadCameraParameters(Path[1].data());
-	pVisualizer->getCameraParameters(Camera);
-	__loadIndices(Path[2], *pGroundTruth);
-
-	return { pTestee, Camera, pGroundTruth };
+	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, Camera);
+	
+	GTEST_ASSERT_EQ(pTestee->size(), 0);
 }
 
 //*****************************************************************
 //FUNCTION: 
-void TestAreaPicking::__lines(const std::string_view& vStr, std::vector<std::string_view>& voStrs)
+void TestAreaPicking::_loadIndices(const std::string& vPath, pcl::Indices& voIndices)
 {
-	const auto Sep = "\n";
-	size_t Start = vStr.find_first_not_of(Sep);
-	while (Start != std::string_view::npos)
-	{
-		size_t End = vStr.find_first_of(Sep, Start + 1);
-		if (End == std::string_view::npos)
-			End = vStr.length();
-
-		voStrs.push_back(vStr.substr(Start, End - Start));
-		Start = vStr.find_first_not_of(Sep, End + 1);
-	}
-}
-
-//*****************************************************************
-//FUNCTION: 
-void TestAreaPicking::__loadIndices(const std::string_view& vPath, pcl::Indices& voIndices)
-{
-	const std::string Path{ vPath };
-	std::ifstream File(Path);
+	std::ifstream File(vPath);
 	boost::archive::text_iarchive ia(File);
 	ia >> BOOST_SERIALIZATION_NVP(voIndices);
 	File.close();
+}
+
+//*****************************************************************
+//FUNCTION: 
+void TestAreaPicking::_loadCamera(const std::string& vPath, pcl::visualization::Camera& voCamera)
+{
+	auto pVisualizer = new pcl::visualization::PCLVisualizer("Viewer", true);
+	pVisualizer->loadCameraParameters(vPath);
+	pVisualizer->getCameraParameters(voCamera);
 }

@@ -13,7 +13,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMaxVisibilityClusterAlg, CLASSIFIER_MaxVisibilityCl
 
 //*****************************************************************
 //FUNCTION:
-void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera)
+void  CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera)
 {
 	if (hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
@@ -21,7 +21,7 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 		return;
 	}
 
-	if (vInputSet.empty())
+	if (vioPointSet->empty())
 		return;
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
 	auto pCloud = pScene->getPointCloudScene()->makeShared();
@@ -43,7 +43,7 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 	Ec.setMaxClusterSize(*CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
 	Ec.setInputCloud(pCloud);
 	Ec.setSearchMethod(pTree);
-	Ec.setIndices(pcl::make_shared<pcl::Indices>(vInputSet.begin(), vInputSet.end()));
+	Ec.setIndices(vioPointSet);
 	Ec.extract(ClusterIndices);
 	if (ClusterIndices.empty())
 		return;
@@ -92,6 +92,9 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 		}
 	}
 
+	
 	for (auto Index : pMaxValidCluster->indices)
 		m_pLocalLabelSet->changePointLabel(Index, vFinalLabel);
+
+	vioPointSet->swap(pMaxValidCluster->indices);
 }

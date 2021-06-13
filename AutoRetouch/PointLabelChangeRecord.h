@@ -16,6 +16,7 @@ namespace hiveObliquePhotography
 
 		private:
 			std::vector<SPointLabelChange> m_ChangeRecord;
+			//bool bIsClusterChanged;
 		};
 	}
 }

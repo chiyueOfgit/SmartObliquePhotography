@@ -53,6 +53,18 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_UnwantedMode = !m_UnwantedMode;
 		}
 
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_LINEPICK).value())
+		{
+			m_LineMode = !m_LineMode;
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_LineMode);
+		}
+
+		if (vEvent.isCtrlPressed() && KeyString == "n")
+		{
+			AutoRetouch::hiveUndoLastOp();
+			m_pVisualizer->refresh();
+		}
+		
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
 		{
 			static int i = 0;
@@ -78,22 +90,44 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_MousePressStatus[0] = PressStatus;
 	else if (Button == pcl::visualization::MouseEvent::RightButton)
 		m_MousePressStatus[1] = PressStatus;
+
+	static int DeltaX, PosX, DeltaY, PosY;
+	DeltaX = vEvent.getX() - PosX;
+	DeltaY = vEvent.getY() - PosY;
+	PosX = vEvent.getX();
+	PosY = vEvent.getY();
+	
+	if(m_LineMode)
+	{
+		if (m_MousePressStatus[0] || m_MousePressStatus[1])
+		{
+			std::vector<int> PickedIndices;
+			pcl::visualization::Camera Camera;
+			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + DeltaX, PosY + DeltaY, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
+			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
+			AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, Camera);
+
+			m_pVisualizer->refresh();
+			
+		}
+	}
 }
 
 //*****************************************************************
 //FUNCTION: 
 void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEvent& vEvent)
 {
-	pcl::Indices Indices;
-	vEvent.getPointsIndices(Indices);
+	const pcl::IndicesPtr pIndices(new pcl::Indices);
+	vEvent.getPointsIndices(*pIndices);
 
 	pcl::visualization::Camera Camera;
 	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
 
 	if (m_PartitionMode)
-		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
 	else
-		AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+		AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
 
 	m_pVisualizer->refresh();
 }
