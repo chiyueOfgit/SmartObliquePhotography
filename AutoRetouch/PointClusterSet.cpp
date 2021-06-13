@@ -28,10 +28,25 @@ bool CPointClusterSet::deletePointCluster(const std::string& vName)
 	if (m_PointClusterMap.find(vName) != m_PointClusterMap.end())
 	{
 		m_PointClusterMap.erase(m_PointClusterMap.find(vName));
+		m_BinaryAreaAABB.reset();
+		for (auto& Cluster : m_PointClusterMap)
+			m_BinaryAreaAABB.update(Cluster.second->getClusterAABB());
 		return true;
 	}
 	else
 		return false;
+}
+
+bool CPointClusterSet::deletePointCluster()
+{
+	if (!m_PointClusterMap.empty())
+	{
+		m_PointClusterMap.erase(--m_PointClusterMap.end());
+		m_BinaryAreaAABB.reset();
+		for (auto& Cluster : m_PointClusterMap)
+			m_BinaryAreaAABB.update(Cluster.second->getClusterAABB());
+	}
+	return true;
 }
 
 std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet() const

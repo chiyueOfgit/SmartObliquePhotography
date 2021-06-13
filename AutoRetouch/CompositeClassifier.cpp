@@ -37,7 +37,7 @@ void ICompositeClassifier::_ensembleResult()
 			EnsembledResult4GlobalLabel.push_back(Temp);
 		}
 	}
-	m_pGlobalLabelSet->applyPointLabelChange(EnsembledResult4GlobalLabel);
+	m_pGlobalLabelSet->applyPointLabelChange(EnsembledResult4GlobalLabel, false);
 }
 
 //*****************************************************************

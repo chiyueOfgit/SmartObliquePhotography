@@ -27,6 +27,7 @@ namespace hiveObliquePhotography
 			bool execute(bool vApplyChange2GlobalLabelIntermediate, TArgs&&... vArgs)
 			{
 				_ASSERTE(m_pLocalLabelSet && m_pGlobalLabelSet);
+				bool Flag = true;
 				
 				try
 				{
@@ -45,7 +46,7 @@ namespace hiveObliquePhotography
 
 					if (vApplyChange2GlobalLabelIntermediate)
 					{
-						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord);
+						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord, Flag);
 					}
 					return true;
 				}
