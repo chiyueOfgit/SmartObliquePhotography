@@ -75,6 +75,11 @@ namespace hiveObliquePhotography
 				if (vZ > Max[2])
 					Max[2] = vZ;
 			}
+			void reset()
+			{
+				Min = { FLT_MAX, FLT_MAX, FLT_MAX };
+				Max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+			}
 		};
 	}
 }

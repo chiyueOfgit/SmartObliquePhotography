@@ -37,7 +37,7 @@ void CCompositeClassifier::ensembleResult()
 			EnsembledResult4GlobalLabel.push_back(Temp);
 		}
 	}
-	m_pGlobalLabelSet->applyPointLabelChange(EnsembledResult4GlobalLabel);
+	m_pGlobalLabelSet->applyPointLabelChange(EnsembledResult4GlobalLabel, false);
 }
 
 EPointLabel CCompositeClassifier::__ensembleSingleResultV(const std::vector<SPointLabelChange>& vOverallResult) const

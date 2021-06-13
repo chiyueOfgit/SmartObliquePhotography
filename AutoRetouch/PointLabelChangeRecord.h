@@ -9,14 +9,14 @@ namespace hiveObliquePhotography
 		{
 		public:
 			CPointLabelChangeRecord() = delete;
-			CPointLabelChangeRecord(const std::vector<SPointLabelChange>& vChangeRecord) : m_ChangeRecord(vChangeRecord) {}
+			CPointLabelChangeRecord(const std::vector<SPointLabelChange>& vChangeRecord, bool vClusterFlag) : m_ChangeRecord(vChangeRecord), m_bIsClusterChanged(vClusterFlag) {}
 			~CPointLabelChangeRecord() = default;
 
 			bool undoV();
 
 		private:
 			std::vector<SPointLabelChange> m_ChangeRecord;
-			//bool bIsClusterChanged;
+			bool m_bIsClusterChanged;
 		};
 	}
 }

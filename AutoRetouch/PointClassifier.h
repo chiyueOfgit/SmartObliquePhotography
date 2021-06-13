@@ -26,6 +26,12 @@ namespace hiveObliquePhotography
 			template<class TConcreteClassifier, class... TArgs>
 			bool execute(bool vApplyChange2GlobalLabelIntermediate, TArgs&&... vArgs)
 			{
+				return execute(vApplyChange2GlobalLabelIntermediate, false, std::forward<TArgs>(vArgs)...);
+			}
+			
+			template<class TConcreteClassifier, class... TArgs>
+			bool execute(bool vApplyChange2GlobalLabelIntermediate, bool vClusterFlag, TArgs&&... vArgs)
+			{
 				_ASSERTE(m_pLocalLabelSet && m_pGlobalLabelSet);
 				
 				try
@@ -45,7 +51,7 @@ namespace hiveObliquePhotography
 
 					if (vApplyChange2GlobalLabelIntermediate)
 					{
-						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord);
+						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord, vClusterFlag);
 					}
 
 					return true;
