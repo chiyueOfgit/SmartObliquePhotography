@@ -9,6 +9,7 @@
 #include "PointCluster4VFH.h"
 #include "PointCluster4Score.h"
 #include "PointCluster4NormalRatio.h"
+#include "CompositeBinaryClassifierAlg.h"
 #include "SpatialClusteringAlg.h"
 #include "MaxVisibilityClusterAlg.h"
 
@@ -26,6 +27,8 @@ namespace hiveObliquePhotography
 		AUTORETOUCH_DECLSPEC bool hiveSwitchPointLabel(const pcl::Indices& vPointIndices, EPointLabel vTo);
 
 		AUTORETOUCH_DECLSPEC bool hiveExecuteBinaryClassifier(const std::string& vClassifierSig, const std::string& vClusterType);
+
+		AUTORETOUCH_DECLSPEC bool hiveExecuteCompositeBinaryClassifier();
 
 		AUTORETOUCH_DECLSPEC bool hiveExecuteClusterAlg2CreateCluster(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const std::vector<Eigen::Matrix4d>& vMatrices);
 
