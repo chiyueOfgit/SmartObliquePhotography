@@ -72,15 +72,7 @@ void QTInterface::__initialResourceSpaceDockWidget()
     ui.resourceTreeView->setModel(m_pResourceSpaceStandardItemModels);
     m_pResourceSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    auto BackgroundColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR");
-    auto FontColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_FONTCOLOR");
-    auto FontSize = *CQInterfaceConfig::getInstance()->getAttribute<int>("DOCKWIDGETTITLEBAR_FONTSIZE");
-
-    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.resourceDockWidget);
-    dockWidgetTitleBar->setAttr(QColor(std::get<0>(BackgroundColor), std::get<1>(BackgroundColor), std::get<2>(BackgroundColor), std::get<3>(BackgroundColor)), 
-                                QColor(std::get<0>(FontColor), std::get<1>(FontColor), std::get<2>(FontColor), std::get<3>(FontColor)), FontSize, "Resource Space");
-    ui.resourceDockWidget->setTitleBarWidget(dockWidgetTitleBar);
-    
+    QTInterface::__initialDockWidgetTitleBar(ui.resourceDockWidget, "Resource Space");
 }
 
 void QTInterface::__initialWorkSpaceDockWidget()
@@ -89,26 +81,26 @@ void QTInterface::__initialWorkSpaceDockWidget()
     ui.workSpaceTreeView->setModel(m_pWorkSpaceStandardItemModels);
     m_pWorkSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.workSpaceDockWidget);
-    dockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "Work Space");
-    ui.workSpaceDockWidget->setTitleBarWidget(dockWidgetTitleBar);
+    QTInterface::__initialDockWidgetTitleBar(ui.workSpaceDockWidget, "Work Space");
 }
 
 void QTInterface::__initialMessageDockWidget()
 {
-    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.messageDockWidget);
-    dockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "OutPut Message");
-    ui.messageDockWidget->setTitleBarWidget(dockWidgetTitleBar);
+    QTInterface::__initialDockWidgetTitleBar(ui.messageDockWidget, "Output Message");
 }
 
-// TODO::DockWidget∏¥”√
-void QTInterface::__initialDockWidgetTitleBar()
+void QTInterface::__initialDockWidgetTitleBar(QDockWidget* vParentWidget, const std::string& vTitleBarText)
 {
-    m_pDockWidgetTitleBar = new QTDockWidgetTitleBar(ui.messageDockWidget);
-    m_pDockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "OutPut Message");
+    auto BackgroundColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR");
+    auto FontColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_FONTCOLOR");
+    auto FontSize = *CQInterfaceConfig::getInstance()->getAttribute<int>("DOCKWIDGETTITLEBAR_FONTSIZE");
+
+    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(vParentWidget);
+    dockWidgetTitleBar->setAttr(QColor(std::get<0>(BackgroundColor), std::get<1>(BackgroundColor), std::get<2>(BackgroundColor), std::get<3>(BackgroundColor)),
+        QColor(std::get<0>(FontColor), std::get<1>(FontColor), std::get<2>(FontColor), std::get<3>(FontColor)), FontSize, QString::fromStdString(vTitleBarText));
+    vParentWidget->setTitleBarWidget(dockWidgetTitleBar);
 }
 
-// TODO::≈‰÷√Œƒº˛
 void QTInterface::__initialSlider(const QStringList& vFilePathList)
 {
     const std::string& FirstCloudFilePath = vFilePathList[0].toStdString();

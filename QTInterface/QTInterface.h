@@ -36,7 +36,7 @@ namespace hiveObliquePhotography
             void __initialResourceSpaceDockWidget();
             void __initialWorkSpaceDockWidget();
             void __initialMessageDockWidget();
-            void __initialDockWidgetTitleBar();
+            void __initialDockWidgetTitleBar(QDockWidget* vParentWidget, const std::string& vTitleBarText);
             void __initialSlider(const QStringList& vFilePathList);
             bool __addResourceSpaceCloudItem(const std::string& vFilePath);
             bool __deleteResourceSpaceCloudItem(const std::string& vFilePath);
