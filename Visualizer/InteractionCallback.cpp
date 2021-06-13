@@ -59,6 +59,12 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_LineMode);
 		}
 
+		if (vEvent.isCtrlPressed() && KeyString == "n")
+		{
+			AutoRetouch::hiveUndoLastOp();
+			m_pVisualizer->refresh();
+		}
+		
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
 		{
 			static int i = 0;
