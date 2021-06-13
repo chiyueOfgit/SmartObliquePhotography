@@ -165,13 +165,13 @@ void CTestRegionGrow::calcRegionGrowingErrorRate(const std::vector<std::string>&
 TEST_F(CTestRegionGrow, DeathTest_EmptyInput)
 {
 	pcl::Indices SeedSet = { };
-	EXPECT_DEATH(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(TestGrowingAlg, SeedSet, EPointLabel::UNWANTED), ".*");
+	ASSERT_ANY_THROW(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(TestGrowingAlg, SeedSet, EPointLabel::UNWANTED));
 }
 
 TEST_F(CTestRegionGrow, DeathTest_IllegalInput)
 {
 	pcl::Indices SeedSet = {170000,180000 };
-	EXPECT_DEATH(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(TestGrowingAlg, SeedSet, EPointLabel::UNWANTED), ".*");
+	ASSERT_ANY_THROW(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(TestGrowingAlg, SeedSet, EPointLabel::UNWANTED));
 
 }
 
@@ -190,11 +190,10 @@ TEST_F(CTestRegionGrow, RegionGrowingCorrectness)
 			}
 		}
 		auto Result = getRegionGrowingResult(InputIndices);
-	
-		GTEST_ASSERT_LT(Result.size(), GroundTruthPointSets.size());
+
 	    pcl::Indices Residual(GroundTruthPointSets.size(), -1);
-	    auto Tail = std::set_difference(Result.begin(), Result.end(), GroundTruthPointSets.begin(), GroundTruthPointSets.end(), Residual.begin());
-	    Residual.resize(Tail - Residual.begin());
+	    auto DTail = std::set_difference(GroundTruthPointSets.begin(), GroundTruthPointSets.end(), Result.begin(), Result.end(), Residual.begin());
+	    Residual.resize(DTail - Residual.begin());
 		
 	    auto AntiElection = getRegionGrowingResult(Residual);
 		int Sum = 0;
@@ -203,7 +202,7 @@ TEST_F(CTestRegionGrow, RegionGrowingCorrectness)
 			if (find(AntiElection.begin(), AntiElection.end(), Index) != AntiElection.end())
 				Sum++;
 		}
-		GTEST_ASSERT_EQ(Sum, InputIndices.size());
+		GTEST_ASSERT_NE(Sum, InputIndices.size());
 	}
 
 }
