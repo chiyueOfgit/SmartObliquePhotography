@@ -39,14 +39,5 @@ namespace hiveObliquePhotography
 
 			return pClassifier->execute<CRegionGrowingByColorAlg>(true, std::forward<TArgs>(vArgs)...);
 		}
-
-		/*template<class... TArgs>
-		bool hiveExecuteOutlierDetectionClassifier(const std::string& vClassifierSig, TArgs&&... vArgs)
-		{
-			IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-			_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", vClassifierSig), false);
-
-			return pClassifier->execute<CStaOutlierDetectingAlg>(true, std::forward<TArgs>(vArgs)...);
-		}*/
 	}
 }
