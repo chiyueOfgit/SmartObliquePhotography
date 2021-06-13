@@ -48,7 +48,7 @@ bool CPointClusterSet::deletePointCluster()
 	return true;
 }
 
-std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet() const
+std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet(const std::string& vName) const
 {
 	std::vector<IPointCluster*> ClusterSet;
 
