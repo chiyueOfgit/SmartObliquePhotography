@@ -17,7 +17,7 @@ bool CPointLabelChangeRecord::undoV()
 	}
 	if(m_bIsClusterChanged)
 	{
-		CPointClusterSet::getInstance()->deletePointCluster();
+		CPointClusterSet::getInstance()->undo();
 	}
 	return true;
 }
