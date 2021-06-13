@@ -196,6 +196,9 @@
       <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\QTInterface\VisualizationConfig.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets" Condition="Exists('D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" />

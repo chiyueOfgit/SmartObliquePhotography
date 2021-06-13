@@ -92,6 +92,7 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 		}
 	}
 
+	
 	for (auto Index : pMaxValidCluster->indices)
 		m_pLocalLabelSet->changePointLabel(Index, vFinalLabel);
 }

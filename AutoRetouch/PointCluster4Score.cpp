@@ -8,9 +8,9 @@ CPointCluster4Score::CPointCluster4Score(const pcl::IndicesPtr& vPointIndices, E
 	_ASSERTE(vPointIndices != nullptr);
 	_ASSERTE(!vPointIndices->empty());
 	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
-	Eigen::RowVector3f Normal{0,0,0};
-	Eigen::RowVector3i Color{0,0,0};
-	Eigen::RowVector3f Position{0,0,0};
+	Eigen::Vector3f Normal{0,0,0};
+	Eigen::Vector3i Color{0,0,0};
+	Eigen::Vector3f Position{0,0,0};
 	
 	for(auto Index: *vPointIndices)
 	{
@@ -29,9 +29,9 @@ double CPointCluster4Score::computeDistanceV(pcl::index_t vPointIndex) const
 	_ASSERTE(pCloud != nullptr);
 	_ASSERTE(vPointIndex < pCloud->size());
 
-	const Eigen::RowVector3f Normal = pCloud->at(vPointIndex).getNormalVector3fMap();
-	const Eigen::RowVector3i Color = pCloud->at(vPointIndex).getRGBVector3i();
-	const Eigen::RowVector3f Position = pCloud->at(vPointIndex).getVector3fMap();
+	const Eigen::Vector3f Normal = pCloud->at(vPointIndex).getNormalVector3fMap();
+	const Eigen::Vector3i Color = pCloud->at(vPointIndex).getRGBVector3i();
+	const Eigen::Vector3f Position = pCloud->at(vPointIndex).getVector3fMap();
 
 	double Score = 10000.0;
 
