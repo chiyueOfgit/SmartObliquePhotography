@@ -21,6 +21,8 @@ namespace hiveObliquePhotography
 
 		private:
 			virtual EPointLabel __ensembleSingleResultV(const std::vector<SPointLabelChange>& vOverallResult) const override;
+
+			std::vector<std::string> m_ClusterTypes;
 		};
 	}
 }
