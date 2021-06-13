@@ -210,9 +210,14 @@ std::string QTInterface::__getFileName(const std::string& vFilePath)
     return vFilePath.substr(vFilePath.find_last_of('/') + 1, vFilePath.find_last_of('.') - vFilePath.find_last_of('/') - 1);
 }
 
+std::string QTInterface::__getDirectory(const std::string& vFilePath)
+{
+    return vFilePath.substr(0, vFilePath.find_last_of('/'));
+}
+
 void QTInterface::onActionOpen()
 {
-    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), ".", tr("Open PointCloud files(*.pcd)"));
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_DirectoryOpenPath), tr("Open PointCloud files(*.pcd)"));
     std::vector<std::string> FilePathSet;
     bool FileOpenSuccessFlag = true;
 
@@ -244,6 +249,7 @@ void QTInterface::onActionOpen()
 
     if (FileOpenSuccessFlag)
     {
+        m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
         AutoRetouch::hiveInitPointCloudScene(pCloud);
         Visualization::hiveInitVisualizer(pCloud);
         QTInterface::__initialVTKWidget();
