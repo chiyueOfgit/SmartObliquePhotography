@@ -38,6 +38,17 @@ bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(EPointLabel vTo, 
 	return true;
 }
 
+bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(const pcl::Indices& vPointIndices, EPointLabel vTo)
+{
+	_ASSERTE(CPointCloudAutoRetouchScene::getInstance() && CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	auto& PointLabelSet = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->fetchPointLabelSet();
+
+	for (auto& PointLabel : vPointIndices)
+		PointLabelSet[PointLabel] = vTo;
+			
+	return true;
+}
+
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std::string& vClassifierSig)
 {
 	RECORD_TIME_BEGIN;

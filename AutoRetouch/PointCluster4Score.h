@@ -14,9 +14,9 @@ namespace hiveObliquePhotography
 			double computeDistanceV(pcl::index_t vPointIndex) const override;
 
 		private:
-			Eigen::RowVector3f m_Normal;
-			Eigen::RowVector3i m_Color;
-			Eigen::RowVector3f m_Position;
+			Eigen::Vector3f m_Normal;
+			Eigen::Vector3i m_Color;
+			Eigen::Vector3f m_Position;
 		};
 	}
 }

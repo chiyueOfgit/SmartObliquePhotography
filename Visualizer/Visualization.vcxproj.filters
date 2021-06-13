@@ -57,4 +57,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\QTInterface\VisualizationConfig.xml" />
+  </ItemGroup>
 </Project>

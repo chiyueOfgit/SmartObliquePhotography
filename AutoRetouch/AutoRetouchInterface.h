@@ -21,6 +21,8 @@ namespace hiveObliquePhotography
 
 		AUTORETOUCH_DECLSPEC bool hiveSwitchPointLabel(EPointLabel vTo, EPointLabel vFrom);
 
+		AUTORETOUCH_DECLSPEC bool hiveSwitchPointLabel(const pcl::Indices& vPointIndices, EPointLabel vTo);
+
 		AUTORETOUCH_DECLSPEC bool hiveExecuteBinaryClassifier(const std::string& vClassifierSig);
 
 		AUTORETOUCH_DECLSPEC bool hiveExecuteClusterAlg2CreateCluster(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const pcl::visualization::Camera& vCamera);
