@@ -13,7 +13,7 @@ namespace hiveObliquePhotography
 			CMaxVisibilityClusterAlg() = default;
 			~CMaxVisibilityClusterAlg() = default;
 
-			void runV(const pcl::IndicesPtr& vioPointSet, EPointLabel vFinalLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix) ;
+			void runV(const pcl::IndicesPtr& vioPointSet, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix) ;
 		};
 	}
 }
