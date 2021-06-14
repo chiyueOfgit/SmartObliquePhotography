@@ -81,7 +81,7 @@ SBox CBinaryClassifierAlg::__createExecuteArea() const
 	auto& AreaBox = CPointClusterSet::getInstance()->getAreaBox();
 	auto& SceneBox = CPointCloudAutoRetouchScene::getInstance()->getSceneAABB();
 
-	float Factor = *CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::EXCUTEAREA_EXPAND_RATIO);
+	float Factor = *CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::EXCUTEAREA_EXPAND_RATIO);
 	const Eigen::Vector3f Padding = (SceneBox.Max - SceneBox.Min) * Factor;
 	return { AreaBox.Min - Padding, AreaBox.Max + Padding };
 }
