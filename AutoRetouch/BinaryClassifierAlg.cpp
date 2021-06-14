@@ -19,17 +19,14 @@ void CBinaryClassifierAlg::runV(const std::string& vClusterType)
 	}
 	
 	m_ClusterSet = CPointClusterSet::getInstance()->getGlobalClusterSet(vClusterType);
-	_ASSERTE(!m_ClusterSet.empty());
 	if (m_ClusterSet.empty())
 		return;
 
 	const auto pScene = CPointCloudAutoRetouchScene::getInstance();
 	const auto pCloud = pScene->getPointCloudScene();
 	const auto pTree = pScene->getGlobalKdTree();
-	_ASSERTE(pCloud != nullptr && pTree != nullptr);
 
 	auto UnknownIndices = __getUnknownIndices();
-
 	auto ExecuteArea = __createExecuteArea();
 
 #pragma omp parallel for

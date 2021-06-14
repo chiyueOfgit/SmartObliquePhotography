@@ -264,41 +264,7 @@ TEST_F(CBinaryTest, Cluster_NormalRatio_Test)
 
 TEST_F(CBinaryTest, Composite_BinaryAlg_Test)
 {
-	//auto* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(CLASSIFIER_BINARY, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	//ASSERT_NE(pClassifier, nullptr);
-	//pClassifier->execute<CBinaryClassifierAlg>(true);
-
-	//auto Results = pClassifier->getResults();
-
-	//for (auto& Result : Results)
-	//{
-	//	//结果数目
-	//	auto LabelChanged = Result;
-	//	ASSERT_GT(LabelChanged.size(), 0);
-	//	ASSERT_LT(LabelChanged.size(), getCloud()->size());
-	//	ASSERT_EQ(LabelChanged.size(), getCloud()->size() - m_pUnwantedIndices->size() - m_pKeptIndices->size());
-
-	//	pcl::index_t Index;
-	//	auto compare = [&](SPointLabelChange vLabelChange) -> bool
-	//	{
-	//		return (vLabelChange.Index == Index);
-	//	};
-
-	//	//结果中不该有簇中的点
-	//	int i = 0, step = 5;
-	//	for (; i < m_pUnwantedIndices->size(); i += step)
-	//	{
-	//		Index = (*m_pUnwantedIndices)[i];
-	//		std::vector<SPointLabelChange>::iterator it = find_if(LabelChanged.begin(), LabelChanged.end(), compare);
-	//		ASSERT_NE(it, LabelChanged.end());
-	//	}
-	//	for (i = 0; i < m_pKeptIndices->size(); i += step)
-	//	{
-	//		Index = (*m_pKeptIndices)[i];
-	//		std::vector<SPointLabelChange>::iterator it = find_if(LabelChanged.begin(), LabelChanged.end(), compare);
-	//		ASSERT_NE(it, LabelChanged.end());
-	//	}
-	//}
+	
 }
 
 TEST_F(CBinaryTest, Composite_BinaryAlg_Expect_Test)
