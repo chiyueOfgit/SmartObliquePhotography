@@ -32,39 +32,36 @@ EPointLabel CCompositeBinaryClassifierAlg::__ensembleSingleResultV(const std::ve
 {
 	//_ASSERTE(m_ClusterTypes.size() == vOverallResult.size());
 
-	if ((float)vOverallResult.size() / m_ClusterTypes.size() > 0.9f)
+	if (m_ClusterTypes.size() != vOverallResult.size())
+		std::cout << "";
+	
+	float Score = 0.0f;
+	const float VFH_WEIGHT = 0.4f;
+	const float SCORE_WEIGHT = 0.3f;
+	const float NORMAL_WEIGHT = 0.3f;
+
+	for (int i = 0; i < vOverallResult.size(); i++)
+	{
+		if (vOverallResult[i].DstLabel == EPointLabel::UNWANTED)
+		{
+			auto Type = m_ClusterTypes[i];
+			if (Type.find(BINARY_CLUSTER_VFH) != std::string::npos)
+			{
+				Score += 100.0f * VFH_WEIGHT * vOverallResult[i].Confidence;
+			}
+			else if (Type.find(BINARY_CLUSTER_SCORE) != std::string::npos)
+			{
+				Score += 100.0f * SCORE_WEIGHT * vOverallResult[i].Confidence;
+			}
+			else if (Type.find(BINARY_CLUSTER_NORMAL) != std::string::npos)
+			{
+				Score += 100.0f * NORMAL_WEIGHT * vOverallResult[i].Confidence;
+			}
+		}
+	}
+
+	if (Score > 60.0f)
 		return EPointLabel::UNWANTED;
 	else
 		return EPointLabel::UNDETERMINED;
-	
-	//todo: 只有改变的会加入overrall，并且顺序未知
-	//float Score = 0.0f;
-	//const float VFH_WEIGHT = 0.4f;
-	//const float SCORE_WEIGHT = 0.3f;
-	//const float NORMAL_WEIGHT = 0.3f;
-
-	//for (int i = 0; i < vOverallResult.size(); i++)
-	//{
-	//	if (vOverallResult[i].DstLabel == EPointLabel::UNWANTED)
-	//	{
-	//		auto Type = m_ClusterTypes[i];
-	//		if (Type.find(BINARY_CLUSTER_VFH) != std::string::npos)
-	//		{
-	//			Score += 100.0f * VFH_WEIGHT * vOverallResult[i].Confidence;
-	//		}
-	//		else if (Type.find(BINARY_CLUSTER_SCORE) != std::string::npos)
-	//		{
-	//			Score += 100.0f * SCORE_WEIGHT * vOverallResult[i].Confidence;
-	//		}
-	//		else if (Type.find(BINARY_CLUSTER_NORMAL) != std::string::npos)
-	//		{
-	//			Score += 100.0f * NORMAL_WEIGHT * vOverallResult[i].Confidence;
-	//		}
-	//	}
-	//}
-
-	//if (Score > 60.0f)
-	//	return EPointLabel::UNWANTED;
-	//else
-	//	return EPointLabel::UNDETERMINED;
 }
