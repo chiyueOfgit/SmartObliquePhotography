@@ -117,12 +117,12 @@ TEST_F(CTestCompositeClassifier, Add_NullClassifier_Test) {
 	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
 	IPointClassifier* pClusterClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	Eigen::Vector3f CameraPos{};
-	std::vector<Eigen::Matrix4d> Matrices{};
+	Eigen::Matrix4d PvMatrix;
 	pcl::IndicesPtr PointIndices = nullptr;
 	
 	CCompositeClassifier* pCompositeClassifier = new CCompositeClassifier;
 	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	ASSERT_NO_THROW(pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), PointIndices, EPointLabel::UNWANTED, CameraPos, Matrices));
+	ASSERT_NO_THROW(pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), PointIndices, EPointLabel::UNWANTED, CameraPos, PvMatrix));
 }
 
 TEST_F(CTestCompositeClassifier, Add_NullLastResult_Test) {
@@ -135,12 +135,12 @@ TEST_F(CTestCompositeClassifier, Add_NullLastResult_Test) {
 	Eigen::Vector3f CameraPos{0,0,0};
 	Eigen::Matrix4d MatrixA(4,4);
 	Eigen::Matrix4d MatrixB(4,4);
-	std::vector<Eigen::Matrix4d> Matrices{ MatrixA ,MatrixB};
+	Eigen::Matrix4d PvMatrix = MatrixB * MatrixA;
 	pcl::IndicesPtr PointIndices = nullptr;
 	
 	CCompositeClassifier* pCompositeClassifier = new CCompositeClassifier;
 	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), PointIndices, EPointLabel::UNWANTED, CameraPos, Matrices);
+	pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), PointIndices, EPointLabel::UNWANTED, CameraPos, PvMatrix);
 	ASSERT_NO_THROW(pCompositeClassifier->addClassifierAndExecuteByLastIndices<CRegionGrowingByColorAlg>(dynamic_cast<CRegionGrowingByColorAlg*>(pGrowingClassifier), EPointLabel::UNWANTED));
 }
 
