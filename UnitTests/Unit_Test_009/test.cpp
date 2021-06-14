@@ -120,15 +120,6 @@ void CTestCompositeClassifier::__initCluster()
 	}
 }
 
-//TEST_F(CTestCompositeClassifier, Init_Nullptr_Test) {
-//
-//	CCompositeClassifier* pCompositeClassifier = new CCompositeClassifier;
-//	CGlobalPointLabelSet* NullptrInput = nullptr;
-//	CGlobalPointLabelSet* EmptyInput = new CGlobalPointLabelSet;
-//	ASSERT_ANY_THROW(pCompositeClassifier->init(NullptrInput));
-//	ASSERT_ANY_THROW(pCompositeClassifier->init(EmptyInput));
-//}
-
 TEST_F(CTestCompositeClassifier, Add_GlobalLabel_Test) {
 
 	auto pCompositeClassifier = new CCompositeBinaryClassifierAlg;
