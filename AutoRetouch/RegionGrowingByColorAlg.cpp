@@ -1,9 +1,7 @@
 #include "pch.h"
-#include <set>
 #include "PointCloudAutoRetouchScene.h"
 #include "RegionGrowingByColorAlg.h"
-#include "AutoRetouchConfig.h"
-#include <common/ConfigInterface.h>
+#include "ColorDifferences.h"
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
@@ -13,29 +11,25 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingByColorAlg, CLASSIFIER_REGION_GROW_COL
 //FUNCTION: 
 void CRegionGrowingByColorAlg::__initValidation(const pcl::Indices& vSeeds, PointCloud_t::ConstPtr vCloud)
 {
-	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
-		return;
-	}
-	m_ColorTestMode = static_cast<EColorMode>(*CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE"));
-	m_EnableColorTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_COLOR_TEST");
-	m_EnableGroundTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_GROUND_TEST");
-	m_EnableNormalTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>("ENABLE_NORMAL_TEST");
+	m_ColorTestMode = static_cast<EColorMode>(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::COLOR_TEST_MODE));
+	m_EnableColorTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>(KEY_WORDS::ENABLE_COLOR_TEST);
+	m_EnableGroundTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>(KEY_WORDS::ENABLE_GROUND_TEST);
+	m_EnableNormalTest = *CAutoRetouchConfig::getInstance()->getAttribute<bool>(KEY_WORDS::ENABLE_NORMAL_TEST);
 
 	if (m_EnableColorTest)
 	{
-		m_AverageColor[0] = m_AverageColor[1] = m_AverageColor[2] = 0;
-		m_AverageColor[3] = static_cast<int>(vSeeds.size());
-		m_SeedsSize = vSeeds.size();
 		switch (m_ColorTestMode)
 		{
 		case EColorMode::MEAN:
 			{
-				const auto ColorMap = vCloud->getMatrixXfMap(1,
-					sizeof(PointCloud_t::PointType) / sizeof(float),
-					offsetof(PointCloud_t::PointType, data_c) / sizeof(float));
-				m_SeedsAverageColor = *reinterpret_cast<const std::uint32_t*>(ColorMap.rowwise().mean().eval().data());
+				m_RgbSum[0] = m_RgbSum[1] = m_RgbSum[2] = 0;
+				for (const auto& Point : *vCloud)
+				{
+					m_RgbSum[0] += Point.r;
+					m_RgbSum[1] += Point.g;
+					m_RgbSum[2] += Point.b;
+				}
+				m_SeedsCount = vCloud->size();	
 			}
 			break;
 		case EColorMode::MEDIAN:
@@ -57,7 +51,7 @@ bool CRegionGrowingByColorAlg::__validatePointV(pcl::index_t vTestIndex, PointCl
 {
 	if (m_EnableColorTest)
 	{
-		switch (static_cast<EColorMode>(CAutoRetouchConfig::getInstance()->getAttribute<int>("COLOR_TEST_MODE").value()))
+		switch (static_cast<EColorMode>(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::COLOR_TEST_MODE)))
 		{
 		case EColorMode::MEAN:
 			if (!__colorTestByAverage(vTestIndex, vCloud))
@@ -97,14 +91,14 @@ float CRegionGrowingByColorAlg::__calculateColorimetricalDifference(std::uint32_
 bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestIndex, PointCloud_t::ConstPtr vCloud) const
 {
 	//应该需要动态更新阈值
-	float ColorThreshold = CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_THRESHOLD").value();
+	float ColorThreshold = CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::COLOR_TEST_THRESHOLD).value();
 
 	//用平均颜色代表整体颜色
 	//用测试点的邻居平均颜色代表该测试点的颜色
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
 	const auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pTree->radiusSearch((*vCloud)[vTestIndex], *CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS"), NeighborIndices, NeighborDistances);
+	pTree->radiusSearch((*vCloud)[vTestIndex], *CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS), NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3, 0);
 	for (auto Index : NeighborIndices)
@@ -118,24 +112,26 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestIndex, PointCloud_t
 	NeighborColor[1] /= NeighborIndices.size();
 	NeighborColor[2] /= NeighborIndices.size();
 
-	auto [r, g, b, a] = __extractColor(m_SeedsAverageColor);
-	std::vector<std::uint32_t> AverageColor{ r, g, b };
-	for (auto i : AverageColor)
-		i = (i * m_SeedsSize + m_AverageColor[i]) / (m_SeedsSize + m_AverageColor[3]);
+	std::vector AverageColor = 
+	{
+		m_RgbSum[0] / m_SeedsCount,
+		m_RgbSum[1] / m_SeedsCount,
+		m_RgbSum[2] / m_SeedsCount,
+	};
 	
-	if (ColorDifferences::calcColorDifferences(AverageColor, NeighborColor) > ColorThreshold)
+	if (CColorDifferences::calcColorDifferences(AverageColor, NeighborColor) > ColorThreshold)
 	{
 		//ColorThreshold--;
 		return false;
 	}
 	else
 	{
-		//通过的更新平均颜色
-		m_AverageColor[0] += NeighborColor[0];
-		m_AverageColor[1] += NeighborColor[1];
-		m_AverageColor[2] += NeighborColor[2];
+		//update average color
+		m_RgbSum[0] += NeighborColor[0];
+		m_RgbSum[1] += NeighborColor[1];
+		m_RgbSum[2] += NeighborColor[2];
 
-		++m_AverageColor[3];
+		++m_SeedsCount;
 	}
 
 	return true;
@@ -146,13 +142,13 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestIndex, PointCloud_t
 bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestIndex, PointCloud_t::ConstPtr vCloud) const
 {
 	//应该需要动态更新阈值
-	float ColorThreshold = CAutoRetouchConfig::getInstance()->getAttribute<float>("COLOR_TEST_THRESHOLD").value();
+	float ColorThreshold = CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::COLOR_TEST_THRESHOLD).value();
 
 	//用测试点的邻居平均颜色代表该测试点的颜色
 	std::vector<int> NeighborIndices;
 	std::vector<float> NeighborDistances;
 	auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	pTree->radiusSearch((*vCloud)[vTestIndex], CAutoRetouchConfig::getInstance()->getAttribute<float>("SEARCH_RADIUS").value(), NeighborIndices, NeighborDistances);
+	pTree->radiusSearch((*vCloud)[vTestIndex], CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS).value(), NeighborIndices, NeighborDistances);
 
 	std::vector<unsigned int> NeighborColor(3);
 	for (auto Index : NeighborIndices)
@@ -168,7 +164,7 @@ bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestIndex, PointCloud_t:
 
 	auto [r, g, b, a] = __extractColor(m_MedianColor);
 	std::vector<std::uint32_t> MedianColor{r, g, b};
-	if (ColorDifferences::calcColorDifferences(MedianColor, NeighborColor) > ColorThreshold)
+	if (CColorDifferences::calcColorDifferences(MedianColor, NeighborColor) > ColorThreshold)
 	{
 		//ColorThreshold--;
 		return false;
@@ -187,7 +183,7 @@ bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestIndex, PointCloud_t:
 //FUNCTION: 
 bool CRegionGrowingByColorAlg::__groundTest(int vTestIndex, PointCloud_t::ConstPtr vCloud) const
 {
-	if ((*vCloud)[vTestIndex].z < CAutoRetouchConfig::getInstance()->getAttribute<float>("GROUND_TEST_THRESHOLD").value())
+	if ((*vCloud)[vTestIndex].z < CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::GROUND_TEST_THRESHOLD).value())
 		return false;
 	else
 		return true;

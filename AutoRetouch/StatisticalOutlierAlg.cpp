@@ -2,12 +2,7 @@
 #include "StatisticalOutlierAlg.h"
 #include "PointCloudAutoRetouchScene.h"
 #include "PointLabel4Classfier.h"
-#include "AutoRetouchConfig.h"
-#include <common/ConfigInterface.h>
 #include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/filters/radius_outlier_removal.h>
-#include <pcl/segmentation/impl/extract_clusters.hpp>
-
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
@@ -16,7 +11,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CStaOutlierDetectingAlg, CLASSIFIER_OUTLIER_DETECTIO
 
 //*****************************************************************
 //FUNCTION:
-void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vFinalLabel)
+void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vExpectLabel)
 {
 	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
@@ -38,7 +33,7 @@ void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vFina
 
 	for (auto& Index : OutlierIndices)
 	{
-		m_pLocalLabelSet->changePointLabel(Index, vFinalLabel);
+		m_pLocalLabelSet->changePointLabel(Index, vExpectLabel);
 	}
 
 }

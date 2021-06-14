@@ -11,7 +11,7 @@ namespace hiveObliquePhotography
 		public:
 			~CPointCloudVisualizer();
 
-			void init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud, bool vIsInQt);
+			void init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud, bool vIsInQt = true);
 
 			void reset(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud);
 

@@ -11,14 +11,14 @@ namespace hiveObliquePhotography
 		{
 		public:
 			CBinaryClassifierAlg() = default;
-			virtual ~CBinaryClassifierAlg() = default;
+			~CBinaryClassifierAlg() override = default;
 
-			virtual void runV();
+			virtual void runV(const std::string& vClusterType);
 
 		protected:
 			std::vector<IPointCluster*> m_ClusterSet;
-
-			SBox m_AABB;
+			pcl::IndicesPtr __getUnknownIndices();
+			SBox __createExecuteArea() const;
 		};
 	}
 }

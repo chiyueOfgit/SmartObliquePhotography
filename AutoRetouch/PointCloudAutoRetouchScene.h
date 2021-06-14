@@ -23,14 +23,17 @@ namespace hiveObliquePhotography
 			void recordCurrentOp(IOpResult* vResult);
 			void init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloudScene);
 
-			std::size_t getNumPoint() const { _ASSERTE(m_pPointCloudScene); return m_pPointCloudScene->size(); }
-
+			std::size_t getNumPoint() const { _ASSERTE(m_pPointCloudScene); return m_pPointCloudScene->size(); }	
+#ifdef _UNIT_TEST
+            std::size_t getNumOfResultQueue() const { return m_OpResultQueue.getNumOfResultQueue(); }
+#endif// _UNIT_TEST 
 			const auto& getPointCloudScene() const { return m_pPointCloudScene; }
 			const auto& getGlobalKdTree() const { return m_pGlobalKdTree; }
 			const auto& getSceneAABB() const { return m_PointCloudSceneAABB; }
 
 			CGlobalPointLabelSet* fetchPointLabelSet() { return &m_PointLabelSet; }
-
+			void resetLabelSet();
+		
 		private:
 			CPointCloudAutoRetouchScene();
 

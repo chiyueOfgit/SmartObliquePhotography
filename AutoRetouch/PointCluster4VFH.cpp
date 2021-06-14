@@ -2,27 +2,18 @@
 #include "PointCluster4VFH.h"
 #include "PointCloudAutoRetouchScene.h"
 #include <pcl/features/impl/vfh.hpp>
-#include <pcl/filters/impl/extract_indices.hpp>
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-CPointCluster4VFH::CPointCluster4VFH(const pcl::Indices& vPointIndices, EPointLabel vLabel) : IPointCluster(vLabel)
+CPointCluster4VFH::CPointCluster4VFH(const pcl::IndicesPtr& vPointIndices, EPointLabel vLabel) : IPointCluster(vPointIndices, vLabel)
 {
-	_ASSERTE(!vPointIndices.empty());
-	__computeVFHDescriptor(vPointIndices, m_VFHDescriptor);
-	m_PointIndices = std::set(vPointIndices.begin(), vPointIndices.end());
-	
-	auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
-
-	SBox AABB;
-	for (auto Index : m_PointIndices)
-		AABB.update((*pCloud)[Index].x, (*pCloud)[Index].y, (*pCloud)[Index].z);
-	setClusterAABB(AABB);
+	_ASSERTE(!vPointIndices->empty());
+	__computeVFHDescriptor(*vPointIndices, m_VFHDescriptor);
 }
 
 //*****************************************************************
 //FUNCTION: 
-double CPointCluster4VFH::computeDistanceV(pcl::index_t vPointIndex) const
+double CPointCluster4VFH::computeSimilarityV(pcl::index_t vPointIndex) const
 {
 	_ASSERTE(vPointIndex < CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene()->size());
 

@@ -24,7 +24,6 @@
 #include "DisplayOptionsSettingDialog.h"
 #include "QTInterfaceConfig.h"
 #include "AutoRetouchConfig.h"
-#include "SpatialClusterConfig.h"
 #include "VisualizationConfig.h"
 #include "ObliquePhotographyDataInterface.h"
 #include "AutoRetouchInterface.h"
@@ -153,15 +152,13 @@ bool QTInterface::__parseConfigFile()
 {
     bool AutoRetouchConfigParseSuccess = false;
     bool VisualizationConfigParseSuccess = false;
-    bool SpatialClusterConfigParseSuccess = false;
     bool QTInterfaceConfigParseSuccess = false;
 
     AutoRetouchConfigParseSuccess = QTInterface::__readConfigFile("AutoRetouchConfig.xml", AutoRetouch::CAutoRetouchConfig::getInstance());
     VisualizationConfigParseSuccess = QTInterface::__readConfigFile("VisualizationConfig.xml", Visualization::CVisualizationConfig::getInstance());
-    SpatialClusterConfigParseSuccess = QTInterface::__readConfigFile("SpatialClusterConfig.xml", CSpatialClusterConfig::getInstance());
     QTInterfaceConfigParseSuccess = QTInterface::__readConfigFile("QTInterfaceConfig.xml", CQInterfaceConfig::getInstance());
 
-    return AutoRetouchConfigParseSuccess && VisualizationConfigParseSuccess && SpatialClusterConfigParseSuccess && QTInterfaceConfigParseSuccess;
+    return AutoRetouchConfigParseSuccess && VisualizationConfigParseSuccess && QTInterfaceConfigParseSuccess;
 }
 
 bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)

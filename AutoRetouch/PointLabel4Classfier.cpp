@@ -12,9 +12,12 @@ bool CLocalPointLabelSet::changePointLabel(pcl::index_t vPointIndex, EPointLabel
 	if (!m_IsRecording) return false;
 //TODO: 检查vPointIndex是否有效，检查当前的label变为vDstLabel是否合法
 
-	const SPointLabelChange TempPointLabel = { vPointIndex, m_PointLabelSet[vPointIndex], vDstLabel };
-	m_PointLabelChangeRecord.push_back(TempPointLabel);
-	m_PointLabelSet[vPointIndex] = vDstLabel;
+	if (m_PointLabelSet[vPointIndex] != vDstLabel)
+	{
+		const SPointLabelChange TempPointLabel = { vPointIndex, m_PointLabelSet[vPointIndex], vDstLabel };
+		m_PointLabelChangeRecord.push_back(TempPointLabel);
+		m_PointLabelSet[vPointIndex] = vDstLabel;
+	}
 	return true;
 }
 
@@ -108,7 +111,7 @@ bool CLocalPointLabelSet::update(CGlobalPointLabelSet* vGlobalLabelSet)
 
 //*****************************************************************
 //FUNCTION: 
-void CGlobalPointLabelSet::applyPointLabelChange(const std::vector<SPointLabelChange>& vChangeRecord)
+void CGlobalPointLabelSet::applyPointLabelChange(const std::vector<SPointLabelChange>& vChangeRecord, bool vClusterFlag)
 {
 	for (const auto& e : vChangeRecord)
 	{
@@ -118,7 +121,7 @@ void CGlobalPointLabelSet::applyPointLabelChange(const std::vector<SPointLabelCh
 
 	m_PointLabelChangeRecord = vChangeRecord;
 	m_Timestamp = hiveCommon::hiveGetGlobalTimestamp();
-	CPointCloudAutoRetouchScene::getInstance()->recordCurrentOp(new CPointLabelChangeRecord(vChangeRecord));
+	CPointCloudAutoRetouchScene::getInstance()->recordCurrentOp(new CPointLabelChangeRecord(vChangeRecord, vClusterFlag));
 }
 
 //*****************************************************************
