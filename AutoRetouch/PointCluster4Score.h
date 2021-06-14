@@ -20,9 +20,9 @@ namespace hiveObliquePhotography
 #endif // _UNIT_TEST
 
 		private:
-			Eigen::Vector3f m_Normal;
-			Eigen::Vector3i m_Color;
-			Eigen::Vector3f m_Position;
+			Eigen::Vector3f m_Normal{0,0,0};
+			Eigen::Vector3i m_Color{0,0,0};
+			Eigen::Vector3f m_Position{0,0,0};
 		};
 	}
 }
