@@ -13,6 +13,8 @@ namespace hiveObliquePhotography
 			~COpResultQueue() = default;
 
 			bool undo();
+			void clear();
+
 #ifdef _UNIT_TEST
 			std::size_t getNumOfResultQueue()const { return m_OpResultQueue.size(); }
 #endif// _UNIT_TEST 

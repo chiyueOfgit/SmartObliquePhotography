@@ -33,6 +33,7 @@ namespace hiveObliquePhotography
 
 			CGlobalPointLabelSet* fetchPointLabelSet() { return &m_PointLabelSet; }
 			void resetLabelSet();
+			void clearResultQueue();
 		
 		private:
 			CPointCloudAutoRetouchScene();

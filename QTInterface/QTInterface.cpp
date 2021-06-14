@@ -54,6 +54,7 @@ void QTInterface::__connectSignals()
 {
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
     QObject::connect(ui.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
+    QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionResetSelectStatus()));
     QObject::connect(ui.actionTestFunction, SIGNAL(triggered()), this, SLOT(onActionTest()));
 }
 
@@ -272,6 +273,12 @@ void QTInterface::onActionSetting()
     std::shared_ptr<hiveQTInterface::CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<hiveQTInterface::CDisplayOptionsSettingDialog>(this);
     pDisplayOptionsSettingDialog->show();
     pDisplayOptionsSettingDialog->exec();
+}
+
+void QTInterface::onActionResetSelectStatus()
+{
+    AutoRetouch::hiveResetSceneSelectStatus();
+    Visualization::hiveRefreshVisualizer();
 }
 
 void QTInterface::onResourceSpaceItemDoubleClick(const QModelIndex& vIndex)

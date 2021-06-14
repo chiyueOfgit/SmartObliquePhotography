@@ -44,3 +44,8 @@ void CPointCloudAutoRetouchScene::resetLabelSet()
 {
 	m_PointLabelSet.init(m_pPointCloudScene->size(), EPointLabel::UNDETERMINED);
 }
+
+void CPointCloudAutoRetouchScene::clearResultQueue()
+{
+	m_OpResultQueue.clear();
+}

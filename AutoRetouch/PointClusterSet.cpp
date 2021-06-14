@@ -80,6 +80,20 @@ bool CPointClusterSet::undo()
 
 }
 
+bool CPointClusterSet::reset()
+{
+	for (auto Pair : m_PointClusterMap)
+		delete Pair.second;
+	m_PointClusterMap.clear();
+
+	while (!m_UndoQueue.empty())
+		m_UndoQueue.pop();
+
+	m_BinaryAreaAABB.reset();
+
+	return true;
+}
+
 std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet(const std::string& vName) const
 {
 	std::vector<IPointCluster*> ClusterSet;
