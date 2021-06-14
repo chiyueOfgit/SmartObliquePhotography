@@ -22,7 +22,7 @@ CPointCluster4VFH::CPointCluster4VFH(const pcl::Indices& vPointIndices, EPointLa
 
 //*****************************************************************
 //FUNCTION: 
-double CPointCluster4VFH::computeDistanceV(pcl::index_t vPointIndex) const
+double CPointCluster4VFH::computeSimilarityV(pcl::index_t vPointIndex) const
 {
 	_ASSERTE(vPointIndex < CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene()->size());
 
