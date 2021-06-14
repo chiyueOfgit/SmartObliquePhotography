@@ -46,7 +46,7 @@ bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(EPointLabel vTo, 
 
 bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(const pcl::Indices& vPointIndices, EPointLabel vTo)
 {
-	_ASSERTE(CPointCloudAutoRetouchScene::getInstance() && CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	_ASSERTE(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	auto& PointLabelSet = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->fetchPointLabelSet();
 
 	for (auto& PointLabel : vPointIndices)
