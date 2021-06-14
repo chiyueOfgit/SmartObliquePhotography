@@ -18,6 +18,7 @@ using namespace hiveObliquePhotography::AutoRetouch;
 const std::string g_Folder = "test_tile16/";
 const std::string g_CloudFile = "Scu_Tile16.pcd";
 
+const std::vector<std::string> Other_COMPOSITE_BINARY_CONFIG = { BINARY_CLUSTER_NORMAL, BINARY_CLUSTER_VFH, BINARY_CLUSTER_SCORE  };
 
 class CTestCompositeClassifier :public testing::Test
 {
@@ -33,10 +34,10 @@ protected:
 
 	void SetUp() override
 	{
-		/*m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
+		m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
 		pcl::io::loadPCDFile(g_Folder + g_CloudFile, *m_pCloud);
 
-		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);*/
+		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);
 	}
 
 	void TearDown() override
@@ -74,7 +75,7 @@ TEST_F(CTestCompositeClassifier, Add_NullClassifier_Test) {
 	
 	CCompositeClassifier* pCompositeClassifier = new CCompositeClassifier;
 	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	GTEST_TEST_NO_THROW_(pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), PointIndices, EPointLabel::UNWANTED, CameraPos, Matrices));
+	ASSERT_NO_THROW(pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), PointIndices, EPointLabel::UNWANTED, CameraPos, Matrices));
 }
 
 TEST_F(CTestCompositeClassifier, Add_NullLastResult_Test) {
@@ -103,5 +104,25 @@ TEST_F(CTestCompositeClassifier, AB_Cluster4Growing_Test) {
 
 TEST_F(CTestCompositeClassifier, AA_BinaryCombinationOrder_Test) {
 
+	std::vector<EPointLabel> FirstGlobalLabel, SecondGlobalLabel;
 
+	auto pCompositeClassifier = new CCompositeBinaryClassifierAlg;
+	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	pCompositeClassifier->addBinaryClassifiers(COMPOSITE_BINARY_CONFIG);
+	pCompositeClassifier->run();
+
+	hiveGetGlobalPointLabelSet(FirstGlobalLabel);
+	CPointCloudAutoRetouchScene::getInstance()->resetLabelSet();
+	
+	auto pOtherCompositeClassifier = new CCompositeBinaryClassifierAlg;
+	pOtherCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	pOtherCompositeClassifier->addBinaryClassifiers(Other_COMPOSITE_BINARY_CONFIG);
+	pOtherCompositeClassifier->run();
+	hiveGetGlobalPointLabelSet(SecondGlobalLabel);
+
+	std::vector<EPointLabel> Difference(CPointCloudAutoRetouchScene::getInstance()->getNumPoint());
+	auto iter = std::set_difference(FirstGlobalLabel.begin(), FirstGlobalLabel.end(), SecondGlobalLabel.begin(), SecondGlobalLabel.end(), Difference.begin());
+	Difference.resize(iter - Difference.begin());
+
+	GTEST_ASSERT_EQ(Difference.size(), 0u);
 }

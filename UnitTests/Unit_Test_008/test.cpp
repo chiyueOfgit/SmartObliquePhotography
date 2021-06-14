@@ -163,6 +163,7 @@ private:
 TEST_F(CBinaryTest, ChangeLabel_Undo_Overview_Test)
 {
 	auto pClassifier = prepareExcute({ m_pUnwantedCluster4VFH, m_pKeptCluster4VFH });
+	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
 	testResultSize(pClassifier);
 	
@@ -175,6 +176,7 @@ TEST_F(CBinaryTest, ClusterSet_Undo_Overview_Test)
 {
 	const std::vector<IPointCluster*> Clusters = { m_pUnwantedCluster4VFH, m_pKeptCluster4VFH };
 	auto pClassifier = prepareExcute(Clusters);
+	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
 	testResultSize(pClassifier);
 	
@@ -186,27 +188,42 @@ TEST_F(CBinaryTest, ClusterSet_Undo_Overview_Test)
 TEST_F(CBinaryTest, ChangeLabel_Undo_Cleanup_Test)
 {
 	auto pClassifier = prepareExcute({ m_pUnwantedCluster4VFH, m_pKeptCluster4VFH });
+	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
+	auto OnceResult = pClassifier->getResultIndices();
 	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
+	auto TwiceResult = pClassifier->getResultIndices();
 	testResultSize(pClassifier);
 
 	testChangeLabelBeforeUndo(pClassifier);
 	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
 	testChangeLabelAfterUndo(pClassifier);
+
+	ASSERT_EQ(OnceResult->size(), TwiceResult->size());
+	for (size_t i = 0; i < OnceResult->size(); i++)
+		ASSERT_EQ(OnceResult->at(i), TwiceResult->at(i));
 }
 
 TEST_F(CBinaryTest, ClusterSet_Undo_Cleanup_Test)
 {
 	const std::vector<IPointCluster*> Clusters = { m_pUnwantedCluster4VFH, m_pKeptCluster4VFH };
 	auto pClassifier = prepareExcute(Clusters);
+	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
 	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	auto OnceResult = pClassifier->getResultIndices();
+	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
+	auto TwiceResult = pClassifier->getResultIndices();
 	testResultSize(pClassifier);
 
 	testClusterSetBeforeUndo(Clusters);
 	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
 	testClusterSetAfterUndo();
+	
+	ASSERT_EQ(OnceResult->size(), TwiceResult->size());
+	for (size_t i = 0; i < OnceResult->size(); i++)
+		ASSERT_EQ(OnceResult->at(i), TwiceResult->at(i));
 }
-
