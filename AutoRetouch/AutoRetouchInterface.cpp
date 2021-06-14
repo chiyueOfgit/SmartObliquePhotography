@@ -152,11 +152,11 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteMaxVisibilityClustering(con
 	return pClassifier->execute<CMaxVisibilityClusterAlg>(true, vioPointIndices, vExpectLabel, vCameraPos, vPvMatrix);
 }
 
-bool hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel)
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowingByColor(const pcl::Indices& vioPointIndices, EPointLabel vExpectLabel)
 {
 	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
 
-	return pClassifier->execute<CMaxVisibilityClusterAlg>(true, vioPointIndices, vExpectLabel);
+	return pClassifier->execute<CRegionGrowingByColorAlg>(true, vioPointIndices, vExpectLabel);
 }
