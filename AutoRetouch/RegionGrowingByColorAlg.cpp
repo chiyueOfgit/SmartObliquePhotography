@@ -1,8 +1,6 @@
 #include "pch.h"
-#include <set>
 #include "PointCloudAutoRetouchScene.h"
 #include "RegionGrowingByColorAlg.h"
-#include "AutoRetouchConfig.h"
 
 using namespace hiveObliquePhotography::AutoRetouch;
 

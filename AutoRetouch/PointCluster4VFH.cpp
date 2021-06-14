@@ -2,7 +2,6 @@
 #include "PointCluster4VFH.h"
 #include "PointCloudAutoRetouchScene.h"
 #include <pcl/features/impl/vfh.hpp>
-#include <pcl/filters/impl/extract_indices.hpp>
 
 using namespace hiveObliquePhotography::AutoRetouch;
 

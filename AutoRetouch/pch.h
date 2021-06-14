@@ -20,16 +20,21 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/search/kdtree.h>
+#include <pcl/filters/impl/extract_indices.hpp>
+#include <pcl/segmentation/impl/extract_clusters.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
 #include "common/Product.h"
 #include "common/Singleton.h"
+#include "common/CommonMicro.h"
 #include "common/CommonInterface.h"
 #include "common/EventLoggerInterface.h"
 #include "common/DesignPatternInterface.h"
+#include "common/ConfigInterface.h"
 
 #include "AutoRetouchCommon.h"
+#include "AutoRetouchConfig.h"
 
 #endif //PCH_H

@@ -3,7 +3,6 @@
 #include "PointCloudAutoRetouchScene.h"
 #include "PointCluster.h"
 #include "PointClusterSet.h"
-#include <omp.h>
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
