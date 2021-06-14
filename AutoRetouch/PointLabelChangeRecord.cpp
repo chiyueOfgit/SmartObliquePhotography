@@ -8,12 +8,9 @@ using namespace hiveObliquePhotography::AutoRetouch;
 //FUNCTION: 
 bool CPointLabelChangeRecord::undoV()
 {
-	for(const auto& OneChange:m_ChangeRecord)
-	{
-		pcl::Indices Indices;
-		Indices.push_back(OneChange.Index);
-		hiveSwitchPointLabel(Indices, OneChange.SrcLabel);
-	}
+	_ASSERTE(!m_ChangeRecord.empty());
+	CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->undo(m_ChangeRecord);
+
 	if(m_bIsClusterChanged)
 	{
 		CPointClusterSet::getInstance()->undo();

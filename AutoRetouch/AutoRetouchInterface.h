@@ -20,9 +20,9 @@ namespace hiveObliquePhotography
 
 		AUTORETOUCH_DECLSPEC void hiveGetGlobalPointLabelSet(std::vector<EPointLabel>& voGlobalLabel);
 
-		AUTORETOUCH_DECLSPEC bool hiveSwitchPointLabel(EPointLabel vTo, EPointLabel vFrom);
+		AUTORETOUCH_DECLSPEC void hiveResetSceneSelectStatus();
 
-		AUTORETOUCH_DECLSPEC bool hiveSwitchPointLabel(const pcl::Indices& vPointIndices, EPointLabel vTo);
+		AUTORETOUCH_DECLSPEC bool hiveSwitchPointLabel(EPointLabel vTo, EPointLabel vFrom);
 
 		AUTORETOUCH_DECLSPEC bool hiveExecuteBinaryClassifier(const std::string& vClassifierSig, const std::string& vClusterType);
 

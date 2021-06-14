@@ -17,3 +17,10 @@ bool COpResultQueue::undo()
 
 	return true;
 }
+
+void hiveObliquePhotography::AutoRetouch::COpResultQueue::clear()
+{
+	for (auto pResult : m_OpResultQueue)
+		delete pResult;
+	m_OpResultQueue.clear();
+}

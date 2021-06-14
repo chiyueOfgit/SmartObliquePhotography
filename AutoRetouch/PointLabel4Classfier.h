@@ -73,6 +73,10 @@ namespace hiveObliquePhotography
 			CLocalPointLabelSet* clone() const;
 
 			void applyPointLabelChange(const std::vector<SPointLabelChange>& vChangeRecord, bool vClusterFlag);
+			
+			bool undo(const std::vector<SPointLabelChange>& vChangeRecord);
+
+			bool switchLabel(EPointLabel vTo, EPointLabel vFrom);
 		};
 	}
 }
