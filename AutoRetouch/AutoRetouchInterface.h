@@ -34,6 +34,6 @@ namespace hiveObliquePhotography
 
 		AUTORETOUCH_DECLSPEC bool hiveExecuteMaxVisibilityClustering(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix);
 
-		AUTORETOUCH_DECLSPEC bool hiveExecuteRegionGrowingByColor(const pcl::Indices& vioPointIndices, EPointLabel vExpectLabel);
+		AUTORETOUCH_DECLSPEC bool hiveExecuteRegionGrowingByColor(const pcl::Indices& vPointIndices, EPointLabel vExpectLabel);
 	}
 }
