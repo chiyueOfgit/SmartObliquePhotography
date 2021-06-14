@@ -3,8 +3,6 @@
 #include "PointCloudAutoRetouchScene.h"
 #include "PointLabel4Classfier.h"
 #include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/filters/radius_outlier_removal.h>
-
 
 using namespace hiveObliquePhotography::AutoRetouch;
 

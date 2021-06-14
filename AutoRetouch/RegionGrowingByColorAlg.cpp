@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PointCloudAutoRetouchScene.h"
 #include "RegionGrowingByColorAlg.h"
+#include "ColorDifferences.h"
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
@@ -118,7 +119,7 @@ bool CRegionGrowingByColorAlg::__colorTestByAverage(int vTestIndex, PointCloud_t
 		m_RgbSum[2] / m_SeedsCount,
 	};
 	
-	if (ColorDifferences::calcColorDifferences(AverageColor, NeighborColor) > ColorThreshold)
+	if (CColorDifferences::calcColorDifferences(AverageColor, NeighborColor) > ColorThreshold)
 	{
 		//ColorThreshold--;
 		return false;
@@ -163,7 +164,7 @@ bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestIndex, PointCloud_t:
 
 	auto [r, g, b, a] = __extractColor(m_MedianColor);
 	std::vector<std::uint32_t> MedianColor{r, g, b};
-	if (ColorDifferences::calcColorDifferences(MedianColor, NeighborColor) > ColorThreshold)
+	if (CColorDifferences::calcColorDifferences(MedianColor, NeighborColor) > ColorThreshold)
 	{
 		//ColorThreshold--;
 		return false;

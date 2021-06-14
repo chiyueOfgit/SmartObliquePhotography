@@ -83,7 +83,7 @@
     <ClInclude Include="StatisticalOutlierAlg.h">
       <Filter>PointClassfier\OutlierDetectingAlg</Filter>
     </ClInclude>
-    <ClInclude Include="Common.h">
+    <ClInclude Include="ColorDifferences.h">
       <Filter>PointClassfier</Filter>
     </ClInclude>
     <ClInclude Include="RegionGrowingByColorAlg.h">
