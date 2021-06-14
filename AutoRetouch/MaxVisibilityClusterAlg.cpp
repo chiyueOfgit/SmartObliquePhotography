@@ -20,7 +20,7 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointL
 	if (vioPointSet == nullptr || vioPointSet->empty())
 		return;
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pCloud = pScene->getPointCloudScene()->makeShared();
+	auto pCloud = pScene->getPointCloudScene();
 	pcl::search::KdTree<pcl::PointSurfel>::Ptr pTree(new pcl::search::KdTree<pcl::PointSurfel>);
 	pTree->setInputCloud(pCloud);
 
