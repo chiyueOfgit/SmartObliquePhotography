@@ -103,7 +103,7 @@
    <addaction name="actionTestFunction"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <widget class="QDockWidget" name="resourceDockWidget">
+  <widget class="QDockWidget" name="resourceSpaceDockWidget">
    <property name="styleSheet">
     <string notr="true">background-color: rgb(255, 255, 255);</string>
    </property>
@@ -113,7 +113,7 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QTreeView" name="resourceTreeView">
+      <widget class="QTreeView" name="resourceSpaceTreeView">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>

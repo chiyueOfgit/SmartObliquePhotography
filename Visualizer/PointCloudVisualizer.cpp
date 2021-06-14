@@ -2,6 +2,9 @@
 #include "PointCloudVisualizer.h"
 #include "InteractionCallback.h"
 #include "AutoRetouchInterface.h"
+#include "VisualizationConfig.h"
+#include <common/ConfigCommon.h>
+#include <common/ConfigInterface.h>
 #include <omp.h>
 
 #define RECORD_TIME_BEGIN clock_t StartTime, FinishTime;\
@@ -14,6 +17,15 @@ using namespace hiveObliquePhotography::Visualization;
 
 CPointCloudVisualizer::CPointCloudVisualizer()
 {
+	CPointCloudVisualizer::__parseConfigFile();
+}
+
+bool CPointCloudVisualizer::__parseConfigFile()
+{
+	if (hiveConfig::hiveParseConfig("VisualizationConfig.xml", hiveConfig::EConfigType::XML, CVisualizationConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+		return false;
+	else
+		return true;
 }
 
 CPointCloudVisualizer::~CPointCloudVisualizer()
@@ -100,9 +112,11 @@ void CPointCloudVisualizer::refresh(bool vResetCamera)
 		}
 	}
 
+	auto PointSize = *hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance()->getAttribute<int>("POINT_SHOW_SIZE");
+
 	pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PointSurfel> RGBAColor(pCloud2Show);
 	m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(pCloud2Show, RGBAColor, "Cloud2Show");
-	m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "Cloud2Show");
+	m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "Cloud2Show");
 
 	if (vResetCamera)
 		m_pPCLVisualizer->resetCamera();

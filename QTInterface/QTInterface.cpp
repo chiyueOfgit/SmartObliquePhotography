@@ -68,11 +68,11 @@ void QTInterface::__initialVTKWidget()
 
 void QTInterface::__initialResourceSpaceDockWidget()
 {
-    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.resourceTreeView);
-    ui.resourceTreeView->setModel(m_pResourceSpaceStandardItemModels);
+    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.resourceSpaceTreeView);
+    ui.resourceSpaceTreeView->setModel(m_pResourceSpaceStandardItemModels);
     m_pResourceSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    QTInterface::__initialDockWidgetTitleBar(ui.resourceDockWidget, "Resource Space");
+    QTInterface::__initialDockWidgetTitleBar(ui.resourceSpaceDockWidget, "Resource Space");
 }
 
 void QTInterface::__initialWorkSpaceDockWidget()
@@ -111,13 +111,15 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     m_pPointSizeSlider = new QSlider(Qt::Horizontal);
     m_pPointSizeSlider->setMinimum(1);
     m_pPointSizeSlider->setMaximum(7);
-    m_pPointSizeSlider->setValue(m_PointSize);
-    m_pPointSizeSlider->setValue(*hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>("POINT_SHOW_SIZE") ? m_PointSize : m_PointSize);
+    m_pPointSizeSlider->setValue(*hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance()->getAttribute<int>("POINT_SHOW_SIZE"));
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
         {
             m_PointSize = m_pPointSizeSlider->value();
-            hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->overwriteAttribute("POINT_SHOW_SIZE", m_PointSize);
+            auto OverwriteSuccess = hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance()->overwriteAttribute("POINT_SHOW_SIZE", m_PointSize);
+            auto q = *hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance()->getAttribute<int>("POINT_SHOW_SIZE");
+            if (OverwriteSuccess)
+                Visualization::hiveRefreshVisualizer(true);
         }
     );
 

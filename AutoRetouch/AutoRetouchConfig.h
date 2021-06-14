@@ -19,16 +19,10 @@ namespace hiveObliquePhotography
 				_defineAttribute("ENABLE_COLOR_TEST", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute("COLOR_TEST_MODE", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 				_defineAttribute("COLOR_TEST_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
-
 				_defineAttribute("ENABLE_GROUND_TEST", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute("GROUND_TEST_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
-
 				_defineAttribute("ENABLE_NORMAL_TEST", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
-
 				_defineAttribute("SEARCH_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
-
-				_defineAttribute("POINT_SHOW_SIZE", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
-
 				_defineAttribute("OUTLIER_MEAN_KNN_NUMBER", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 				_defineAttribute("OUTLIER_STD_MULTIPLE_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 			}

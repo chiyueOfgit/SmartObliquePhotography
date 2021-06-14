@@ -26,7 +26,7 @@ namespace hiveObliquePhotography
 				_defineAttribute(SWITCH_UNWANTED_DISCARD, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(SWITCH_BINARY_GROWING, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(SWITCH_BINARY_CLUSTER_LABEL, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
-				_defineAttribute(POINT_SHOW_SIZE, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
+				_defineAttribute(POINT_SHOW_SIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 
 			}
 

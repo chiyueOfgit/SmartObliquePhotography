@@ -29,7 +29,7 @@ namespace hiveObliquePhotography
             std::string m_CurrentCloud = "";
             std::string m_DirectoryOpenPath = "../Models/Tile1";
             size_t m_SceneIndex = -1;
-            double m_PointSize = 3;             // magic
+            int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;
 
             void __initialVTKWidget();
@@ -45,7 +45,7 @@ namespace hiveObliquePhotography
             void __connectSignals();
             void __checkFileOpenRepeatedly();
             template <class T>
-            bool __readConfigFile(const std::string& vFileName, T* t);
+            bool __readConfigFile(const std::string& vFileName, T* vInstance);
             std::string __getFileName(const std::string& vFilePath);
             std::string __getDirectory(const std::string& vFilePath);
 
