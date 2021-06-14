@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "PointCluster4NormalRatio.h"
 #include "PointCloudAutoRetouchScene.h"
-#include <pcl/filters/impl/extract_indices.hpp>
 
 using namespace hiveObliquePhotography::AutoRetouch;
 

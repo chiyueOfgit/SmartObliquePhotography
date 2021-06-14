@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "CompositeClassifier.h"
 #include "PointCloudAutoRetouchScene.h"
+#include "CompositeClassifier.h"
 
 using namespace hiveObliquePhotography::AutoRetouch;
 

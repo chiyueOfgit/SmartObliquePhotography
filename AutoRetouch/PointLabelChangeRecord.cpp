@@ -2,7 +2,6 @@
 #include "PointLabelChangeRecord.h"
 #include "AutoRetouchInterface.h"
 
-
 using namespace hiveObliquePhotography::AutoRetouch;
 
 //*****************************************************************

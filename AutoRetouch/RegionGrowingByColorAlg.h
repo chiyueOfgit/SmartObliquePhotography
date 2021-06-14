@@ -1,6 +1,5 @@
 #pragma once
 #include "RegionGrowingAlg.h"
-#include "Common.h"
 
 namespace hiveObliquePhotography
 {
@@ -8,7 +7,6 @@ namespace hiveObliquePhotography
 	{
 		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 		
-		//TODO: Ìí¼ÓUNKNOWN£¿
 		enum class EColorMode : unsigned char
 		{
 			MEAN = 0,

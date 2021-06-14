@@ -13,7 +13,7 @@ namespace hiveObliquePhotography
 			CStaOutlierDetectingAlg() = default;
 			~CStaOutlierDetectingAlg() = default;
 
-			virtual void runV(pcl::Indices& vioInputSet, EPointLabel vExpectLabel);
+			void runV(pcl::Indices& vioInputSet, EPointLabel vExpectLabel) override;
 		};
 	}
 }
