@@ -1,11 +1,5 @@
 #include "pch.h"
 #include "AutoRetouchInterface.h"
-#include "BinaryClassifierAlg.h"
-#include "PointCluster4VFH.h"
-#include "PointCluster4Score.h"
-#include "PointCluster4NormalRatio.h"
-#include "CompositeBinaryClassifierAlg.h"
-#include "MaxVisibilityClusterAlg.h"
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
