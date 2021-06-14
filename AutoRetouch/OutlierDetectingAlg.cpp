@@ -6,7 +6,7 @@ using namespace hiveObliquePhotography::AutoRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-void COutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vFinalLabel)
+void COutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vExpectLabel)
 {
 
 }

@@ -16,7 +16,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CStaOutlierDetectingAlg, CLASSIFIER_OUTLIER_DETECTIO
 
 //*****************************************************************
 //FUNCTION:
-void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vFinalLabel)
+void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vExpectLabel)
 {
 	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
@@ -38,7 +38,7 @@ void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vFina
 
 	for (auto& Index : OutlierIndices)
 	{
-		m_pLocalLabelSet->changePointLabel(Index, vFinalLabel);
+		m_pLocalLabelSet->changePointLabel(Index, vExpectLabel);
 	}
 
 }
