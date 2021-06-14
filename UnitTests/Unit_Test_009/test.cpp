@@ -7,9 +7,17 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
 
+#include "CompositeBinaryClassifierAlg.h"
+#include "MaxVisibilityClusterAlg.h"
+#include "PointCluster4NormalRatio.h"
+#include "PointCluster4Score.h"
+#include "PointCluster4VFH.h"
+
 //测试用例列表：
-//  * Add_NullClassifier_Test: 测试加入未建成功的Classifier
-//  * Add_NullLastResult_Test: 测试AddClassifier后所得索引结果为空的情况
+//  * Init_NullptrOrEmpty_Test: 测试init异常反应
+//  * Add_GlobalLabel_Test: 测试多次addClassifier后不会影响GlobalLabel
+//  * AfterRun_UndoQueue_Test: 测试一次组合操作之对应一次Undo操作
+//  * Add_NullLastResult_Test: 测试addClassifier后所得索引结果为空的情况
 //  * AB_Cluster4Growing_Test: 测试AB组合（聚类区域生长）的正确性
 //  * AA_BinaryCombinationOrder_Test: 测试AA组合（多条件二分）关于加入顺序无关性
 
@@ -112,17 +120,42 @@ void CTestCompositeClassifier::__initCluster()
 	}
 }
 
-TEST_F(CTestCompositeClassifier, Add_NullClassifier_Test) {
+//TEST_F(CTestCompositeClassifier, Init_Nullptr_Test) {
+//
+//	CCompositeClassifier* pCompositeClassifier = new CCompositeClassifier;
+//	CGlobalPointLabelSet* NullptrInput = nullptr;
+//	CGlobalPointLabelSet* EmptyInput = new CGlobalPointLabelSet;
+//	ASSERT_ANY_THROW(pCompositeClassifier->init(NullptrInput));
+//	ASSERT_ANY_THROW(pCompositeClassifier->init(EmptyInput));
+//}
 
-	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
-	IPointClassifier* pClusterClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	Eigen::Vector3f CameraPos{};
-	Eigen::Matrix4d PvMatrix;
-	pcl::IndicesPtr PointIndices = nullptr;
-	
-	CCompositeClassifier* pCompositeClassifier = new CCompositeClassifier;
+TEST_F(CTestCompositeClassifier, Add_GlobalLabel_Test) {
+
+	auto pCompositeClassifier = new CCompositeBinaryClassifierAlg;
 	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	ASSERT_NO_THROW(pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), PointIndices, EPointLabel::UNWANTED, CameraPos, PvMatrix));
+	std::vector<EPointLabel> FirstGlobalLabel, SecondGlobalLabel;
+	hiveGetGlobalPointLabelSet(FirstGlobalLabel);
+
+	pCompositeClassifier->addBinaryClassifiers(COMPOSITE_BINARY_CONFIG);
+	hiveGetGlobalPointLabelSet(SecondGlobalLabel);
+
+	std::vector<EPointLabel> Difference(CPointCloudAutoRetouchScene::getInstance()->getNumPoint());
+	auto iter = std::set_difference(FirstGlobalLabel.begin(), FirstGlobalLabel.end(), SecondGlobalLabel.begin(), SecondGlobalLabel.end(), Difference.begin());
+	Difference.resize(iter - Difference.begin());
+
+	GTEST_ASSERT_EQ(Difference.size(), 0u);
+}
+
+TEST_F(CTestCompositeClassifier, AfterRun_UndoQueue_Test) {
+
+	auto BeforeRun = CPointCloudAutoRetouchScene::getInstance()->getNumOfResultQueue();
+	auto pCompositeClassifier = new CCompositeBinaryClassifierAlg;
+	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	pCompositeClassifier->addBinaryClassifiers(COMPOSITE_BINARY_CONFIG);
+	pCompositeClassifier->run();
+	auto AfterRun = CPointCloudAutoRetouchScene::getInstance()->getNumOfResultQueue();
+
+	GTEST_ASSERT_EQ(BeforeRun + 1, AfterRun);
 }
 
 TEST_F(CTestCompositeClassifier, Add_NullLastResult_Test) {
@@ -133,21 +166,16 @@ TEST_F(CTestCompositeClassifier, Add_NullLastResult_Test) {
 	IPointClassifier* pGrowingClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(GrowingAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 
 	Eigen::Vector3f CameraPos{0,0,0};
-	Eigen::Matrix4d MatrixA(4,4);
-	Eigen::Matrix4d MatrixB(4,4);
-	Eigen::Matrix4d PvMatrix = MatrixB * MatrixA;
+	Eigen::Matrix4d MatrixV(4,4);
+	Eigen::Matrix4d MatrixP(4,4);
 	pcl::IndicesPtr PointIndices = nullptr;
 	
 	CCompositeClassifier* pCompositeClassifier = new CCompositeClassifier;
 	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), PointIndices, EPointLabel::UNWANTED, CameraPos, PvMatrix);
+	pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), PointIndices, EPointLabel::UNWANTED, CameraPos, MatrixP * MatrixV);
 	ASSERT_NO_THROW(pCompositeClassifier->addClassifierAndExecuteByLastIndices<CRegionGrowingByColorAlg>(dynamic_cast<CRegionGrowingByColorAlg*>(pGrowingClassifier), EPointLabel::UNWANTED));
 }
 
-TEST_F(CTestCompositeClassifier, AB_Cluster4Growing_Test) {
-
-	
-}
 
 TEST_F(CTestCompositeClassifier, AA_BinaryCombinationOrder_Test) {
 
