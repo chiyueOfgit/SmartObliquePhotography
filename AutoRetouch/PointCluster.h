@@ -28,7 +28,7 @@ namespace hiveObliquePhotography
 
 			const pcl::IndicesPtr& getClusterIndices() const { return m_PointIndices; }
 			
-			virtual double computeDistanceV(pcl::index_t vPointIndex) const = 0;
+			virtual double computeSimilarityV(pcl::index_t vPointIndex) const = 0;
 
 		private:
 			SBox m_AABB;

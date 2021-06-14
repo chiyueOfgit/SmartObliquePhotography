@@ -20,7 +20,7 @@ CPointCluster4Score::CPointCluster4Score(const pcl::IndicesPtr& vPointIndices, E
 	m_Position /= vPointIndices->size();
 }
 
-double CPointCluster4Score::computeDistanceV(pcl::index_t vPointIndex) const
+double CPointCluster4Score::computeSimilarityV(pcl::index_t vPointIndex) const
 {
 	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
 	_ASSERTE(pCloud != nullptr);

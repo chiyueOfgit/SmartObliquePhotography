@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "AutoRetouchInterface.h"
 #include "VisualizationInterface.h"
+#include "BinaryClassifierAlg.h"
 #include "PointCluster4VFH.h"
 #include "PointCluster4Score.h"
 #include "PointCluster4NormalRatio.h"
@@ -72,7 +73,7 @@ protected:
 		std::vector<int> Indices;
 		std::ifstream File(vPath.c_str());
 		boost::archive::text_iarchive ia(File);
-		ia >> BOOST_SERIALIZATION_NVP(*pIndices);
+		ia >> BOOST_SERIALIZATION_NVP(Indices);
 		File.close();	//ia后才能关闭
 		pcl::IndicesPtr pIndices(new pcl::Indices(Indices));
 		return pIndices;
