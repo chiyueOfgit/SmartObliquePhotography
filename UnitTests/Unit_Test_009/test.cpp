@@ -17,6 +17,8 @@ using namespace hiveObliquePhotography::AutoRetouch;
 
 const std::string g_Folder = "test_tile16/";
 const std::string g_CloudFile = "Scu_Tile16.pcd";
+const std::string g_WantedFile = "SomeBigTreePoints.txt";
+const std::string g_UnWantedFile = "SomeGroundPoints.txt";
 
 const std::vector<std::string> Other_COMPOSITE_BINARY_CONFIG = { BINARY_CLUSTER_NORMAL, BINARY_CLUSTER_VFH, BINARY_CLUSTER_SCORE  };
 
@@ -24,20 +26,13 @@ class CTestCompositeClassifier :public testing::Test
 {
 protected:
 
-	const std::vector<std::string> GroundTruth = {
-		"groundtruth/LeftBigTree.txt",
-		"groundtruth/MidTwoTrees.txt",
-		"groundtruth/RightFourTrees.txt",
-		"groundtruth/KinderGarten.txt"
-	};
-
-
 	void SetUp() override
 	{
 		m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
 		pcl::io::loadPCDFile(g_Folder + g_CloudFile, *m_pCloud);
 
 		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);
+		__initCluster();
 	}
 
 	void TearDown() override
@@ -62,8 +57,60 @@ protected:
 
 private:
 	pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
+	void __initCluster();
 };
 
+void CTestCompositeClassifier::__initCluster()
+{
+	auto WantedIndex = loadPointIndices(g_Folder + g_WantedFile);
+	auto UnWantedIndex = loadPointIndices(g_Folder + g_UnWantedFile);
+
+	{
+		std::size_t ClusterId = 0;
+		std::vector<std::string> UwNames, WNames;
+		std::vector<IPointCluster*> UwpClusters, WpClusters;
+		for (auto& Type : COMPOSITE_BINARY_CONFIG)
+		{
+			if (Type.find(BINARY_CLUSTER_VFH) != std::string::npos)
+			{
+				UwNames.push_back(BINARY_CLUSTER_VFH + std::to_string(ClusterId));
+				UwpClusters.push_back(new CPointCluster4VFH(std::make_shared<pcl::Indices>(UnWantedIndex), EPointLabel::UNWANTED));
+			}
+			else if (Type.find(BINARY_CLUSTER_SCORE) != std::string::npos)
+			{
+				UwNames.push_back(BINARY_CLUSTER_SCORE + std::to_string(ClusterId));
+				UwpClusters.push_back(new CPointCluster4Score(std::make_shared<pcl::Indices>(UnWantedIndex), EPointLabel::UNWANTED));
+			}
+			else if (Type.find(BINARY_CLUSTER_NORMAL) != std::string::npos)
+			{
+				UwNames.push_back(BINARY_CLUSTER_NORMAL + std::to_string(ClusterId));
+				UwpClusters.push_back(new CPointCluster4NormalRatio(std::make_shared<pcl::Indices>(UnWantedIndex), EPointLabel::UNWANTED));
+			}
+		}
+		CPointClusterSet::getInstance()->addPointClusters(UwNames, UwpClusters);
+		ClusterId++;
+
+		for (auto& Type : COMPOSITE_BINARY_CONFIG)
+		{
+			if (Type.find(BINARY_CLUSTER_VFH) != std::string::npos)
+			{
+				WNames.push_back(BINARY_CLUSTER_VFH + std::to_string(ClusterId));
+				WpClusters.push_back(new CPointCluster4VFH(std::make_shared<pcl::Indices>(WantedIndex), EPointLabel::KEPT));
+			}
+			else if (Type.find(BINARY_CLUSTER_SCORE) != std::string::npos)
+			{
+				WNames.push_back(BINARY_CLUSTER_SCORE + std::to_string(ClusterId));
+				WpClusters.push_back(new CPointCluster4Score(std::make_shared<pcl::Indices>(WantedIndex), EPointLabel::KEPT));
+			}
+			else if (Type.find(BINARY_CLUSTER_NORMAL) != std::string::npos)
+			{
+				WNames.push_back(BINARY_CLUSTER_NORMAL + std::to_string(ClusterId));
+				WpClusters.push_back(new CPointCluster4NormalRatio(std::make_shared<pcl::Indices>(WantedIndex), EPointLabel::KEPT));
+			}
+		}
+		CPointClusterSet::getInstance()->addPointClusters(WNames, WpClusters);
+	}
+}
 
 TEST_F(CTestCompositeClassifier, Add_NullClassifier_Test) {
 
@@ -105,12 +152,12 @@ TEST_F(CTestCompositeClassifier, AB_Cluster4Growing_Test) {
 TEST_F(CTestCompositeClassifier, AA_BinaryCombinationOrder_Test) {
 
 	std::vector<EPointLabel> FirstGlobalLabel, SecondGlobalLabel;
-
+	
 	auto pCompositeClassifier = new CCompositeBinaryClassifierAlg;
 	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	pCompositeClassifier->addBinaryClassifiers(COMPOSITE_BINARY_CONFIG);
 	pCompositeClassifier->run();
-
+	
 	hiveGetGlobalPointLabelSet(FirstGlobalLabel);
 	CPointCloudAutoRetouchScene::getInstance()->resetLabelSet();
 	
