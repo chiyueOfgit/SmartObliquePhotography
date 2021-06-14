@@ -84,7 +84,7 @@ protected:
 		m_pKeptCluster4NormalRatio = new CPointCluster4NormalRatio(m_pKeptIndices, m_Kept);
 	}
 
-	auto* prepareExcute(const std::vector<IPointCluster*>& vClusters)
+	auto* prepareExcute(const std::vector<IPointCluster*>& vClusters) const
 	{
 		for (std::size_t i = 0; i < vClusters.size(); i++)
 			CPointClusterSet::getInstance()->addPointCluster("vfh_" + std::to_string(i), vClusters[i]);
@@ -94,7 +94,7 @@ protected:
 		return pClassifier;
 	}
 
-	void testResultSize(const IPointClassifier* vClassifier)
+	void testResultSize(const IPointClassifier* vClassifier) const
 	{
 		//结果数目
 		auto LabelChanged = vClassifier->getResult();
@@ -103,19 +103,19 @@ protected:
 		ASSERT_LE(LabelChanged.size(), getCloud()->size() - m_pUnwantedIndices->size() - m_pKeptIndices->size());
 	}
 	
-	void testChangeLabelBeforeUndo(const IPointClassifier* vClassifier)
+	void testChangeLabelBeforeUndo(const IPointClassifier* vClassifier) const
 	{
 		for (auto& OneChange : vClassifier->getResult())
 			ASSERT_EQ(OneChange.DstLabel, vClassifier->getGlobalLabelSet()->getPointLabel(OneChange.Index));
 	}
 
-	void testChangeLabelAfterUndo(const IPointClassifier* vClassifier)
+	void testChangeLabelAfterUndo(const IPointClassifier* vClassifier) const
 	{
 		for (auto& OneChange : vClassifier->getResult())
 			ASSERT_EQ(OneChange.SrcLabel, vClassifier->getGlobalLabelSet()->getPointLabel(OneChange.Index));
 	}
 
-	void testClusterSetBeforeUndo(const std::vector<IPointCluster*>& vClusters)
+	void testClusterSetBeforeUndo(const std::vector<IPointCluster*>& vClusters) const
 	{
 		for (int i = 0; i < 2; i++)
 		{
@@ -131,7 +131,7 @@ protected:
 		}
 	}
 
-	void testClusterSetAfterUndo()
+	void testClusterSetAfterUndo() const
 	{
 		for (int i = 0; i < 2; i++)
 		{
@@ -182,6 +182,8 @@ TEST_F(CBinaryTest, ClusterSet_Undo_Overview_Test)
 	
 	testClusterSetBeforeUndo(Clusters);
 	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
 	testClusterSetAfterUndo();
 }
 
@@ -220,6 +222,8 @@ TEST_F(CBinaryTest, ClusterSet_Undo_Cleanup_Test)
 	testResultSize(pClassifier);
 
 	testClusterSetBeforeUndo(Clusters);
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
 	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
 	testClusterSetAfterUndo();
 	
