@@ -151,10 +151,10 @@ TEST_F(CBinaryTest, Cluster_Set_Test)
 
 	for (int i = 0; i < pClusters.size(); i++)
 	{
-		pClusterSet->addPointCluster(std::to_string(i), pClusters[i]);
+		pClusterSet->addPointCluster("test_" + std::to_string(i), pClusters[i]);
 	}
 
-	auto pGlobalClusters = pClusterSet->getGlobalClusterSet();
+	auto pGlobalClusters = pClusterSet->getGlobalClusterSet("test");
 	ASSERT_EQ(pGlobalClusters.size(), pClusters.size());
 
 }
