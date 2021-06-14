@@ -12,7 +12,14 @@ void CCompositeClassifier::ensembleResult()
 
 	std::vector<std::vector<SPointLabelChange>::const_iterator> itr;
 	itr.resize(m_ClassifierSet.size());
-	for (auto i = 0; i < m_ClassifierSet.size(); i++) itr[i] = m_ClassifierSet[i]->getResult().cbegin();
+
+	for (auto i = 0; i < m_ClassifierSet.size(); i++)
+	{
+		itr[i] = m_ClassifierSet[i]->getResult().cbegin();
+		_ASSERTE(itr != m_ClassifierSet[i]->getResult().cend());
+		if (itr[i] == m_ClassifierSet[i]->getResult().cend())
+			return;
+	}
 
 	std::vector<SPointLabelChange> OverallResult4SinglePoint;
 	std::vector<SPointLabelChange> EnsembledResult4GlobalLabel;
