@@ -89,7 +89,7 @@ protected:
 		for (std::size_t i = 0; i < vClusters.size(); i++)
 			CPointClusterSet::getInstance()->addPointCluster("vfh_" + std::to_string(i), vClusters[i]);
 
-		auto* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(CLASSIFIER_BINARY, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+		auto* pClassifier = hiveDesignPattern::hiveCreateProduct<IPointClassifier>(CLASSIFIER_BINARY, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 
 		return pClassifier;
 	}
