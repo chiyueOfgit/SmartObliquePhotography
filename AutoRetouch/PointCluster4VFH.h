@@ -11,7 +11,7 @@ namespace hiveObliquePhotography
 			CPointCluster4VFH(const pcl::IndicesPtr& vPointIndices, EPointLabel vLabel);
 			~CPointCluster4VFH() override = default;
 
-			double computeDistanceV(pcl::index_t vPointIndex) const override;
+			double computeSimilarityV(pcl::index_t vPointIndex) const override;
 
 #ifdef _UNIT_TEST
 			const auto& getVFHMatrix() const { return m_VFHDescriptor; }

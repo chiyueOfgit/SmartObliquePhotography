@@ -13,7 +13,7 @@ namespace hiveObliquePhotography
 			CPointCluster4NormalRatio(const pcl::IndicesPtr& vPointIndices, EPointLabel vLabel);
 			~CPointCluster4NormalRatio() override = default;
 
-			double computeDistanceV(pcl::index_t vPointIndex) const override;
+			double computeSimilarityV(pcl::index_t vPointIndex) const override;
 
 		private:
 			PointCloud_t::Ptr m_pPointCloud;

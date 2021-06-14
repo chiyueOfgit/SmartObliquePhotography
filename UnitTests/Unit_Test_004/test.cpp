@@ -36,7 +36,7 @@ const std::string g_Folder = "test_tile16/";
 const std::string g_CloudFile = "Scu_Tile16.pcd";
 const std::string g_UnwantedTreePoints = "SomeBigTreePoints.txt";
 const std::string g_KeptGroundPoints = "SomeGroundPoints.txt";
-const std::string g_RestrictPoints1 = "";
+const std::string g_RestrictPoints1 = "SomeGroundPoints.txt";
 
 class CBinaryTest : public testing::Test
 {
@@ -69,11 +69,12 @@ protected:
 
 	pcl::IndicesPtr loadPointIndices(const std::string& vPath)
 	{
-		pcl::IndicesPtr pIndices(new pcl::Indices);
+		std::vector<int> Indices;
 		std::ifstream File(vPath.c_str());
 		boost::archive::text_iarchive ia(File);
 		ia >> BOOST_SERIALIZATION_NVP(*pIndices);
 		File.close();	//ia后才能关闭
+		pcl::IndicesPtr pIndices(new pcl::Indices(Indices));
 		return pIndices;
 	}
 
@@ -125,21 +126,21 @@ TEST_F(CBinaryTest, Cluster_Overview_Test)
 	pcl::IndicesPtr ErrorIndices1(new pcl::Indices{ ErrorIndex1 });
 	pcl::IndicesPtr ErrorIndices2(new pcl::Indices{ ErrorIndex2 });
 
-	//无效的创建失败
-	EXPECT_DEATH(new CPointCluster4VFH(ErrorIndices1, m_Kept), ".*");
-	EXPECT_DEATH(new CPointCluster4VFH(ErrorIndices2, m_Unwanted), ".*");
+	//无效的创建失败但不能抛出异常
+	EXPECT_NO_THROW(new CPointCluster4VFH(ErrorIndices1, m_Kept));
+	EXPECT_NO_THROW(new CPointCluster4VFH(ErrorIndices2, m_Unwanted));
 
-	//无效的算距离失败
-	EXPECT_DEATH(m_pUnwantedCluster4VFH->computeDistanceV(ErrorIndex1), ".*");
-	EXPECT_DEATH(m_pUnwantedCluster4VFH->computeDistanceV(ErrorIndex2), ".*");
-	EXPECT_DEATH(m_pKeptCluster4VFH->computeDistanceV(ErrorIndex1), ".*");
-	EXPECT_DEATH(m_pKeptCluster4VFH->computeDistanceV(ErrorIndex2), ".*");
+	//无效的算距离失败但不能抛出异常
+	EXPECT_NO_THROW(m_pUnwantedCluster4VFH->computeSimilarityV(ErrorIndex1));
+	EXPECT_NO_THROW(m_pUnwantedCluster4VFH->computeSimilarityV(ErrorIndex2));
+	EXPECT_NO_THROW(m_pKeptCluster4VFH->computeSimilarityV(ErrorIndex1));
+	EXPECT_NO_THROW(m_pKeptCluster4VFH->computeSimilarityV(ErrorIndex2));
 
 	//簇中的点必须更靠近自己
 	for (int i = 0, step = 3; i < m_pUnwantedIndices->size() && i < m_pKeptIndices->size(); i += step)
 	{
-		EXPECT_GT(m_pUnwantedCluster4VFH->computeDistanceV((*m_pUnwantedIndices)[i]), m_pKeptCluster4VFH->computeDistanceV((*m_pUnwantedIndices)[i]));
-		EXPECT_GT(m_pKeptCluster4VFH->computeDistanceV((*m_pKeptIndices)[i]), m_pUnwantedCluster4VFH->computeDistanceV((*m_pKeptIndices)[i]));
+		EXPECT_GT(m_pUnwantedCluster4VFH->computeSimilarityV((*m_pUnwantedIndices)[i]), m_pKeptCluster4VFH->computeSimilarityV((*m_pUnwantedIndices)[i]));
+		EXPECT_GT(m_pKeptCluster4VFH->computeSimilarityV((*m_pKeptIndices)[i]), m_pUnwantedCluster4VFH->computeSimilarityV((*m_pKeptIndices)[i]));
 	}
 
 }
@@ -166,15 +167,14 @@ TEST_F(CBinaryTest, BinaryAlg_Overview_Test)
 	for (int i = 0; i < pClusters.size(); i++)
 		CPointClusterSet::getInstance()->addPointCluster(std::to_string(i), pClusters[i]);
 
-	auto* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(CLASSIFIER_BINARY, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	auto* pClassifier = hiveDesignPattern::hiveCreateProduct<IPointClassifier>(CLASSIFIER_BINARY, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	ASSERT_NE(pClassifier, nullptr);
-	pClassifier->execute<CBinaryClassifierAlg>(true);
+	pClassifier->execute<CBinaryClassifierAlg>(true, "test");
 
 	//结果数目
 	auto LabelChanged = pClassifier->getResult();
 	ASSERT_GT(LabelChanged.size(), 0);
-	ASSERT_LT(LabelChanged.size(), getCloud()->size());
-	ASSERT_EQ(LabelChanged.size(), getCloud()->size() - m_pUnwantedIndices->size() - m_pKeptIndices->size());
+	ASSERT_LT(LabelChanged.size(), getCloud()->size() - m_pUnwantedIndices->size() - m_pKeptIndices->size());
 
 	pcl::index_t Index;
 	auto compare = [&](SPointLabelChange vLabelChange) -> bool
@@ -219,11 +219,9 @@ TEST_F(CBinaryTest, Cluster_VFH_TEST)
 	//ASSERT_TRUE((KeptVFHMatrix.array() == 0).any());
 
 	ASSERT_EQ(UnwantedVFHMatrix.minCoeff(), 0);
-	ASSERT_EQ(UnwantedVFHMatrix.maxCoeff(), 1);
 	ASSERT_GT(UnwantedVFHMatrix.squaredNorm(), 0);
 
 	ASSERT_EQ(KeptVFHMatrix.minCoeff(), 0);
-	ASSERT_EQ(KeptVFHMatrix.maxCoeff(), 1);
 	ASSERT_GT(KeptVFHMatrix.squaredNorm(), 0);
 
 }
