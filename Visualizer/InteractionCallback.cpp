@@ -114,11 +114,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 			Camera.computeViewMatrix(ViewMatrix);
 			Camera.computeProjectionMatrix(ProjectionMatrix);
-			std::vector<Eigen::Matrix4d> Matrices{ ViewMatrix, ProjectionMatrix };
+			const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 			
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + DeltaX, PosY + DeltaY, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
 			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
-			AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, Matrices);
+			AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
 
 			m_pVisualizer->refresh();
 			
@@ -139,12 +139,12 @@ void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEven
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
-	std::vector<Eigen::Matrix4d> Matrices{ViewMatrix, ProjectionMatrix };
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	
 	if (m_PartitionMode)
-		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, Matrices);
+		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, PvMatrix);
 	else
-		AutoRetouch::hiveExecuteCompositeClusterAndGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, Matrices);
+		AutoRetouch::hiveExecuteCompositeClusterAndGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, PvMatrix);
 
 	m_pVisualizer->refresh();
 }

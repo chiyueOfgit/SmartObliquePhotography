@@ -13,7 +13,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMaxVisibilityClusterAlg, CLASSIFIER_MaxVisibilityCl
 
 //*****************************************************************
 //FUNCTION:
-void  CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLabel vFinalLabel, const Eigen::Vector3f& vCameraPos, const std::vector<Eigen::Matrix4d>& vMatrices)
+void  CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLabel vFinalLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
 	if (hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
@@ -67,7 +67,7 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointL
 			//w?
 			Position.w() = 1.0;
 			
-			Position = vMatrices[1] * vMatrices[0] * Position;
+			Position = vPvMatrix * Position;
 			Position /= Position.eval().w();//»ìÏý£¿
 			Position += Eigen::Vector4d(1.0, 1.0, 1.0, 1.0);
 			Position *= Resolution / 2.0;

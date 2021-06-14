@@ -79,14 +79,14 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeBinaryClassifier()
 	return true;
 }
 
-bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const std::vector<Eigen::Matrix4d>& vMatrices)
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
 	RECORD_TIME_BEGIN;
 	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
 
-	if (pClassifier->execute<CMaxVisibilityClusterAlg>(true, true, vioPointIndices, vExpectLabel, vCameraPos, vMatrices))
+	if (pClassifier->execute<CMaxVisibilityClusterAlg>(true, true, vioPointIndices, vExpectLabel, vCameraPos, vPvMatrix))
 	{
 		RECORD_TIME_END(æ€¿‡);
 
@@ -125,7 +125,7 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(co
 		return false;
 }
 
-bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeClusterAndGrowing(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const std::vector<Eigen::Matrix4d>& vMatrices)
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeClusterAndGrowing(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
 	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
 	IPointClassifier* pClusterClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
@@ -137,17 +137,26 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeClusterAndGrowing(
 
 	CCompositeClassifier* pCompositeClassifier = new CCompositeClassifier;
 	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), vioPointIndices, vExpectLabel, vCameraPos, vMatrices);
+	pCompositeClassifier->addClassifierAndExecute<CMaxVisibilityClusterAlg>(dynamic_cast<CMaxVisibilityClusterAlg*>(pClusterClassifier), vioPointIndices, vExpectLabel, vCameraPos, vPvMatrix);
 	pCompositeClassifier->addClassifierAndExecuteByLastIndices<CRegionGrowingByColorAlg>(dynamic_cast<CRegionGrowingByColorAlg*>(pGrowingClassifier), vExpectLabel);
 	pCompositeClassifier->ensembleResult();
 	return true;
 }
 
-bool hiveObliquePhotography::AutoRetouch::hiveExecuteMaxVisibilityClustering(const pcl::IndicesPtr& vioPointIndices, EPointLabel vFinalLabel, const Eigen::Vector3f& vCameraPos, const std::vector<Eigen::Matrix4d>& vMatrices)
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteMaxVisibilityClustering(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
 	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
 
-	return pClassifier->execute<CMaxVisibilityClusterAlg>(true, vioPointIndices, vFinalLabel, vCameraPos, vMatrices);
+	return pClassifier->execute<CMaxVisibilityClusterAlg>(true, vioPointIndices, vExpectLabel, vCameraPos, vPvMatrix);
+}
+
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowClassifier(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel)
+{
+	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
+	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
+
+	return pClassifier->execute<CMaxVisibilityClusterAlg>(true, vioPointIndices, vExpectLabel);
 }
