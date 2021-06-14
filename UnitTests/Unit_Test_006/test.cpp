@@ -141,10 +141,9 @@ TEST_F(TestAreaPicking, DeathTest_IndicesIsNullptr)
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
-	
-	ASSERT_DEATH(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, CameraPos, ProjectionMatrix * ViewMatrix); , "");
-}
 
+	ASSERT_ANY_THROW(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, CameraPos, ProjectionMatrix * ViewMatrix););
+}
 
 TEST_F(TestAreaPicking, DeathTest_IndicesIsEmpty)
 {
@@ -158,6 +157,19 @@ TEST_F(TestAreaPicking, DeathTest_IndicesIsEmpty)
 	hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, CameraPos, ProjectionMatrix * ViewMatrix);
 	
 	GTEST_ASSERT_EQ(pTestee->size(), 0);
+}
+
+TEST_F(TestAreaPicking, DeathTest_IndexIsOutOfRange)
+{
+	pcl::IndicesPtr pTestee(new pcl::Indices);
+	pTestee->push_back(-1);
+	pcl::visualization::Camera Camera;
+	const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	
+	ASSERT_ANY_THROW(hiveExecuteMaxVisibilityClustering(pTestee, EPointLabel::KEPT, CameraPos, ProjectionMatrix * ViewMatrix););
 }
 
 //*****************************************************************

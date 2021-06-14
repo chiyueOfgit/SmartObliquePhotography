@@ -16,22 +16,18 @@ void CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLa
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
 		return;
 	}
-
 	if (vioPointSet == nullptr)
 		_THROW_RUNTIME_ERROR("Indices pointer does not exist");
-	
 	if (vioPointSet->empty())
 		return;
 	
 	const auto pScene = CPointCloudAutoRetouchScene::getInstance();
 	const auto pCloud = pScene->getPointCloudScene();
-
 	for (auto CurrentIndex : *vioPointSet)
 		if (CurrentIndex < 0 || CurrentIndex >= pCloud->size())
 			_THROW_RUNTIME_ERROR("Index is out of range");
 
 	const int Resolution = *CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
-
 	std::vector<pcl::PointIndices> ClusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointSurfel> Ec;
 	Ec.setClusterTolerance(*CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
