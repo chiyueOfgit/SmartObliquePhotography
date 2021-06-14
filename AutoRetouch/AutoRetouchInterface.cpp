@@ -1,5 +1,11 @@
 #include "pch.h"
 #include "AutoRetouchInterface.h"
+#include "BinaryClassifierAlg.h"
+#include "PointCluster4VFH.h"
+#include "PointCluster4Score.h"
+#include "PointCluster4NormalRatio.h"
+#include "CompositeBinaryClassifierAlg.h"
+#include "MaxVisibilityClusterAlg.h"
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
@@ -52,8 +58,9 @@ bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(const pcl::Indice
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std::string& vClassifierSig, const std::string& vClusterType)
 {
 	RECORD_TIME_BEGIN;
-
-	_ASSERTE(vClassifierSig.find(CLASSIFIER_BINARY) != std::string::npos);
+	
+	if (vClassifierSig.find(CLASSIFIER_BINARY) == std::string::npos)
+		return false;
 
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveCreateProduct<IPointClassifier>(vClassifierSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", vClassifierSig), false);

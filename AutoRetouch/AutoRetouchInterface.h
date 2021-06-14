@@ -1,17 +1,9 @@
 #pragma once
 #include "AutoRetouchExport.h"
 #include "PointCloudAutoRetouchScene.h"
-#include "RegionGrowingAlg.h"
 #include "RegionGrowingByColorAlg.h"
 #include "PointClusterSet.h"
 #include "CompositeClassifier.h"
-#include "BinaryClassifierAlg.h"
-#include "PointCluster4VFH.h"
-#include "PointCluster4Score.h"
-#include "PointCluster4NormalRatio.h"
-#include "CompositeBinaryClassifierAlg.h"
-#include "SpatialClusteringAlg.h"
-#include "MaxVisibilityClusterAlg.h"
 
 namespace hiveObliquePhotography
 {
