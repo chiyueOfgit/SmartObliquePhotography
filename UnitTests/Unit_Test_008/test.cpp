@@ -168,7 +168,7 @@ TEST_F(CBinaryTest, ChangeLabel_Undo_Overview_Test)
 	testResultSize(pClassifier);
 	
 	testChangeLabelBeforeUndo(pClassifier);
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	hiveUndoLastOp();
 	testChangeLabelAfterUndo(pClassifier);
 }
 
@@ -181,9 +181,9 @@ TEST_F(CBinaryTest, ClusterSet_Undo_Overview_Test)
 	testResultSize(pClassifier);
 	
 	testClusterSetBeforeUndo(Clusters);
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	hiveUndoLastOp();
+	hiveUndoLastOp();
+	hiveUndoLastOp();
 	testClusterSetAfterUndo();
 }
 
@@ -193,14 +193,14 @@ TEST_F(CBinaryTest, ChangeLabel_Undo_Cleanup_Test)
 	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
 	auto OnceResult = pClassifier->getResultIndices();
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	hiveUndoLastOp();
 	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
 	auto TwiceResult = pClassifier->getResultIndices();
 	testResultSize(pClassifier);
 
 	testChangeLabelBeforeUndo(pClassifier);
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	hiveUndoLastOp();
 	testChangeLabelAfterUndo(pClassifier);
 
 	ASSERT_EQ(OnceResult->size(), TwiceResult->size());
@@ -214,7 +214,7 @@ TEST_F(CBinaryTest, ClusterSet_Undo_Cleanup_Test)
 	auto pClassifier = prepareExcute(Clusters);
 	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	hiveUndoLastOp();
 	auto OnceResult = pClassifier->getResultIndices();
 	
 	pClassifier->execute<CBinaryClassifierAlg>(true, "vfh");
@@ -222,9 +222,9 @@ TEST_F(CBinaryTest, ClusterSet_Undo_Cleanup_Test)
 	testResultSize(pClassifier);
 
 	testClusterSetBeforeUndo(Clusters);
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
-	CPointCloudAutoRetouchScene::getInstance()->undoLastOp();
+	hiveUndoLastOp();
+	hiveUndoLastOp();
+	hiveUndoLastOp();
 	testClusterSetAfterUndo();
 	
 	ASSERT_EQ(OnceResult->size(), TwiceResult->size());
