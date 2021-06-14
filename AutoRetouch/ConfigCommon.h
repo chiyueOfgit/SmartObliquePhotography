@@ -19,4 +19,5 @@ namespace KEY_WORDS
 	constexpr char  SEARCH_RADIUS[] = "SEARCH_RADIUS";
 
 	constexpr char  POINT_SHOW_SIZE[] = "POINT_SHOW_SIZE";
+	
 }

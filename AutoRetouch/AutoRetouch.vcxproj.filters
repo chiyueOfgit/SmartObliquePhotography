@@ -104,9 +104,6 @@
     <ClInclude Include="ConfigCommon.h">
       <Filter>Config</Filter>
     </ClInclude>
-    <ClInclude Include="SpatialClusterConfig.h">
-      <Filter>Config</Filter>
-    </ClInclude>
     <ClInclude Include="CompositeBinaryClassifierAlg.h">
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClInclude>

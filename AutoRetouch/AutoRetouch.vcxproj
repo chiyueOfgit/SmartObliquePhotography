@@ -192,7 +192,6 @@
     <ClInclude Include="PointLabel4Classfier.h" />
     <ClInclude Include="PointLabelChangeRecord.h" />
     <ClInclude Include="RegionGrowingAlg.h" />
-    <ClInclude Include="SpatialClusterConfig.h" />
     <ClInclude Include="RegionGrowingByColorAlg.h" />
     <ClInclude Include="SpatialClusteringAlg.h" />
     <ClInclude Include="StatisticalOutlierAlg.h" />

@@ -2,7 +2,7 @@
 #include "MaxVisibilityClusterAlg.h"
 #include "PointCloudAutoRetouchScene.h"
 #include <pcl/segmentation/impl/extract_clusters.hpp>
-#include "SpatialClusterConfig.h"
+#include "AutoRetouchConfig.h"
 #include <common/ConfigInterface.h>
 #include <common/FileSystem.h>
 #include <common/CommonMicro.h>
@@ -15,7 +15,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMaxVisibilityClusterAlg, CLASSIFIER_MaxVisibilityCl
 //FUNCTION:
 void  CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLabel vFinalLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
-	if (hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
 		return;
@@ -28,13 +28,13 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointL
 	pcl::search::KdTree<pcl::PointSurfel>::Ptr pTree(new pcl::search::KdTree<pcl::PointSurfel>);
 	pTree->setInputCloud(pCloud);
 
-	const int  Resolution = *CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
+	const int  Resolution = *CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
 
 	std::vector<pcl::PointIndices> ClusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointSurfel> Ec;
-	Ec.setClusterTolerance(*CSpatialClusterConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
-	Ec.setMinClusterSize(*CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
-	Ec.setMaxClusterSize(*CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
+	Ec.setClusterTolerance(*CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
+	Ec.setMinClusterSize(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
+	Ec.setMaxClusterSize(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
 	Ec.setInputCloud(pCloud);
 	Ec.setSearchMethod(pTree);
 	Ec.setIndices(vioPointSet);
