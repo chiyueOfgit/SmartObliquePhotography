@@ -150,7 +150,8 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\visualization\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
@@ -169,8 +170,8 @@
     <ClInclude Include="AutoRetouchExport.h" />
     <ClInclude Include="AutoRetouchInterface.h" />
     <ClInclude Include="BinaryClassifierAlg.h" />
-    <ClInclude Include="BinaryClassifierAlgByVFH.h" />
     <ClInclude Include="Common.h" />
+    <ClInclude Include="CompositeBinaryClassifierAlg.h" />
     <ClInclude Include="CompositeClassifier.h" />
     <ClInclude Include="ConfigCommon.h" />
     <ClInclude Include="MaxVisibilityClusterAlg.h" />
@@ -184,6 +185,8 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PointCloudAutoRetouchScene.h" />
     <ClInclude Include="PointCluster.h" />
+    <ClInclude Include="PointCluster4NormalRatio.h" />
+    <ClInclude Include="PointCluster4Score.h" />
     <ClInclude Include="PointCluster4VFH.h" />
     <ClInclude Include="PointClusterSet.h" />
     <ClInclude Include="PointLabel4Classfier.h" />
@@ -197,7 +200,7 @@
   <ItemGroup>
     <ClCompile Include="AutoRetouchInterface.cpp" />
     <ClCompile Include="BinaryClassifierAlg.cpp" />
-    <ClCompile Include="BinaryClassifierAlgByVFH.cpp" />
+    <ClCompile Include="CompositeBinaryClassifierAlg.cpp" />
     <ClCompile Include="CompositeClassifier.cpp" />
     <ClCompile Include="MaxVisibilityClusterAlg.cpp" />
     <ClCompile Include="OpResultQueue.cpp" />
@@ -211,6 +214,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PointCloudAutoRetouchScene.cpp" />
+    <ClCompile Include="PointCluster4NormalRatio.cpp" />
+    <ClCompile Include="PointCluster4Score.cpp" />
     <ClCompile Include="PointCluster4VFH.cpp" />
     <ClCompile Include="PointClusterSet.cpp" />
     <ClCompile Include="PointLabel4Classfier.cpp" />
@@ -222,11 +227,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\visualization\pcl_visualization.vcxproj">
-      <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="AutoRetouchConfig.xml" />

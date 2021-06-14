@@ -11,12 +11,16 @@ namespace hiveObliquePhotography
 	namespace AutoRetouch
 	{
 		const std::string CLASSIFIER_BINARY = "Binary";
-		const std::string CLASSIFIER_BINARY_VFH = "Binary_vfh";
 		const std::string CLASSIFIER_SpatialCluster = "Cluster";
 		const std::string CLASSIFIER_MaxVisibilityCluster = "MaxVisibilityCluster";
 		const std::string CLASSIFIER_REGION_GROW = "RegionGrow";
 		const std::string CLASSIFIER_REGION_GROW_COLOR = "RegionGrow_color";
 		const std::string CLASSIFIER_OUTLIER_DETECTION = "OutlierDetection";
+
+		const std::string BINARY_CLUSTER_VFH = "vfh";
+		const std::string BINARY_CLUSTER_SCORE = "score";
+		const std::string BINARY_CLUSTER_NORMAL = "normal";
+		const std::vector<std::string> COMPOSITE_BINARY_CONFIG = { BINARY_CLUSTER_VFH, BINARY_CLUSTER_SCORE, BINARY_CLUSTER_NORMAL };
 
 		enum class EPointLabel : unsigned char
 		{
@@ -61,7 +65,7 @@ namespace hiveObliquePhotography
 						Max[i] = vBox.Max[i];
 				}
 			}
-			inline void update(float vX, float vY, float vZ)
+			void update(float vX, float vY, float vZ)
 			{
 				if (vX < Min[0])
 					Min[0] = vX;
@@ -75,6 +79,11 @@ namespace hiveObliquePhotography
 					Max[1] = vY;
 				if (vZ > Max[2])
 					Max[2] = vZ;
+			}
+			void reset()
+			{
+				Min = { FLT_MAX, FLT_MAX, FLT_MAX };
+				Max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 			}
 		};
 	}

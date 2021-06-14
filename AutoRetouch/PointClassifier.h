@@ -26,6 +26,12 @@ namespace hiveObliquePhotography
 			template<class TConcreteClassifier, class... TArgs>
 			bool execute(bool vApplyChange2GlobalLabelIntermediate, TArgs&&... vArgs)
 			{
+				return execute<TConcreteClassifier>(vApplyChange2GlobalLabelIntermediate, false, std::forward<TArgs>(vArgs)...);
+			}
+			
+			template<class TConcreteClassifier, class... TArgs>
+			bool execute(bool vApplyChange2GlobalLabelIntermediate, bool vClusterFlag, TArgs&&... vArgs)
+			{
 				_ASSERTE(m_pLocalLabelSet && m_pGlobalLabelSet);
 				
 				try
@@ -45,8 +51,9 @@ namespace hiveObliquePhotography
 
 					if (vApplyChange2GlobalLabelIntermediate)
 					{
-						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord);//TODO: 除LabelChange以外的其他结果记录无法添加
+						m_pGlobalLabelSet->applyPointLabelChange(m_PointLabelChangeRecord, vClusterFlag);
 					}
+
 					return true;
 				}
 				catch (std::runtime_error& e)
@@ -63,15 +70,19 @@ namespace hiveObliquePhotography
 			}
 
 			const std::vector<SPointLabelChange>& getResult() const { return m_PointLabelChangeRecord; }
-			pcl::Indices getResultIndices() const
+			pcl::IndicesPtr getResultIndices() const
 			{
-				pcl::Indices ResultIndices;
-				ResultIndices.reserve(m_PointLabelChangeRecord.size());
+				pcl::IndicesPtr ResultIndices(new pcl::Indices);
+				ResultIndices->reserve(m_PointLabelChangeRecord.size());
 				for (auto& LabelChange : m_PointLabelChangeRecord)
-					ResultIndices.push_back(LabelChange.Index);
+					ResultIndices->push_back(LabelChange.Index);
 				return ResultIndices;
 			}
 
+#ifdef _UNIT_TEST
+			auto& getGlobalLabelSet() const { return m_pGlobalLabelSet; }
+#endif
+		
 		protected:
 			CGlobalPointLabelSet* m_pGlobalLabelSet = nullptr;
 			CLocalPointLabelSet*  m_pLocalLabelSet = nullptr;

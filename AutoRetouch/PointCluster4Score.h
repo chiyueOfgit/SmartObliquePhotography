@@ -11,7 +11,7 @@ namespace hiveObliquePhotography
 			CPointCluster4Score(const pcl::IndicesPtr& vPointIndices, EPointLabel vLabel);
 			~CPointCluster4Score() override = default;
 
-			double computeSimilarityV(pcl::index_t vPointIndex) const override;
+			double computeDistanceV(pcl::index_t vPointIndex) const override;
 
 #ifdef _UNIT_TEST
 			const auto& getNormal() const { return m_Normal; }
@@ -20,9 +20,9 @@ namespace hiveObliquePhotography
 #endif // _UNIT_TEST
 
 		private:
-			Eigen::Vector3f m_Normal;
-			Eigen::Vector3i m_Color;
-			Eigen::Vector3f m_Position;
+			Eigen::Vector3f m_Normal{0,0,0};
+			Eigen::Vector3i m_Color{0,0,0};
+			Eigen::Vector3f m_Position{0,0,0};
 		};
 	}
 }

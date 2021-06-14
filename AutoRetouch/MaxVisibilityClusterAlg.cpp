@@ -13,7 +13,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMaxVisibilityClusterAlg, CLASSIFIER_MaxVisibilityCl
 
 //*****************************************************************
 //FUNCTION:
-void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera)
+void  CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLabel vFinalLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
 	if (hiveConfig::hiveParseConfig("SpatialClusterConfig.xml", hiveConfig::EConfigType::XML, CSpatialClusterConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
@@ -21,18 +21,14 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 		return;
 	}
 
-	if (vInputSet.empty())
+	if (vioPointSet == nullptr || vioPointSet->empty())
 		return;
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
-	auto pCloud = pScene->getPointCloudScene();
-	
+	auto pCloud = pScene->getPointCloudScene()->makeShared();
+	pcl::search::KdTree<pcl::PointSurfel>::Ptr pTree(new pcl::search::KdTree<pcl::PointSurfel>);
+	pTree->setInputCloud(pCloud);
+
 	const int  Resolution = *CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
-	//const Eigen::Vector3f ViewDir(vCamera.focal[0] - vCamera.pos[0], vCamera.focal[1] - vCamera.pos[1], vCamera.focal[2] - vCamera.pos[2]);
-	const Eigen::Vector3f ViewPos(vCamera.pos[0], vCamera.pos[1], vCamera.pos[2]);
-	Eigen::Matrix4d ViewMatrix;
-	Eigen::Matrix4d ProjectMatrix;
-	vCamera.computeViewMatrix(ViewMatrix);
-	vCamera.computeProjectionMatrix(ProjectMatrix);
 
 	std::vector<pcl::PointIndices> ClusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointSurfel> Ec;
@@ -40,8 +36,8 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 	Ec.setMinClusterSize(*CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
 	Ec.setMaxClusterSize(*CSpatialClusterConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
 	Ec.setInputCloud(pCloud);
-	Ec.setSearchMethod(pScene->getGlobalKdTree());
-	Ec.setIndices(pcl::make_shared<pcl::Indices>(vInputSet.begin(), vInputSet.end()));
+	Ec.setSearchMethod(pTree);
+	Ec.setIndices(vioPointSet);
 	Ec.extract(ClusterIndices);
 	if (ClusterIndices.empty())
 		return;
@@ -53,7 +49,7 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 		for (auto Index : Indices.indices)
 		{
 			const Eigen::Vector3f Position = pCloud->at(Index).getArray3fMap();
-			MinDistance = std::min(MinDistance, (Position - ViewPos).norm());
+			MinDistance = std::min(MinDistance, (Position - vCameraPos).norm());
 		}
 		ClusterIndicesWithDistances.emplace_back(MinDistance, &Indices);
 	}
@@ -71,10 +67,10 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 			//w?
 			Position.w() = 1.0;
 			
-			Position = ProjectMatrix * ViewMatrix * Position;
+			Position = vPvMatrix * Position;
 			Position /= Position.eval().w();//»ìÏý£¿
 			Position += Eigen::Vector4d(1.0, 1.0, 1.0, 1.0);
-			Position *= Resolution / 1.0;
+			Position *= Resolution / 2.0;
 
 			Eigen::Vector2i Coord{ Position.x(), Position.y() };
 			if (Coord[0] > 0 && Coord[0] < Resolution && Coord[1] > 0 && Coord[1] < Resolution && Flag[Coord[0]][Coord[1]])
@@ -90,6 +86,9 @@ void  CMaxVisibilityClusterAlg::runV(const pcl::Indices& vInputSet, EPointLabel 
 		}
 	}
 
+	
 	for (auto Index : pMaxValidCluster->indices)
 		m_pLocalLabelSet->changePointLabel(Index, vFinalLabel);
+
+	vioPointSet->swap(pMaxValidCluster->indices);
 }

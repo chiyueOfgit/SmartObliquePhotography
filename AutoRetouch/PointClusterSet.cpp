@@ -8,38 +8,89 @@ bool CPointClusterSet::addPointCluster(const std::string& vName, IPointCluster* 
 {
 	_ASSERTE(vName != "" && vName != "\n");
 
-	if (m_PointClusterMap.find(vName) == m_PointClusterMap.end())
+	m_PointClusterMap.insert({ vName, vCluster });
+
+	if (vCluster->getClusterLabel() == EPointLabel::UNWANTED)
 	{
-		m_PointClusterMap[vName] = vCluster;
-
-		if (vCluster->getClusterLabel() == EPointLabel::UNWANTED)
-		{
-			m_BinaryAreaAABB.update(vCluster->getClusterAABB());
-		}
-
-		return true;
+		m_BinaryAreaAABB.update(vCluster->getClusterAABB());
 	}
-	else
-		return false;
+	
+	m_UndoQueue.push({ vName });
+	return true;
 }
+
+bool CPointClusterSet::addPointClusters(const std::vector<std::string>& vNames, const std::vector<IPointCluster*>& vPointClusters)
+{
+	_ASSERTE(vNames.size() == vPointClusters.size());
+	if (vNames.size() != vPointClusters.size())
+		_THROW_RUNTIME_ERROR("paramerter error.");
+	for (int i = 0; i < vNames.size(); i++)
+	{
+		m_PointClusterMap.insert({ vNames[i], vPointClusters[i] });
+
+		if (vPointClusters[i]->getClusterLabel() == EPointLabel::UNWANTED)
+		{
+			m_BinaryAreaAABB.update(vPointClusters[i]->getClusterAABB());
+		}
+	}
+
+	m_UndoQueue.push(vNames);
+	return true;
+}
+
 
 bool CPointClusterSet::deletePointCluster(const std::string& vName)
 {
-	if (m_PointClusterMap.find(vName) != m_PointClusterMap.end())
+	auto Iter = m_PointClusterMap.find(vName);
+	if (Iter != m_PointClusterMap.end())
 	{
-		m_PointClusterMap.erase(m_PointClusterMap.find(vName));
+		for (int i = 0; i < m_PointClusterMap.count(vName); i++)
+			delete Iter->second;
+		m_PointClusterMap.erase(vName);
+
 		return true;
 	}
 	else
 		return false;
 }
 
-std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet() const
+bool CPointClusterSet::undo()
+{
+	if (!m_UndoQueue.empty())
+	{
+		auto& Clusters2Delete = m_UndoQueue.top();
+
+		for (auto& Name : Clusters2Delete)
+		{
+			deletePointCluster(Name);
+		}
+
+		m_BinaryAreaAABB.reset();
+		for (auto& Pair : m_PointClusterMap)
+		{
+			if (Pair.second->getClusterLabel() == EPointLabel::UNWANTED)
+				m_BinaryAreaAABB.update(Pair.second->getClusterAABB());
+		}
+
+		m_UndoQueue.pop();
+		return true;
+	}
+	else
+		return false;
+
+}
+
+std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet(const std::string& vName) const
 {
 	std::vector<IPointCluster*> ClusterSet;
 
 	for (auto& Pair : m_PointClusterMap)
-		ClusterSet.push_back(Pair.second);
+	{
+		if (Pair.first.find(vName) != std::string::npos)
+		{
+			ClusterSet.push_back(Pair.second);
+		}
+	}
 
 	return ClusterSet;
 }

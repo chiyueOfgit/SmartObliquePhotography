@@ -39,21 +39,39 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	{
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(VIEW_BINARY_RESULT).value())
 		{
-			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY_VFH);
+			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY, "vfh");
 			m_pVisualizer->refresh();
 		}
 
-		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_BINARY_GROWING).value())
+		else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_BINARY_GROWING).value())
 		{
 			m_PartitionMode = !m_PartitionMode;
 		}
 
-		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_BINARY_CLUSTER_LABEL).value())
+		else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_BINARY_CLUSTER_LABEL).value())
 		{
 			m_UnwantedMode = !m_UnwantedMode;
 		}
 
-		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
+		else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_LINEPICK).value())
+		{
+			m_LineMode = !m_LineMode;
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_LineMode);
+		}
+
+		else if (vEvent.isCtrlPressed() && KeyString == m_pVisualizationConfig->getAttribute<std::string>(UNDO).value())
+		{
+			AutoRetouch::hiveUndoLastOp();
+			m_pVisualizer->refresh();
+		}
+
+		else if (KeyString == "s")
+		{
+			AutoRetouch::hiveExecuteCompositeBinaryClassifier();
+			m_pVisualizer->refresh();
+		}
+		
+		else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
 		{
 			static int i = 0;
 			i++;
@@ -78,22 +96,55 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_MousePressStatus[0] = PressStatus;
 	else if (Button == pcl::visualization::MouseEvent::RightButton)
 		m_MousePressStatus[1] = PressStatus;
+
+	static int DeltaX, PosX, DeltaY, PosY;
+	DeltaX = vEvent.getX() - PosX;
+	DeltaY = vEvent.getY() - PosY;
+	PosX = vEvent.getX();
+	PosY = vEvent.getY();
+	
+	if(m_LineMode)
+	{
+		if (m_MousePressStatus[0] || m_MousePressStatus[1])
+		{
+			std::vector<int> PickedIndices;
+			pcl::visualization::Camera Camera;
+			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+            const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+			Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+			Camera.computeViewMatrix(ViewMatrix);
+			Camera.computeProjectionMatrix(ProjectionMatrix);
+			const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+			
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + DeltaX, PosY + DeltaY, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
+			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
+			AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
+
+			m_pVisualizer->refresh();
+			
+		}
+	}
 }
 
 //*****************************************************************
 //FUNCTION: 
 void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEvent& vEvent)
 {
-	pcl::Indices Indices;
-	vEvent.getPointsIndices(Indices);
+	const pcl::IndicesPtr pIndices(new pcl::Indices);
+	vEvent.getPointsIndices(*pIndices);
 
 	pcl::visualization::Camera Camera;
 	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-
+    const Eigen::Vector3f CameraPos = { static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	
 	if (m_PartitionMode)
-		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, PvMatrix);
 	else
-		AutoRetouch::hiveExecuteClusterAlg2RegionGrowing(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, Camera);
+		AutoRetouch::hiveExecuteCompositeClusterAndGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, PvMatrix);
 
 	m_pVisualizer->refresh();
 }

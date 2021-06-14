@@ -1,6 +1,5 @@
 #pragma once
 #include "SpatialClusteringAlg.h"
-#include <pcl/visualization/pcl_visualizer.h>
 
 namespace hiveObliquePhotography
 {
@@ -14,7 +13,7 @@ namespace hiveObliquePhotography
 			CMaxVisibilityClusterAlg() = default;
 			~CMaxVisibilityClusterAlg() = default;
 
-			void runV(const pcl::Indices& vInputSet, EPointLabel vFinalLabel, const pcl::visualization::Camera& vCamera) ;
+			void runV(const pcl::IndicesPtr& vioPointSet, EPointLabel vFinalLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix) ;
 		};
 	}
 }

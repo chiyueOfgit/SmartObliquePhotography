@@ -72,7 +72,7 @@ protected:
 		std::vector<int> Indices;
 		std::ifstream File(vPath.c_str());
 		boost::archive::text_iarchive ia(File);
-		ia >> BOOST_SERIALIZATION_NVP(Indices);
+		ia >> BOOST_SERIALIZATION_NVP(*pIndices);
 		File.close();	//ia后才能关闭
 		pcl::IndicesPtr pIndices(new pcl::Indices(Indices));
 		return pIndices;
