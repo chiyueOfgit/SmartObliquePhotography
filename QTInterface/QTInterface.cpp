@@ -17,12 +17,15 @@
 #include <common/ConfigCommon.h>
 #include <common/ConfigInterface.h>
 #include <algorithm>
+#include <tuple>
 
 #include "QTDockWidgetTitleBar.h"
 #include "ui_DisplayOptionsSettingDialog.h"
 #include "DisplayOptionsSettingDialog.h"
+#include "QTInterfaceConfig.h"
 #include "AutoRetouchConfig.h"
 #include "SpatialClusterConfig.h"
+#include "VisualizationConfig.h"
 #include "ObliquePhotographyDataInterface.h"
 #include "AutoRetouchInterface.h"
 #include "VisualizationInterface.h"
@@ -65,41 +68,39 @@ void QTInterface::__initialVTKWidget()
 
 void QTInterface::__initialResourceSpaceDockWidget()
 {
-    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceTreeView);
-    ui.workSpaceTreeView->setModel(m_pResourceSpaceStandardItemModels);
+    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.resourceTreeView);
+    ui.resourceTreeView->setModel(m_pResourceSpaceStandardItemModels);
     m_pResourceSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.workSpaceTreeView);
-    dockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "Resource Space");
-    ui.resourceDockWidget->setTitleBarWidget(dockWidgetTitleBar);
+    QTInterface::__initialDockWidgetTitleBar(ui.resourceDockWidget, "Resource Space");
 }
 
 void QTInterface::__initialWorkSpaceDockWidget()
 {
-    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceDockWidget);
-    ui.resourceTreeView->setModel(m_pResourceSpaceStandardItemModels);
-    m_pResourceSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
+    m_pWorkSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceTreeView);
+    ui.workSpaceTreeView->setModel(m_pWorkSpaceStandardItemModels);
+    m_pWorkSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.workSpaceDockWidget);
-    dockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "Resource Space");
-    ui.workSpaceDockWidget->setTitleBarWidget(dockWidgetTitleBar);
+    QTInterface::__initialDockWidgetTitleBar(ui.workSpaceDockWidget, "Work Space");
 }
 
 void QTInterface::__initialMessageDockWidget()
 {
-    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(ui.messageDockWidget);
-    dockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "OutPut Message");
-    ui.messageDockWidget->setTitleBarWidget(dockWidgetTitleBar);
+    QTInterface::__initialDockWidgetTitleBar(ui.messageDockWidget, "Output Message");
 }
 
-// TODO::DockWidget∏¥”√
-void QTInterface::__initialDockWidgetTitleBar()
+void QTInterface::__initialDockWidgetTitleBar(QDockWidget* vParentWidget, const std::string& vTitleBarText)
 {
-    m_pDockWidgetTitleBar = new QTDockWidgetTitleBar(ui.messageDockWidget);
-    m_pDockWidgetTitleBar->setAttr(QColor(0, 122, 204, 255), QColor(255, 255, 255, 255), 9, "OutPut Message");
+    auto BackgroundColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR");
+    auto FontColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_FONTCOLOR");
+    auto FontSize = *CQInterfaceConfig::getInstance()->getAttribute<int>("DOCKWIDGETTITLEBAR_FONTSIZE");
+
+    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(vParentWidget);
+    dockWidgetTitleBar->setAttr(QColor(std::get<0>(BackgroundColor), std::get<1>(BackgroundColor), std::get<2>(BackgroundColor), std::get<3>(BackgroundColor)),
+        QColor(std::get<0>(FontColor), std::get<1>(FontColor), std::get<2>(FontColor), std::get<3>(FontColor)), FontSize, QString::fromStdString(vTitleBarText));
+    vParentWidget->setTitleBarWidget(dockWidgetTitleBar);
 }
 
-// TODO::≈‰÷√Œƒº˛
 void QTInterface::__initialSlider(const QStringList& vFilePathList)
 {
     const std::string& FirstCloudFilePath = vFilePathList[0].toStdString();
@@ -131,19 +132,34 @@ void QTInterface::__checkFileOpenRepeatedly()
 
 }
 
+template <class T>
+bool QTInterface::__readConfigFile(const std::string& vFileName, T* vInstance)
+{
+    if (hiveConfig::hiveParseConfig(vFileName, hiveConfig::EConfigType::XML, vInstance) != hiveConfig::EParseResult::SUCCEED)
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file " + vFileName) + ".");
+        return false;
+    }
+    else
+    {
+        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file " + vFileName) + ".");
+        return true;
+    }
+}
+
 bool QTInterface::__parseConfigFile()
 {
     bool AutoRetouchConfigParseSuccess = false;
-    if (hiveConfig::hiveParseConfig("../AutoRetouch/AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, AutoRetouch::CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-    {
-        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Failed to parse config file AutoRetouchConfig.xml."));
-        AutoRetouchConfigParseSuccess = true;
-    }   
-    else
-    {
-        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString("Succeed to parse config file AutoRetouchConfig.xml."));
-    }
-    return AutoRetouchConfigParseSuccess;
+    bool VisualizationConfigParseSuccess = false;
+    bool SpatialClusterConfigParseSuccess = false;
+    bool QTInterfaceConfigParseSuccess = false;
+
+    AutoRetouchConfigParseSuccess = QTInterface::__readConfigFile("AutoRetouchConfig.xml", AutoRetouch::CAutoRetouchConfig::getInstance());
+    VisualizationConfigParseSuccess = QTInterface::__readConfigFile("VisualizationConfig.xml", Visualization::CVisualizationConfig::getInstance());
+    SpatialClusterConfigParseSuccess = QTInterface::__readConfigFile("SpatialClusterConfig.xml", CSpatialClusterConfig::getInstance());
+    QTInterfaceConfigParseSuccess = QTInterface::__readConfigFile("QTInterfaceConfig.xml", CQInterfaceConfig::getInstance());
+
+    return AutoRetouchConfigParseSuccess && VisualizationConfigParseSuccess && SpatialClusterConfigParseSuccess && QTInterfaceConfigParseSuccess;
 }
 
 bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
@@ -194,9 +210,14 @@ std::string QTInterface::__getFileName(const std::string& vFilePath)
     return vFilePath.substr(vFilePath.find_last_of('/') + 1, vFilePath.find_last_of('.') - vFilePath.find_last_of('/') - 1);
 }
 
+std::string QTInterface::__getDirectory(const std::string& vFilePath)
+{
+    return vFilePath.substr(0, vFilePath.find_last_of('/'));
+}
+
 void QTInterface::onActionOpen()
 {
-    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), ".", tr("Open PointCloud files(*.pcd)"));
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_DirectoryOpenPath), tr("Open PointCloud files(*.pcd)"));
     std::vector<std::string> FilePathSet;
     bool FileOpenSuccessFlag = true;
 
@@ -228,6 +249,7 @@ void QTInterface::onActionOpen()
 
     if (FileOpenSuccessFlag)
     {
+        m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
         AutoRetouch::hiveInitPointCloudScene(pCloud);
         Visualization::hiveInitVisualizer(pCloud);
         QTInterface::__initialVTKWidget();
@@ -318,7 +340,7 @@ void QTInterface::closeEvent(QCloseEvent* vEvent)
 
 void QTInterface::onActionTest()
 {
-    auto pointsize = *hiveObliquePhotography::AutoRetouch::CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS);
+    auto pointsize = *hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance()->getAttribute<double>("POINT_SHOW_SIZE");
 
     int a;
 }

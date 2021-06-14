@@ -28,7 +28,10 @@ namespace hiveObliquePhotography
 
 				_defineAttribute(KEY_WORDS::SEARCH_RADIUS, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 
-				_defineAttribute(KEY_WORDS::POINT_SHOW_SIZE, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+				_defineAttribute("POINT_SHOW_SIZE", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
+
+				_defineAttribute("OUTLIER_MEAN_KNN_NUMBER", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
+				_defineAttribute("OUTLIER_STD_MULTIPLE_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 			}
 
 			friend class hiveDesignPattern::CSingleton<CAutoRetouchConfig>;

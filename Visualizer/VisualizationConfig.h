@@ -10,6 +10,7 @@ namespace hiveObliquePhotography
 		const std::string SWITCH_UNWANTED_DISCARD = "SWITCH_UNWANTED_DISCARD";
 		const std::string SWITCH_BINARY_GROWING = "SWITCH_BINARY_GROWING";
 		const std::string SWITCH_BINARY_CLUSTER_LABEL = "SWITCH_BINARY_CLUSTER_LABEL";
+		const std::string POINT_SHOW_SIZE = "POINT_SHOW_SIZE";
 		const std::string SWITCH_LINEPICK = "SWITCH_LINEPICK";
 		const std::string LINEWIDTH = "LINEWIDTH";
 		const std::string UNDO = "UNDO";
@@ -32,6 +33,8 @@ namespace hiveObliquePhotography
 				_defineAttribute(UNDO, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(LINEWIDTH, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 				
+				_defineAttribute(POINT_SHOW_SIZE, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
+
 			}
 
 			friend class hiveDesignPattern::CSingleton<CVisualizationConfig>;

@@ -2,6 +2,8 @@
 #include "StatisticalOutlierAlg.h"
 #include "PointCloudAutoRetouchScene.h"
 #include "PointLabel4Classfier.h"
+#include "AutoRetouchConfig.h"
+#include <common/ConfigInterface.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/segmentation/impl/extract_clusters.hpp>
@@ -16,40 +18,27 @@ _REGISTER_EXCLUSIVE_PRODUCT(CStaOutlierDetectingAlg, CLASSIFIER_OUTLIER_DETECTIO
 //FUNCTION:
 void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vFinalLabel)
 {
-	const auto& pScene = CPointCloudAutoRetouchScene::getInstance();
-	const auto& pCloud = pScene->getPointCloudScene();
-	auto& pKdTree = pScene->getGlobalKdTree();
-
-	pcl::PointCloud<pcl::PointSurfel>::Ptr pTempCloud(new pcl::PointCloud<pcl::PointSurfel>);
-	pcl::PointCloud<pcl::PointSurfel>::Ptr pResultCloud(new pcl::PointCloud<pcl::PointSurfel>);
-
-	for (auto Index : vioInputSet)
+	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
 	{
-		pcl::PointSurfel Point = pCloud->points[Index];
-		Point.curvature = Index;
-		pTempCloud->push_back(Point);
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
+		return;
 	}
 
+	const auto& pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
+	auto& pKdTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
+
+	pcl::Indices OutlierIndices;
 	pcl::StatisticalOutlierRemoval<pcl::PointSurfel> Od;
-	Od.setInputCloud(pTempCloud);
-	Od.setMeanK(50);
-	Od.setStddevMulThresh(0.50);
-	Od.filter(*pResultCloud);
-
-	pcl::Indices innerIndex;
-	for (auto& Point : pResultCloud->points)
-	{
-		innerIndex.push_back(Point.curvature);
-	}
-	vioInputSet.swap(innerIndex);
-
+	Od.setInputCloud(pCloud);
+	Od.setIndices(pcl::make_shared<pcl::Indices>(vioInputSet.begin(), vioInputSet.end()));
+	Od.setMeanK(*CAutoRetouchConfig::getInstance()->getAttribute<int>("OUTLIER_MEAN_KNN_NUMBER"));
+	Od.setStddevMulThresh(*CAutoRetouchConfig::getInstance()->getAttribute<float>("OUTLIER_STD_MULTIPLE_THRESHOLD"));
 	Od.setNegative(true);
-	Od.filter(*pResultCloud);
+	Od.filter(OutlierIndices);
 
-	std::vector<SPointLabelChange> PointLabelChangeRecord;
-	for (auto& Point : pResultCloud->points)
+	for (auto& Index : OutlierIndices)
 	{
-		m_pLocalLabelSet->changePointLabel(Point.curvature, vFinalLabel);
+		m_pLocalLabelSet->changePointLabel(Index, vFinalLabel);
 	}
 
 }
