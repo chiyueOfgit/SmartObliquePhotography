@@ -170,7 +170,7 @@
     <ClInclude Include="AutoRetouchExport.h" />
     <ClInclude Include="AutoRetouchInterface.h" />
     <ClInclude Include="BinaryClassifierAlg.h" />
-    <ClInclude Include="Common.h" />
+    <ClInclude Include="ColorDifferences.h" />
     <ClInclude Include="CompositeBinaryClassifierAlg.h" />
     <ClInclude Include="CompositeClassifier.h" />
     <ClInclude Include="ConfigCommon.h" />

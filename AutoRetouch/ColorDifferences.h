@@ -1,6 +1,5 @@
 #pragma once
 #include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
 
 namespace hiveObliquePhotography
 {
@@ -14,7 +13,7 @@ namespace hiveObliquePhotography
         };
 
         //CIEDE2000¼ÆËãÉ«²î
-        class ColorDifferences
+        class CColorDifferences
         {
         public:
             static float calcColorDifferences(std::vector<unsigned int>& PointColor, std::vector<unsigned int>& NeighborColor)

@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "CompositeClassifier.h"
 #include "PointCloudAutoRetouchScene.h"
+#include "CompositeClassifier.h"
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
@@ -32,16 +32,21 @@ void CCompositeClassifier::ensembleResult()
 		{
 			if (i == itr[k]->Index)
 			{
-				_ASSERTE(itr[k] < m_ClassifierSet[k]->getResult().cend());
+				_ASSERTE(itr[k] != m_ClassifierSet[k]->getResult().cend());
 				OverallResult4SinglePoint.push_back(*itr[k]);
 				++itr[k];
+			}
+			else if (m_pGlobalLabelSet->getPointLabel(i) == EPointLabel::UNDETERMINED)
+			{
+				OverallResult4SinglePoint.push_back({ i, m_pGlobalLabelSet->getPointLabel(i), m_pGlobalLabelSet->getPointLabel(i) });
 			}
 		}
 
 		if (!OverallResult4SinglePoint.empty())
 		{
 			SPointLabelChange Temp = { i, OverallResult4SinglePoint[0].SrcLabel, __ensembleSingleResultV(OverallResult4SinglePoint) };
-			EnsembledResult4GlobalLabel.push_back(Temp);
+			if (Temp.SrcLabel != Temp.DstLabel)
+				EnsembledResult4GlobalLabel.push_back(Temp);
 		}
 	}
 	m_pGlobalLabelSet->applyPointLabelChange(EnsembledResult4GlobalLabel, false);

@@ -189,13 +189,13 @@ TEST_F(CBinaryTest, BinaryAlg_Overview_Test)
 	{
 		Index = (*m_pUnwantedIndices)[i];
 		std::vector<SPointLabelChange>::iterator it = find_if(LabelChanged.begin(), LabelChanged.end(), compare);
-		ASSERT_NE(it, LabelChanged.end());
+		ASSERT_EQ(it, LabelChanged.end());
 	}
 	for (i = 0; i < m_pKeptIndices->size(); i += step)
 	{
 		Index = (*m_pKeptIndices)[i];
 		std::vector<SPointLabelChange>::iterator it = find_if(LabelChanged.begin(), LabelChanged.end(), compare);
-		ASSERT_NE(it, LabelChanged.end());
+		ASSERT_EQ(it, LabelChanged.end());
 	}
 
 	//结果中不该有给定约束点
@@ -205,7 +205,7 @@ TEST_F(CBinaryTest, BinaryAlg_Overview_Test)
 		{
 			Index = RestrictIndex;
 			std::vector<SPointLabelChange>::iterator it = find_if(LabelChanged.begin(), LabelChanged.end(), compare);
-			ASSERT_NE(it, LabelChanged.end());
+			ASSERT_EQ(it, LabelChanged.end());
 		}
 	}
 }
