@@ -20,11 +20,12 @@ double CPointCluster4NormalRatio::computeSimilarityV(pcl::index_t vPointIndex) c
 	//		_THROW_RUNTIME_ERROR("Out of range");
 	if (vPointIndex < 0 || vPointIndex >= pCloud->size())
 		_THROW_RUNTIME_ERROR("Index is out of range");
-	
+
+	const auto Threshold = *CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::BINARY_CLASSIFIER_NORMAL_RATIO_THRESHOLD);
 	const Eigen::Vector3f PointNormal = pCloud->at(vPointIndex).getNormalVector3fMap();
 	int NormalCount = 0;
 	for (const auto& CurrentIndex : *m_PointIndices)
-		if (PointNormal.dot(pCloud->at(CurrentIndex).getNormalVector3fMap()) >= 0.93969262078591f)
+		if (PointNormal.dot(pCloud->at(CurrentIndex).getNormalVector3fMap()) >= Threshold)
 			++NormalCount;
 
 	return static_cast<double>(NormalCount) / static_cast<double>(m_PointIndices->size());
