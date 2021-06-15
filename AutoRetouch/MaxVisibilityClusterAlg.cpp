@@ -26,7 +26,7 @@ void CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLa
 	for (auto CurrentIndex : *vioPointSet)
 		if (CurrentIndex < 0 || CurrentIndex >= pCloud->size())
 			_THROW_RUNTIME_ERROR("Index is out of range");
-
+	
 	const int Resolution = *CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
 	std::vector<pcl::PointIndices> ClusterIndices;
 	pcl::EuclideanClusterExtraction<pcl::PointSurfel> Ec;
