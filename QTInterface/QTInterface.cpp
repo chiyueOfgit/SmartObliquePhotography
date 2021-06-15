@@ -155,7 +155,8 @@ bool QTInterface::__parseConfigFile()
     bool VisualizationConfigParseSuccess = false;
     bool QTInterfaceConfigParseSuccess = false;
 
-    AutoRetouchConfigParseSuccess = QTInterface::__readConfigFile("AutoRetouchConfig.xml", AutoRetouch::CAutoRetouchConfig::getInstance());
+    AutoRetouch::hiveGetAutoRetouchConfig(m_pAutoRetouchConfig);
+    //AutoRetouchConfigParseSuccess = QTInterface::__readConfigFile("AutoRetouchConfig.xml", AutoRetouch::CAutoRetouchConfig::getInstance());
     VisualizationConfigParseSuccess = QTInterface::__readConfigFile("VisualizationConfig.xml", Visualization::CVisualizationConfig::getInstance());
     QTInterfaceConfigParseSuccess = QTInterface::__readConfigFile("QTInterfaceConfig.xml", CQInterfaceConfig::getInstance());
 
@@ -270,7 +271,7 @@ void QTInterface::onActionOpen()
  
 void QTInterface::onActionSetting()
 {
-    std::shared_ptr<hiveQTInterface::CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<hiveQTInterface::CDisplayOptionsSettingDialog>(this);
+    std::shared_ptr<CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<CDisplayOptionsSettingDialog>(this);
     pDisplayOptionsSettingDialog->show();
     pDisplayOptionsSettingDialog->exec();
 }

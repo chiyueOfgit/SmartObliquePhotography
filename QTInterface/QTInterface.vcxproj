@@ -161,7 +161,6 @@
   <ItemGroup>
     <Xml Include="AutoRetouchConfig.xml" />
     <Xml Include="QTInterfaceConfig.xml" />
-    <Xml Include="SpatialClusterConfig.xml" />
     <Xml Include="VisualizationConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

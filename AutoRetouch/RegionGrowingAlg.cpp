@@ -14,11 +14,6 @@ void CRegionGrowingAlg::runV(const pcl::Indices& vioPointSet, EPointLabel vDstLa
 	constexpr unsigned char NEIGHBOR_TRAVERSED = 1 << 1;
 	constexpr unsigned char VALIDATE_TRAVERSED = 1 << 2;
 
-	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
-		return;
-	}
 	if (vioPointSet.empty())
 		return;
 	

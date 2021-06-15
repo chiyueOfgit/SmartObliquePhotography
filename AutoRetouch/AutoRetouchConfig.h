@@ -1,6 +1,7 @@
 #pragma once
 #include <common/HiveConfig.h>
 #include <common/Singleton.h>
+#include <common/ConfigInterface.h>
 #include "ConfigCommon.h"
 
 namespace hiveObliquePhotography
@@ -13,7 +14,16 @@ namespace hiveObliquePhotography
 			~CAutoRetouchConfig() override = default;
 
 		private:
-			CAutoRetouchConfig() { CAutoRetouchConfig::__defineAttributesV(); }
+			CAutoRetouchConfig()
+			{ 
+				CAutoRetouchConfig::__defineAttributesV();
+
+				if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
+				{
+					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
+					return;
+				}
+			}
 
 			void __defineAttributesV() override
 			{
