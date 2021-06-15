@@ -59,6 +59,15 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_LineMode);
 		}
 
+		else if (KeyString == "m")
+		{
+			pcl::Indices InputIndice;
+			AutoRetouch::hiveGetIndicesByLabel(InputIndice, AutoRetouch::EPointLabel::KEPT);
+			AutoRetouch::hiveGetIndicesByLabel(InputIndice, AutoRetouch::EPointLabel::UNDETERMINED);
+			AutoRetouch::hiveExecuteOutlierDetecting(InputIndice, AutoRetouch::EPointLabel::UNWANTED);
+			m_pVisualizer->refresh();
+		}
+
 		else if (vEvent.isCtrlPressed() && KeyString == m_pVisualizationConfig->getAttribute<std::string>(UNDO).value())
 		{
 			AutoRetouch::hiveUndoLastOp();
