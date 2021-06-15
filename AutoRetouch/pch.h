@@ -20,8 +20,6 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/search/kdtree.h>
-#include <pcl/filters/impl/extract_indices.hpp>
-#include <pcl/segmentation/impl/extract_clusters.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>

@@ -2,6 +2,7 @@
 #include "MaxVisibilityClusterAlg.h"
 #include "PointCloudAutoRetouchScene.h"
 #include <common/FileSystem.h>
+#include <pcl/segmentation/impl/extract_clusters.hpp>
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
