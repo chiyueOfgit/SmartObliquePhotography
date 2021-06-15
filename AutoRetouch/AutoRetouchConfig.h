@@ -48,6 +48,7 @@ namespace hiveObliquePhotography
 				_defineAttribute(KEY_WORDS::MINCLUSTERSIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 				_defineAttribute(KEY_WORDS::MAXCLUSTERSIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 				_defineAttribute(KEY_WORDS::EXCUTEAREA_EXPAND_RATIO, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+				_defineAttribute(KEY_WORDS::BINARY_CLASSIFIER_NORMAL_RATIO_THRESHOLD, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 			}
 
 			friend class hiveDesignPattern::CSingleton<CAutoRetouchConfig>;
