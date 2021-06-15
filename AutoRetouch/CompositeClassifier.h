@@ -59,7 +59,10 @@ namespace hiveObliquePhotography
 					if (m_pLocalLabelSet->getTimestamp() != m_pGlobalLabelSet->getTimestamp())
 						m_pLocalLabelSet->update(m_pGlobalLabelSet);
 
-					vClassifier->execute<TConcreteClassifier>(false, *m_pLastClassifierResult, std::forward<TArgs>(vArgs)...);
+					if (m_pLastClassifierResult)
+						vClassifier->execute<TConcreteClassifier>(false, *m_pLastClassifierResult, std::forward<TArgs>(vArgs)...);
+					else
+						vClassifier->execute<TConcreteClassifier>(false, pcl::Indices{}, std::forward<TArgs>(vArgs)...);
 					m_pLastClassifierResult = vClassifier->getResultIndices();
 				}
 				catch (std::runtime_error& e)
