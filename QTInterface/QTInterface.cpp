@@ -261,7 +261,7 @@ void QTInterface::onActionSave()
 {
     const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
    // if (hiveSavePointCloudScene(FilePath, m_CurrentCloud))
-        QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(" "));
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString(" "));
 }
 
 void QTInterface::onActionSetting()
