@@ -20,8 +20,6 @@ namespace hiveObliquePhotography
 
 			void run();
 
-
-
 		private:
 			CPointCloudVisualizer();
 

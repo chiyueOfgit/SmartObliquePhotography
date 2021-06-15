@@ -39,7 +39,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	{
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(VIEW_BINARY_RESULT).value())
 		{
-			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY, "vfh");
+			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY, "normal");
 			m_pVisualizer->refresh();
 		}
 
