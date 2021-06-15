@@ -154,3 +154,8 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowingByColor(const 
 
 	return pClassifier->execute<CRegionGrowingByColorAlg>(true, vioPointIndices, vExpectLabel);
 }
+
+void hiveObliquePhotography::AutoRetouch::hiveGetAutoRetouchConfig()
+{
+	//return CAutoRetouchConfig::getInstance();
+}
