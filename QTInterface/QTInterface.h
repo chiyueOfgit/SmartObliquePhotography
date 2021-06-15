@@ -8,6 +8,11 @@ class QSlider;
 
 namespace hiveObliquePhotography
 {
+    namespace AutoRetouch
+    {
+        class CAutoRetouchConfig;
+    }
+
     namespace QTInterface
 
     {
@@ -31,6 +36,8 @@ namespace hiveObliquePhotography
             size_t m_SceneIndex = -1;
             int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;
+
+            AutoRetouch::CAutoRetouchConfig* m_pAutoRetouchConfig = nullptr;
 
             void __initialVTKWidget();
             void __initialResourceSpaceDockWidget();

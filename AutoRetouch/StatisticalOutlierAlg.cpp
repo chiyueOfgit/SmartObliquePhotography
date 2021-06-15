@@ -13,11 +13,6 @@ _REGISTER_EXCLUSIVE_PRODUCT(CStaOutlierDetectingAlg, CLASSIFIER_OUTLIER_DETECTIO
 //FUNCTION:
 void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vExpectLabel)
 {
-	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
-		return;
-	}
 	if (vioInputSet.empty())
 		return;
 	
