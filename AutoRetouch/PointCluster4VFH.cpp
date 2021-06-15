@@ -33,8 +33,6 @@ void CPointCluster4VFH::__computeVFHDescriptor(const pcl::Indices& vPointIndices
 	auto pCloud = pScene->getPointCloudScene();
 	auto pTree = pScene->getGlobalKdTree();
 
-	_ASSERTE(pScene && pCloud && pTree);
-
 	std::set IndicesUnique(vPointIndices.begin(), vPointIndices.end());
 	_ASSERTE(IndicesUnique.size() == vPointIndices.size());
 	_ASSERTE(*std::max_element(vPointIndices.begin(), vPointIndices.end()) < pCloud->size());

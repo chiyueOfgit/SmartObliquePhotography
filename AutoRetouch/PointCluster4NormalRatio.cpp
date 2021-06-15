@@ -23,10 +23,7 @@ CPointCluster4NormalRatio::CPointCluster4NormalRatio(const pcl::IndicesPtr& vPoi
 //FUNCTION: 
 double CPointCluster4NormalRatio::computeSimilarityV(pcl::index_t vPointIndex) const
 {
-	return 0;
-
 	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
-	_ASSERTE(pCloud != nullptr);
 	_ASSERTE(vPointIndex < pCloud->size());
 
 	const Eigen::RowVector3f Normal = pCloud->at(vPointIndex).getNormalVector3fMap();
