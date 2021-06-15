@@ -18,9 +18,15 @@ namespace hiveObliquePhotography
 			{ 
 				CAutoRetouchConfig::__defineAttributesV();
 
-				if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
+				std::string RelativePath = "../";
+#ifdef _UNIT_TEST
+				RelativePath = "../../";
+#endif // _UNIT_TEST
+
+				const std::string ConfigPath = "Configs/AutoRetouchConfig.xml";
+				if (hiveConfig::hiveParseConfig(RelativePath + ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
 				{
-					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
+					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 					return;
 				}
 			}

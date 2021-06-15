@@ -59,14 +59,14 @@ void CDisplayOptionsSettingDialog::onActionChangeSize()
 {
 	m_pAutoRetouchConfig->overwriteAttribute(KEY_WORDS::SEARCH_RADIUS, m_SearchSizeSlider->value());
 
-	m_pUi->SizeBox->setValue(*m_pAutoRetouchConfig->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS));
+	m_pUi->SizeBox->setValue(m_SearchSizeSlider->value());
 }
 
 void CDisplayOptionsSettingDialog::onActionChangeThreshold()
 {
 	m_pAutoRetouchConfig->overwriteAttribute(KEY_WORDS::COLOR_TEST_THRESHOLD, m_ColorThresholdSlider->value());
 	
-	m_pUi->ThresholdBox->setValue(*m_pAutoRetouchConfig->getAttribute<float>(KEY_WORDS::COLOR_TEST_THRESHOLD));
+	m_pUi->ThresholdBox->setValue(m_ColorThresholdSlider->value());
 	
 }
 
@@ -79,6 +79,5 @@ void CDisplayOptionsSettingDialog::onActionInputSize()
 void CDisplayOptionsSettingDialog::onActionInputThreshold()
 {
 	m_pAutoRetouchConfig->overwriteAttribute(KEY_WORDS::COLOR_TEST_THRESHOLD, m_ColorThresholdSlider->value());
-
 	m_ColorThresholdSlider->setValue(*m_pAutoRetouchConfig->getAttribute<float>(KEY_WORDS::COLOR_TEST_THRESHOLD));
 }

@@ -8,13 +8,12 @@ class QSlider;
 
 namespace hiveObliquePhotography
 {
-    namespace AutoRetouch
+    namespace Visualization
     {
-        class CAutoRetouchConfig;
+        class CVisualizationConfig;
     }
 
     namespace QTInterface
-
     {
         class QTInterface : public QMainWindow
         {
@@ -38,7 +37,7 @@ namespace hiveObliquePhotography
             std::vector<std::string> m_FilePathList;
             pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
 
-            AutoRetouch::CAutoRetouchConfig* m_pAutoRetouchConfig = nullptr;
+            Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
 
             void __initialVTKWidget();
             void __initialResourceSpaceDockWidget();
@@ -48,8 +47,7 @@ namespace hiveObliquePhotography
             void __initialSlider(const QStringList& vFilePathList);
             bool __addResourceSpaceCloudItem(const std::string& vFilePath);
             bool __deleteResourceSpaceCloudItem(const std::string& vFilePath);
-            bool __MessageDockWidgetOutputText(QString vString);
-            bool __parseConfigFile();
+            bool __messageDockWidgetOutputText(QString vString);
             void __connectSignals();
             template <class T>
             bool __readConfigFile(const std::string& vFileName, T* vInstance);
