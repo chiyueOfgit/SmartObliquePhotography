@@ -56,7 +56,11 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
     QObject::connect(ui.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
     QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionResetSelectStatus()));
-    QObject::connect(ui.actionTestFunction, SIGNAL(triggered()), this, SLOT(onActionTest()));
+    QObject::connect(ui.actionBlend, SIGNAL(triggered()), this, SLOT(onActionBlend()));
+    QObject::connect(ui.actionDichotomy, SIGNAL(triggered()), this, SLOT(onActionDichotomy()));
+    QObject::connect(ui.actionRegionGrowing, SIGNAL(triggered()), this, SLOT(onActionRegionGrowing()));
+    QObject::connect(ui.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
+    QObject::connect(ui.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
     QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
 }
 
@@ -131,6 +135,25 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     pSubWindow->resize(200, 50);                // magic
     pSubWindow->setWindowFlag(Qt::FramelessWindowHint);
     pSubWindow->show();
+}
+
+void QTInterface::__setActionsMutex()
+{
+    if (ui.actionRegionGrowing->isChecked())
+    {
+        ui.actionDichotomy->setChecked(false);
+        ui.actionBlend->setChecked(false);
+    }
+    else if (ui.actionDichotomy->isChecked())
+    {
+        ui.actionRegionGrowing->setChecked(false);
+        ui.actionBlend->setChecked(false);
+    }
+    else if (ui.actionBlend->isChecked())
+    {
+        ui.actionRegionGrowing->setChecked(false);
+        ui.actionDichotomy->setChecked(false);
+    }
 }
 
 template <class T>
@@ -272,12 +295,43 @@ void QTInterface::onActionSetting()
     std::shared_ptr<CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<CDisplayOptionsSettingDialog>(this);
     pDisplayOptionsSettingDialog->show();
     pDisplayOptionsSettingDialog->exec();
+    ui.actionSetting->setChecked(false);
 }
 
 void QTInterface::onActionResetSelectStatus()
 {
     AutoRetouch::hiveResetSceneSelectStatus();
     Visualization::hiveRefreshVisualizer();
+}
+
+void QTInterface::onActionBlend()
+{
+    ui.actionDichotomy->setChecked(false);
+    ui.actionRegionGrowing->setChecked(false);
+}
+
+void QTInterface::onActionDichotomy()
+{
+    ui.actionBlend->setChecked(false);
+    ui.actionRegionGrowing->setChecked(false);
+
+}
+
+void QTInterface::onActionRegionGrowing()
+{
+    ui.actionBlend->setChecked(false);
+    ui.actionDichotomy->setChecked(false);
+
+}
+
+void QTInterface::onActionRubber()
+{
+    ui.actionBrush->setChecked(false);
+}
+
+void QTInterface::onActionBrush()
+{
+    ui.actionRubber->setChecked(false);
 }
 
 void QTInterface::onResourceSpaceItemDoubleClick(const QModelIndex& vIndex)
@@ -346,11 +400,4 @@ void QTInterface::closeEvent(QCloseEvent* vEvent)
     {
         vEvent->ignore();
     }
-}
-
-void QTInterface::onActionTest()
-{
-    auto pointsize = *m_pVisualizationConfig->getAttribute<double>("POINT_SHOW_SIZE");
-
-    int a;
 }

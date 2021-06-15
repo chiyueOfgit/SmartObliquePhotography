@@ -49,6 +49,7 @@ namespace hiveObliquePhotography
             bool __deleteResourceSpaceCloudItem(const std::string& vFilePath);
             bool __messageDockWidgetOutputText(QString vString);
             void __connectSignals();
+            void __setActionsMutex();
             template <class T>
             bool __readConfigFile(const std::string& vFileName, T* vInstance);
             std::string __getFileName(const std::string& vFilePath);
@@ -59,7 +60,11 @@ namespace hiveObliquePhotography
             void onActionSave();
             void onActionSetting();
             void onActionResetSelectStatus();
-            void onActionTest();
+            void onActionRegionGrowing();
+            void onActionDichotomy();
+            void onActionBlend();
+            void onActionBrush();
+            void onActionRubber();
             void onResourceSpaceItemDoubleClick(const QModelIndex& vIndex);
 
         };

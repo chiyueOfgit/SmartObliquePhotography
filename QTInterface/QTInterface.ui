@@ -57,9 +57,7 @@
       <string>在这里输入</string>
      </property>
     </widget>
-    <addaction name="actionPointPicking"/>
     <addaction name="actionAreaPicking"/>
-    <addaction name="actionRegion_Growing"/>
     <addaction name="actionSetting"/>
     <addaction name="menu"/>
    </widget>
@@ -67,8 +65,6 @@
     <property name="title">
      <string>Display</string>
     </property>
-    <addaction name="actionRollerBall"/>
-    <addaction name="actionTwist"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -84,23 +80,16 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="separator"/>
-   <addaction name="actionPointPicking"/>
-   <addaction name="actionPointListPicking"/>
-   <addaction name="actionTraceAPolylineByPointPicking"/>
-   <addaction name="actioncloneSelectedEntries"/>
-   <addaction name="actionMergeMultipleClouds"/>
+   <addaction name="actionBrush"/>
+   <addaction name="actionRubber"/>
+   <addaction name="actionRegionGrowing"/>
+   <addaction name="actionDichotomy"/>
+   <addaction name="actionBlend"/>
+   <addaction name="actionUpdate"/>
+   <addaction name="separator"/>
    <addaction name="actionDelete"/>
    <addaction name="separator"/>
-   <addaction name="actionRectangleAreaPicking"/>
-   <addaction name="actionCircleAreaPicking"/>
-   <addaction name="separator"/>
-   <addaction name="actionRollerBall"/>
-   <addaction name="actionTwist"/>
-   <addaction name="separator"/>
-   <addaction name="actionFilter"/>
    <addaction name="actionSetting"/>
-   <addaction name="separator"/>
-   <addaction name="actionTestFunction"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="resourceSpaceDockWidget">
@@ -202,58 +191,16 @@ background-color: rgb(255, 255, 255);</string>
     <string>Save</string>
    </property>
   </action>
-  <action name="actionPointPicking">
-   <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/pointPicking.png</normaloff>:/QTInterface/Icon/pointPicking.png</iconset>
-   </property>
-   <property name="text">
-    <string>PointPicking</string>
-   </property>
-  </action>
-  <action name="actionRectangleAreaPicking">
-   <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/rectangleAreaPicking.png</normaloff>:/QTInterface/Icon/rectangleAreaPicking.png</iconset>
-   </property>
-   <property name="text">
-    <string>rectangleAreaPicking</string>
-   </property>
-  </action>
-  <action name="actionCircleAreaPicking">
-   <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/circleAreaPicking.png</normaloff>:/QTInterface/Icon/circleAreaPicking.png</iconset>
-   </property>
-   <property name="text">
-    <string>circleAreaPicking</string>
-   </property>
-  </action>
-  <action name="actionRollerBall">
-   <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/rollerBall.png</normaloff>:/QTInterface/Icon/rollerBall.png</iconset>
-   </property>
-   <property name="text">
-    <string>RollerBall</string>
-   </property>
-  </action>
   <action name="actionSetting">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
      <normaloff>:/QTInterface/Icon/setting.png</normaloff>:/QTInterface/Icon/setting.png</iconset>
    </property>
    <property name="text">
     <string>Setting</string>
-   </property>
-  </action>
-  <action name="actionTwist">
-   <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/twist.png</normaloff>:/QTInterface/Icon/twist.png</iconset>
-   </property>
-   <property name="text">
-    <string>Twist</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -266,47 +213,6 @@ background-color: rgb(255, 255, 255);</string>
     <string>AreaPicking</string>
    </property>
   </action>
-  <action name="actionRegion_Growing">
-   <property name="text">
-    <string>Region Growing</string>
-   </property>
-  </action>
-  <action name="actionPointListPicking">
-   <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/list.png</normaloff>:/QTInterface/Icon/list.png</iconset>
-   </property>
-   <property name="text">
-    <string>PointListPicking</string>
-   </property>
-  </action>
-  <action name="actionTraceAPolylineByPointPicking">
-   <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/polyline.png</normaloff>:/QTInterface/Icon/polyline.png</iconset>
-   </property>
-   <property name="text">
-    <string>Trace a polyline by point picking</string>
-   </property>
-  </action>
-  <action name="actioncloneSelectedEntries">
-   <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/entry.png</normaloff>:/QTInterface/Icon/entry.png</iconset>
-   </property>
-   <property name="text">
-    <string>clone selected entries</string>
-   </property>
-  </action>
-  <action name="actionMergeMultipleClouds">
-   <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/merge.png</normaloff>:/QTInterface/Icon/merge.png</iconset>
-   </property>
-   <property name="text">
-    <string>merge multiple clouds</string>
-   </property>
-  </action>
   <action name="actionDelete">
    <property name="icon">
     <iconset resource="QTInterface.qrc">
@@ -316,22 +222,76 @@ background-color: rgb(255, 255, 255);</string>
     <string>Delete</string>
    </property>
   </action>
-  <action name="actionFilter">
+  <action name="actionBrush">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/filter.png</normaloff>:/QTInterface/Icon/filter.png</iconset>
+     <normaloff>:/QTInterface/Icon/brush.png</normaloff>:/QTInterface/Icon/brush.png</iconset>
    </property>
    <property name="text">
-    <string>Filter</string>
+    <string>Brush</string>
    </property>
   </action>
-  <action name="actionTestFunction">
+  <action name="actionRubber">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/test.png</normaloff>:/QTInterface/Icon/test.png</iconset>
+     <normaloff>:/QTInterface/Icon/rubber.png</normaloff>:/QTInterface/Icon/rubber.png</iconset>
    </property>
    <property name="text">
-    <string>Test Function</string>
+    <string>Rubber</string>
+   </property>
+  </action>
+  <action name="actionDichotomy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/dichotomy.png</normaloff>:/QTInterface/Icon/dichotomy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dichotomy</string>
+   </property>
+  </action>
+  <action name="actionRegionGrowing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/regionGrowing.png</normaloff>:/QTInterface/Icon/regionGrowing.png</iconset>
+   </property>
+   <property name="text">
+    <string>RegionGrowing</string>
+   </property>
+  </action>
+  <action name="actionUpdate">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/update.png</normaloff>:/QTInterface/Icon/update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Update</string>
+   </property>
+  </action>
+  <action name="actionBlend">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/blend.png</normaloff>:/QTInterface/Icon/blend.png</iconset>
+   </property>
+   <property name="text">
+    <string>Blend</string>
    </property>
   </action>
  </widget>

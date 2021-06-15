@@ -10,7 +10,7 @@ namespace hiveObliquePhotography
 		const std::string DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR = "DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR";
 		const std::string DOCKWIDGETTITLEBAR_FONTCOLOR = "DOCKWIDGETTITLEBAR_FONTCOLOR";
 		const std::string DOCKWIDGETTITLEBAR_FONTSIZE = "DOCKWIDGETTITLEBAR_FONTSIZE";
-
+		const std::string SLIDER_SIZE = "SLIDER_SIZE";
 
 		class CQInterfaceConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CQInterfaceConfig>
 		{
@@ -40,7 +40,7 @@ namespace hiveObliquePhotography
 				_defineAttribute(DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC4I);
 				_defineAttribute(DOCKWIDGETTITLEBAR_FONTCOLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC4I);
 				_defineAttribute(DOCKWIDGETTITLEBAR_FONTSIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
-
+				_defineAttribute(SLIDER_SIZE, hiveConfig::EConfigDataType::ATTRIBUTE_VEC2I);
 			}
 
 			friend class hiveDesignPattern::CSingleton<CQInterfaceConfig>;
