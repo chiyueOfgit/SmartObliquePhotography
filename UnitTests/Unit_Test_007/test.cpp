@@ -133,9 +133,8 @@ TEST_F(CTestOutlierDetection, calculatePercentage)
 	executeOutlierDetectionTest(GroundTruthPaths, Outlier,30.0);
 }
 
-//TODO: 接口尚未定义，暂时无效
 TEST_F(CTestOutlierDetection, DeathTest_IllegalInput)
 {
 	pcl::Indices SeedSet = { -1 };
-	ASSERT_ANY_THROW(testOutlierDetection(SeedSet););
+	ASSERT_ANY_THROW(hiveObliquePhotography::AutoRetouch::hiveExecuteOutlierDetecting(SeedSet, EPointLabel::UNWANTED));
 }
