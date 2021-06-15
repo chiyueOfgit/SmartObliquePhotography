@@ -16,22 +16,34 @@ void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vExpe
 	if (vioInputSet.empty())
 		return;
 	
-	const auto& pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
+	const auto& pSceneCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
 	for (auto CurrentIndex : vioInputSet)
-		if (CurrentIndex < 0 || CurrentIndex >= pCloud->size())
+		if (CurrentIndex < 0 || CurrentIndex >= pSceneCloud->size())
 			_THROW_RUNTIME_ERROR("Index is out of range");
-	
-	pcl::Indices OutlierIndices;
-	pcl::StatisticalOutlierRemoval<std::decay<decltype(*pCloud)>::type::PointType> Od;
+
+	PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
+	PointCloud_t::Ptr pResultCloud(new pcl::PointCloud<pcl::PointSurfel>);
+
+	for (auto Index : vioInputSet)
+	{
+		pcl::PointSurfel Point = pSceneCloud->points[Index];
+		Point.curvature = Index;
+		pCloud->push_back(Point);
+	}
+
+	pcl::StatisticalOutlierRemoval<pcl::PointSurfel> Od;
 	Od.setInputCloud(pCloud);
-	Od.setIndices(pcl::make_shared<pcl::Indices>(vioInputSet.begin(), vioInputSet.end()));
 	Od.setMeanK(*CAutoRetouchConfig::getInstance()->getAttribute<int>("OUTLIER_MEAN_KNN_NUMBER"));
 	Od.setStddevMulThresh(*CAutoRetouchConfig::getInstance()->getAttribute<float>("OUTLIER_STD_MULTIPLE_THRESHOLD"));
 	Od.setNegative(true);
-	Od.filter(OutlierIndices);
+	Od.filter(*pResultCloud);
 
-	for (auto& Index : OutlierIndices)
-		m_pLocalLabelSet->changePointLabel(Index, vExpectLabel);
+	pcl::Indices OutlierIndices;
+	for (auto& Point : pResultCloud->points)
+	{
+		m_pLocalLabelSet->changePointLabel(Point.curvature, vExpectLabel);
+		OutlierIndices.push_back(Point.curvature);
+	}
 
 	OutlierIndices.swap(vioInputSet);
 }
