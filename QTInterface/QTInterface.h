@@ -35,6 +35,7 @@ namespace hiveObliquePhotography
             size_t m_SceneIndex = -1;
             int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;
+            pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
 
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
 
@@ -48,7 +49,7 @@ namespace hiveObliquePhotography
             bool __deleteResourceSpaceCloudItem(const std::string& vFilePath);
             bool __messageDockWidgetOutputText(QString vString);
             void __connectSignals();
-            void __checkFileOpenRepeatedly();
+            void __setActionsMutex();
             template <class T>
             bool __readConfigFile(const std::string& vFileName, T* vInstance);
             std::string __getFileName(const std::string& vFilePath);
@@ -59,7 +60,11 @@ namespace hiveObliquePhotography
             void onActionSave();
             void onActionSetting();
             void onActionResetSelectStatus();
-            void onActionTest();
+            void onActionRegionGrowing();
+            void onActionDichotomy();
+            void onActionBlend();
+            void onActionBrush();
+            void onActionRubber();
             void onResourceSpaceItemDoubleClick(const QModelIndex& vIndex);
 
         };

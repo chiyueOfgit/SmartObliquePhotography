@@ -18,6 +18,7 @@
 #include <common/ConfigInterface.h>
 #include <algorithm>
 #include <tuple>
+#include <typeinfo>
 
 #include "QTDockWidgetTitleBar.h"
 #include "ui_DisplayOptionsSettingDialog.h"
@@ -55,7 +56,12 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
     QObject::connect(ui.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
     QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionResetSelectStatus()));
-    QObject::connect(ui.actionTestFunction, SIGNAL(triggered()), this, SLOT(onActionTest()));
+    QObject::connect(ui.actionBlend, SIGNAL(triggered()), this, SLOT(onActionBlend()));
+    QObject::connect(ui.actionDichotomy, SIGNAL(triggered()), this, SLOT(onActionDichotomy()));
+    QObject::connect(ui.actionRegionGrowing, SIGNAL(triggered()), this, SLOT(onActionRegionGrowing()));
+    QObject::connect(ui.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
+    QObject::connect(ui.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
+    QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
 }
 
 void QTInterface::__initialVTKWidget()
@@ -131,9 +137,23 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     pSubWindow->show();
 }
 
-void QTInterface::__checkFileOpenRepeatedly()
+void QTInterface::__setActionsMutex()
 {
-
+    if (ui.actionRegionGrowing->isChecked())
+    {
+        ui.actionDichotomy->setChecked(false);
+        ui.actionBlend->setChecked(false);
+    }
+    else if (ui.actionDichotomy->isChecked())
+    {
+        ui.actionRegionGrowing->setChecked(false);
+        ui.actionBlend->setChecked(false);
+    }
+    else if (ui.actionBlend->isChecked())
+    {
+        ui.actionRegionGrowing->setChecked(false);
+        ui.actionDichotomy->setChecked(false);
+    }
 }
 
 template <class T>
@@ -216,21 +236,22 @@ void QTInterface::onActionOpen()
     foreach(QString FilePathQString, FilePathList)
     {
         std::string FilePathString = FilePathQString.toStdString();
+        /*// check if file is opened repeatedly 
         if (std::find(m_FilePathList.begin(), m_FilePathList.end(), FilePathString) == m_FilePathList.end())
         {
             m_FilePathList.push_back(FilePathString);
             FilePathSet.push_back(FilePathString);
         }
         else
-        {
-            QTInterface::__messageDockWidgetOutputText(QString::fromStdString(FilePathString + " has been opened yet! It won't be loaded again!"));
-        }
+            QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(FilePathString + " has been opened yet! It won't be loaded again!"));*/
+        FilePathSet.push_back(FilePathString);
     }
 
     if (FilePathSet.empty())
         return;
 
     auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
+    m_pCloud = pCloud;
 
     _ASSERT(pCloud);
     if (pCloud == nullptr)
@@ -260,8 +281,13 @@ void QTInterface::onActionOpen()
 void QTInterface::onActionSave()
 {
     const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
-   // if (hiveSavePointCloudScene(FilePath, m_CurrentCloud))
-        QTInterface::__messageDockWidgetOutputText(QString::fromStdString(" "));
+	
+    PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
+    hiveObliquePhotography::AutoRetouch::hiveGetPointCloudForSave(pCloud);
+    if(hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
+          QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
+    else
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
 }
 
 void QTInterface::onActionSetting()
@@ -269,6 +295,7 @@ void QTInterface::onActionSetting()
     std::shared_ptr<CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<CDisplayOptionsSettingDialog>(this);
     pDisplayOptionsSettingDialog->show();
     pDisplayOptionsSettingDialog->exec();
+    ui.actionSetting->setChecked(false);
 }
 
 void QTInterface::onActionResetSelectStatus()
@@ -277,16 +304,51 @@ void QTInterface::onActionResetSelectStatus()
     Visualization::hiveRefreshVisualizer();
 }
 
+void QTInterface::onActionBlend()
+{
+    ui.actionDichotomy->setChecked(false);
+    ui.actionRegionGrowing->setChecked(false);
+}
+
+void QTInterface::onActionDichotomy()
+{
+    ui.actionBlend->setChecked(false);
+    ui.actionRegionGrowing->setChecked(false);
+
+}
+
+void QTInterface::onActionRegionGrowing()
+{
+    ui.actionBlend->setChecked(false);
+    ui.actionDichotomy->setChecked(false);
+
+}
+
+void QTInterface::onActionRubber()
+{
+    ui.actionBrush->setChecked(false);
+}
+
+void QTInterface::onActionBrush()
+{
+    ui.actionRubber->setChecked(false);
+}
+
 void QTInterface::onResourceSpaceItemDoubleClick(const QModelIndex& vIndex)
 {
     const auto& CloudName = vIndex.data().toString();
     m_CurrentCloud = CloudName.toStdString();
-    auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
+    auto& pViewer = Visualization::hiveGetPCLVisualizer();
+
+    delete pViewer;
+    pViewer = new pcl::visualization::PCLVisualizer("Visualizer", false);
+    pViewer->setBackgroundColor(0.2, 0.2, 0.2);
+    pViewer->setShowFPS(false);
+    __initialVTKWidget();
     pViewer->removeAllPointClouds();
-    //pViewer->addPointCloud(hiveObliquePhotography::);
+    pViewer->addPointCloud<pcl::PointSurfel>(m_pCloud, CloudName.toStdString());
     pViewer->resetCamera();
-    pcl::visualization::Camera ResetCamera;
-    pViewer->getCameraParameters(ResetCamera);
+    pViewer->updateCamera();
 }
 
 void QTInterface::closeEvent(QCloseEvent* vEvent)
@@ -338,11 +400,4 @@ void QTInterface::closeEvent(QCloseEvent* vEvent)
     {
         vEvent->ignore();
     }
-}
-
-void QTInterface::onActionTest()
-{
-    auto pointsize = *m_pVisualizationConfig->getAttribute<double>("POINT_SHOW_SIZE");
-
-    int a;
 }

@@ -1,20 +1,14 @@
 <RCC>
     <qresource prefix="/QTInterface">
         <file>Icon/open.png</file>
-        <file>Icon/circleAreaPicking.png</file>
-        <file>Icon/pointPicking.png</file>
-        <file>Icon/rectangleAreaPicking.png</file>
-        <file>Icon/rollerBall.png</file>
         <file>Icon/save.png</file>
         <file>Icon/setting.png</file>
-        <file>Icon/twist.png</file>
-        <file>Icon/list.png</file>
-        <file>Icon/polyline.png</file>
-        <file>Icon/entry.png</file>
-        <file>Icon/merge.png</file>
         <file>Icon/delete.png</file>
-        <file>Icon/filter.png</file>
-        <file>Icon/segment.png</file>
-        <file>Icon/test.png</file>
+        <file>Icon/brush.png</file>
+        <file>Icon/dichotomy.png</file>
+        <file>Icon/update.png</file>
+        <file>Icon/regionGrowing.png</file>
+        <file>Icon/rubber.png</file>
+        <file>Icon/blend.png</file>
     </qresource>
 </RCC>
