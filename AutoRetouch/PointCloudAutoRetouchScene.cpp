@@ -3,7 +3,7 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-CPointCloudAutoRetouchScene::CPointCloudAutoRetouchScene() : m_pGlobalKdTree(new pcl::search::KdTree<pcl::PointSurfel>)
+CPointCloudAutoRetouchScene::CPointCloudAutoRetouchScene() : m_pGlobalKdTree(new pcl::search::KdTree<PointCloud_t::PointType>)
 {
 
 }
@@ -30,7 +30,7 @@ void CPointCloudAutoRetouchScene::recordCurrentOp(IOpResult* vResult)
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudAutoRetouchScene::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloudScene)
+void CPointCloudAutoRetouchScene::init(PointCloud_t::Ptr vPointCloudScene)
 {
 	_ASSERTE(vPointCloudScene);
 	m_pPointCloudScene = vPointCloudScene;

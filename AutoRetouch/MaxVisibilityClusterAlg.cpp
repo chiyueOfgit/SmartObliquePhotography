@@ -29,7 +29,8 @@ void CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLa
 	
 	const int Resolution = *CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
 	std::vector<pcl::PointIndices> ClusterIndices;
-	pcl::EuclideanClusterExtraction<pcl::PointSurfel> Ec;
+
+	pcl::EuclideanClusterExtraction<std::decay<decltype(*pCloud)>::type::PointType> Ec;
 	Ec.setClusterTolerance(*CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
 	Ec.setMinClusterSize(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
 	Ec.setMaxClusterSize(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));

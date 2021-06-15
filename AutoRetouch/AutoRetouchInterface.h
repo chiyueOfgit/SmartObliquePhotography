@@ -15,7 +15,9 @@ namespace hiveObliquePhotography
 {
 	namespace AutoRetouch
 	{
-		AUTORETOUCH_DECLSPEC void hiveInitPointCloudScene(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud);
+		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+
+		AUTORETOUCH_DECLSPEC void hiveInitPointCloudScene(PointCloud_t::Ptr vPointCloud);
 		AUTORETOUCH_DECLSPEC void hiveUndoLastOp();
 
 		AUTORETOUCH_DECLSPEC void hiveGetGlobalPointLabelSet(std::vector<EPointLabel>& voGlobalLabel);

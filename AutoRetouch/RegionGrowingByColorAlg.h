@@ -4,15 +4,14 @@
 namespace hiveObliquePhotography
 {
 	namespace AutoRetouch
-	{
-		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
-		
+	{		
 		enum class EColorMode : unsigned char
 		{
 			MEAN = 0,
 			MEDIAN,
 		};
 
+		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 		class CRegionGrowingByColorAlg :public CRegionGrowingAlg
 		{
 		public:
