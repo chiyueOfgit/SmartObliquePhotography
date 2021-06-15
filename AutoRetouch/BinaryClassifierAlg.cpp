@@ -52,6 +52,8 @@ void CBinaryClassifierAlg::runV(const std::string& vClusterType)
 #pragma omp critical
 			if (m_ClusterSet[MaxIndex]->getClusterLabel() == EPointLabel::UNWANTED)
 				m_pLocalLabelSet->changePointLabel(Index, m_ClusterSet[MaxIndex]->getClusterLabel());
+			else if (m_ClusterSet[MaxIndex]->getClusterLabel() == EPointLabel::KEPT)
+				m_pLocalLabelSet->changePointLabel(Index, EPointLabel::UNDETERMINED);
 		}
 	}
 }
