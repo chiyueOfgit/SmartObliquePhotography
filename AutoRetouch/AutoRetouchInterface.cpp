@@ -20,6 +20,15 @@ void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(PointCloud_t::
 	CPointCloudAutoRetouchScene::getInstance()->init(vPointCloud);
 }
 
+void hiveObliquePhotography::AutoRetouch::hiveGetPointCloudForSave(PointCloud_t::Ptr voPointCloud)
+{
+	pcl::Indices PointIndices;
+	hiveGetIndicesByLabel(PointIndices, EPointLabel::KEPT);
+	hiveGetIndicesByLabel(PointIndices, EPointLabel::UNDETERMINED);
+	for (auto Index : PointIndices)
+		voPointCloud->push_back(CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene()->at(Index));
+}
+
 //*****************************************************************
 //FUNCTION: 
 void hiveObliquePhotography::AutoRetouch::hiveGetGlobalPointLabelSet(std::vector<EPointLabel>& voGlobalLabel)
@@ -46,8 +55,6 @@ void hiveObliquePhotography::AutoRetouch::hiveResetSceneSelectStatus()
 	pCluster->reset();
 }
 
-//*****************************************************************
-//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(EPointLabel vTo, EPointLabel vFrom)
 {
 	_ASSERTE(CPointCloudAutoRetouchScene::getInstance() && CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
