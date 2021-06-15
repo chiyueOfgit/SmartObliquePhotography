@@ -1,6 +1,7 @@
 #pragma once
 #include <common/HiveConfig.h>
 #include <common/Singleton.h>
+#include <common/ConfigInterface.h>
 
 namespace hiveObliquePhotography
 {
@@ -17,14 +18,28 @@ namespace hiveObliquePhotography
 			~CQInterfaceConfig() override = default;
 
 		private:
-			CQInterfaceConfig() { CQInterfaceConfig::__defineAttributesV(); }
+			CQInterfaceConfig()
+			{
+				CQInterfaceConfig::__defineAttributesV();
+
+				std::string RelativePath = "../";
+#ifdef _UNIT_TEST
+				RelativePath = "../../";
+#endif // _UNIT_TEST
+				const std::string ConfigPath = "Configs/QTInterfaceConfig.xml";
+
+				if (hiveConfig::hiveParseConfig(RelativePath + ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
+				{
+					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+					return;
+				}
+			}
 
 			void __defineAttributesV() override
 			{
 				_defineAttribute(DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC4I);
 				_defineAttribute(DOCKWIDGETTITLEBAR_FONTCOLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC4I);
 				_defineAttribute(DOCKWIDGETTITLEBAR_FONTSIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
-
 
 			}
 

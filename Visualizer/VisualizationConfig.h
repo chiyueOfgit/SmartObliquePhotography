@@ -1,6 +1,7 @@
 #pragma once
 #include <common/HiveConfig.h>
 #include <common/Singleton.h>
+#include <common/ConfigInterface.h>
 
 namespace hiveObliquePhotography
 {
@@ -21,7 +22,23 @@ namespace hiveObliquePhotography
 			~CVisualizationConfig() override = default;
 
 		private:
-			CVisualizationConfig() { CVisualizationConfig::__defineAttributesV(); }
+			CVisualizationConfig()
+			{
+				CVisualizationConfig::__defineAttributesV();
+			
+				std::string RelativePath = "../";
+#ifdef _UNIT_TEST
+				RelativePath = "../../";
+#endif // _UNIT_TEST
+
+				const std::string ConfigPath = "Configs/VisualizationConfig.xml";
+
+				if (hiveConfig::hiveParseConfig(RelativePath + ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
+				{
+					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+					return;
+				}
+			}
 
 			void __defineAttributesV() override
 			{

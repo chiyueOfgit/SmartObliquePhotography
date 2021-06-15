@@ -1,5 +1,6 @@
 #pragma once
 #include "VisualizationExport.h"
+#include "VisualizationConfig.h"
 
 namespace hiveObliquePhotography
 {
@@ -14,5 +15,7 @@ namespace hiveObliquePhotography
 		VISUALIZATION_DECLSPEC void hiveRunVisualizerLoop();
 
 		VISUALIZATION_DECLSPEC void* hiveGetPCLVisualizer();
+
+		VISUALIZATION_DECLSPEC bool hiveGetVisualizationConfig(CVisualizationConfig*& voConfig);
 	}
 }
