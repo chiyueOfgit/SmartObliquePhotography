@@ -36,9 +36,11 @@ EPointLabel CCompositeBinaryClassifierAlg::__ensembleSingleResultV(const std::ve
 		std::cout << "";
 	
 	float Score = 0.0f;
-	const float VFH_WEIGHT = 0.4f;
-	const float SCORE_WEIGHT = 0.3f;
-	const float NORMAL_WEIGHT = 0.3f;
+	auto pConfig = CAutoRetouchConfig::getInstance();
+	const float VFH_WEIGHT = pConfig->getAttribute<float>(KEY_WORDS::VFH_WEIGHT).value();
+	const float SCORE_WEIGHT = pConfig->getAttribute<float>(KEY_WORDS::SCORE_WEIGHT).value();
+	const float NORMAL_WEIGHT = pConfig->getAttribute<float>(KEY_WORDS::NORMAL_WEIGHT).value();
+	const float EXPECT_SCORE = pConfig->getAttribute<float>(KEY_WORDS::EXPECT_SCORE).value();
 
 	for (int i = 0; i < vOverallResult.size(); i++)
 	{
@@ -60,7 +62,7 @@ EPointLabel CCompositeBinaryClassifierAlg::__ensembleSingleResultV(const std::ve
 		}
 	}
 
-	if (Score > 60.0f)
+	if (Score > EXPECT_SCORE)
 		return EPointLabel::UNWANTED;
 	else
 		return EPointLabel::UNDETERMINED;

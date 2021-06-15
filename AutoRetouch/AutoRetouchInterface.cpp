@@ -96,7 +96,15 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeBinaryClassifier()
 {
 	auto pCompositeClassifier = new CCompositeBinaryClassifierAlg;
 	pCompositeClassifier->init(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	pCompositeClassifier->addBinaryClassifiers(COMPOSITE_BINARY_CONFIG);
+	auto pConfig = CAutoRetouchConfig::getInstance();
+	std::vector<std::string> ClusterTypes;
+	if (pConfig->getAttribute<bool>(KEY_WORDS::ENABLE_VFH).value())
+		ClusterTypes.push_back(BINARY_CLUSTER_VFH);
+	if (pConfig->getAttribute<bool>(KEY_WORDS::ENABLE_SCORE).value())
+		ClusterTypes.push_back(BINARY_CLUSTER_SCORE);
+	if (pConfig->getAttribute<bool>(KEY_WORDS::ENABLE_NORMAL).value())
+		ClusterTypes.push_back(BINARY_CLUSTER_NORMAL);
+	pCompositeClassifier->addBinaryClassifiers(ClusterTypes);
 	pCompositeClassifier->run();
 	return true;
 }
@@ -118,24 +126,23 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(co
 		std::vector<IPointCluster*> pClusters;
 
 		static std::size_t ClusterId = 0;
-		for (auto& Type : COMPOSITE_BINARY_CONFIG)
+		auto pConfig = CAutoRetouchConfig::getInstance();
+		if (pConfig->getAttribute<bool>(KEY_WORDS::ENABLE_VFH).value())
 		{
-			if (Type.find(BINARY_CLUSTER_VFH) != std::string::npos)
-			{
-				Names.push_back(BINARY_CLUSTER_VFH + std::to_string(ClusterId));
-				pClusters.push_back(new CPointCluster4VFH(pClassifier->getResultIndices(), vExpectLabel));
-			}
-			else if (Type.find(BINARY_CLUSTER_SCORE) != std::string::npos)
-			{
-				Names.push_back(BINARY_CLUSTER_SCORE + std::to_string(ClusterId));
-				pClusters.push_back(new CPointCluster4Score(pClassifier->getResultIndices(), vExpectLabel));
-			}
-			else if (Type.find(BINARY_CLUSTER_NORMAL) != std::string::npos)
-			{
-				Names.push_back(BINARY_CLUSTER_NORMAL + std::to_string(ClusterId));
-				pClusters.push_back(new CPointCluster4NormalRatio(pClassifier->getResultIndices(), vExpectLabel));
-			}
+			Names.push_back(BINARY_CLUSTER_VFH + std::to_string(ClusterId));
+			pClusters.push_back(new CPointCluster4VFH(pClassifier->getResultIndices(), vExpectLabel));
 		}
+		if (pConfig->getAttribute<bool>(KEY_WORDS::ENABLE_SCORE).value())
+		{
+			Names.push_back(BINARY_CLUSTER_SCORE + std::to_string(ClusterId));
+			pClusters.push_back(new CPointCluster4Score(pClassifier->getResultIndices(), vExpectLabel));
+		}
+		if (pConfig->getAttribute<bool>(KEY_WORDS::ENABLE_NORMAL).value())
+		{
+			Names.push_back(BINARY_CLUSTER_NORMAL + std::to_string(ClusterId));
+			pClusters.push_back(new CPointCluster4NormalRatio(pClassifier->getResultIndices(), vExpectLabel));
+		}
+
 		CPointClusterSet::getInstance()->addPointClusters(Names, pClusters);
 
 		ClusterId++;
