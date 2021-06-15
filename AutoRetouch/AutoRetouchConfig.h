@@ -49,6 +49,15 @@ namespace hiveObliquePhotography
 				_defineAttribute(KEY_WORDS::MAXCLUSTERSIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 				_defineAttribute(KEY_WORDS::EXCUTEAREA_EXPAND_RATIO, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 				_defineAttribute(KEY_WORDS::BINARY_CLASSIFIER_NORMAL_RATIO_THRESHOLD, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+				//composite binary
+				_defineAttribute(KEY_WORDS::ENABLE_VFH, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(KEY_WORDS::ENABLE_SCORE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(KEY_WORDS::ENABLE_NORMAL, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(KEY_WORDS::VFH_WEIGHT, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+				_defineAttribute(KEY_WORDS::SCORE_WEIGHT, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+				_defineAttribute(KEY_WORDS::NORMAL_WEIGHT, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+				_defineAttribute(KEY_WORDS::EXPECT_SCORE, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+
 			}
 
 			friend class hiveDesignPattern::CSingleton<CAutoRetouchConfig>;

@@ -14,12 +14,7 @@ void CCompositeClassifier::ensembleResult()
 	itr.resize(m_ClassifierSet.size());
 
 	for (auto i = 0; i < m_ClassifierSet.size(); i++)
-	{
 		itr[i] = m_ClassifierSet[i]->getResult().cbegin();
-		_ASSERTE(itr != m_ClassifierSet[i]->getResult().cend());
-		if (itr[i] == m_ClassifierSet[i]->getResult().cend())
-			return;
-	}
 
 	std::vector<SPointLabelChange> OverallResult4SinglePoint;
 	std::vector<SPointLabelChange> EnsembledResult4GlobalLabel;
@@ -30,7 +25,7 @@ void CCompositeClassifier::ensembleResult()
 		OverallResult4SinglePoint.clear();
 		for (auto k = 0; k < m_ClassifierSet.size(); k++)
 		{
-			if (i == itr[k]->Index)
+			if (itr[k] != m_ClassifierSet[k]->getResult().cend() && i == itr[k]->Index)
 			{
 				_ASSERTE(itr[k] != m_ClassifierSet[k]->getResult().cend());
 				OverallResult4SinglePoint.push_back(*itr[k]);

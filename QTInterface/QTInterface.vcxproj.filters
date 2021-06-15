@@ -87,13 +87,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="AutoRetouchConfig.xml">
+    <Xml Include="..\Configs\AutoRetouchConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="VisualizationConfig.xml">
+    <Xml Include="..\Configs\QTInterfaceConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="QTInterfaceConfig.xml">
+    <Xml Include="..\Configs\VisualizationConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>

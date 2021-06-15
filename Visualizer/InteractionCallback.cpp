@@ -18,6 +18,7 @@ CInteractionCallback::CInteractionCallback(pcl::visualization::PCLVisualizer* vV
 	vVisualizer->registerAreaPickingCallback([&](const auto& vEvent) { areaPicking(vEvent); });
 
 	m_pVisualizationConfig = CVisualizationConfig::getInstance();
+	AutoRetouch::hiveGetAutoRetouchConfig(m_pAutoRetouchConfig);
 }
 
 //*****************************************************************
@@ -36,7 +37,14 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	{
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(VIEW_BINARY_RESULT).value())
 		{
-			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY, "score");
+			std::string ClusterType;
+			if (m_pAutoRetouchConfig->getAttribute<bool>(KEY_WORDS::ENABLE_VFH).value())
+				ClusterType = "vfh";
+			else if (m_pAutoRetouchConfig->getAttribute<bool>(KEY_WORDS::ENABLE_SCORE).value())
+				ClusterType = "score";
+			else if (m_pAutoRetouchConfig->getAttribute<bool>(KEY_WORDS::ENABLE_NORMAL).value())
+				ClusterType = "normal";
+			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY, ClusterType);
 			m_pVisualizer->refresh();
 		}
 
@@ -137,10 +145,7 @@ void hiveObliquePhotography::Visualization::CInteractionCallback::pointPicking(c
 {
 	auto Index = vEvent.getPointIndex();
 	float GroundHeight = m_pVisualizer->m_pSceneCloud->points[Index].z + 0.1f;
-	AutoRetouch::CAutoRetouchConfig* pConfig = nullptr;
-	AutoRetouch::hiveGetAutoRetouchConfig(pConfig);
-	if (pConfig)
-		pConfig->overwriteAttribute(KEY_WORDS::GROUND_TEST_THRESHOLD, GroundHeight);
+		m_pAutoRetouchConfig->overwriteAttribute(KEY_WORDS::GROUND_TEST_THRESHOLD, GroundHeight);
 }
 
 //*****************************************************************

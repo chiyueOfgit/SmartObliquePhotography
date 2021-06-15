@@ -2,6 +2,11 @@
 
 namespace hiveObliquePhotography
 {
+	namespace AutoRetouch
+	{
+		class CAutoRetouchConfig;
+	}
+
 	namespace Visualization
 	{
 		class CPointCloudVisualizer;
@@ -34,6 +39,7 @@ namespace hiveObliquePhotography
 			CPointCloudVisualizer* m_pVisualizer = nullptr;
 
 			CVisualizationConfig* m_pVisualizationConfig = nullptr;
+			AutoRetouch::CAutoRetouchConfig* m_pAutoRetouchConfig = nullptr;
 		};
 	}
 }
