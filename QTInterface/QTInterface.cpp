@@ -53,6 +53,7 @@ QTInterface::~QTInterface()
 void QTInterface::__connectSignals()
 {
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
+    QObject::connect(ui.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
     QObject::connect(ui.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
     QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionResetSelectStatus()));
     QObject::connect(ui.actionTestFunction, SIGNAL(triggered()), this, SLOT(onActionTest()));
@@ -253,7 +254,19 @@ void QTInterface::onActionOpen()
         }
     }
 }
- 
+
+void QTInterface::onActionSave()
+{
+    const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
+	
+    PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
+    hiveObliquePhotography::AutoRetouch::hiveGetPointCloudForSave(pCloud);
+    if(hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
+          QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
+    else
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
+}
+
 void QTInterface::onActionSetting()
 {
     std::shared_ptr<CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<CDisplayOptionsSettingDialog>(this);

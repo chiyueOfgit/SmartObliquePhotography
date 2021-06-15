@@ -10,7 +10,8 @@ namespace hiveObliquePhotography
 		~CPointCloudScene() override;
 
 		PointCloud_t::Ptr loadScene(const std::vector<std::string>& vFileNameSet);
-
+		bool saveScene(PointCloud_t& vPointCloud, std::string vFileName);
+		
 		std::size_t getNumTiles() const { return m_PointCloudTileMap.size(); }
 
 		void clear();
