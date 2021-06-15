@@ -260,8 +260,13 @@ void QTInterface::onActionOpen()
 void QTInterface::onActionSave()
 {
     const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
-   // if (hiveSavePointCloudScene(FilePath, m_CurrentCloud))
-        QTInterface::__messageDockWidgetOutputText(QString::fromStdString(" "));
+	
+    PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
+    hiveObliquePhotography::AutoRetouch::hiveGetPointCloudForSave(pCloud);
+    if(hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
+          QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
+    else
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
 }
 
 void QTInterface::onActionSetting()

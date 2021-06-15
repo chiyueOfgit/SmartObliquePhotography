@@ -15,7 +15,8 @@ pcl::PointCloud<pcl::PointSurfel>::Ptr hiveObliquePhotography::hiveInitPointClou
 
 bool hiveObliquePhotography::hiveSavePointCloudScene(PointCloud_t& vPointCloud, std::string vFileName)
 {
-	_ASSERTE(!vFileName.empty());
-
+	if (vFileName.empty()||vPointCloud.empty())
+		return false;
+	
 	return CPointCloudScene::getInstance()->saveScene(vPointCloud, vFileName);
 }
