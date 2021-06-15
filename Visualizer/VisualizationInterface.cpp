@@ -19,7 +19,7 @@ void hiveObliquePhotography::Visualization::hiveRunVisualizerLoop()
 	CPointCloudVisualizer::getInstance()->run();
 }
 
-void* hiveObliquePhotography::Visualization::hiveGetPCLVisualizer()
+pcl::visualization::PCLVisualizer*& hiveObliquePhotography::Visualization::hiveGetPCLVisualizer()
 {
 	return CPointCloudVisualizer::getInstance()->m_pPCLVisualizer;
 }

@@ -271,14 +271,17 @@ void QTInterface::onResourceSpaceItemDoubleClick(const QModelIndex& vIndex)
 {
     const auto& CloudName = vIndex.data().toString();
     m_CurrentCloud = CloudName.toStdString();
-    auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
+    auto& pViewer = Visualization::hiveGetPCLVisualizer();
+
+    delete pViewer;
+    pViewer = new pcl::visualization::PCLVisualizer("Visualizer", false);
+    pViewer->setBackgroundColor(0.2, 0.2, 0.2);
+    pViewer->setShowFPS(false);
+    __initialVTKWidget();
     pViewer->removeAllPointClouds();
-    pViewer->addPointCloud<typeid(m_pCloud)>(m_pCloud, CloudName.toStdString());
+    pViewer->addPointCloud<pcl::PointSurfel>(m_pCloud, CloudName.toStdString());
     pViewer->resetCamera();
-    pcl::visualization::Camera ResetCamera;
-    pViewer->getCameraParameters(ResetCamera);
-    Visualization::hiveRefreshVisualizer();
-    pViewer->setCameraParameters(ResetCamera);
+    pViewer->updateCamera();
 }
 
 void QTInterface::closeEvent(QCloseEvent* vEvent)

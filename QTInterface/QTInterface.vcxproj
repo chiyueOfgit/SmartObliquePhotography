@@ -159,9 +159,9 @@
     <ClInclude Include="QTInterfaceConfig.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="AutoRetouchConfig.xml" />
-    <Xml Include="QTInterfaceConfig.xml" />
-    <Xml Include="VisualizationConfig.xml" />
+    <Xml Include="..\Configs\AutoRetouchConfig.xml" />
+    <Xml Include="..\Configs\QTInterfaceConfig.xml" />
+    <Xml Include="..\Configs\VisualizationConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
