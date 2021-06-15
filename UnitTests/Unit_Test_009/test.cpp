@@ -27,8 +27,7 @@ const std::string g_Folder = "test_tile16/";
 const std::string g_CloudFile = "Scu_Tile16.pcd";
 const std::string g_WantedFile = "SomeBigTreePoints.txt";
 const std::string g_UnWantedFile = "SomeGroundPoints.txt";
-
-const std::vector<std::string> Other_COMPOSITE_BINARY_CONFIG = { BINARY_CLUSTER_NORMAL, BINARY_CLUSTER_VFH, BINARY_CLUSTER_SCORE  };
+const std::vector Other_COMPOSITE_BINARY_CONFIG = { BINARY_CLUSTER_NORMAL, BINARY_CLUSTER_VFH, BINARY_CLUSTER_SCORE };
 
 class CTestCompositeClassifier :public testing::Test
 {
@@ -36,7 +35,7 @@ protected:
 
 	void SetUp() override
 	{
-		m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
+		m_pCloud.reset(new PointCloud_t);
 		pcl::io::loadPCDFile(g_Folder + g_CloudFile, *m_pCloud);
 
 		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);
@@ -44,9 +43,7 @@ protected:
 	}
 
 	void TearDown() override
-	{
-
-	}
+	{}
 
 	pcl::Indices loadPointIndices(std::string vPath)
 	{
@@ -59,12 +56,12 @@ protected:
 	}
 
 	pcl::Indices getRegionGrowingResult(const pcl::Indices& vSeedSet);
-	pcl::PointCloud<pcl::PointSurfel>::Ptr getCloud() { return m_pCloud; }
+	auto getCloud() const { return m_pCloud; }
 	void calcRegionGrowingAccuracy(const std::vector<std::string>& vGroundTruthPath, float vExpectedCorrect);
 	void calcRegionGrowingErrorRate(const std::vector<std::string>& vGroundTruthPath, float vExpectedError);
 
 private:
-	pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
+	PointCloud_t::Ptr m_pCloud = nullptr;
 	void __initCluster();
 };
 

@@ -90,9 +90,6 @@
     <Xml Include="AutoRetouchConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="SpatialClusterConfig.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
     <Xml Include="VisualizationConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>

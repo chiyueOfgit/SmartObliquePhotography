@@ -59,10 +59,16 @@ namespace hiveObliquePhotography
 				catch (std::runtime_error& e)
 				{
 					_HIVE_OUTPUT_WARNING(e.what());
+#ifdef _UNIT_TEST
+					throw e;
+#endif
 				}
 				catch (...)
 				{
 					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to execute to classifier [%1%] due to unexpected error.", m_Name));
+#ifdef _UNIT_TEST
+					throw std::exception("unexpected error");
+#endif
 				}
 				m_pLocalLabelSet->stopRecord();
 				m_pLocalLabelSet->reset(m_PointLabelChangeRecord);

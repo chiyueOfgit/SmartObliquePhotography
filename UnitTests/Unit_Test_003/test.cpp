@@ -27,7 +27,6 @@ const std::string TestGrowingAlg = CLASSIFIER_REGION_GROW_COLOR;
 const std::string g_Folder = "test_tile16/";
 const std::string g_CloudFile = "Scu_Tile16.pcd";
 
-
 class CTestRegionGrow :public testing::Test
 {
 protected:
@@ -42,16 +41,14 @@ protected:
 	
 	void SetUp() override
 	{
-		m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
+		m_pCloud.reset(new PointCloud_t);
 		pcl::io::loadPCDFile(g_Folder + g_CloudFile, *m_pCloud);
 
 		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);
 	}
 
 	void TearDown() override
-	{
-
-	}
+	{}
 
 	pcl::Indices loadPointIndices(std::string vPath)
 	{
@@ -64,12 +61,12 @@ protected:
 	}
 
 	pcl::Indices getRegionGrowingResult(const pcl::Indices& vSeedSet);
-	pcl::PointCloud<pcl::PointSurfel>::Ptr getCloud(){ return m_pCloud; }
+	auto getCloud() const{ return m_pCloud; }
 	void calcRegionGrowingAccuracy(const std::vector<std::string>& vGroundTruthPath, float vExpectedCorrect);
 	void calcRegionGrowingErrorRate(const std::vector<std::string>& vGroundTruthPath, float vExpectedError);
 
 private:
-	pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
+	PointCloud_t::Ptr m_pCloud = nullptr;
 };
 
 pcl::Indices CTestRegionGrow::getRegionGrowingResult(const pcl::Indices& vSeedSet)
@@ -171,7 +168,7 @@ TEST_F(CTestRegionGrow, DeathTest_EmptyInput)
 TEST_F(CTestRegionGrow, DeathTest_IllegalInput)
 {
 	pcl::Indices SeedSet = {1700000,1800000, -1 };
-	ASSERT_NO_THROW(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowingByColor(SeedSet, EPointLabel::UNWANTED));
+	ASSERT_ANY_THROW(hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowingByColor(SeedSet, EPointLabel::UNWANTED));
 }
 
 TEST_F(CTestRegionGrow, RegionGrowingCorrectness)

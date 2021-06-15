@@ -12,24 +12,15 @@ _REGISTER_NORMAL_PRODUCT(CBinaryClassifierAlg, CLASSIFIER_BINARY)
 //FUNCTION:
 void CBinaryClassifierAlg::runV(const std::string& vClusterType)
 {
-	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
-		return;
-	}
-	
 	m_ClusterSet = CPointClusterSet::getInstance()->getGlobalClusterSet(vClusterType);
-	_ASSERTE(!m_ClusterSet.empty());
 	if (m_ClusterSet.empty())
 		return;
 
 	const auto pScene = CPointCloudAutoRetouchScene::getInstance();
 	const auto pCloud = pScene->getPointCloudScene();
 	const auto pTree = pScene->getGlobalKdTree();
-	_ASSERTE(pCloud != nullptr && pTree != nullptr);
 
 	auto UnknownIndices = __getUnknownIndices();
-
 	auto ExecuteArea = __createExecuteArea();
 
 #pragma omp parallel for
@@ -55,6 +46,8 @@ void CBinaryClassifierAlg::runV(const std::string& vClusterType)
 #pragma omp critical
 			if (m_ClusterSet[MaxIndex]->getClusterLabel() == EPointLabel::UNWANTED)
 				m_pLocalLabelSet->changePointLabel(Index, m_ClusterSet[MaxIndex]->getClusterLabel());
+			else if (m_ClusterSet[MaxIndex]->getClusterLabel() == EPointLabel::KEPT)
+				m_pLocalLabelSet->changePointLabel(Index, EPointLabel::UNDETERMINED);
 		}
 	}
 }

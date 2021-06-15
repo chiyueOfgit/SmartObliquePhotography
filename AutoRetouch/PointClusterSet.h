@@ -17,6 +17,7 @@ namespace hiveObliquePhotography
 			
 			bool deletePointCluster(const std::string& vName);
 			bool undo();
+			bool reset();
 
 			std::vector<IPointCluster*> getGlobalClusterSet(const std::string& vName) const;
 

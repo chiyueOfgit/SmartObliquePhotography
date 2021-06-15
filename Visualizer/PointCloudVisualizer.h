@@ -6,14 +6,15 @@ namespace hiveObliquePhotography
 	{
 		class CInteractionCallback;
 
+		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 		class CPointCloudVisualizer : public hiveDesignPattern::CSingleton<CPointCloudVisualizer>
 		{
 		public:
 			~CPointCloudVisualizer();
 
-			void init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud, bool vIsInQt = true);
+			void init(PointCloud_t::Ptr vPointCloud, bool vIsInQt = true);
 
-			void reset(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud);
+			void reset(PointCloud_t::Ptr vPointCloud);
 
 			void refresh(bool vResetCamera = false);
 
@@ -29,7 +30,7 @@ namespace hiveObliquePhotography
 			pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 			CInteractionCallback* m_pCallback = nullptr;
 
-			pcl::PointCloud<pcl::PointSurfel>::Ptr m_pSceneCloud = nullptr;
+			PointCloud_t::Ptr m_pSceneCloud = nullptr;
 
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
 			friend class CInteractionCallback;

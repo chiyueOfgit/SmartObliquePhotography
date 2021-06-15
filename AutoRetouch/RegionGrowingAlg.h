@@ -3,10 +3,9 @@
 
 namespace hiveObliquePhotography
 {
-	using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
-	
 	namespace AutoRetouch
 	{
+		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 		class CRegionGrowingAlg : public IPointClassifier
 		{
 		public:

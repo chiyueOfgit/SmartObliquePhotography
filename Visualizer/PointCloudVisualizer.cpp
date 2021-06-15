@@ -36,7 +36,7 @@ CPointCloudVisualizer::~CPointCloudVisualizer()
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud, bool vIsInQt)
+void CPointCloudVisualizer::init(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
 {
 	_ASSERTE(vPointCloud);
 	m_pSceneCloud = vPointCloud;
@@ -49,7 +49,7 @@ void CPointCloudVisualizer::init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCl
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudVisualizer::reset(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
+void CPointCloudVisualizer::reset(PointCloud_t::Ptr vPointCloud)
 {
 	_ASSERTE(vPointCloud);
 	m_pSceneCloud = vPointCloud;
@@ -72,9 +72,9 @@ void CPointCloudVisualizer::refresh(bool vResetCamera)
 	
 	_ASSERTE(GlobalLabel.size() == m_pSceneCloud->size());
 
-	pcl::PointCloud<pcl::PointSurfel>::Ptr pCloud2Show(new pcl::PointCloud<pcl::PointSurfel>);
+	PointCloud_t::Ptr pCloud2Show(new PointCloud_t);
 	pCloud2Show->resize(m_pSceneCloud->size());
-	std::memcpy(pCloud2Show->data(), m_pSceneCloud->data(), m_pSceneCloud->size() * sizeof(pcl::PointSurfel));
+	std::memcpy(pCloud2Show->data(), m_pSceneCloud->data(), m_pSceneCloud->size() * sizeof(PointCloud_t::PointType));
 	
 	#pragma omp parallel for
 	for (int i = 0; i < m_pSceneCloud->size(); i++)
@@ -113,9 +113,9 @@ void CPointCloudVisualizer::refresh(bool vResetCamera)
 	}
 
 	auto PointSize = *hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance()->getAttribute<int>("POINT_SHOW_SIZE");
-
-	pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PointSurfel> RGBAColor(pCloud2Show);
-	m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(pCloud2Show, RGBAColor, "Cloud2Show");
+	
+	pcl::visualization::PointCloudColorHandlerRGBAField<PointCloud_t::PointType> RGBAColor(pCloud2Show);
+	m_pPCLVisualizer->addPointCloud(pCloud2Show, RGBAColor, "Cloud2Show");
 	m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "Cloud2Show");
 
 	if (vResetCamera)

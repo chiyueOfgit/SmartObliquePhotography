@@ -10,6 +10,7 @@ namespace hiveObliquePhotography
 		class CNeighborhood;
 		class IPointCluster;
 
+		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 		class CPointCloudAutoRetouchScene : public hiveDesignPattern::CSingleton<CPointCloudAutoRetouchScene>
 		{
 		public:
@@ -21,7 +22,7 @@ namespace hiveObliquePhotography
 			bool undoLastOp();
 
 			void recordCurrentOp(IOpResult* vResult);
-			void init(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloudScene);
+			void init(PointCloud_t::Ptr vPointCloudScene);
 
 			std::size_t getNumPoint() const { _ASSERTE(m_pPointCloudScene); return m_pPointCloudScene->size(); }	
 #ifdef _UNIT_TEST
@@ -33,6 +34,7 @@ namespace hiveObliquePhotography
 
 			CGlobalPointLabelSet* fetchPointLabelSet() { return &m_PointLabelSet; }
 			void resetLabelSet();
+			void clearResultQueue();
 		
 		private:
 			CPointCloudAutoRetouchScene();
@@ -40,8 +42,8 @@ namespace hiveObliquePhotography
 			COpResultQueue m_OpResultQueue;
 			CGlobalPointLabelSet m_PointLabelSet;
 
-			pcl::PointCloud<pcl::PointSurfel>::Ptr m_pPointCloudScene = nullptr;
-			pcl::search::KdTree<pcl::PointSurfel>::Ptr m_pGlobalKdTree = nullptr;
+			PointCloud_t::Ptr m_pPointCloudScene = nullptr;
+			pcl::search::KdTree<PointCloud_t::PointType>::Ptr m_pGlobalKdTree = nullptr;
 
 			SBox m_PointCloudSceneAABB;
 

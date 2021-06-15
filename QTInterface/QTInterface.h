@@ -8,6 +8,11 @@ class QSlider;
 
 namespace hiveObliquePhotography
 {
+    namespace AutoRetouch
+    {
+        class CAutoRetouchConfig;
+    }
+
     namespace QTInterface
 
     {
@@ -32,6 +37,8 @@ namespace hiveObliquePhotography
             int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;
 
+            AutoRetouch::CAutoRetouchConfig* m_pAutoRetouchConfig = nullptr;
+
             void __initialVTKWidget();
             void __initialResourceSpaceDockWidget();
             void __initialWorkSpaceDockWidget();
@@ -52,6 +59,7 @@ namespace hiveObliquePhotography
         private slots:
             void onActionOpen();
             void onActionSetting();
+            void onActionResetSelectStatus();
             void onActionTest();
             void onResourceSpaceItemDoubleClick(const QModelIndex& vIndex);
 

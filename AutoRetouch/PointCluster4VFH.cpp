@@ -44,7 +44,7 @@ void CPointCluster4VFH::__computeVFHDescriptor(const pcl::Indices& vPointIndices
 	if (vPointIndices.size() == 1)
 		Indices->push_back(Indices->front());
 
-	pcl::VFHEstimation<pcl::PointSurfel, pcl::PointSurfel> Estimation;
+	pcl::VFHEstimation<std::decay<decltype(*pCloud)>::type::PointType, std::decay<decltype(*pCloud)>::type::PointType> Estimation;
 	pcl::PointCloud<pcl::VFHSignature308> Result;
 	Estimation.setInputCloud(pCloud);
 	Estimation.setInputNormals(pCloud);

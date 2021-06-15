@@ -6,7 +6,7 @@ using namespace hiveObliquePhotography::AutoRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-void CSpatialClusteringAlg::runV(const pcl::Indices& vInputSet, EPointLabel vFinalLabel)
+void CSpatialClusteringAlg::runV(const pcl::Indices& vInputSet, EPointLabel vExpectLabel)
 {
 
 }

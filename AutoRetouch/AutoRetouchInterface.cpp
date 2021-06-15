@@ -13,7 +13,7 @@ void hiveObliquePhotography::AutoRetouch::hiveUndoLastOp()
 
 //*****************************************************************
 //FUNCTION: 
-void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
+void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(PointCloud_t::Ptr vPointCloud)
 {
 	CPointCloudAutoRetouchScene::getInstance()->init(vPointCloud);
 }
@@ -25,28 +25,38 @@ void hiveObliquePhotography::AutoRetouch::hiveGetGlobalPointLabelSet(std::vector
 	voGlobalLabel = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->getPointLabelSet();
 }
 
+void hiveObliquePhotography::AutoRetouch::hiveResetSceneSelectStatus()
+{
+	auto pScene = CPointCloudAutoRetouchScene::getInstance();
+	auto pCluster = CPointClusterSet::getInstance();
+
+	pScene->resetLabelSet();
+	pScene->clearResultQueue();
+	pCluster->reset();
+}
+
 //*****************************************************************
 //FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(EPointLabel vTo, EPointLabel vFrom)
 {
 	_ASSERTE(CPointCloudAutoRetouchScene::getInstance() && CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	auto& PointLabelSet = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->fetchPointLabelSet();
-
-	for (auto& PointLabel : PointLabelSet)
-		if (PointLabel == vFrom)
-			PointLabel = vTo;
-	return true;
+	return CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->switchLabel(vTo, vFrom);
 }
 
-bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(const pcl::Indices& vPointIndices, EPointLabel vTo)
+bool hiveObliquePhotography::AutoRetouch::hiveGetAutoRetouchConfig(CAutoRetouchConfig*& voConfig)
 {
-	_ASSERTE(CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
-	auto& PointLabelSet = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->fetchPointLabelSet();
-
-	for (auto& PointLabel : vPointIndices)
-		PointLabelSet[PointLabel] = vTo;
-			
-	return true;
+	auto pConfig = CAutoRetouchConfig::getInstance();
+	_ASSERTE(pConfig);
+	if (pConfig)
+	{
+		voConfig = CAutoRetouchConfig::getInstance();
+		return true;
+	}
+	else
+	{
+		voConfig = nullptr;
+		return false;
+	}
 }
 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std::string& vClassifierSig, const std::string& vClusterType)
@@ -146,13 +156,13 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteMaxVisibilityClustering(con
 	return pClassifier->execute<CMaxVisibilityClusterAlg>(true, vioPointIndices, vExpectLabel, vCameraPos, vPvMatrix);
 }
 
-bool hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowingByColor(const pcl::Indices& vioPointIndices, EPointLabel vExpectLabel)
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowingByColor(const pcl::Indices& vPointIndices, EPointLabel vExpectLabel)
 {
-	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
+	const std::string ClusterAlgSig = CLASSIFIER_REGION_GROW_COLOR;
 	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
 
-	return pClassifier->execute<CRegionGrowingByColorAlg>(true, vioPointIndices, vExpectLabel);
+	return pClassifier->execute<CRegionGrowingByColorAlg>(true, vPointIndices, vExpectLabel);
 }
 
 void hiveObliquePhotography::AutoRetouch::hiveGetAutoRetouchConfig()
