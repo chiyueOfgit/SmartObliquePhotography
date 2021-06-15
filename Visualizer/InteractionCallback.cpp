@@ -14,13 +14,10 @@ CInteractionCallback::CInteractionCallback(pcl::visualization::PCLVisualizer* vV
 	_ASSERTE(vVisualizer);
 	vVisualizer->registerKeyboardCallback([&](const auto& vEvent) { keyboardCallback(vEvent); });
 	vVisualizer->registerMouseCallback([&](const auto& vEvent) { mouseCallback(vEvent); });
+	vVisualizer->registerPointPickingCallback([&](const auto& vEvent) { pointPicking(vEvent); });
 	vVisualizer->registerAreaPickingCallback([&](const auto& vEvent) { areaPicking(vEvent); });
 
-	if (hiveConfig::hiveParseConfig("VisualizationConfig.xml", hiveConfig::EConfigType::XML, CVisualizationConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-		std::cout << "Failed to parse config file." << std::endl;
-	else
-		m_pVisualizationConfig = CVisualizationConfig::getInstance();
-
+	m_pVisualizationConfig = CVisualizationConfig::getInstance();
 }
 
 //*****************************************************************
@@ -39,7 +36,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	{
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(VIEW_BINARY_RESULT).value())
 		{
-			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY, "vfh");
+			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY, "score");
 			m_pVisualizer->refresh();
 		}
 
@@ -62,7 +59,6 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		else if (KeyString == "m")
 		{
 			pcl::Indices InputIndice;
-			AutoRetouch::hiveGetIndicesByLabel(InputIndice, AutoRetouch::EPointLabel::KEPT);
 			AutoRetouch::hiveGetIndicesByLabel(InputIndice, AutoRetouch::EPointLabel::UNDETERMINED);
 			AutoRetouch::hiveExecuteOutlierDetecting(InputIndice, AutoRetouch::EPointLabel::UNWANTED);
 			m_pVisualizer->refresh();
@@ -133,6 +129,18 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			
 		}
 	}
+}
+
+//*****************************************************************
+//FUNCTION: 
+void hiveObliquePhotography::Visualization::CInteractionCallback::pointPicking(const pcl::visualization::PointPickingEvent& vEvent)
+{
+	auto Index = vEvent.getPointIndex();
+	float GroundHeight = m_pVisualizer->m_pSceneCloud->points[Index].z + 0.1f;
+	AutoRetouch::CAutoRetouchConfig* pConfig = nullptr;
+	AutoRetouch::hiveGetAutoRetouchConfig(pConfig);
+	if (pConfig)
+		pConfig->overwriteAttribute(KEY_WORDS::GROUND_TEST_THRESHOLD, GroundHeight);
 }
 
 //*****************************************************************

@@ -4,19 +4,10 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
-CPointCluster4NormalRatio::CPointCluster4NormalRatio(const pcl::IndicesPtr& vPointIndices, EPointLabel vLabel) : IPointCluster(vPointIndices, vLabel)
+CPointCluster4NormalRatio::CPointCluster4NormalRatio(const pcl::IndicesPtr& vPointIndices, EPointLabel vLabel) : IPointCluster(vPointIndices, vLabel), m_PointIndices(vPointIndices)
 {	
 	_ASSERTE(vPointIndices != nullptr);
 	_ASSERTE(!vPointIndices->empty());
-
-	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
-	_ASSERTE(pCloud != nullptr);
-	
-	m_pPointCloud.reset(new PointCloud_t);
-	pcl::ExtractIndices<PointCloud_t::PointType> Extract;
-	Extract.setInputCloud(pCloud);
-	Extract.setIndices(vPointIndices);
-	Extract.filter(*m_pPointCloud);
 }
 
 //*****************************************************************
@@ -24,15 +15,18 @@ CPointCluster4NormalRatio::CPointCluster4NormalRatio(const pcl::IndicesPtr& vPoi
 double CPointCluster4NormalRatio::computeSimilarityV(pcl::index_t vPointIndex) const
 {
 	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
-	_ASSERTE(vPointIndex < pCloud->size());
+	//for (const auto& CurrentIndex : *m_PointIndices)
+	//	if (CurrentIndex < 0 || CurrentIndex >= pCloud->size())
+	//		_THROW_RUNTIME_ERROR("Out of range");
+	if (vPointIndex < 0 || vPointIndex >= pCloud->size())
+		_THROW_RUNTIME_ERROR("Index is out of range");
 
-	const Eigen::RowVector3f Normal = pCloud->at(vPointIndex).getNormalVector3fMap();
+	const auto Threshold = *CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::BINARY_CLASSIFIER_NORMAL_RATIO_THRESHOLD);
+	const Eigen::Vector3f PointNormal = pCloud->at(vPointIndex).getNormalVector3fMap();
+	int NormalCount = 0;
+	for (const auto& CurrentIndex : *m_PointIndices)
+		if (PointNormal.dot(pCloud->at(CurrentIndex).getNormalVector3fMap()) >= Threshold)
+			++NormalCount;
 
-	const auto NormalMap = pCloud->getMatrixXfMap(3, sizeof(PointCloud_t::PointType) / sizeof(float), 
-		offsetof(PointCloud_t::PointType, data_n) / sizeof(float));
-	//TODO: 配置文件添加法线判定为相似的阈值
-	//dot(theta) <= cos (20 degrees)
-	const auto NormalCount = ((Normal * NormalMap).array() >= 0.93969262078591f).count();
-
-	return static_cast<double>(NormalCount) / static_cast<double>(pCloud->size());
+	return static_cast<double>(NormalCount) / static_cast<double>(m_PointIndices->size());
 }

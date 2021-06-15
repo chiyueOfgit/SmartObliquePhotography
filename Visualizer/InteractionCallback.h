@@ -17,6 +17,8 @@ namespace hiveObliquePhotography
 
 			void mouseCallback(const pcl::visualization::MouseEvent& vEvent);
 
+			void pointPicking(const pcl::visualization::PointPickingEvent& vEvent);
+
 			void areaPicking(const pcl::visualization::AreaPickingEvent& vEvent);
 
 			~CInteractionCallback() = default;

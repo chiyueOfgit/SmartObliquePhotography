@@ -12,3 +12,11 @@ pcl::PointCloud<pcl::PointSurfel>::Ptr hiveObliquePhotography::hiveInitPointClou
 
 	return CPointCloudScene::getInstance()->loadScene(vFileNameSet);
 }
+
+bool hiveObliquePhotography::hiveSavePointCloudScene(PointCloud_t& vPointCloud, std::string vFileName)
+{
+	if (vFileName.empty()||vPointCloud.empty())
+		return false;
+	
+	return CPointCloudScene::getInstance()->saveScene(vPointCloud, vFileName);
+}

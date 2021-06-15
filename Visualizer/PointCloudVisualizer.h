@@ -20,12 +20,8 @@ namespace hiveObliquePhotography
 
 			void run();
 
-
-
 		private:
 			CPointCloudVisualizer();
-
-			bool __parseConfigFile();
 
 			pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 			CInteractionCallback* m_pCallback = nullptr;
@@ -34,7 +30,7 @@ namespace hiveObliquePhotography
 
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
 			friend class CInteractionCallback;
-			friend void* hiveGetPCLVisualizer();
+			friend pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
 		};
 	}
 }

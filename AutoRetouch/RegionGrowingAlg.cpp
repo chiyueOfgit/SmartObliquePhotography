@@ -8,26 +8,29 @@ _REGISTER_EXCLUSIVE_PRODUCT(CRegionGrowingAlg, CLASSIFIER_REGION_GROW)
 
 //*****************************************************************
 //FUNCTION: 
-void CRegionGrowingAlg::runV(const pcl::Indices& vioPointSet, EPointLabel vDstLabel)
+void CRegionGrowingAlg::runV(const pcl::Indices& vioPoints, EPointLabel vDstLabel)
 {
 	constexpr unsigned char DEFAULT_TRAVERSED = 1 << 0;
 	constexpr unsigned char NEIGHBOR_TRAVERSED = 1 << 1;
 	constexpr unsigned char VALIDATE_TRAVERSED = 1 << 2;
 
-	if (vioPointSet.empty())
+	if (vioPoints.empty())
 		return;
 	
 	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
 	const auto pTree = CPointCloudAutoRetouchScene::getInstance()->getGlobalKdTree();
-	for (auto CurrentIndex : vioPointSet)
+	for (auto CurrentIndex : vioPoints)
 		if (CurrentIndex < 0 || CurrentIndex >= pCloud->size())
 			_THROW_RUNTIME_ERROR("Index is out of range");
 	
 	std::vector Traversed(pCloud->size(), DEFAULT_TRAVERSED);
-	__initValidation(vioPointSet, pCloud);
+	__initValidation(vioPoints, pCloud);
 	
+	for (auto Index : vioPoints)
+		m_pLocalLabelSet->changePointLabel(Index, vDstLabel);
+
 	const auto SearchRadius = *CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::SEARCH_RADIUS);
-	pcl::Indices Seeds(vioPointSet);
+	pcl::Indices Seeds(vioPoints);
 	while (!Seeds.empty())
 	{
 		const auto CurrentIndex = Seeds.back();

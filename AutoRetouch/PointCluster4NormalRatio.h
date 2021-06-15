@@ -15,7 +15,7 @@ namespace hiveObliquePhotography
 			double computeSimilarityV(pcl::index_t vPointIndex) const override;
 
 		private:
-			PointCloud_t::Ptr m_pPointCloud;
+			pcl::IndicesPtr m_PointIndices;
 		};
 	}
 }

@@ -183,6 +183,7 @@ bool CRegionGrowingByColorAlg::__colorTestByMedian(int vTestIndex, PointCloud_t:
 //FUNCTION: 
 bool CRegionGrowingByColorAlg::__groundTest(int vTestIndex, PointCloud_t::ConstPtr vCloud) const
 {
+	auto GroundHeight = CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::GROUND_TEST_THRESHOLD).value();
 	if ((*vCloud)[vTestIndex].z < CAutoRetouchConfig::getInstance()->getAttribute<float>(KEY_WORDS::GROUND_TEST_THRESHOLD).value())
 		return false;
 	else

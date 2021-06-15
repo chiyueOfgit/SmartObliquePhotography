@@ -18,9 +18,15 @@ namespace hiveObliquePhotography
 			{ 
 				CAutoRetouchConfig::__defineAttributesV();
 
-				if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
+				std::string RelativePath = "../";
+#ifdef _UNIT_TEST
+				RelativePath = "../../";
+#endif // _UNIT_TEST
+
+				const std::string ConfigPath = "Configs/AutoRetouchConfig.xml";
+				if (hiveConfig::hiveParseConfig(RelativePath + ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
 				{
-					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
+					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 					return;
 				}
 			}
@@ -42,6 +48,7 @@ namespace hiveObliquePhotography
 				_defineAttribute(KEY_WORDS::MINCLUSTERSIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 				_defineAttribute(KEY_WORDS::MAXCLUSTERSIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 				_defineAttribute(KEY_WORDS::EXCUTEAREA_EXPAND_RATIO, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+				_defineAttribute(KEY_WORDS::BINARY_CLASSIFIER_NORMAL_RATIO_THRESHOLD, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 			}
 
 			friend class hiveDesignPattern::CSingleton<CAutoRetouchConfig>;
