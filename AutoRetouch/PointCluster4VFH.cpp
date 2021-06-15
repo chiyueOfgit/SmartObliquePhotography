@@ -33,8 +33,6 @@ void CPointCluster4VFH::__computeVFHDescriptor(const pcl::Indices& vPointIndices
 	auto pCloud = pScene->getPointCloudScene();
 	auto pTree = pScene->getGlobalKdTree();
 
-	_ASSERTE(pScene && pCloud && pTree);
-
 	std::set IndicesUnique(vPointIndices.begin(), vPointIndices.end());
 	_ASSERTE(IndicesUnique.size() == vPointIndices.size());
 	_ASSERTE(*std::max_element(vPointIndices.begin(), vPointIndices.end()) < pCloud->size());
@@ -44,7 +42,7 @@ void CPointCluster4VFH::__computeVFHDescriptor(const pcl::Indices& vPointIndices
 	if (vPointIndices.size() == 1)
 		Indices->push_back(Indices->front());
 
-	pcl::VFHEstimation<pcl::PointSurfel, pcl::PointSurfel> Estimation;
+	pcl::VFHEstimation<std::decay<decltype(*pCloud)>::type::PointType, std::decay<decltype(*pCloud)>::type::PointType> Estimation;
 	pcl::PointCloud<pcl::VFHSignature308> Result;
 	Estimation.setInputCloud(pCloud);
 	Estimation.setInputNormals(pCloud);

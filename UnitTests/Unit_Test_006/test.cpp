@@ -41,7 +41,7 @@ protected:
 	void SetUp() override
 	{
 		std::string ModelPath("test_tile16/Scu_Tile16.pcd");
-		pcl::PointCloud<pcl::PointSurfel>::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
+		PointCloud_t::Ptr pCloud(new PointCloud_t);
 		pcl::io::loadPCDFile(ModelPath, *pCloud);
 		CPointCloudAutoRetouchScene::getInstance()->init(pCloud);
 	}

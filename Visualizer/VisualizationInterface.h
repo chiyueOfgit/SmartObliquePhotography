@@ -6,7 +6,9 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
-		VISUALIZATION_DECLSPEC void hiveInitVisualizer(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud, bool vIsInQt = true);
+		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+		
+		VISUALIZATION_DECLSPEC void hiveInitVisualizer(PointCloud_t::Ptr vPointCloud, bool vIsInQt = true);
 
 		VISUALIZATION_DECLSPEC void hiveRefreshVisualizer(bool vResetCamera = false);
 

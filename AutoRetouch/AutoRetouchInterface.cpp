@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "AutoRetouchInterface.h"
 
+
+
 using namespace hiveObliquePhotography::AutoRetouch;
 
 
@@ -13,7 +15,7 @@ void hiveObliquePhotography::AutoRetouch::hiveUndoLastOp()
 
 //*****************************************************************
 //FUNCTION: 
-void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
+void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(PointCloud_t::Ptr vPointCloud)
 {
 	CPointCloudAutoRetouchScene::getInstance()->init(vPointCloud);
 }
@@ -23,6 +25,15 @@ void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(pcl::PointClou
 void hiveObliquePhotography::AutoRetouch::hiveGetGlobalPointLabelSet(std::vector<EPointLabel>& voGlobalLabel)
 {
 	voGlobalLabel = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->getPointLabelSet();
+}
+
+void hiveObliquePhotography::AutoRetouch::hiveGetIndicesByLabel(pcl::Indices& voPointIndices, EPointLabel vExpectLabel)
+{
+	std::vector<EPointLabel> GlobalLabel;
+	hiveGetGlobalPointLabelSet(GlobalLabel);
+	for (size_t i = 0;i < GlobalLabel.size();i++)
+		if (GlobalLabel[i] == vExpectLabel)
+			voPointIndices.push_back(i);
 }
 
 void hiveObliquePhotography::AutoRetouch::hiveResetSceneSelectStatus()
@@ -163,4 +174,13 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowingByColor(const 
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
 
 	return pClassifier->execute<CRegionGrowingByColorAlg>(true, vPointIndices, vExpectLabel);
+}
+
+bool hiveObliquePhotography::AutoRetouch::hiveExecuteOutlierDetecting(pcl::Indices& vioPointIndices, EPointLabel vExpectLabel)
+{
+	const std::string ClusterAlgSig = CLASSIFIER_OUTLIER_DETECTION;
+	IPointClassifier* pClassifier = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(ClusterAlgSig, CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
+	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
+
+	return pClassifier->execute<COutlierDetectingAlg>(true, vioPointIndices, vExpectLabel);
 }

@@ -20,9 +20,9 @@ void  CStaOutlierDetectingAlg::runV(pcl::Indices& vioInputSet, EPointLabel vExpe
 	for (auto CurrentIndex : vioInputSet)
 		if (CurrentIndex < 0 || CurrentIndex >= pCloud->size())
 			_THROW_RUNTIME_ERROR("Index is out of range");
-
+	
 	pcl::Indices OutlierIndices;
-	pcl::StatisticalOutlierRemoval<pcl::PointSurfel> Od;
+	pcl::StatisticalOutlierRemoval<std::decay<decltype(*pCloud)>::type::PointType> Od;
 	Od.setInputCloud(pCloud);
 	Od.setIndices(pcl::make_shared<pcl::Indices>(vioInputSet.begin(), vioInputSet.end()));
 	Od.setMeanK(*CAutoRetouchConfig::getInstance()->getAttribute<int>("OUTLIER_MEAN_KNN_NUMBER"));

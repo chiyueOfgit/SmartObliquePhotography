@@ -23,7 +23,6 @@ CPointCluster4Score::CPointCluster4Score(const pcl::IndicesPtr& vPointIndices, E
 double CPointCluster4Score::computeSimilarityV(pcl::index_t vPointIndex) const
 {
 	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();
-	_ASSERTE(pCloud != nullptr);
 	_ASSERTE(vPointIndex < pCloud->size());
 
 	const Eigen::Vector3f Normal = pCloud->at(vPointIndex).getNormalVector3fMap();

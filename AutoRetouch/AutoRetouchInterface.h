@@ -9,6 +9,7 @@
 #include "RegionGrowingByColorAlg.h"
 #include "BinaryClassifierAlg.h"
 #include "MaxVisibilityClusterAlg.h"
+#include "OutlierDetectingAlg.h"
 #include "CompositeClassifier.h"
 #include "CompositeBinaryClassifierAlg.h"
 
@@ -16,10 +17,14 @@ namespace hiveObliquePhotography
 {
 	namespace AutoRetouch
 	{
-		AUTORETOUCH_DECLSPEC void hiveInitPointCloudScene(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud);
+		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+
+		AUTORETOUCH_DECLSPEC void hiveInitPointCloudScene(PointCloud_t::Ptr vPointCloud);
 		AUTORETOUCH_DECLSPEC void hiveUndoLastOp();
 
 		AUTORETOUCH_DECLSPEC void hiveGetGlobalPointLabelSet(std::vector<EPointLabel>& voGlobalLabel);
+
+		AUTORETOUCH_DECLSPEC void hiveGetIndicesByLabel(pcl::Indices& voPointIndices, EPointLabel vExpectLabel);
 
 		AUTORETOUCH_DECLSPEC void hiveResetSceneSelectStatus();
 
@@ -38,5 +43,7 @@ namespace hiveObliquePhotography
 		AUTORETOUCH_DECLSPEC bool hiveExecuteMaxVisibilityClustering(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix);
 
 		AUTORETOUCH_DECLSPEC bool hiveExecuteRegionGrowingByColor(const pcl::Indices& vPointIndices, EPointLabel vExpectLabel);
+
+		AUTORETOUCH_DECLSPEC bool hiveExecuteOutlierDetecting(pcl::Indices& vioPointIndices, EPointLabel vExpectLabel);
 	}
 }
