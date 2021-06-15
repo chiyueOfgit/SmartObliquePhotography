@@ -58,6 +58,7 @@ namespace hiveObliquePhotography
 
         private slots:
             void onActionOpen();
+            void onActionSave();
             void onActionSetting();
             void onActionResetSelectStatus();
             void onActionTest();

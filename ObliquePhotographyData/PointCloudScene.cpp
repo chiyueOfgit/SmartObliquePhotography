@@ -3,6 +3,7 @@
 #include <boost/format.hpp>
 #include "common/UtilityInterface.h"
 #include "PointCloudLoader.h"
+#include "PointCloudSaver.h"
 
 using namespace hiveObliquePhotography;
 
@@ -47,6 +48,20 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 		}
 	}
 	return m_pPointCloudScene;
+}
+
+bool CPointCloudScene::saveScene(PointCloud_t& vPointCloud, std::string vFileName)
+{
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudSaver>(hiveUtility::hiveGetFileSuffix(vFileName));
+	if (pTileLoader)
+	{
+		pTileLoader->saveDataToFile(vPointCloud, vFileName);
+	}
+	else
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load tile [%1%] due to unknown format.", vFileName));
+	}
+	return true;
 }
 
 //*****************************************************************
