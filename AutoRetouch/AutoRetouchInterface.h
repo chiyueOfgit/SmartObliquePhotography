@@ -1,6 +1,7 @@
 #pragma once
 #include "AutoRetouchExport.h"
 #include "PointCloudAutoRetouchScene.h"
+#include "AutoRetouchConfig.h"
 #include "PointClusterSet.h"
 #include "PointCluster4VFH.h"
 #include "PointCluster4Score.h"
@@ -16,7 +17,9 @@ namespace hiveObliquePhotography
 {
 	namespace AutoRetouch
 	{
-		AUTORETOUCH_DECLSPEC void hiveInitPointCloudScene(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud);
+		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+
+		AUTORETOUCH_DECLSPEC void hiveInitPointCloudScene(PointCloud_t::Ptr vPointCloud);
 		AUTORETOUCH_DECLSPEC void hiveUndoLastOp();
 
 		AUTORETOUCH_DECLSPEC void hiveGetGlobalPointLabelSet(std::vector<EPointLabel>& voGlobalLabel);
@@ -26,6 +29,8 @@ namespace hiveObliquePhotography
 		AUTORETOUCH_DECLSPEC void hiveResetSceneSelectStatus();
 
 		AUTORETOUCH_DECLSPEC bool hiveSwitchPointLabel(EPointLabel vTo, EPointLabel vFrom);
+
+		AUTORETOUCH_DECLSPEC bool hiveGetAutoRetouchConfig(CAutoRetouchConfig*& voConfig);
 
 		AUTORETOUCH_DECLSPEC bool hiveExecuteBinaryClassifier(const std::string& vClassifierSig, const std::string& vClusterType);
 

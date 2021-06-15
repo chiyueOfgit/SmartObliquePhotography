@@ -25,16 +25,14 @@ class CTestOutlierDetection :public testing::Test
 protected:
 	void SetUp() override
 	{
-		m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
+		m_pCloud.reset(new PointCloud_t);
 		pcl::io::loadPCDFile(g_Folder + g_CloudFile, *m_pCloud);
 
 		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);
 	}
 
 	void TearDown() override
-	{
-
-	}
+	{}
 
 	pcl::Indices loadPointIndices(std::string vPath)
 	{
@@ -66,12 +64,12 @@ protected:
 		return m_pOutlierSet;
 	}
 
-	pcl::PointCloud<pcl::PointSurfel>::Ptr getCloud() { return m_pCloud; }
+	auto getCloud() const { return m_pCloud; }
 
 	void CTestOutlierDetection::executeOutlierDetectionTest(const std::vector<std::string>& vGroundTruthPaths, const pcl::Indices& vOutlier, float vExpectedCorrectRate);
 
 private:
-	pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
+	PointCloud_t::Ptr m_pCloud = nullptr;
 	pcl::Indices m_pOutlierSet;
 };
 

@@ -15,7 +15,7 @@ void hiveObliquePhotography::AutoRetouch::hiveUndoLastOp()
 
 //*****************************************************************
 //FUNCTION: 
-void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(pcl::PointCloud<pcl::PointSurfel>::Ptr vPointCloud)
+void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(PointCloud_t::Ptr vPointCloud)
 {
 	CPointCloudAutoRetouchScene::getInstance()->init(vPointCloud);
 }
@@ -52,6 +52,22 @@ bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(EPointLabel vTo, 
 {
 	_ASSERTE(CPointCloudAutoRetouchScene::getInstance() && CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	return CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->switchLabel(vTo, vFrom);
+}
+
+bool hiveObliquePhotography::AutoRetouch::hiveGetAutoRetouchConfig(CAutoRetouchConfig*& voConfig)
+{
+	auto pConfig = CAutoRetouchConfig::getInstance();
+	_ASSERTE(pConfig);
+	if (pConfig)
+	{
+		voConfig = CAutoRetouchConfig::getInstance();
+		return true;
+	}
+	else
+	{
+		voConfig = nullptr;
+		return false;
+	}
 }
 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std::string& vClassifierSig, const std::string& vClusterType)

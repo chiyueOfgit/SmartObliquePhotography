@@ -38,7 +38,7 @@ protected:
 	void SetUp() override
 	{
 		//init scene
-		m_pCloud.reset(new pcl::PointCloud<pcl::PointSurfel>);
+		m_pCloud.reset(new PointCloud_t);
 		pcl::io::loadPCDFile(g_Folder + g_CloudFile, *m_pCloud);
 
 		hiveObliquePhotography::AutoRetouch::CPointCloudAutoRetouchScene::getInstance()->init(m_pCloud);
@@ -154,10 +154,10 @@ protected:
 	CPointCluster4NormalRatio* m_pUnwantedCluster4NormalRatio = nullptr;
 	CPointCluster4NormalRatio* m_pKeptCluster4NormalRatio = nullptr;
 
-	pcl::PointCloud<pcl::PointSurfel>::ConstPtr getCloud() const { return m_pCloud; }
+	PointCloud_t::Ptr getCloud() const { return m_pCloud; }
 
 private:
-	pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
+	PointCloud_t::Ptr m_pCloud = nullptr;
 };
 
 TEST_F(CBinaryTest, ChangeLabel_Undo_Overview_Test)

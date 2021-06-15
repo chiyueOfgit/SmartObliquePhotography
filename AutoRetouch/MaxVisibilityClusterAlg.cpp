@@ -11,11 +11,6 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMaxVisibilityClusterAlg, CLASSIFIER_MaxVisibilityCl
 //FUNCTION:
 void CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
-	if (hiveConfig::hiveParseConfig("AutoRetouchConfig.xml", hiveConfig::EConfigType::XML, CAutoRetouchConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", "AutoRetouchConfig.xml"));
-		return;
-	}
 	if (vioPointSet == nullptr)
 		_THROW_RUNTIME_ERROR("Indices pointer does not exist");
 	if (vioPointSet->empty())
@@ -26,10 +21,11 @@ void CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLa
 	for (auto CurrentIndex : *vioPointSet)
 		if (CurrentIndex < 0 || CurrentIndex >= pCloud->size())
 			_THROW_RUNTIME_ERROR("Index is out of range");
-
+	
 	const int Resolution = *CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::RESOLUTION);
 	std::vector<pcl::PointIndices> ClusterIndices;
-	pcl::EuclideanClusterExtraction<pcl::PointSurfel> Ec;
+
+	pcl::EuclideanClusterExtraction<std::decay<decltype(*pCloud)>::type::PointType> Ec;
 	Ec.setClusterTolerance(*CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
 	Ec.setMinClusterSize(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
 	Ec.setMaxClusterSize(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
