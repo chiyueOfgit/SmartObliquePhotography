@@ -36,6 +36,7 @@ namespace hiveObliquePhotography
             size_t m_SceneIndex = -1;
             int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;
+            pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
 
             AutoRetouch::CAutoRetouchConfig* m_pAutoRetouchConfig = nullptr;
 
@@ -50,7 +51,6 @@ namespace hiveObliquePhotography
             bool __MessageDockWidgetOutputText(QString vString);
             bool __parseConfigFile();
             void __connectSignals();
-            void __checkFileOpenRepeatedly();
             template <class T>
             bool __readConfigFile(const std::string& vFileName, T* vInstance);
             std::string __getFileName(const std::string& vFilePath);

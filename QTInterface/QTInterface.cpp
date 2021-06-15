@@ -18,6 +18,7 @@
 #include <common/ConfigInterface.h>
 #include <algorithm>
 #include <tuple>
+#include <typeinfo>
 
 #include "QTDockWidgetTitleBar.h"
 #include "ui_DisplayOptionsSettingDialog.h"
@@ -56,6 +57,7 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
     QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionResetSelectStatus()));
     QObject::connect(ui.actionTestFunction, SIGNAL(triggered()), this, SLOT(onActionTest()));
+    QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
 }
 
 void QTInterface::__initialVTKWidget()
@@ -127,11 +129,6 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     pSubWindow->resize(200, 50);                // magic
     pSubWindow->setWindowFlag(Qt::FramelessWindowHint);
     pSubWindow->show();
-}
-
-void QTInterface::__checkFileOpenRepeatedly()
-{
-
 }
 
 template <class T>
@@ -228,21 +225,22 @@ void QTInterface::onActionOpen()
     foreach(QString FilePathQString, FilePathList)
     {
         std::string FilePathString = FilePathQString.toStdString();
+        /*// check if file is opened repeatedly 
         if (std::find(m_FilePathList.begin(), m_FilePathList.end(), FilePathString) == m_FilePathList.end())
         {
             m_FilePathList.push_back(FilePathString);
             FilePathSet.push_back(FilePathString);
         }
         else
-        {
-            QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(FilePathString + " has been opened yet! It won't be loaded again!"));
-        }
+            QTInterface::__MessageDockWidgetOutputText(QString::fromStdString(FilePathString + " has been opened yet! It won't be loaded again!"));*/
+        FilePathSet.push_back(FilePathString);
     }
 
     if (FilePathSet.empty())
         return;
 
     auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
+    m_pCloud = pCloud;
 
     _ASSERT(pCloud);
     if (pCloud == nullptr)
@@ -288,10 +286,12 @@ void QTInterface::onResourceSpaceItemDoubleClick(const QModelIndex& vIndex)
     m_CurrentCloud = CloudName.toStdString();
     auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
     pViewer->removeAllPointClouds();
-    //pViewer->addPointCloud(hiveObliquePhotography::);
+    pViewer->addPointCloud<typeid(m_pCloud)>(m_pCloud, CloudName.toStdString());
     pViewer->resetCamera();
     pcl::visualization::Camera ResetCamera;
     pViewer->getCameraParameters(ResetCamera);
+    Visualization::hiveRefreshVisualizer();
+    pViewer->setCameraParameters(ResetCamera);
 }
 
 void QTInterface::closeEvent(QCloseEvent* vEvent)
