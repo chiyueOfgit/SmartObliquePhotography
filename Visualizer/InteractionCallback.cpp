@@ -16,11 +16,7 @@ CInteractionCallback::CInteractionCallback(pcl::visualization::PCLVisualizer* vV
 	vVisualizer->registerMouseCallback([&](const auto& vEvent) { mouseCallback(vEvent); });
 	vVisualizer->registerAreaPickingCallback([&](const auto& vEvent) { areaPicking(vEvent); });
 
-	if (hiveConfig::hiveParseConfig("VisualizationConfig.xml", hiveConfig::EConfigType::XML, CVisualizationConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-		std::cout << "Failed to parse config file." << std::endl;
-	else
-		m_pVisualizationConfig = CVisualizationConfig::getInstance();
-
+	m_pVisualizationConfig = CVisualizationConfig::getInstance();
 }
 
 //*****************************************************************
@@ -62,7 +58,6 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		else if (KeyString == "m")
 		{
 			pcl::Indices InputIndice;
-			AutoRetouch::hiveGetIndicesByLabel(InputIndice, AutoRetouch::EPointLabel::KEPT);
 			AutoRetouch::hiveGetIndicesByLabel(InputIndice, AutoRetouch::EPointLabel::UNDETERMINED);
 			AutoRetouch::hiveExecuteOutlierDetecting(InputIndice, AutoRetouch::EPointLabel::UNWANTED);
 			m_pVisualizer->refresh();

@@ -11,7 +11,6 @@ using namespace hiveObliquePhotography;
 
 TEST(Test_PointCloudVisualizer, TestInitAndRefresh)
 {
-
 	const std::vector<std::string> FilePaths
 	{
 		"TestModel/Tile_1_L19.pcd",
