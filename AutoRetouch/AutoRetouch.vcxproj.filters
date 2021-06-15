@@ -171,7 +171,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="AutoRetouchConfig.xml">
+    <Xml Include="..\Configs\AutoRetouchConfig.xml">
       <Filter>Config</Filter>
     </Xml>
   </ItemGroup>
