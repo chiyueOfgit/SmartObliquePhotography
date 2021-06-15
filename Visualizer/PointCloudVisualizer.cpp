@@ -17,15 +17,6 @@ using namespace hiveObliquePhotography::Visualization;
 
 CPointCloudVisualizer::CPointCloudVisualizer()
 {
-	CPointCloudVisualizer::__parseConfigFile();
-}
-
-bool CPointCloudVisualizer::__parseConfigFile()
-{
-	if (hiveConfig::hiveParseConfig("VisualizationConfig.xml", hiveConfig::EConfigType::XML, CVisualizationConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
-		return false;
-	else
-		return true;
 }
 
 CPointCloudVisualizer::~CPointCloudVisualizer()
