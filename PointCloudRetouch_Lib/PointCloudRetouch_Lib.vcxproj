@@ -155,6 +155,7 @@
   <ItemGroup>
     <ClInclude Include="..\PointCloudRetouch\Feature.h" />
     <ClInclude Include="..\PointCloudRetouch\InitialClusterCreator.h" />
+    <ClInclude Include="..\PointCloudRetouch\NeighborhoodBuilder.h" />
     <ClInclude Include="..\PointCloudRetouch\pch.h" />
     <ClInclude Include="..\PointCloudRetouch\PointClassifier.h" />
     <ClInclude Include="..\PointCloudRetouch\PointCloudRetouchCommon.h" />

@@ -10,6 +10,9 @@
     <Filter Include="PointCloud">
       <UniqueIdentifier>{cb8d607d-42be-46fa-ae0c-e3de2db9c7b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NeighborhoodBuilder">
+      <UniqueIdentifier>{b7765bfa-9481-4819-bba0-9486d93dfe97}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Feature.h">
@@ -45,6 +48,9 @@
     <ClInclude Include="PointClassifier.h">
       <Filter>Operation</Filter>
     </ClInclude>
+    <ClInclude Include="NeighborhoodBuilder.h">
+      <Filter>NeighborhoodBuilder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -71,6 +77,9 @@
     <ClCompile Include="PointCloudRetouchManager.cpp" />
     <ClCompile Include="PointClusterExpander.cpp">
       <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="NeighborhoodBuilder.cpp">
+      <Filter>NeighborhoodBuilder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

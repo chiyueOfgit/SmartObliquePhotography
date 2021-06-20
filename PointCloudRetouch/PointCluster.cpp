@@ -6,9 +6,9 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-double CPointCluster::evaluateProbability(pcl::index_t vInputPoint, std::uint32_t vCurrentTimestamp)
+double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 {
-	_ASSERTE(!m_FeatureSet.empty() && !m_FeatureWeightSet.empty() && (vCurrentTimestamp >= m_CreationTimestamp));
+	_ASSERTE(!m_FeatureSet.empty() && !m_FeatureWeightSet.empty());
 
 	double Probability = 0;
 
@@ -24,12 +24,13 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint, std::uint32_
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCluster::init(const hiveConfig::CHiveConfig *vConfig, std::uint32_t vClusterCenter, const std::vector<pcl::index_t>& vFeatureGenerationSet, const std::vector<pcl::index_t>& vValidationSet, std::uint32_t vCreationTimestamp)
+bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t vClusterCenter, EPointLabel vLabel, const std::vector<pcl::index_t>& vFeatureGenerationSet, const std::vector<pcl::index_t>& vValidationSet, std::uint32_t vCreationTimestamp)
 {
 	_ASSERTE(vConfig && !vFeatureGenerationSet.empty() && !vValidationSet.empty());
 	m_pConfig = vConfig;
 	m_CreationTimestamp = vCreationTimestamp;
 	m_ClusterCenter = vClusterCenter;
+	m_Label = vLabel;
 	m_ClusterCoreRegion = vFeatureGenerationSet;  //·¢Éústd::vector¿½±´
 
 	__createFeatureObjectSet();
@@ -48,3 +49,9 @@ void CPointCluster::__createFeatureObjectSet()
 {
 }
 
+//*****************************************************************
+//FUNCTION: 
+bool CPointCluster::isBelongingTo(double vProbability) const
+{
+	return true;
+}

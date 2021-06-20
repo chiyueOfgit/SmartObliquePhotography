@@ -7,7 +7,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vRadius, double vHardness, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, const hiveConfig::CHiveConfig *vClusterConfig)
+CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vRadius, double vHardness, EPointLabel vLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, const hiveConfig::CHiveConfig *vClusterConfig)
 {
 	CPointCluster* pInitialCluster = new CPointCluster;
 
@@ -26,7 +26,7 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 	std::vector<pcl::index_t> FeatureGenerationSet, ValidationSet;
 	__divideUserSpecifiedRegion(vUserMarkedRegion, PointHardnessSet, DivideThreshold.value(), FeatureGenerationSet, ValidationSet);
 
-	pInitialCluster->init(vClusterConfig, ClusterCenter, FeatureGenerationSet, ValidationSet, CPointCloudRetouchManager::getInstance()->addAndGetTimestamp());
+	pInitialCluster->init(vClusterConfig, ClusterCenter, vLabel, FeatureGenerationSet, ValidationSet, CPointCloudRetouchManager::getInstance()->addAndGetTimestamp());
 
 	return pInitialCluster;
 }
