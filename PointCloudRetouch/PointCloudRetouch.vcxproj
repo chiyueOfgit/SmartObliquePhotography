@@ -156,6 +156,7 @@
     <ClInclude Include="Feature.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InitialClusterCreator.h" />
+    <ClInclude Include="NeighborhoodBuilder.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PointClassifier.h" />
     <ClInclude Include="PointCloudRetouchCommon.h" />
@@ -172,6 +173,7 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
+    <ClCompile Include="NeighborhoodBuilder.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

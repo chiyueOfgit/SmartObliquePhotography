@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PointCloudRetouchManager.h"
 #include "PointCluster.h"
+#include "NeighborhoodBuilder.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -38,13 +39,6 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudRetouchManager::tagPointLabel(const std::vector<pcl::index_t>& vTargetPointSet, EPointLabel vTargetLabel)
-{
-	m_PointLabelSet.tagPointLabel(vTargetPointSet, vTargetLabel);
-}
-
-//*****************************************************************
-//FUNCTION: 
 CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel)
 {
 	_ASSERTE(m_pConfig);
@@ -53,7 +47,7 @@ CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::ve
 	const hiveConfig::CHiveConfig* pClusterConfig = (vTargetLabel == EPointLabel::KEPT) ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig();
 	_ASSERTE(pClusterConfig);
 
-	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vHardness, vRadius, vCameraPos, vPvMatrix, pClusterConfig);
+	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vHardness, vRadius, vTargetLabel, vCameraPos, vPvMatrix, pClusterConfig);
 }
 
 //*****************************************************************
@@ -66,7 +60,7 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 	{
 		CPointCluster* pInitCluster = __generateInitialCluster(vUserMarkedRegion, vHardness, vRadius, vCameraPos, vPvMatrix, vTargetLabel);
 		_ASSERTE(pInitCluster);
-		tagPointLabel(pInitCluster->getCoreRegion(), vTargetLabel);
+		m_PointLabelSet.tagCoreRegion4Cluster(pInitCluster->getCoreRegion(), vTargetLabel, pInitCluster->getClusterIndex());
 
 		if (vTargetLabel == EPointLabel::UNWANTED)
 		{
@@ -87,4 +81,11 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 
 	}
 	return false;
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed, std::vector<pcl::index_t>& voNeighborhood)
+{
+	m_pNeighborhoodBuilder->buildNeighborhood(vSeed, voNeighborhood);
 }

@@ -10,20 +10,28 @@ namespace hiveObliquePhotography
 	namespace PointCloudRetouch
 	{
 		class CPointCluster;
+		class INeighborhoodBuilder;
 
 		class CPointCloudRetouchManager : public hiveDesignPattern::CSingleton<CPointCloudRetouchManager>
 		{
 		public:	
 			~CPointCloudRetouchManager() = default;
 
-			void tagPointLabel(const std::vector<pcl::index_t>& vTargetPointSet, EPointLabel vTargetLabel);
+			void buildNeighborhood(pcl::index_t vSeed, std::vector<pcl::index_t>& voNeighborhood);
+			void tagPointLabel(pcl::index_t vPoint, EPointLabel vTargetLabel, std::uint32_t vClusterIndex, double vClusterBelongingProbability)
+			{
+				m_PointLabelSet.tagPointLabel(vPoint, vTargetLabel, vClusterIndex, vClusterBelongingProbability);
+			}
 
 			bool init(PointCloud_t::Ptr vPointCloud, const hiveConfig::CHiveConfig* vConfig);
 			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel);
 
 			std::size_t   getNumCluster() const { return m_PointClusterSet.getNumCluster(); }
 			std::uint32_t addAndGetTimestamp() { m_Timestamp++; return m_Timestamp; }
-			const auto& getRetouchScene() const { return m_Scene; }
+			std::uint32_t getClusterIndexAt(std::size_t vIndex) const { return m_PointLabelSet.getClusterIndexAt(vIndex); }
+
+			double getClusterBelongingProbabilityAt(std::size_t vIndex) const { return m_PointLabelSet.getClusterBelongingProbabilityAt(vIndex); }
+
 		private:
 			CPointCloudRetouchManager() {};
 
@@ -35,6 +43,7 @@ namespace hiveObliquePhotography
 			CRetouchTask             m_LitterMarker;
 			CRetouchTask             m_BackgroundMarker;
 			CInitialClusterCreator   m_InitialClusterCreator;
+			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			hiveConfig::CHiveConfig* m_pConfig;
 			
 			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel);

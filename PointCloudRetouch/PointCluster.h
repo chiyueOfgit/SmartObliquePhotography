@@ -12,11 +12,16 @@ namespace hiveObliquePhotography
 			CPointCluster() = default;
 			~CPointCluster() = default;
 
-			bool init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t vClusterCenter, const std::vector<pcl::index_t>& vFeatureGenerationSet, const std::vector<pcl::index_t>& vValidationSet, std::uint32_t vCreationTimestamp);
+			bool init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t vClusterCenter, EPointLabel vLabel, const std::vector<pcl::index_t>& vFeatureGenerationSet, const std::vector<pcl::index_t>& vValidationSet, std::uint32_t vCreationTimestamp);
+			bool isBelongingTo(double vProbability) const;
 
-			double evaluateProbability(pcl::index_t vInputPoint, std::uint32_t vCurrentTimestamp);
+			double evaluateProbability(pcl::index_t vInputPoint) const;
 
 			const std::vector<pcl::index_t>& getCoreRegion() const { return m_ClusterCoreRegion; }
+
+			std::uint32_t getClusterIndex() const { return m_CreationTimestamp;} //使用唯一的时间戳作为clustser index
+
+			EPointLabel getLabel() const { return m_Label; }
 
 		protected:
 			std::vector<IFeature*> m_FeatureSet;
@@ -25,6 +30,7 @@ namespace hiveObliquePhotography
 		private:
 			std::uint32_t m_CreationTimestamp;
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
+			EPointLabel  m_Label;
 			pcl::index_t m_ClusterCenter;
 			std::vector<pcl::index_t> m_ClusterCoreRegion;
 
