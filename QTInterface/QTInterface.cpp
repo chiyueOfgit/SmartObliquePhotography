@@ -21,14 +21,15 @@
 #include <typeinfo>
 
 #include "QTDockWidgetTitleBar.h"
-#include "ui_DisplayOptionsSettingDialog.h"
-#include "DisplayOptionsSettingDialog.h"
+#include "SliderSizeDockWidget.h"
+#include "GrowingOptionsSettingDialog.h"
+#include "BinaryOptionsSettingDialog.h"
 #include "QTInterfaceConfig.h"
-#include "AutoRetouchConfig.h"
 #include "VisualizationConfig.h"
 #include "ObliquePhotographyDataInterface.h"
 #include "AutoRetouchInterface.h"
 #include "VisualizationInterface.h"
+#include "QTLinker.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -38,6 +39,11 @@ using namespace hiveObliquePhotography::QTInterface;
 QTInterface::QTInterface(QWidget * vParent)
     : QMainWindow(vParent)
 {
+    {
+        Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
+        AutoRetouch::hiveGetAutoRetouchConfig(m_pAutoRetouchConfig );
+    }
+
     ui.setupUi(this);
 
     __connectSignals();
@@ -56,8 +62,9 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
     QObject::connect(ui.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
     QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionResetSelectStatus()));
-    QObject::connect(ui.actionBlend, SIGNAL(triggered()), this, SLOT(onActionBlend()));
-    QObject::connect(ui.actionDichotomy, SIGNAL(triggered()), this, SLOT(onActionDichotomy()));
+    QObject::connect(ui.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionUpdate()));
+    QObject::connect(ui.actionCompositeBinary, SIGNAL(triggered()), this, SLOT(onActionCompositeBinary()));
+    QObject::connect(ui.actionBinary, SIGNAL(triggered()), this, SLOT(onActionBinary()));
     QObject::connect(ui.actionRegionGrowing, SIGNAL(triggered()), this, SLOT(onActionRegionGrowing()));
     QObject::connect(ui.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
     QObject::connect(ui.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
@@ -109,8 +116,6 @@ void QTInterface::__initialDockWidgetTitleBar(QDockWidget* vParentWidget, const 
 
 void QTInterface::__initialSlider(const QStringList& vFilePathList)
 {
-    Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
-
     const std::string& FirstCloudFilePath = vFilePathList[0].toStdString();
     auto FileCloudFileName = QTInterface::__getFileName(FirstCloudFilePath);
 
@@ -119,6 +124,9 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     m_pPointSizeSlider = new QSlider(Qt::Horizontal);
     m_pPointSizeSlider->setMinimum(1);
     m_pPointSizeSlider->setMaximum(7);
+    m_pPointSizeSlider->setSingleStep(1);
+    m_pPointSizeSlider->setTickInterval(1);
+    m_pPointSizeSlider->setTickPosition(QSlider::TicksAbove);
     m_pPointSizeSlider->setValue(*m_pVisualizationConfig->getAttribute<int>("POINT_SHOW_SIZE"));
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
@@ -141,19 +149,26 @@ void QTInterface::__setActionsMutex()
 {
     if (ui.actionRegionGrowing->isChecked())
     {
-        ui.actionDichotomy->setChecked(false);
-        ui.actionBlend->setChecked(false);
+        ui.actionBinary->setChecked(false);
+        ui.actionCompositeBinary->setChecked(false);
     }
-    else if (ui.actionDichotomy->isChecked())
+    else if (ui.actionBinary->isChecked())
     {
         ui.actionRegionGrowing->setChecked(false);
-        ui.actionBlend->setChecked(false);
+        ui.actionCompositeBinary->setChecked(false);
     }
-    else if (ui.actionBlend->isChecked())
+    else if (ui.actionCompositeBinary->isChecked())
     {
         ui.actionRegionGrowing->setChecked(false);
-        ui.actionDichotomy->setChecked(false);
+        ui.actionBinary->setChecked(false);
     }
+}
+
+void QTInterface::__setActionsEnabled()
+{
+    QList<QAction*> ObjectList = ui.mainToolBar->actions();
+    for (auto Action : ObjectList)
+        Action->setEnabled(true);
 }
 
 template <class T>
@@ -262,9 +277,11 @@ void QTInterface::onActionOpen()
         m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
         AutoRetouch::hiveInitPointCloudScene(pCloud);
         Visualization::hiveInitVisualizer(pCloud);
+        Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         QTInterface::__initialVTKWidget();
         Visualization::hiveRefreshVisualizer(true);
         QTInterface::__initialSlider(FilePathList);
+        QTInterface::__setActionsEnabled();
 
         if (FilePathSet.size() == 1)
         {
@@ -292,9 +309,9 @@ void QTInterface::onActionSave()
 
 void QTInterface::onActionSetting()
 {
-    std::shared_ptr<CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<CDisplayOptionsSettingDialog>(this);
-    pDisplayOptionsSettingDialog->show();
-    pDisplayOptionsSettingDialog->exec();
+    //std::shared_ptr<CGrowingOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<CGrowingOptionsSettingDialog>(this);
+    //pDisplayOptionsSettingDialog->show();
+    //pDisplayOptionsSettingDialog->exec();
     ui.actionSetting->setChecked(false);
 }
 
@@ -302,53 +319,123 @@ void QTInterface::onActionResetSelectStatus()
 {
     AutoRetouch::hiveResetSceneSelectStatus();
     Visualization::hiveRefreshVisualizer();
+    QTInterface::__messageDockWidgetOutputText(QString::fromStdString("All operations have been reset."));
 }
 
-void QTInterface::onActionBlend()
+void QTInterface::onActionUpdate()
 {
-    ui.actionDichotomy->setChecked(false);
-    ui.actionRegionGrowing->setChecked(false);
+    AutoRetouch::hiveExecuteCompositeBinaryClassifier();
+    Visualization::hiveRefreshVisualizer();
+    QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Composite binary algorithm run successfully."));
 }
 
-void QTInterface::onActionDichotomy()
+void QTInterface::onActionCompositeBinary()
 {
-    ui.actionBlend->setChecked(false);
+    ui.actionBinary->setChecked(false);
     ui.actionRegionGrowing->setChecked(false);
 
+    if (m_pBinaryOptionsSettingDialog)
+    {
+        m_pBinaryOptionsSettingDialog->close();
+        _SAFE_DELETE(m_pBinaryOptionsSettingDialog);
+    }
+
+    if (ui.actionCompositeBinary->isChecked())
+    {
+        if (m_pGrowingOptionsSettingDialog)
+        {
+            m_pGrowingOptionsSettingDialog->close();
+            _SAFE_DELETE(m_pGrowingOptionsSettingDialog);
+        }
+
+        m_pBinaryOptionsSettingDialog = new CBinaryOptionsSettingDialog(this);
+        m_pBinaryOptionsSettingDialog->show();
+        m_pBinaryOptionsSettingDialog->exec();
+    }
+
+    m_pVisualizationConfig->overwriteAttribute("BINARY_MODE", ui.actionCompositeBinary->isChecked());
+
+}
+
+void QTInterface::onActionBinary()
+{
+    ui.actionCompositeBinary->setChecked(false);
+    ui.actionRegionGrowing->setChecked(false);
 }
 
 void QTInterface::onActionRegionGrowing()
 {
-    ui.actionBlend->setChecked(false);
-    ui.actionDichotomy->setChecked(false);
+    ui.actionCompositeBinary->setChecked(false);
+    ui.actionBinary->setChecked(false);
 
+    if (m_pGrowingOptionsSettingDialog)
+    {
+        m_pGrowingOptionsSettingDialog->close();
+        _SAFE_DELETE(m_pGrowingOptionsSettingDialog);
+    }
+
+    if (ui.actionRegionGrowing->isChecked())
+    {
+        if (m_pBinaryOptionsSettingDialog)
+        {
+            m_pBinaryOptionsSettingDialog->close();
+            _SAFE_DELETE(m_pBinaryOptionsSettingDialog);
+        }
+
+        m_pGrowingOptionsSettingDialog = new CGrowingOptionsSettingDialog(this);
+        m_pGrowingOptionsSettingDialog->show();
+        m_pGrowingOptionsSettingDialog->exec();
+    }
+
+    m_pVisualizationConfig->overwriteAttribute("BINARY_MODE", !ui.actionRegionGrowing->isChecked());
 }
 
 void QTInterface::onActionRubber()
 {
+    if (ui.actionRubber->isChecked())
+    {
+        if (m_pBrushSizeDockWidget != nullptr)
+            m_pBrushSizeDockWidget->close();
+        m_pRubberSizeDockWidget = new CSliderSizeDockWidget(ui.VTKWidget);
+        m_pRubberSizeDockWidget->setWindowTitle(QString("Rubber Size"));
+        m_pRubberSizeDockWidget->show();
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to rubber."));
+    }
+    else
+        m_pRubberSizeDockWidget->close();
+
+    bool bRubber = ui.actionRubber->isChecked();
     ui.actionBrush->setChecked(false);
+    m_pVisualizationConfig->overwriteAttribute("LINE_MODE", bRubber);
+    Visualization::hiveSetLineMode(bRubber);
+    m_pVisualizationConfig->overwriteAttribute("UNWANTED_MODE", !bRubber);
 }
 
 void QTInterface::onActionBrush()
 {
+    if (ui.actionBrush->isChecked())
+    {
+        if (m_pRubberSizeDockWidget != nullptr)
+            m_pRubberSizeDockWidget->close();
+        m_pBrushSizeDockWidget = new CSliderSizeDockWidget(ui.VTKWidget);
+        m_pBrushSizeDockWidget->setWindowTitle(QString("Brush Size"));
+        m_pBrushSizeDockWidget->show();
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to brush."));
+    }
+    else
+        m_pBrushSizeDockWidget->close();
+
+    bool bBrush = ui.actionBrush->isChecked();
     ui.actionRubber->setChecked(false);
+    m_pVisualizationConfig->overwriteAttribute("LINE_MODE", bBrush);
+    Visualization::hiveSetLineMode(bBrush);
+    m_pVisualizationConfig->overwriteAttribute("UNWANTED_MODE", bBrush);
 }
 
 void QTInterface::onResourceSpaceItemDoubleClick(const QModelIndex& vIndex)
 {
-    const auto& CloudName = vIndex.data().toString();
-    m_CurrentCloud = CloudName.toStdString();
-    auto& pViewer = Visualization::hiveGetPCLVisualizer();
-
-    delete pViewer;
-    pViewer = new pcl::visualization::PCLVisualizer("Visualizer", false);
-    pViewer->setBackgroundColor(0.2, 0.2, 0.2);
-    pViewer->setShowFPS(false);
+    Visualization::hiveResetVisualizer(m_pCloud, true);
     __initialVTKWidget();
-    pViewer->removeAllPointClouds();
-    pViewer->addPointCloud<pcl::PointSurfel>(m_pCloud, CloudName.toStdString());
-    pViewer->resetCamera();
-    pViewer->updateCamera();
 }
 
 void QTInterface::closeEvent(QCloseEvent* vEvent)

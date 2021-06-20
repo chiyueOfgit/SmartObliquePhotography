@@ -23,7 +23,7 @@ namespace hiveObliquePhotography
 #endif // _UNIT_TEST
 
 			std::size_t getNumPoint() const { _ASSERTE(m_pPointCloudScene); return m_pPointCloudScene->size(); }	
-
+			const auto& getPointCloudScene() const { return m_pPointCloudScene; }
 		private:
 			PointCloud_t::Ptr m_pPointCloudScene = nullptr;
 			pcl::search::KdTree<PointCloud_t::PointType>::Ptr m_pGlobalKdTree = nullptr;

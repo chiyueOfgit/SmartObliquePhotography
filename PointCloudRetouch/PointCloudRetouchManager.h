@@ -23,7 +23,7 @@ namespace hiveObliquePhotography
 
 			std::size_t   getNumCluster() const { return m_PointClusterSet.getNumCluster(); }
 			std::uint32_t addAndGetTimestamp() { m_Timestamp++; return m_Timestamp; }
-
+			const auto& getRetouchScene() const { return m_Scene; }
 		private:
 			CPointCloudRetouchManager() {};
 
