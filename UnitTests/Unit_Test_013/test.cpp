@@ -3,70 +3,53 @@
 #include "PointLabelSet.h"
 
 //	测试用例列表：
-//	* Uninitialized_Test：测试未初始化时能否正确运行；
-//	* Illegal_Input_Test：测试输入非法时能否正确运行；
+//	* Uninitialized_Test：测试未初始化时能否正确报错，报错后能否继续正确运行
+//	* Illegal_Input_Test：测试输入非法时能否正确报错，报错后能否继续正确运行
 //	* 由于CPointLabelSet为数据类，所以没必要进行功能上的测试
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-void tryCatchAndThrow(std::function<void()> vDoSomething)
-{
-	try
-	{
-		vDoSomething();
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-		throw e;
-	}
-	catch (...)
-	{
-		std::cout << "unknown exception" << std::endl;
-		throw std::exception("unknown exception");
-	}
-}
-
 TEST(TestPointLabelSet, Uninitialized_Test)
 {
-	auto DoSomething = []()
-	{
-		CPointLabelSet PointLabelSet;
+	CPointLabelSet PointLabelSet;
 
-		PointLabelSet.tagPointLabel(999, {}, 999, {});
-		PointLabelSet.tagCoreRegion4Cluster({ 999 }, {}, 999);
-		PointLabelSet.getLabelAt(999);
-		PointLabelSet.getClusterIndexAt(999);
-		PointLabelSet.getClusterBelongingProbabilityAt(999);
-	};
+	EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(999, {}, 999, {}));
+	EXPECT_ANY_THROW(PointLabelSet.tagCoreRegion4Cluster({ 999 }, {}, 999));
+	EXPECT_ANY_THROW(PointLabelSet.getLabelAt(999));
+	EXPECT_ANY_THROW(PointLabelSet.getClusterIndexAt(999));
+	EXPECT_ANY_THROW(PointLabelSet.getClusterBelongingProbabilityAt(999));
 
-	ASSERT_NO_THROW(DoSomething());
+	EXPECT_NO_THROW(PointLabelSet.init(100));
+	EXPECT_NO_THROW(PointLabelSet.tagPointLabel(50, {}, 50, 0.5));
+	EXPECT_NO_THROW(PointLabelSet.tagCoreRegion4Cluster({ 50 }, {}, 50));
+	EXPECT_NO_THROW(PointLabelSet.getLabelAt(50));
+	EXPECT_NO_THROW(PointLabelSet.getClusterIndexAt(50));
+	EXPECT_NO_THROW(PointLabelSet.getClusterBelongingProbabilityAt(50));
 }
 
 TEST(TestPointLabelSet, Illegal_Input_Test)
 {
-	auto DoSomething = []()
-	{
-		CPointLabelSet PointLabelSet;
-		PointLabelSet.init(-1);
-		PointLabelSet.init(100);
+	CPointLabelSet PointLabelSet;
+	EXPECT_ANY_THROW(PointLabelSet.init(-1));
+	EXPECT_NO_THROW(PointLabelSet.init(100));
 
-		PointLabelSet.tagPointLabel(-1, {}, -1, {});
-		PointLabelSet.tagPointLabel(999, {}, 999, {});
+	EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(-1, {}, -1, 0.5));
+	EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(999, {}, 999, 0.5));
+	EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(50, {}, 50, -1));
+	EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(50, {}, 50, 10));
+	EXPECT_ANY_THROW(PointLabelSet.tagCoreRegion4Cluster({}, {}, 50));
+	EXPECT_ANY_THROW(PointLabelSet.tagCoreRegion4Cluster({ -1 }, {}, -1));
+	EXPECT_ANY_THROW(PointLabelSet.tagCoreRegion4Cluster({ 999 }, {}, 999));
+	EXPECT_ANY_THROW(PointLabelSet.getLabelAt(-1));
+	EXPECT_ANY_THROW(PointLabelSet.getLabelAt(999));
+	EXPECT_ANY_THROW(PointLabelSet.getClusterIndexAt(-1));
+	EXPECT_ANY_THROW(PointLabelSet.getClusterIndexAt(999));
+	EXPECT_ANY_THROW(PointLabelSet.getClusterBelongingProbabilityAt(-1));
+	EXPECT_ANY_THROW(PointLabelSet.getClusterBelongingProbabilityAt(999));
 
-		PointLabelSet.tagCoreRegion4Cluster({}, {}, 50);
-		PointLabelSet.tagCoreRegion4Cluster({ -1 }, {}, -1);
-		PointLabelSet.tagCoreRegion4Cluster({ 999 }, {}, 999);
-
-		PointLabelSet.getLabelAt(-1);
-		PointLabelSet.getLabelAt(999);
-
-		PointLabelSet.getClusterIndexAt(-1);
-		PointLabelSet.getClusterIndexAt(999);
-
-		PointLabelSet.getClusterBelongingProbabilityAt(-1);
-		PointLabelSet.getClusterBelongingProbabilityAt(999);
-	};
-	
-	ASSERT_NO_THROW(DoSomething());
+	EXPECT_NO_THROW(PointLabelSet.tagPointLabel(50, {}, 50, 0.5));
+	EXPECT_NO_THROW(PointLabelSet.tagCoreRegion4Cluster({ 50 }, {}, 50));
+	EXPECT_NO_THROW(PointLabelSet.getLabelAt(50));
+	EXPECT_NO_THROW(PointLabelSet.getClusterIndexAt(50));
+	EXPECT_NO_THROW(PointLabelSet.getClusterBelongingProbabilityAt(50));
 }
