@@ -1,10 +1,7 @@
 #include "pch.h"
 #include "AutoRetouchInterface.h"
 
-
-
 using namespace hiveObliquePhotography::AutoRetouch;
-
 
 //*****************************************************************
 //FUNCTION: 
@@ -20,6 +17,8 @@ void hiveObliquePhotography::AutoRetouch::hiveInitPointCloudScene(PointCloud_t::
 	CPointCloudAutoRetouchScene::getInstance()->init(vPointCloud);
 }
 
+//*****************************************************************
+//FUNCTION: 
 void hiveObliquePhotography::AutoRetouch::hiveGetPointCloudForSave(PointCloud_t::Ptr voPointCloud)
 {
 	pcl::Indices PointIndices;
@@ -36,6 +35,8 @@ void hiveObliquePhotography::AutoRetouch::hiveGetGlobalPointLabelSet(std::vector
 	voGlobalLabel = CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->getPointLabelSet();
 }
 
+//*****************************************************************
+//FUNCTION: 
 void hiveObliquePhotography::AutoRetouch::hiveGetIndicesByLabel(pcl::Indices& voPointIndices, EPointLabel vExpectLabel)
 {
 	std::vector<EPointLabel> GlobalLabel;
@@ -45,6 +46,8 @@ void hiveObliquePhotography::AutoRetouch::hiveGetIndicesByLabel(pcl::Indices& vo
 			voPointIndices.push_back(i);
 }
 
+//*****************************************************************
+//FUNCTION: 
 void hiveObliquePhotography::AutoRetouch::hiveResetSceneSelectStatus()
 {
 	auto pScene = CPointCloudAutoRetouchScene::getInstance();
@@ -55,12 +58,16 @@ void hiveObliquePhotography::AutoRetouch::hiveResetSceneSelectStatus()
 	pCluster->reset();
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveSwitchPointLabel(EPointLabel vTo, EPointLabel vFrom)
 {
 	_ASSERTE(CPointCloudAutoRetouchScene::getInstance() && CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet());
 	return CPointCloudAutoRetouchScene::getInstance()->fetchPointLabelSet()->switchLabel(vTo, vFrom);
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveGetAutoRetouchConfig(CAutoRetouchConfig*& voConfig)
 {
 	auto pConfig = CAutoRetouchConfig::getInstance();
@@ -77,6 +84,8 @@ bool hiveObliquePhotography::AutoRetouch::hiveGetAutoRetouchConfig(CAutoRetouchC
 	}
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std::string& vClassifierSig, const std::string& vClusterType)
 {
 	RECORD_TIME_BEGIN;
@@ -92,6 +101,8 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteBinaryClassifier(const std:
 	return true;
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeBinaryClassifier()
 {
 	auto pCompositeClassifier = new CCompositeBinaryClassifierAlg;
@@ -109,6 +120,8 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeBinaryClassifier()
 	return true;
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
 	RECORD_TIME_BEGIN;
@@ -154,6 +167,8 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteClusterAlg2CreateCluster(co
 		return false;
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeClusterAndGrowing(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
 	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
@@ -172,6 +187,8 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteCompositeClusterAndGrowing(
 	return true;
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteMaxVisibilityClustering(const pcl::IndicesPtr& vioPointIndices, EPointLabel vExpectLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
 {
 	const std::string ClusterAlgSig = CLASSIFIER_MaxVisibilityCluster;
@@ -181,6 +198,8 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteMaxVisibilityClustering(con
 	return pClassifier->execute<CMaxVisibilityClusterAlg>(true, vioPointIndices, vExpectLabel, vCameraPos, vPvMatrix);
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowingByColor(const pcl::Indices& vPointIndices, EPointLabel vExpectLabel)
 {
 	const std::string ClusterAlgSig = CLASSIFIER_REGION_GROW_COLOR;
@@ -190,6 +209,8 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteRegionGrowingByColor(const 
 	return pClassifier->execute<CRegionGrowingByColorAlg>(true, vPointIndices, vExpectLabel);
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::AutoRetouch::hiveExecuteOutlierDetecting(pcl::Indices& vioPointIndices, EPointLabel vExpectLabel)
 {
 	const std::string ClusterAlgSig = CLASSIFIER_OUTLIER_DETECTION;
@@ -197,4 +218,32 @@ bool hiveObliquePhotography::AutoRetouch::hiveExecuteOutlierDetecting(pcl::Indic
 	_HIVE_EARLY_RETURN(!pClassifier, _FORMAT_STR1("Fail to execute classifier [%1%] due to unknown classifier signature.", ClusterAlgSig), false);
 
 	return pClassifier->execute<COutlierDetectingAlg>(true, vioPointIndices, vExpectLabel);
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::AutoRetouch::hiveInitBackgroundMarker(const hiveConfig::CHiveConfig* vBackgroundMarkerConfig)
+{
+	_ASSERTE(vBackgroundMarkerConfig);
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::AutoRetouch::hiveInitLitterMarker(const hiveConfig::CHiveConfig* vLitterMarkerConfig)
+{
+	_ASSERTE(vLitterMarkerConfig);
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::AutoRetouch::hiveMarkBackground(const pcl::IndicesPtr& vMarkedRegion, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
+{
+
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::AutoRetouch::hiveMarkLitter(const pcl::IndicesPtr& vMarkedRegion, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix)
+{
+
 }

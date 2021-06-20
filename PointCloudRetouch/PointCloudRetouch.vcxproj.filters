@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="PointCluster">
+      <UniqueIdentifier>{420b5f5d-879a-4e53-9df9-1332679ee257}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Operation">
+      <UniqueIdentifier>{9c830b88-7188-42a0-b536-55f6a37c0a08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PointCloud">
+      <UniqueIdentifier>{cb8d607d-42be-46fa-ae0c-e3de2db9c7b7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Feature.h">
+      <Filter>PointCluster</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCluster.h">
+      <Filter>PointCluster</Filter>
+    </ClInclude>
+    <ClInclude Include="PointClusterSet.h">
+      <Filter>PointCluster</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="PointCloudRetouchInterface.h" />
+    <ClInclude Include="PointCloudRetouchExport.h" />
+    <ClInclude Include="PointCloudRetouchCommon.h" />
+    <ClInclude Include="RetouchTask.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
+    <ClInclude Include="InitialClusterCreator.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLabelSet.h">
+      <Filter>PointCloud</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudRetouchScene.h">
+      <Filter>PointCloud</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudRetouchManager.h" />
+    <ClInclude Include="PointClusterExpander.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
+    <ClInclude Include="PointClassifier.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PointCluster.cpp">
+      <Filter>PointCluster</Filter>
+    </ClCompile>
+    <ClCompile Include="PointClusterSet.cpp">
+      <Filter>PointCluster</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudRetouchInterface.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="InitialClusterCreator.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="RetouchTask.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudRetouchScene.cpp">
+      <Filter>PointCloud</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLabelSet.cpp">
+      <Filter>PointCloud</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudRetouchManager.cpp" />
+    <ClCompile Include="PointClusterExpander.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

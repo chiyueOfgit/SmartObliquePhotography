@@ -18,3 +18,5 @@
 #include "common/CommonInterface.h"
 #include "common/DesignPatternInterface.h"
 #include "common/EventLoggerInterface.h"
+
+#include "../../ObliquePhotographyData/ObliquePhotographyDataCommon.h"

@@ -13,9 +13,6 @@
     <Filter Include="PointClassfier\BinaryClassifierAlg">
       <UniqueIdentifier>{92edc354-72c6-48ab-bf58-2431d81bf79b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PointClassfier\SpatialClusteringAlg">
-      <UniqueIdentifier>{06422865-b59d-4faf-9ff1-6831e81c0c98}</UniqueIdentifier>
-    </Filter>
     <Filter Include="PointClassfier\RegionGrowingAlg">
       <UniqueIdentifier>{17666b75-d24b-4196-ac46-df9f5f44747c}</UniqueIdentifier>
     </Filter>
@@ -24,6 +21,15 @@
     </Filter>
     <Filter Include="Config">
       <UniqueIdentifier>{ff8080d8-b8c1-458f-833a-3bdd7481319a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PointClassfier\CompoisteClassifier">
+      <UniqueIdentifier>{b6461c36-19d0-4a30-a5a7-d979ce07a326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Task">
+      <UniqueIdentifier>{7d4245a8-f343-4f92-9efb-0594dfb0f5e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PointClassfier\InitialClusterCreator">
+      <UniqueIdentifier>{06422865-b59d-4faf-9ff1-6831e81c0c98}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -59,17 +65,14 @@
     <ClInclude Include="PointLabelChangeRecord.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="CompositeClassifier.h">
-      <Filter>PointClassfier</Filter>
-    </ClInclude>
     <ClInclude Include="BinaryClassifierAlg.h">
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClInclude>
-    <ClInclude Include="SpatialClusteringAlg.h">
-      <Filter>PointClassfier\SpatialClusteringAlg</Filter>
+    <ClInclude Include="InitialClusterCreator.h">
+      <Filter>PointClassfier\InitialClusterCreator</Filter>
     </ClInclude>
     <ClInclude Include="MaxVisibilityClusterAlg.h">
-      <Filter>PointClassfier\SpatialClusteringAlg</Filter>
+      <Filter>PointClassfier\InitialClusterCreator</Filter>
     </ClInclude>
     <ClInclude Include="RegionGrowingAlg.h">
       <Filter>PointClassfier\RegionGrowingAlg</Filter>
@@ -104,8 +107,20 @@
     <ClInclude Include="ConfigCommon.h">
       <Filter>Config</Filter>
     </ClInclude>
+    <ClInclude Include="CompositeClassifier.h">
+      <Filter>PointClassfier\CompoisteClassifier</Filter>
+    </ClInclude>
     <ClInclude Include="CompositeBinaryClassifierAlg.h">
-      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+      <Filter>PointClassfier\CompoisteClassifier</Filter>
+    </ClInclude>
+    <ClInclude Include="Task.h">
+      <Filter>Task</Filter>
+    </ClInclude>
+    <ClInclude Include="LitterMarker.h">
+      <Filter>Task</Filter>
+    </ClInclude>
+    <ClInclude Include="BackgoundMarker.h">
+      <Filter>Task</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -127,17 +142,14 @@
     <ClCompile Include="PointLabelChangeRecord.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="CompositeClassifier.cpp">
-      <Filter>PointClassfier</Filter>
-    </ClCompile>
     <ClCompile Include="BinaryClassifierAlg.cpp">
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClCompile>
-    <ClCompile Include="SpatialClusteringAlg.cpp">
-      <Filter>PointClassfier\SpatialClusteringAlg</Filter>
+    <ClCompile Include="InitialClusterCreator.cpp">
+      <Filter>PointClassfier\InitialClusterCreator</Filter>
     </ClCompile>
     <ClCompile Include="MaxVisibilityClusterAlg.cpp">
-      <Filter>PointClassfier\SpatialClusteringAlg</Filter>
+      <Filter>PointClassfier\InitialClusterCreator</Filter>
     </ClCompile>
     <ClCompile Include="RegionGrowingAlg.cpp">
       <Filter>PointClassfier\RegionGrowingAlg</Filter>
@@ -163,8 +175,20 @@
     <ClCompile Include="PointCluster4Score.cpp">
       <Filter>PointClassfier\BinaryClassifierAlg</Filter>
     </ClCompile>
+    <ClCompile Include="CompositeClassifier.cpp">
+      <Filter>PointClassfier\CompoisteClassifier</Filter>
+    </ClCompile>
     <ClCompile Include="CompositeBinaryClassifierAlg.cpp">
-      <Filter>PointClassfier\BinaryClassifierAlg</Filter>
+      <Filter>PointClassfier\CompoisteClassifier</Filter>
+    </ClCompile>
+    <ClCompile Include="Task.cpp">
+      <Filter>Task</Filter>
+    </ClCompile>
+    <ClCompile Include="LitterMarker.cpp">
+      <Filter>Task</Filter>
+    </ClCompile>
+    <ClCompile Include="BackgoundMarker.cpp">
+      <Filter>Task</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

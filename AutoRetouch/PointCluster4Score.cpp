@@ -3,6 +3,8 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
+//*****************************************************************
+//FUNCTION: 
 CPointCluster4Score::CPointCluster4Score(const pcl::IndicesPtr& vPointIndices, EPointLabel vLabel) : IPointCluster(vPointIndices, vLabel)
 {
 	if (vPointIndices == nullptr || vPointIndices->empty())
@@ -20,6 +22,8 @@ CPointCluster4Score::CPointCluster4Score(const pcl::IndicesPtr& vPointIndices, E
 	m_Position /= vPointIndices->size();
 }
 
+//*****************************************************************
+//FUNCTION: 
 double CPointCluster4Score::computeSimilarityV(pcl::index_t vPointIndex) const
 {
 	const auto pCloud = CPointCloudAutoRetouchScene::getInstance()->getPointCloudScene();

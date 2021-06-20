@@ -20,6 +20,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/search/kdtree.h>
+#include <pcl/segmentation/impl/extract_clusters.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
@@ -34,5 +35,7 @@
 
 #include "AutoRetouchCommon.h"
 #include "AutoRetouchConfig.h"
+
+using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 
 #endif //PCH_H

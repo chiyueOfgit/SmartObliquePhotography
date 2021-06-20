@@ -6,7 +6,7 @@ using namespace hiveObliquePhotography::AutoRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-void CCompositeClassifier::ensembleResult()
+void CCompositeClassifier::__ensembleResult()
 {
 	_ASSERTE((m_ClassifierSet.size() > 1) && m_pGlobalLabelSet);
 
@@ -57,4 +57,28 @@ EPointLabel CCompositeClassifier::__ensembleSingleResultV(const std::vector<SPoi
 			return EPointLabel::UNWANTED;
 	}
 	return EPointLabel::UNDETERMINED;
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool CCompositeClassifier::onProductCreatedV(CGlobalPointLabelSet* vGlobalLabelSet, const std::vector<std::string>& vChildClassifierSigSet)
+{
+	_ASSERTE(vGlobalLabelSet && (vChildClassifierSigSet.size() > 1));
+	m_pGlobalLabelSet = vGlobalLabelSet;
+	m_pLocalLabelSet = m_pGlobalLabelSet->clone();
+	_ASSERTE(m_pLocalLabelSet);
+
+	for (const auto& e : vChildClassifierSigSet)
+	{
+		IPointClassifier* pClassifer = hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(e, vGlobalLabelSet);
+		if (pClassifer)
+		{
+			m_ClassifierSet.emplace_back(pClassifer);
+		}
+		else
+		{
+			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to create classifier object [%1%] due to invalid signature.", e));
+		}
+	}
+	return true;
 }

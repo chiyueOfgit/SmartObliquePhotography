@@ -11,7 +11,6 @@ namespace hiveObliquePhotography
 			MEDIAN,
 		};
 
-		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 		class CRegionGrowingByColorAlg :public CRegionGrowingAlg
 		{
 		public:

@@ -2,8 +2,6 @@
 
 namespace hiveObliquePhotography
 {
-	using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
-	
 	class CPointCloudScene : public hiveDesignPattern::CSingleton<CPointCloudScene>
 	{
 	public:

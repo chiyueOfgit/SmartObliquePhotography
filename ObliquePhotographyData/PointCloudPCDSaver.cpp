@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "PointCloudPCDSaver.h"
-#include <boost/format.hpp>
-#include <pcl/io/pcd_io.h>
 
 using namespace hiveObliquePhotography;
 

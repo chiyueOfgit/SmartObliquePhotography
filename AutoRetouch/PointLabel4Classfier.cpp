@@ -124,14 +124,17 @@ void CGlobalPointLabelSet::applyPointLabelChange(const std::vector<SPointLabelCh
 	CPointCloudAutoRetouchScene::getInstance()->recordCurrentOp(new CPointLabelChangeRecord(vChangeRecord, vClusterFlag));
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool CGlobalPointLabelSet::switchLabel(EPointLabel vTo, EPointLabel vFrom)
 {
 	for (auto& PointLabel : m_PointLabelSet)
-		if (PointLabel == vFrom)
-			PointLabel = vTo;
+		if (PointLabel == vFrom) PointLabel = vTo;
 	return true;
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool CGlobalPointLabelSet::undo(const std::vector<SPointLabelChange>& vChangeRecord)
 {
 	for (const auto& e : vChangeRecord)

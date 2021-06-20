@@ -2,8 +2,6 @@
 
 namespace hiveObliquePhotography
 {
-	using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
-
 	class IPointCloudSaver : public hiveDesignPattern::IProduct
 	{
 	public:

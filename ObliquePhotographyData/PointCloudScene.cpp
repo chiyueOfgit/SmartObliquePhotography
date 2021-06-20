@@ -1,7 +1,5 @@
 #include "pch.h"
 #include "PointCloudScene.h"
-#include <boost/format.hpp>
-#include "common/UtilityInterface.h"
 #include "PointCloudLoader.h"
 #include "PointCloudSaver.h"
 
@@ -16,8 +14,7 @@ CPointCloudScene::~CPointCloudScene()
 //FUNCTION: 
 PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
 {
-	if (vFileNameSet.empty())
-		return nullptr;
+	if (vFileNameSet.empty()) return nullptr;
 	
 	clear();
 	m_pPointCloudScene.reset(new PointCloud_t);
@@ -50,6 +47,8 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 	return m_pPointCloudScene;
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool CPointCloudScene::saveScene(PointCloud_t& vPointCloud, std::string vFileName)
 {
 	auto* pSceneSaver = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudSaver>(hiveUtility::hiveGetFileSuffix(vFileName) + "_Save");

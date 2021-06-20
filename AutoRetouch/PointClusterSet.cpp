@@ -4,6 +4,8 @@
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
+//*****************************************************************
+//FUNCTION: 
 bool CPointClusterSet::addPointCluster(const std::string& vName, IPointCluster* vCluster)
 {
 	_ASSERTE(vName != "" && vName != "\n");
@@ -19,6 +21,8 @@ bool CPointClusterSet::addPointCluster(const std::string& vName, IPointCluster* 
 	return true;
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool CPointClusterSet::addPointClusters(const std::vector<std::string>& vNames, const std::vector<IPointCluster*>& vPointClusters)
 {
 	_ASSERTE(vNames.size() == vPointClusters.size());
@@ -38,7 +42,8 @@ bool CPointClusterSet::addPointClusters(const std::vector<std::string>& vNames, 
 	return true;
 }
 
-
+//*****************************************************************
+//FUNCTION: 
 bool CPointClusterSet::deletePointCluster(const std::string& vName)
 {
 	auto Iter = m_PointClusterMap.find(vName);
@@ -54,6 +59,8 @@ bool CPointClusterSet::deletePointCluster(const std::string& vName)
 		return false;
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool CPointClusterSet::undo()
 {
 	if (!m_UndoQueue.empty())
@@ -80,20 +87,21 @@ bool CPointClusterSet::undo()
 
 }
 
+//*****************************************************************
+//FUNCTION: 
 bool CPointClusterSet::reset()
 {
-	for (auto Pair : m_PointClusterMap)
-		delete Pair.second;
+	for (auto Pair : m_PointClusterMap) delete Pair.second;
 	m_PointClusterMap.clear();
 
-	while (!m_UndoQueue.empty())
-		m_UndoQueue.pop();
+	while (!m_UndoQueue.empty()) m_UndoQueue.pop();
 
 	m_BinaryAreaAABB.reset();
-
 	return true;
 }
 
+//*****************************************************************
+//FUNCTION: 
 std::vector<IPointCluster*> CPointClusterSet::getGlobalClusterSet(const std::string& vName) const
 {
 	std::vector<IPointCluster*> ClusterSet;

@@ -18,6 +18,7 @@ TEST(Test_LoadPointCloudTile, LoadTilePly)
 {	
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(g_ValidPLYFileName));
 	auto pTile = pTileLoader->loadDataFromFile(g_ValidPLYFileName);
+	ASSERT_NE(pTile, nullptr);
 	GTEST_ASSERT_EQ(pTile->size(), 148701);
 }
 
@@ -25,6 +26,7 @@ TEST(Test_LoadPointCloudTile, LoadTilePcd)
 {
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(g_ValidPCDFileName));
 	auto pTile = pTileLoader->loadDataFromFile(g_ValidPCDFileName);
+	ASSERT_NE(pTile, nullptr);
 	GTEST_ASSERT_EQ(pTile->size(), 148701);
 }
 

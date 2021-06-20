@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "MaxVisibilityClusterAlg.h"
 #include "PointCloudAutoRetouchScene.h"
-#include <common/FileSystem.h>
-#include <pcl/segmentation/impl/extract_clusters.hpp>
 
 using namespace hiveObliquePhotography::AutoRetouch;
 
@@ -27,9 +25,9 @@ void CMaxVisibilityClusterAlg::runV(const pcl::IndicesPtr& vioPointSet, EPointLa
 	std::vector<pcl::PointIndices> ClusterIndices;
 
 	pcl::EuclideanClusterExtraction<std::decay<decltype(*pCloud)>::type::PointType> Ec;
-	Ec.setClusterTolerance(*CAutoRetouchConfig::getInstance()->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
-	Ec.setMinClusterSize(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
-	Ec.setMaxClusterSize(*CAutoRetouchConfig::getInstance()->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
+	Ec.setClusterTolerance(m_pConfig->getAttribute<double>(KEY_WORDS::CLUSTERTOLERANCE));
+	Ec.setMinClusterSize(m_pConfig->getAttribute<int>(KEY_WORDS::MINCLUSTERSIZE));
+	Ec.setMaxClusterSize(m_pConfig->getAttribute<int>(KEY_WORDS::MAXCLUSTERSIZE));
 	Ec.setInputCloud(pCloud);
 	Ec.setIndices(vioPointSet);
 	Ec.extract(ClusterIndices);

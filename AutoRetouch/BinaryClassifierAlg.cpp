@@ -23,7 +23,6 @@ void CBinaryClassifierAlg::runV(const std::string& vClusterType)
 	auto UnknownIndices = __getUnknownIndices();
 	auto ExecuteArea = __createExecuteArea();
 
-#pragma omp parallel for
 	for (int i = 0; i < UnknownIndices->size(); i++)
 	{
 		const auto Index = UnknownIndices->at(i);
@@ -32,10 +31,9 @@ void CBinaryClassifierAlg::runV(const std::string& vClusterType)
 			double MaxScore = -FLT_MAX;
 			std::size_t MaxIndex = -1;
 
-#pragma omp parallel for
 			for (int i = 0; i < m_ClusterSet.size(); i++)
 			{
-				const auto Score = m_ClusterSet[i]->computeSimilarityV(Index);
+				double Score = m_ClusterSet[i]->computeSimilarityV(Index);
 				if (Score > MaxScore)
 				{
 					MaxScore = Score;
@@ -43,7 +41,6 @@ void CBinaryClassifierAlg::runV(const std::string& vClusterType)
 				}
 			}
 
-#pragma omp critical
 			if (m_ClusterSet[MaxIndex]->getClusterLabel() == EPointLabel::UNWANTED)
 				m_pLocalLabelSet->changePointLabel(Index, m_ClusterSet[MaxIndex]->getClusterLabel());
 			else if (m_ClusterSet[MaxIndex]->getClusterLabel() == EPointLabel::KEPT)

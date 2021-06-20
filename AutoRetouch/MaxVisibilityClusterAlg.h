@@ -1,5 +1,5 @@
 #pragma once
-#include "SpatialClusteringAlg.h"
+#include "InitialClusterCreator.h"
 
 namespace hiveObliquePhotography
 {
@@ -7,7 +7,7 @@ namespace hiveObliquePhotography
 	{
 		class IPointCluster;
 
-		class CMaxVisibilityClusterAlg : public CSpatialClusteringAlg
+		class CMaxVisibilityClusterAlg : public IInitialClusterCreator
 		{
 		public:
 			CMaxVisibilityClusterAlg() = default;

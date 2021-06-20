@@ -26,4 +26,7 @@
 #include "common/CommonInterface.h"
 #include "common/DesignPatternInterface.h"
 #include "common/EventLoggerInterface.h"
+
+using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+
 #endif // PCH_H

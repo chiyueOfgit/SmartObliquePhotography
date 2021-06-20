@@ -5,7 +5,6 @@ namespace hiveObliquePhotography
 {
 	namespace AutoRetouch
 	{
-		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 		class CPointCluster4NormalRatio : public IPointCluster
 		{
 		public:

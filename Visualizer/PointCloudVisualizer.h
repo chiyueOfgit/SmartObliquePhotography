@@ -6,7 +6,6 @@ namespace hiveObliquePhotography
 	{
 		class CInteractionCallback;
 
-		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 		class CPointCloudVisualizer : public hiveDesignPattern::CSingleton<CPointCloudVisualizer>
 		{
 		public:
