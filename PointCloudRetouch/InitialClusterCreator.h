@@ -12,7 +12,7 @@ namespace hiveObliquePhotography
 			CInitialClusterCreator() = default;
 			~CInitialClusterCreator() = default;
 
-			CPointCluster* createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vRadius, double vHardness, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, const hiveConfig::CHiveConfig *vClusterConfig);
+			CPointCluster* createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vRadius, double vHardness, EPointLabel vClusterLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, const hiveConfig::CHiveConfig *vClusterConfig);
 
 #ifdef _UNIT_TEST
 //可以把很重要的私有函数做个wrapper放在这里，就可以进行单元测试
