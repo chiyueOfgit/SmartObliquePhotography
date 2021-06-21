@@ -82,9 +82,8 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitSceneWithNegativeSize)
 
 	//负数要么throw要么初始化为空
 	EXPECT_ANY_THROW(LabelSet.init(-1));
-	auto LabelVector = LabelSet.getLabelSet();
-	EXPECT_NE(LabelVector.size(), -1);
-	EXPECT_TRUE(LabelVector.empty());
+	EXPECT_NE(LabelSet.getSize(), -1);
+	EXPECT_EQ(LabelSet.getSize(), 0);
 }
 
 TEST(Test_InitPointCloudRetouch, CreateNeighborhoodBuilder)
@@ -160,7 +159,7 @@ TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchManager)
 
 	pManager->init(pCloud, pConfig);
 	ASSERT_EQ(pManager->getClusterSet().getNumCluster(), 0);
-	ASSERT_EQ(pManager->getLabelSet().getLabelSet().size(), pCloud->size());
+	ASSERT_EQ(pManager->getLabelSet().getSize(), pCloud->size());
 	ASSERT_EQ(pManager->getRetouchScene().getPointCloudScene(), pCloud);
 	ASSERT_NE(pManager->getLitterMarker().getExpander(), nullptr);
 	ASSERT_NE(pManager->getBackgroundMarker().getExpander(), nullptr);
