@@ -25,7 +25,7 @@ void CEuclideanNeighborhoodBuilder::__extraInitV()
 		m_pCloud->push_back(TempPoint);
 	}
 
-//	m_pTree->setInputCloud(m_pCloud);  程序会在这里崩掉
+	m_pTree->setInputCloud(m_pCloud);  //程序会在这里崩掉
 }
 
 //*****************************************************************
