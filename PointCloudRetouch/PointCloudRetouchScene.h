@@ -23,6 +23,8 @@ namespace hiveObliquePhotography
 			std::size_t getNumPoint() const { _ASSERTE(m_pPointCloudScene); return m_pPointCloudScene->size(); }
 
 		private:
+			Eigen::Vector4i __extractRgba(float vRgba);
+
 			PointCloud_t::Ptr m_pPointCloudScene = nullptr;
 		};
 	}

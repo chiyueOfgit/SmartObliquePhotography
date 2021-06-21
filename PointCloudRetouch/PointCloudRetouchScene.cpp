@@ -38,4 +38,28 @@ Eigen::Vector4i CPointCloudRetouchScene::getColorAt(std::size_t vIndex)
 	return __extractRgba(m_pPointCloudScene->points[vIndex].rgb);
 }
 
+Eigen::Vector4i CPointCloudRetouchScene::__extractRgba(float vRgba)
+{
+	union ColorLayout
+	{
+		struct
+		{
+			std::uint8_t b;
+			std::uint8_t g;
+			std::uint8_t r;
+			std::uint8_t a;
+		};
+		float rgba;
+	};
+	ColorLayout Color;
+	Color.rgba = vRgba;
+
+	Eigen::Vector4i Rgba;
+	Rgba.x() = Color.r;
+	Rgba.y() = Color.g;
+	Rgba.z() = Color.b;
+	Rgba.w() = 255;
+
+	return Rgba;
+}
 
