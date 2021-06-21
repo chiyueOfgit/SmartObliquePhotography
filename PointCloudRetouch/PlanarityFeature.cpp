@@ -61,6 +61,8 @@ PointCloud_t::Ptr CPlanarityFeature::__createPositionCloud(const std::vector<pcl
 		Point.x = Position.x();
 		Point.y = Position.y();
 		Point.z = Position.z();
+
+		pCloud->push_back(Point);
 	}
 	return pCloud;
 }

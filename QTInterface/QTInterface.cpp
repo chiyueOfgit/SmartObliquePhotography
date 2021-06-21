@@ -21,15 +21,11 @@
 #include <typeinfo>
 
 #include "QTDockWidgetTitleBar.h"
-#include "SliderSizeDockWidget.h"
-#include "GrowingOptionsSettingDialog.h"
-#include "BinaryOptionsSettingDialog.h"
 #include "QTInterfaceConfig.h"
 #include "VisualizationConfig.h"
 #include "ObliquePhotographyDataInterface.h"
 #include "AutoRetouchInterface.h"
 #include "VisualizationInterface.h"
-#include "QTLinker.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -41,7 +37,7 @@ QTInterface::QTInterface(QWidget * vParent)
 {
     {
         Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
-        AutoRetouch::hiveGetAutoRetouchConfig(m_pAutoRetouchConfig );
+        //AutoRetouch::hiveGetAutoRetouchConfig(m_pAutoRetouchConfig );
     }
 
     ui.setupUi(this);
@@ -277,7 +273,7 @@ void QTInterface::onActionOpen()
         m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
         AutoRetouch::hiveInitPointCloudScene(pCloud);
         Visualization::hiveInitVisualizer(pCloud);
-        Visualization::hiveRegisterQTLinker(new CQTLinker(this));
+        //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         QTInterface::__initialVTKWidget();
         Visualization::hiveRefreshVisualizer(true);
         QTInterface::__initialSlider(FilePathList);
@@ -297,14 +293,14 @@ void QTInterface::onActionOpen()
 
 void QTInterface::onActionSave()
 {
-    const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
+    //const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
 	
-    PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
-    hiveObliquePhotography::AutoRetouch::hiveGetPointCloudForSave(pCloud);
-    if(hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
-          QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
-    else
-        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
+    //PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
+    //hiveObliquePhotography::AutoRetouch::hiveGetPointCloudForSave(pCloud);
+    //if(hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
+    //      QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
+    //else
+    //    QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
 }
 
 void QTInterface::onActionSetting()
@@ -322,46 +318,46 @@ void QTInterface::onActionResetSelectStatus()
     QTInterface::__messageDockWidgetOutputText(QString::fromStdString("All operations have been reset."));
 }
 
-void QTInterface::onActionUpdate()
-{
-    AutoRetouch::hiveExecuteCompositeBinaryClassifier();
-    Visualization::hiveRefreshVisualizer();
-    QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Composite binary algorithm run successfully."));
-}
-
-void QTInterface::onActionCompositeBinary()
-{
-    ui.actionBinary->setChecked(false);
-    ui.actionRegionGrowing->setChecked(false);
-
-    if (m_pBinaryOptionsSettingDialog)
-    {
-        m_pBinaryOptionsSettingDialog->close();
-        _SAFE_DELETE(m_pBinaryOptionsSettingDialog);
-    }
-
-    if (ui.actionCompositeBinary->isChecked())
-    {
-        if (m_pGrowingOptionsSettingDialog)
-        {
-            m_pGrowingOptionsSettingDialog->close();
-            _SAFE_DELETE(m_pGrowingOptionsSettingDialog);
-        }
-
-        m_pBinaryOptionsSettingDialog = new CBinaryOptionsSettingDialog(this);
-        m_pBinaryOptionsSettingDialog->show();
-        m_pBinaryOptionsSettingDialog->exec();
-    }
-
-    m_pVisualizationConfig->overwriteAttribute("BINARY_MODE", ui.actionCompositeBinary->isChecked());
-
-}
-
-void QTInterface::onActionBinary()
-{
-    ui.actionCompositeBinary->setChecked(false);
-    ui.actionRegionGrowing->setChecked(false);
-}
+//void QTInterface::onActionUpdate()
+//{
+//    AutoRetouch::hiveExecuteCompositeBinaryClassifier();
+//    Visualization::hiveRefreshVisualizer();
+//    QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Composite binary algorithm run successfully."));
+//}
+//
+//void QTInterface::onActionCompositeBinary()
+//{
+//    ui.actionBinary->setChecked(false);
+//    ui.actionRegionGrowing->setChecked(false);
+//
+//    if (m_pBinaryOptionsSettingDialog)
+//    {
+//        m_pBinaryOptionsSettingDialog->close();
+//        _SAFE_DELETE(m_pBinaryOptionsSettingDialog);
+//    }
+//
+//    if (ui.actionCompositeBinary->isChecked())
+//    {
+//        if (m_pGrowingOptionsSettingDialog)
+//        {
+//            m_pGrowingOptionsSettingDialog->close();
+//            _SAFE_DELETE(m_pGrowingOptionsSettingDialog);
+//        }
+//
+//        m_pBinaryOptionsSettingDialog = new CBinaryOptionsSettingDialog(this);
+//        m_pBinaryOptionsSettingDialog->show();
+//        m_pBinaryOptionsSettingDialog->exec();
+//    }
+//
+//    m_pVisualizationConfig->overwriteAttribute("BINARY_MODE", ui.actionCompositeBinary->isChecked());
+//
+//}
+//
+//void QTInterface::onActionBinary()
+//{
+//    ui.actionCompositeBinary->setChecked(false);
+//    ui.actionRegionGrowing->setChecked(false);
+//}
 
 void QTInterface::onActionRegionGrowing()
 {
