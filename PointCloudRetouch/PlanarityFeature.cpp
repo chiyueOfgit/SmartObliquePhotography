@@ -36,17 +36,13 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	float Distance = m_Plane.dot(Position);
 
 	if (Distance > m_Peak.second || Distance < m_Peak.first)
-	{
 		return 0;
-	}
+
 	if (Distance < 0)
-	{
-		return NormalDistribution(Distance / m_Peak.first * 2);
-	}
+		Distance /= m_Peak.first;
 	else
-	{
-		return NormalDistribution(Distance / m_Peak.second * 2);
-	}
+		Distance /= m_Peak.second;
+	return pow(Distance, 4) - 2.0f * pow(Distance, 2) + 1.0f;
 }
 
 //*****************************************************************
@@ -73,7 +69,7 @@ Eigen::Vector4f CPlanarityFeature::__fitPlane(PointCloud_t::Ptr vCloud) const
 {
 	Eigen::VectorXf Coeff;
 	pcl::SampleConsensusModelPlane<PointCloud_t::PointType>::Ptr ModelPlane
-	(new pcl::SampleConsensusModelPlane<PointCloud_t::PointType>(vCloud));
+		(new pcl::SampleConsensusModelPlane<PointCloud_t::PointType>(vCloud));
 	pcl::RandomSampleConsensus<PointCloud_t::PointType> Ransac(ModelPlane);
 	//TODO: move to config
 	Ransac.setDistanceThreshold(0.3);
