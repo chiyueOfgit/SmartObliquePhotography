@@ -11,6 +11,8 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 {
 	CPointCluster* pInitialCluster = new CPointCluster;
 
+	__cullingMarkedRegion2Circle(vUserMarkedRegion, vRadius, vCameraPos, vPvMatrix);
+
 	std::vector<double> PointHardnessSet;
 	__generateHardness4EveryPoint(vUserMarkedRegion, vRadius, vHardness, vCameraPos, vPvMatrix, PointHardnessSet);
 

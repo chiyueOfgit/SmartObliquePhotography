@@ -18,6 +18,11 @@ namespace hiveObliquePhotography
 			void buildNeighborhood(pcl::index_t vSeed, std::vector<pcl::index_t>& voNeighborhood);
 			void reset();
 
+#ifdef _UNIT_TEST
+			const auto getVisitedTag() const { return m_pVisitedTag; }
+#endif // _UNIT_TEST
+
+
 		protected:
 			PointCloud_t::Ptr m_pPointCloudScene = nullptr;
 
