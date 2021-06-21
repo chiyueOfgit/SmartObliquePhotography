@@ -21,6 +21,10 @@ namespace hiveObliquePhotography
 			void tagCoreRegion4Cluster(const std::vector<pcl::index_t>& vTargetPointSet, EPointLabel vTargetLabel, std::uint32_t vClusterIndex);
 			void init(std::size_t vSize);
 
+#ifdef _UNIT_TEST
+			const std::vector<SPointLabel>& getLabelSet() const { return m_LabelSet; }
+#endif
+
 			EPointLabel   getLabelAt(std::size_t vIndex) const { _ASSERTE(vIndex < m_LabelSet.size()); return m_LabelSet[vIndex].PointLabel; }
 			std::uint32_t getClusterIndexAt(std::size_t vIndex) const { _ASSERTE(vIndex < m_LabelSet.size()); return m_LabelSet[vIndex].ClusterIndex; }
 
