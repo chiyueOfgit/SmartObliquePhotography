@@ -48,21 +48,15 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 //FUNCTION: 
 void CPointCluster::__createFeatureObjectSet()
 {
-
+	
 }
 
 //*****************************************************************
 //FUNCTION: 
 bool CPointCluster::isBelongingTo(double vProbability) const
 {
-	int Num = 0;
-	float ExpectRatio = 60.0f;
-	for (auto pFeature : m_FeatureSet)
-	{
-		if (vProbability > 0)//pFeature->getExpectProbability())
-			Num++;
-	}
-	if (Num / m_FeatureSet.size() >= ExpectRatio)
+	const float ExpectProbability = 0.6f;
+	if (vProbability >= ExpectProbability)
 		return true;
 	else
 		return false;
