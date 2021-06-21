@@ -511,6 +511,21 @@ pcl::visualization::PCLVisualizerInteractorStyle::registerAreaPickingCallback (s
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::PCLVisualizerInteractorStyle::switchMode(bool vPick)
+{
+    if (vPick)
+    {
+        point_picker_ = static_cast<vtkPointPicker*> (Interactor->GetPicker());
+
+        vtkSmartPointer<vtkAreaPicker> area_picker = vtkSmartPointer<vtkAreaPicker>::New();
+        Interactor->SetPicker(area_picker);
+    }
+    else
+        Interactor->SetPicker(point_picker_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 {
   if (!init_)

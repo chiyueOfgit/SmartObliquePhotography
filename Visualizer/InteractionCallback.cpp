@@ -135,6 +135,32 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			//m_pVisualizer->refresh();
 			
 		}
+
+		if (vEvent.getType() == pcl::visualization::MouseEvent::MouseButtonRelease
+			&& vEvent.getButton() == pcl::visualization::MouseEvent::LeftButton
+			&& m_KeyPressStatus['l'])
+		{
+			//»º´æ
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
+
+			std::vector<int> PickedIndices;
+			pcl::visualization::Camera Camera;
+			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+			const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+			Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+			Camera.computeViewMatrix(ViewMatrix);
+			Camera.computeProjectionMatrix(ProjectionMatrix);
+			const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+
+			//move to config
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + 10, PosY + 10, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
+			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
+			//AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE).value() ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
+			
+			//m_pVisualizer->refresh();
+
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
+		}
 	}
 }
 
