@@ -22,7 +22,7 @@ namespace hiveObliquePhotography
 			void init(std::size_t vSize);
 
 #ifdef _UNIT_TEST
-			const std::vector<SPointLabel>& getLabelSet() const { return m_LabelSet; }
+			std::size_t getSize() const { return m_LabelSet.size(); }
 #endif
 
 			EPointLabel   getLabelAt(std::size_t vIndex) const { _ASSERTE(vIndex < m_LabelSet.size()); return m_LabelSet[vIndex].PointLabel; }

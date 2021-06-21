@@ -67,10 +67,13 @@ TEST(Test_InitPointCloudRetouch, InitPointLabelSet)
 	const std::size_t Num = 10;
 
 	LabelSet.init(Num);
-	auto LabelVector = LabelSet.getLabelSet();
-	ASSERT_EQ(LabelVector.size(), Num);
-	ASSERT_EQ(LabelVector.front().ClusterIndex, 0);
-	ASSERT_EQ(LabelVector.front().PointLabel, EPointLabel::UNDETERMINED);
+	ASSERT_EQ(LabelSet.getSize(), Num);
+
+	for (int i = 0; i < Num; i++)
+	{
+		ASSERT_EQ(LabelSet.getClusterIndexAt(i), 0);
+		ASSERT_EQ(LabelSet.getLabelAt(i), EPointLabel::UNDETERMINED);
+	}
 }
 
 TEST(Test_InitPointCloudRetouch, DeathTest_InitSceneWithNegativeSize)
