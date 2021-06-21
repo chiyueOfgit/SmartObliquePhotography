@@ -11,7 +11,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, float vRadius,  EPointLabel vLabel, const Eigen::Vector2f& vCenter, const Eigen::Matrix4f& vPvMatrix, const std::pair<float, float>& vWindowSize, const hiveConfig::CHiveConfig *vClusterConfig)
+CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, float vRadius,  EPointLabel vLabel, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, const hiveConfig::CHiveConfig *vClusterConfig)
 {
 	CPointCluster* pInitialCluster = new CPointCluster;
 
@@ -50,7 +50,7 @@ void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::
 
 //*****************************************************************
 //FUNCTION: 
-pcl::index_t CInitialClusterCreator::__computeClusterCenter(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float> vPointHardnessSet, const Eigen::Vector2f& vCenter, const Eigen::Matrix4f& vPvMatrix, const std::pair<float, float>& vWindowSize)
+pcl::index_t CInitialClusterCreator::__computeClusterCenter(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float> vPointHardnessSet, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize)
 {
 	pcl::index_t CenterIndex;
 	float MinDistance = FLT_MAX;
@@ -62,7 +62,7 @@ pcl::index_t CInitialClusterCreator::__computeClusterCenter(const std::vector<pc
 			auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 			Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegion[i]);
 
-			Position = vPvMatrix * Position;
+			Position = vPvMatrix.cast<float>() * Position;
 			Position /= Position.eval().w();
 			Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
 			Position /= 2.0;
@@ -79,7 +79,7 @@ pcl::index_t CInitialClusterCreator::__computeClusterCenter(const std::vector<pc
 
 //*****************************************************************
 //FUNCTION: 
-void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, float vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4f& vPvMatrix, const std::pair<float, float>& vWindowSize, std::vector<float>& voPointHardnessSet)
+void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, float vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, std::vector<float>& voPointHardnessSet)
 {
 	_ASSERTE(vRadius);
 	
@@ -93,7 +93,7 @@ void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl
 	    auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 		Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegion[i]);
 		
-		Position = vPvMatrix * Position;
+		Position = vPvMatrix.cast<float>() * Position;
 		Position /= Position.eval().w();
 		Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
 		Position /= 2.0;
