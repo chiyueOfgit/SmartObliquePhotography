@@ -51,6 +51,9 @@
     <ClInclude Include="NeighborhoodBuilder.h">
       <Filter>NeighborhoodBuilder</Filter>
     </ClInclude>
+    <ClInclude Include="VfhFeature.h">
+      <Filter>PointCluster</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -80,6 +83,9 @@
     </ClCompile>
     <ClCompile Include="NeighborhoodBuilder.cpp">
       <Filter>NeighborhoodBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="VfhFeature.cpp">
+      <Filter>PointCluster</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
