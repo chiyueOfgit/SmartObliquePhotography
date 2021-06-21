@@ -42,11 +42,11 @@ CVfhFeature::CVfhFeature()
 double CVfhFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
 	__computeVfhDescriptor(vDeterminantPointSet, m_DeterminantVfhDescriptor);
-	Eigen::Matrix<float, 308, 1> CenterVfhDescriptor;
+	Eigen::Matrix<float, VfhDimension, 1> CenterVfhDescriptor;
 	__computeVfhDescriptor({ vClusterCenter }, CenterVfhDescriptor);
 	m_BaseDotResult = __blockDotVfhDescriptor(CenterVfhDescriptor, m_DeterminantVfhDescriptor, m_BlockSize);
 	
-	Eigen::Matrix<float, 308, 1> ValidationVfhDescriptor;
+	Eigen::Matrix<float, VfhDimension, 1> ValidationVfhDescriptor;
 	__computeVfhDescriptor(vValidationSet, ValidationVfhDescriptor);
 	auto ValidationDotResult = __blockDotVfhDescriptor(ValidationVfhDescriptor, m_DeterminantVfhDescriptor, m_BlockSize);
 
@@ -57,7 +57,7 @@ double CVfhFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermina
 //FUNCTION: 
 double CVfhFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-	Eigen::Matrix<float, 308, 1> PointVfhDescriptor;
+	Eigen::Matrix<float, VfhDimension, 1> PointVfhDescriptor;
 	__computeVfhDescriptor({ vInputPoint }, PointVfhDescriptor);
 	auto PointDotResult = __blockDotVfhDescriptor(PointVfhDescriptor, m_DeterminantVfhDescriptor, m_BlockSize);
 	return PointDotResult / m_BaseDotResult;
@@ -65,7 +65,7 @@ double CVfhFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 
 //*****************************************************************
 //FUNCTION: 
-void CVfhFeature::__computeVfhDescriptor(const std::vector<pcl::index_t>& vPointIndices, Eigen::Matrix<float, 308, 1>& voVfhDescriptor) const
+void CVfhFeature::__computeVfhDescriptor(const std::vector<pcl::index_t>& vPointIndices, Eigen::Matrix<float, VfhDimension, 1>& voVfhDescriptor) const
 {
 	pcl::IndicesPtr pIndices(new pcl::Indices(vPointIndices.begin(), vPointIndices.end()));
 	if (vPointIndices.size() == 1)
@@ -83,19 +83,18 @@ void CVfhFeature::__computeVfhDescriptor(const std::vector<pcl::index_t>& vPoint
 		voVfhDescriptor = Result.getMatrixXfMap(pcl::VFHSignature308::descriptorSize(), pcl::VFHSignature308::descriptorSize(), 0).col(0);
 }
 
-double CVfhFeature::__blockDotVfhDescriptor(const Eigen::Matrix<float, 308, 1>& vLVfh, const Eigen::Matrix<float, 308, 1>& vRVfh, std::size_t vBlockSize) const
+double CVfhFeature::__blockDotVfhDescriptor(const Eigen::Matrix<float, VfhDimension, 1>& vLVfh, const Eigen::Matrix<float, VfhDimension, 1>& vRVfh, std::size_t vBlockSize) const
 {
-	_ASSERTE(vBlockSize > 0 && vBlockSize <= 308);
 	if (vBlockSize <= 0)
 		vBlockSize = 5;
-	else if (vBlockSize > 308)
-		vBlockSize = 308;
+	else if (vBlockSize > VfhDimension)
+		vBlockSize = VfhDimension;
 
 	double BlockDot = 0.0;
-	for (int i = 0; i < 308; i += vBlockSize)
+	for (int i = 0; i < VfhDimension; i += vBlockSize)
 	{
 		float LTemp = 0.0f, RTemp = 0.0f;
-		for (int j = 0; j < vBlockSize && (i + j) < 308; j++)
+		for (int j = 0; j < vBlockSize && (i + j) < VfhDimension; j++)
 		{
 			LTemp += vLVfh.row(i + j).value();
 			RTemp += vRVfh.row(i + j).value();

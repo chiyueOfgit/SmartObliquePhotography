@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ColorFeature.h" />
     <ClInclude Include="Feature.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InitialClusterCreator.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="VfhFeature.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
     <ClCompile Include="NeighborhoodBuilder.cpp" />
