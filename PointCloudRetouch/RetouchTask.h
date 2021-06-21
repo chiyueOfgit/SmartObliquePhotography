@@ -16,7 +16,7 @@ namespace hiveObliquePhotography
 			bool init(const hiveConfig::CHiveConfig* vConfig);
 			bool execute(const CPointCluster *vUserSpecifiedCluster);
 
-			const hiveConfig::CHiveConfig* getClusterConfig() const;
+			const hiveConfig::CHiveConfig* getClusterConfig() const { _ASSERTE(m_pClusterConfig); return m_pClusterConfig; }
 
 #ifdef _UNIT_TEST
 			const auto getExpander() const { return m_pPointClusterExpander; }
@@ -24,7 +24,8 @@ namespace hiveObliquePhotography
 
 		private:
 			CPointClusterExpander *m_pPointClusterExpander = nullptr;
-			const hiveConfig::CHiveConfig* m_pConfig;
+			const hiveConfig::CHiveConfig *m_pConfig = nullptr;
+			const hiveConfig::CHiveConfig* m_pClusterConfig = nullptr;
 		};
 	}
 }

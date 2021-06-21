@@ -5,7 +5,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_EXCLUSIVE_PRODUCT(CPointClusterExpander, KEYWORD::CLUSTER_EXPANDER)
+_REGISTER_NORMAL_PRODUCT(CPointClusterExpander, KEYWORD::CLUSTER_EXPANDER)
 
 //*****************************************************************
 //FUNCTION: 

@@ -11,8 +11,11 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("TASK",			 hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
 	_defineAttribute("CLUSTER",		     hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
 	_defineAttribute("FEATURE",			 hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("CLASSIFIER",       hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("POINT_CLOUD_RETOUCN_CONFIG", hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
 
 	_defineAttribute("UP", hiveConfig::EConfigDataType::ATTRIBUTE_VEC3F);
+	_defineAttribute("SIG", hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 	_defineAttribute("SEARCH_MODE", hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 	_defineAttribute("NEAREST_N", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	_defineAttribute("RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);

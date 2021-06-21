@@ -27,7 +27,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-const std::string g_CloudPath = "Panda.pcd";
+const std::string g_CloudPath = "../../UnitTests/Unit_Test_010/Panda.pcd";
 
 const std::string g_BuilderSig = "";
 
@@ -152,12 +152,13 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitRetouchTaskWithErrorConfig)
 TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchManager)
 {
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
-	pcl::io::loadPCDFile(g_CloudPath, *pCloud);
+	pcl::PointSurfel t;
+	pCloud->push_back(t);
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
-	hiveConfig::hiveParseConfig("PointCloudRetouchConfig.xml", hiveConfig::EConfigType::XML, pConfig);
+	hiveConfig::hiveParseConfig("../../UnitTests/Unit_Test_010/PointCloudRetouchConfig.xml", hiveConfig::EConfigType::XML, pConfig);
 	auto pManager = CPointCloudRetouchManager::getInstance();
 
-	pManager->init(pCloud, pConfig);
+	pManager->init(pCloud, pConfig->findSubconfigByName("Retouch"));
 	ASSERT_EQ(pManager->getClusterSet().getNumCluster(), 0);
 	ASSERT_EQ(pManager->getLabelSet().getSize(), pCloud->size());
 	ASSERT_NE(pManager->getLitterMarker().getExpander(), nullptr);
