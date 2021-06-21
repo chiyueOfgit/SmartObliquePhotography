@@ -2,7 +2,6 @@
 #include "PlanarityFeature.h"
 #include <pcl/sample_consensus/impl/sac_model_plane.hpp>
 #include <pcl/sample_consensus/impl/ransac.hpp>
-#include "PointCloudRetouchCommon.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
