@@ -26,18 +26,17 @@ bool INeighborhoodBuilder::onProductCreatedV(PointCloud_t::Ptr vPointCloudScene,
 
 //*****************************************************************
 //FUNCTION: 
-void INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed, std::vector<pcl::index_t>& voNeighborhood)
+void INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex, std::vector<pcl::index_t>& voNeighborhood)
 {
 	_ASSERTE(m_pPointCloudScene && (vSeed < m_pPointCloudScene->size()));
 
 	std::vector<pcl::index_t> Neighborhood;
 	__buildNeighborhoodV(vSeed, Neighborhood);
 
-	EPointLabel SeedLabel = m_pPointLabelSet->getLabelAt(vSeed);
 	voNeighborhood.clear();
 	for (auto e : Neighborhood)
 	{
-		if ((m_pPointLabelSet->getLabelAt(e) != SeedLabel) && !m_pVisitedTag[e])
+		if ((m_pPointLabelSet->getClusterIndexAt(e) != vSeedClusterIndex) && !m_pVisitedTag[e])
 		{
 			voNeighborhood.emplace_back(e);
 			m_pVisitedTag[e] = true;

@@ -37,7 +37,7 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 		if (IsClusterIndexRequired2Change)
 		{
 			pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
-			pManager->buildNeighborhood(Candidate, Neighborhood);
+			pManager->buildNeighborhood(Candidate, vCluster->getClusterIndex(), Neighborhood);
 			for (auto e : Neighborhood) ExpandingCandidateQueue.push(e);
 		}
 	}

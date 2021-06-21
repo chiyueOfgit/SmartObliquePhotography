@@ -15,7 +15,7 @@ namespace hiveObliquePhotography
 
 			virtual bool onProductCreatedV(PointCloud_t::Ptr vPointCloudScene, const CPointLabelSet* vPointLabelSet);
 
-			void buildNeighborhood(pcl::index_t vSeed, std::vector<pcl::index_t>& voNeighborhood);
+			void buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex, std::vector<pcl::index_t>& voNeighborhood);
 			void reset();
 
 #ifdef _UNIT_TEST
