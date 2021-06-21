@@ -13,6 +13,9 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
+#define PI 3.141592653589793
+#define radians(x) (x * PI / 180)
+
 class CTestCreateInitialCluster : public testing::Test
 {
 protected:
@@ -20,7 +23,17 @@ protected:
 	{
 		m_pCloud1.reset(new PointCloud_t);
 		m_pCloud1->resize(100);
-
+		
+		float Angle = 0.0f, AngleStep = 30.0f, Radius = 0.1f, RadiusStep = 0.1f;
+		while (Angle < 360.0f && Radius <= 1.0f)
+		{
+			pcl::PointSurfel Point;
+			Point.x = Radius * cos(radians(Angle));
+			Point.y = Radius * sin(radians(Angle));
+			Point.z = 1.0f;
+			Point.rgba = -1;
+			m_pCloud1->push_back(Point);
+		}
 
 	}
 
