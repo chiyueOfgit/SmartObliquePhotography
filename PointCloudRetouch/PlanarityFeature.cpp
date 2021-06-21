@@ -2,6 +2,7 @@
 #include "PlanarityFeature.h"
 #include <pcl/sample_consensus/impl/sac_model_plane.hpp>
 #include <pcl/sample_consensus/impl/ransac.hpp>
+#include "PointCloudRetouchCommon.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -14,10 +15,18 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	m_Peak = __computePeakDistance(pDeterminantCloud, m_Plane);
 	
 	float SumMatch = 0.0f;
+	int VaildNum = 0;
 	for (auto& i : vValidationSet)
-		SumMatch += evaluateFeatureMatchFactorV(i);
+	{
+		auto Match = evaluateFeatureMatchFactorV(i);
+		if (Match > 0)
+		{
+			++VaildNum;
+			SumMatch += Match;
+		}
+	}
 
-	return SumMatch / vValidationSet.size();
+	return SumMatch / VaildNum;
 }
 
 //*****************************************************************
@@ -27,6 +36,10 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	const auto& Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(vInputPoint);
 	float Distance = m_Plane.dot(Position);
 
+	if (Distance > m_Peak.second || Distance < m_Peak.first)
+	{
+		return 0;
+	}
 	if (Distance < 0)
 	{
 		return NormalDistribution(Distance / m_Peak.first * 2);
