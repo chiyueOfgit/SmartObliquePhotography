@@ -33,7 +33,7 @@ namespace hiveObliquePhotography
 			double getClusterBelongingProbabilityAt(std::size_t vIndex) const { return m_PointLabelSet.getClusterBelongingProbabilityAt(vIndex); }
 
 			const auto& getRetouchScene() const { return m_Scene; }
-
+			
 #ifdef _UNIT_TEST
 			const auto& getClusterSet() const { return m_PointClusterSet; }
 			const auto& getLabelSet() const { return m_PointLabelSet; }
@@ -53,11 +53,15 @@ namespace hiveObliquePhotography
 			CRetouchTask             m_BackgroundMarker;
 			CInitialClusterCreator   m_InitialClusterCreator;
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
-			hiveConfig::CHiveConfig* m_pConfig;
+			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 			
 			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel);
 
+			bool __dumpPointLabel4Visualizer(std::vector<std::size_t>& voPointLabel) const;
+
 		friend class hiveDesignPattern::CSingleton<CPointCloudRetouchManager>;
+
+		friend bool hiveDumpPointLabel4Visualizer(std::vector<std::size_t>& voPointLabel);
 		};
 	}
 }

@@ -44,15 +44,18 @@
     <ClInclude Include="..\..\Visualizer\pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AutoRetouch_Lib\AutoRetouch_Lib.vcxproj">
-      <Project>{c343c23f-c156-407f-a1e9-3bfb59a4989a}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\ObliquePhotographyData_Lib\ObliquePhotographyData_Lib.vcxproj">
       <Project>{3757d1fb-eddb-4d14-803b-4d692a7d175b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PointCloudRetouch_Lib\PointCloudRetouch_Lib.vcxproj">
+      <Project>{87879ac2-2e99-42c7-8ff9-a456d9350873}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\Visualizer_Lib\Visualization_Lib.vcxproj">
       <Project>{75dd450f-ca6d-415d-808d-b5ff6751daeb}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="PointCloudRetouchConfig.xml" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -133,7 +136,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>../../visualization/include;../../Visualizer;../../AutoRetouch;..\..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../visualization/include;../../Visualizer;../../PointCloudRetouch;..\..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -144,7 +147,7 @@
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalOptions>/WHOLEARCHIVE:AutoRetouch_Lib.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/WHOLEARCHIVE:PointCloudRetouch_Lib.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

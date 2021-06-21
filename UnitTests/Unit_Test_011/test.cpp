@@ -48,7 +48,7 @@ protected:
 TEST(Test_CreateInitialCluster, GenerateHardness4EveryPoint)
 {
 	CInitialClusterCreator Creator;
-	Creator.testGenerateHardness4EveryPoint()
+	Creator.generateHardness4EveryPoint();
 }
 
 TEST(Test_CreateInitialCluster, ComputeClusterCenter)

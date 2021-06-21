@@ -12,6 +12,10 @@ namespace hiveObliquePhotography
 			const std::string VFH_FEATURE = "VFH_FEATURE";
 			const std::string COLOR_FEATURE = "COLOR_FEATURE";
 
+			const std::string EUCLIDEAN_NEIGHBOR_BUILDER = "EUCLIDEAN_NEIGHBOR_BUILDER";
+
+			const std::string CLUSTER_EXPANDER = "CLUSTER_EXPANDER";
+
 		}
 		enum class EPointLabel : unsigned char
 		{

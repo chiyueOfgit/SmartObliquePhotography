@@ -25,3 +25,8 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveMarkBackground(const std::ve
 {
 	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, EPointLabel::KEPT);
 }
+
+bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointLabel4Visualizer(std::vector<std::size_t>& voPointLabel)
+{
+	return CPointCloudRetouchManager::getInstance()->__dumpPointLabel4Visualizer(voPointLabel);
+}

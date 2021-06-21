@@ -13,30 +13,39 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 
 	m_Scene.init(vPointCloud);
 	m_PointLabelSet.init(m_Scene.getNumPoint());
-
-	//todo: 从配置文件建立builder
-	std::string BuilderSig = "";
-	m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(BuilderSig, vPointCloud, &m_PointLabelSet);
-	_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, "Fail to create specific neighborhood builder.", false);
+	m_pConfig = vConfig;
 
 	for (auto i = 0; i < vConfig->getNumSubconfig(); i++)
 	{
 		const hiveConfig::CHiveConfig* pConfig = vConfig->getSubconfigAt(i);
-		if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("LitterMarker")))
+		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("TASK")))
 		{
-			m_LitterMarker.init(pConfig);
-		}
-		else
-		{
-			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("BackgroundMarker")))
+			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("LitterMarker")))
 			{
-				m_BackgroundMarker.init(pConfig);
+				m_LitterMarker.init(pConfig);
 			}
 			else
 			{
-				_HIVE_EARLY_RETURN(true, _FORMAT_STR1("Unexpeced subconfiguration [%1%].", pConfig->getName()), false);
+				if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("BackgroundMarker")))
+				{
+					m_BackgroundMarker.init(pConfig);
+				}
+				else
+				{
+					_HIVE_EARLY_RETURN(true, _FORMAT_STR1("Unexpeced subconfiguration [%1%].", pConfig->getName()), false);
+				}
 			}
+			continue;
 		}
+		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("NEIGHBOR_BUILDER")))
+		{
+			std::optional<std::string> NeighborhoodBuilderSig = pConfig->getAttribute<std::string>("SIG");
+			_ASSERTE(NeighborhoodBuilderSig.has_value());
+			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), vPointCloud, &m_PointLabelSet);
+			_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating  neighborhood builder [%1%].", NeighborhoodBuilderSig.value()), false);
+			continue;
+		}
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Unknown subconfiguration type [%1%].", pConfig->getSubconfigType()));
 	}
 	
 	return true;
@@ -52,8 +61,26 @@ CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::ve
 	const hiveConfig::CHiveConfig* pClusterConfig = (vTargetLabel == EPointLabel::KEPT) ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig();
 	_ASSERTE(pClusterConfig);
 
-	//return nullptr;
 	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vHardness, vRadius, vTargetLabel, vCenter, vPvMatrix, vWindowSize, pClusterConfig);
+}
+
+bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::__dumpPointLabel4Visualizer(std::vector<std::size_t>& voPointLabel) const
+{
+	auto NumPoints = m_Scene.getNumPoint();
+	if (NumPoints > 0)
+	{
+		voPointLabel.clear();
+
+		for (int i = 0; i < NumPoints; i++)
+		{
+			auto Label = m_PointLabelSet.getLabelAt(i);
+			voPointLabel.push_back(static_cast<std::size_t>(Label));
+		}
+
+		return true;
+	}
+	else
+		return false;
 }
 
 //*****************************************************************

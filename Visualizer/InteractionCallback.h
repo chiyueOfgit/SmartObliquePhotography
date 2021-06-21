@@ -39,7 +39,6 @@ namespace hiveObliquePhotography
 			CPointCloudVisualizer* m_pVisualizer = nullptr;
 
 			CVisualizationConfig* m_pVisualizationConfig = nullptr;
-			AutoRetouch::CAutoRetouchConfig* m_pAutoRetouchConfig = nullptr;
 		};
 	}
 }

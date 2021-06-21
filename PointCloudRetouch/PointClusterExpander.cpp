@@ -5,6 +5,8 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
+_REGISTER_NORMAL_PRODUCT(CPointClusterExpander, KEYWORD::CLUSTER_EXPANDER)
+
 //*****************************************************************
 //FUNCTION: 
 void CPointClusterExpander::runV(const CPointCluster* vCluster)

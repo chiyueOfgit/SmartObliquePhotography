@@ -152,7 +152,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);VISUALIZATION_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../visualization/include;../AutoRetouch</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../visualization/include;../PointCloudRetouch</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
@@ -191,9 +191,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AutoRetouch\AutoRetouch.vcxproj">
-      <Project>{a8f8e3db-1ace-4584-9acd-f180cbac22ee}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\visualization\pcl_visualization.vcxproj">
       <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
     </ProjectReference>

@@ -1,10 +1,8 @@
 #include "pch.h"
 #include "PointCloudVisualizer.h"
 #include "InteractionCallback.h"
-#include "AutoRetouchInterface.h"
+#include "PointCloudRetouchInterface.h"
 #include "VisualizationConfig.h"
-#include <common/ConfigCommon.h>
-#include <common/ConfigInterface.h>
 #include <omp.h>
 
 #define RECORD_TIME_BEGIN clock_t StartTime, FinishTime;\
@@ -48,20 +46,15 @@ void CPointCloudVisualizer::reset(PointCloud_t::Ptr vPointCloud)
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudVisualizer::refresh(bool vResetCamera)
+void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel, bool vResetCamera)
 {
 	RECORD_TIME_BEGIN
 
 	_ASSERTE(!m_pSceneCloud->empty());
 
-	//pcl::visualization::Camera RecordCamera;
-	//m_pPCLVisualizer->saveCameraParameters("RecordCamera");
 	m_pPCLVisualizer->removeAllPointClouds();
-
-	std::vector<AutoRetouch::EPointLabel> GlobalLabel;
-	AutoRetouch::hiveGetGlobalPointLabelSet(GlobalLabel);
 	
-	_ASSERTE(GlobalLabel.size() == m_pSceneCloud->size());
+	_ASSERTE(vPointLabel.size() == m_pSceneCloud->size());
 
 	PointCloud_t::Ptr pCloud2Show(new PointCloud_t);
 	pCloud2Show->resize(m_pSceneCloud->size());
@@ -70,34 +63,34 @@ void CPointCloudVisualizer::refresh(bool vResetCamera)
 	#pragma omp parallel for
 	for (int i = 0; i < m_pSceneCloud->size(); i++)
 	{
-		switch (GlobalLabel[i])
+		switch (vPointLabel[i])
 		{
-		case AutoRetouch::EPointLabel::DISCARDED:
+		case 0:
 		{
 			pCloud2Show->points[i].a = 0;
 			break;
 		}
-		case AutoRetouch::EPointLabel::UNWANTED:
-		{
-			unsigned char StandardRed[4] = { 0, 0, 255, 255 };	//gbr
-			std::memcpy(&pCloud2Show->points[i].rgba, StandardRed, sizeof(StandardRed));
-			break;
-		}
-		case AutoRetouch::EPointLabel::KEPT:
+		case 1:
 		{
 			unsigned char StandardBlue[4] = { 255, 0, 0, 255 };
 			std::memcpy(&pCloud2Show->points[i].rgba, StandardBlue, sizeof(StandardBlue));
 			break;
 		}
-		case AutoRetouch::EPointLabel::FILLED:
+		case 2:
+		{
+			unsigned char StandardRed[4] = { 0, 0, 255, 255 };	//gbr
+			std::memcpy(&pCloud2Show->points[i].rgba, StandardRed, sizeof(StandardRed));
+			break;
+		}
+		case 3:
+		{
+			pCloud2Show->points[i].a = 255;
+			break;
+		}
+		case 4:
 		{
 			unsigned char StandardGreen[4] = { 0, 255, 0, 255 };
 			std::memcpy(&pCloud2Show->points[i].rgba, StandardGreen, sizeof(StandardGreen));
-			break;
-		}
-		case AutoRetouch::EPointLabel::UNDETERMINED:
-		{
-			pCloud2Show->points[i].a = 255;
 			break;
 		}
 		}
@@ -113,7 +106,6 @@ void CPointCloudVisualizer::refresh(bool vResetCamera)
 		m_pPCLVisualizer->resetCamera();
 	else
 	{
-		//auto Success = m_pPCLVisualizer->loadCameraParameters("RecordCamera");
 		m_pPCLVisualizer->updateCamera();
 	}
 

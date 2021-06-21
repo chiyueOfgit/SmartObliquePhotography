@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ColorFeature.h" />
+    <ClInclude Include="EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="Feature.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InitialClusterCreator.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="PlanarityFeature.h" />
     <ClInclude Include="PointClassifier.h" />
     <ClInclude Include="PointCloudRetouchCommon.h" />
+    <ClInclude Include="PointCloudRetouchConfig.h" />
     <ClInclude Include="PointCloudRetouchExport.h" />
     <ClInclude Include="PointCloudRetouchInterface.h" />
     <ClInclude Include="PointCloudRetouchManager.h" />
@@ -176,6 +178,7 @@
   <ItemGroup>
     <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="EuclideanNeighborhoodBuilder.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
     <ClCompile Include="NeighborhoodBuilder.cpp" />
     <ClCompile Include="pch.cpp">
@@ -185,6 +188,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PlanarityFeature.cpp" />
+    <ClCompile Include="PointCloudRetouchConfig.cpp" />
     <ClCompile Include="PointCloudRetouchInterface.cpp" />
     <ClCompile Include="PointCloudRetouchManager.cpp" />
     <ClCompile Include="PointCloudRetouchScene.cpp" />

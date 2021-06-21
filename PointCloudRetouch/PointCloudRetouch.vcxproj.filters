@@ -13,11 +13,11 @@
     <Filter Include="NeighborhoodBuilder">
       <UniqueIdentifier>{b7765bfa-9481-4819-bba0-9486d93dfe97}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PointCluster\Feature">
+      <UniqueIdentifier>{926b71ef-dc67-44ac-ae60-fb66ef7901a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Feature.h">
-      <Filter>PointCluster</Filter>
-    </ClInclude>
     <ClInclude Include="PointCluster.h">
       <Filter>PointCluster</Filter>
     </ClInclude>
@@ -51,14 +51,21 @@
     <ClInclude Include="NeighborhoodBuilder.h">
       <Filter>NeighborhoodBuilder</Filter>
     </ClInclude>
-    <ClInclude Include="VfhFeature.h">
-      <Filter>PointCluster</Filter>
+    <ClInclude Include="Feature.h">
+      <Filter>PointCluster\Feature</Filter>
     </ClInclude>
     <ClInclude Include="PlanarityFeature.h">
-      <Filter>PointCluster</Filter>
+      <Filter>PointCluster\Feature</Filter>
     </ClInclude>
+    <ClInclude Include="VfhFeature.h">
+      <Filter>PointCluster\Feature</Filter>
+    </ClInclude>
+    <ClInclude Include="EuclideanNeighborhoodBuilder.h">
+      <Filter>NeighborhoodBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudRetouchConfig.h" />
     <ClInclude Include="ColorFeature.h">
-      <Filter>PointCluster</Filter>
+      <Filter>PointCluster\Feature</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -90,14 +97,18 @@
     <ClCompile Include="NeighborhoodBuilder.cpp">
       <Filter>NeighborhoodBuilder</Filter>
     </ClCompile>
-    <ClCompile Include="VfhFeature.cpp">
-      <Filter>PointCluster</Filter>
-    </ClCompile>
     <ClCompile Include="PlanarityFeature.cpp">
-      <Filter>PointCluster</Filter>
+      <Filter>PointCluster\Feature</Filter>
     </ClCompile>
+    <ClCompile Include="VfhFeature.cpp">
+      <Filter>PointCluster\Feature</Filter>
+    </ClCompile>
+    <ClCompile Include="EuclideanNeighborhoodBuilder.cpp">
+      <Filter>NeighborhoodBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudRetouchConfig.cpp" />
     <ClCompile Include="ColorFeature.cpp">
-      <Filter>PointCluster</Filter>
+      <Filter>PointCluster\Feature</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
