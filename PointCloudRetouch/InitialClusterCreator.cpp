@@ -101,12 +101,12 @@ void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl
 		Position *= Resolution;
 		Eigen::Vector3f Coord{ Position.x(), Position.y(), Position.z() };
 		
-		if (Coord[0] > 0 && Coord[0] < Resolution && Coord[1] > 0 && Coord[1] < Resolution && Coord[3] < Raster[Coord[0]][Coord[1]].first)
+		if (Coord[0] > 0 && Coord[0] < Resolution && Coord[1] > 0 && Coord[1] < Resolution && Coord[2] < Raster[Coord[0]][Coord[1]].first)
 		{
-			Raster[Coord[0]][Coord[1]].first = Coord[3];
+			Raster[Coord[0]][Coord[1]].first = Coord[2];
 			Raster[Coord[0]][Coord[1]].second = i;
-			if (Coord[3] < MinDepth)
-				MinDepth = Coord[3];
+			if (Coord[2] < MinDepth)
+				MinDepth = Coord[2];
 		}
 	}
 
