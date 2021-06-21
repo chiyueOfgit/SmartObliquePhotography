@@ -57,6 +57,9 @@
     <ClInclude Include="PlanarityFeature.h">
       <Filter>PointCluster</Filter>
     </ClInclude>
+    <ClInclude Include="ColorFeature.h">
+      <Filter>PointCluster</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -91,6 +94,9 @@
       <Filter>PointCluster</Filter>
     </ClCompile>
     <ClCompile Include="PlanarityFeature.cpp">
+      <Filter>PointCluster</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorFeature.cpp">
       <Filter>PointCluster</Filter>
     </ClCompile>
   </ItemGroup>
