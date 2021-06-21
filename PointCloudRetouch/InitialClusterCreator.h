@@ -15,10 +15,9 @@ namespace hiveObliquePhotography
 			CPointCluster* createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vRadius, double vHardness, EPointLabel vClusterLabel, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, const hiveConfig::CHiveConfig *vClusterConfig);
 
 #ifdef _UNIT_TEST
-			void testDivideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<double> vPointHardnessSet, double vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet) { __divideUserSpecifiedRegion(vUserMarkedRegion, vPointHardnessSet, vDivideThreshold, voFeatureGenerationSet, voValidationSet); }
-			void testGenerateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, double vRadius, double vHardness, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, std::vector<double>& voPointHardnessSet) { __generateHardness4EveryPoint(vUserMarkedRegion, vRadius, vHardness, vCameraPos, vPvMatrix, voPointHardnessSet); }
-			pcl::index_t testComputeClusterCenter(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<double> vPointHardnessSet) { return __computeClusterCenter(vUserMarkedRegion, vPointHardnessSet); }
-			//可以把很重要的私有函数做个wrapper放在这里，就可以进行单元测试
+			void divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<double> vPointHardnessSet, double vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet) { __divideUserSpecifiedRegion(vUserMarkedRegion, vPointHardnessSet, vDivideThreshold, voFeatureGenerationSet, voValidationSet); }
+			void generateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, double vRadius, double vHardness, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, std::vector<double>& voPointHardnessSet) { __generateHardness4EveryPoint(vUserMarkedRegion, vRadius, vHardness, vCameraPos, vPvMatrix, voPointHardnessSet); }
+			pcl::index_t computeClusterCenter(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<double> vPointHardnessSet) { return __computeClusterCenter(vUserMarkedRegion, vPointHardnessSet); }
 #endif
 
 		private:
