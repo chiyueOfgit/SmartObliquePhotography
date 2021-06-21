@@ -47,13 +47,24 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 //FUNCTION: 
 void CPointClusterExpander::__initExpandingCandidateQueue(const CPointCluster* vCluster, std::queue<pcl::index_t>& voCandidateQueue)
 {
-
+	CPointCloudRetouchManager* pManager = CPointCloudRetouchManager::getInstance();
+	auto RegionIndices = vCluster->getCoreRegion();
+	for(auto& Index: RegionIndices)
+	{
+		std::vector<pcl::index_t> Neighborhood;
+		pManager->buildNeighborhood(Index, vCluster->getClusterIndex(), Neighborhood);
+		if(Neighborhood.empty())
+			continue;
+		for (auto Neighbor : Neighborhood) voCandidateQueue.push(Neighbor);
+	}
 }
 
 //*****************************************************************
 //FUNCTION: 
 bool CPointClusterExpander::__isReassigned2CurrentCluster(double vCurrentProbability, std::uint32_t vCurrentTimestamp, double vOldProbability, std::uint32_t vOldTimestamp)
 {
-//TODO£º
-	return true;
+	if (vCurrentProbability > vOldProbability || (vCurrentProbability > vOldProbability / 2 && vCurrentTimestamp - vOldTimestamp > 5))
+		return true;
+	else
+		return false;
 }
