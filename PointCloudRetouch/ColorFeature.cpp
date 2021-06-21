@@ -6,9 +6,9 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_EXCLUSIVE_PRODUCT(CColorFeature, KEYWORD::COLOR_FEATURE)
 
-#define EPSILON 1e-12
+#define EPSILON 1e-2
 
-const float ColorThreshold = 0.3;
+const float ColorThreshold = 30;
 const std::size_t K = 3;
 //*****************************************************************
 //FUNCTION: 
