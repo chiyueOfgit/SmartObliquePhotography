@@ -121,7 +121,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	if (m_AreaMode && m_MousePressStatus[0])
 	{
 		std::vector<pcl::index_t> PickedIndices;
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - 0.5, PosY - 0.5, PosX + 0.5, PosY + 0.5, PickedIndices);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - 5, PosY - 5, PosX + 5, PosY + 5, PickedIndices);
 
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
@@ -140,24 +140,24 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	if(m_LineMode)
 	{
-		if (m_MousePressStatus[0] || m_MousePressStatus[1])
-		{
-			std::vector<int> PickedIndices;
-			pcl::visualization::Camera Camera;
-			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-            const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
-			Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
-			Camera.computeViewMatrix(ViewMatrix);
-			Camera.computeProjectionMatrix(ProjectionMatrix);
-			const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-			
-			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + DeltaX, PosY + DeltaY, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
-			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
-			//AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
+		//if (m_MousePressStatus[0] || m_MousePressStatus[1])
+		//{
+		//	std::vector<int> PickedIndices;
+		//	pcl::visualization::Camera Camera;
+		//	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+  //          const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+		//	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+		//	Camera.computeViewMatrix(ViewMatrix);
+		//	Camera.computeProjectionMatrix(ProjectionMatrix);
+		//	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+		//	
+		//	m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + DeltaX, PosY + DeltaY, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
+		//	pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
+		//	//AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
 
-			//m_pVisualizer->refresh();
-			
-		}
+		//	//m_pVisualizer->refresh();
+		//	
+		//}
 
 		if (vEvent.getType() == pcl::visualization::MouseEvent::MouseButtonRelease
 			&& vEvent.getButton() == pcl::visualization::MouseEvent::LeftButton
@@ -176,11 +176,14 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 
 			//move to config
-			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + 10, PosY + 10, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX, PosY, PosX + 10, PosY + 10, PickedIndices);
 			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
 			//AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE).value() ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
 			
-			//m_pVisualizer->refresh();
+			if (m_UnwantedMode)
+				PointCloudRetouch::hiveMarkLitter(*Indices, 0.8, 0.5, { PosX, PosY }, PvMatrix, { Camera.window_size[0], Camera.window_size[1] });
+			else
+				PointCloudRetouch::hiveMarkBackground(*Indices, 0.8, 0.5, { PosX, PosY }, PvMatrix, { Camera.window_size[0], Camera.window_size[1] });
 
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 		}
