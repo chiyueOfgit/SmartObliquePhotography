@@ -59,7 +59,7 @@ bool CPointCluster::isBelongingTo(double vProbability) const
 	float ExpectRatio = 60.0f;
 	for (auto pFeature : m_FeatureSet)
 	{
-		if (vProbability > pFeature->getExpectProbability())
+		if (vProbability > 0)//pFeature->getExpectProbability())
 			Num++;
 	}
 	if (Num / m_FeatureSet.size() >= ExpectRatio)
