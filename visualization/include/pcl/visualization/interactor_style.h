@@ -280,7 +280,7 @@ namespace pcl
 
 
         inline int
-        areaPick(float StartX, float StartY, float EndX, float EndY, float Width, std::vector<int>& voIndices)
+        areaPick(float StartX, float StartY, float EndX, float EndY, std::vector<int>& voIndices)
         {
             auto picking = PointPickingCallback::New();
             auto iren = this->GetInteractor();

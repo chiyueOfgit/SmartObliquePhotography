@@ -36,6 +36,8 @@ namespace hiveObliquePhotography
 			bool m_PartitionMode = true;
 			bool m_LineMode = false;
 
+			bool m_AreaMode = false;
+
 			CPointCloudVisualizer* m_pVisualizer = nullptr;
 
 			CVisualizationConfig* m_pVisualizationConfig = nullptr;
