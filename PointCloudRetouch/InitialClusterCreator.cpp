@@ -4,8 +4,8 @@
 #include "PointCloudRetouchManager.h"
 #include "PointCloudRetouchCommon.h"
 
-#define initResolution 128
-#define DepthOffset 0.4
+#define initResolution 256
+#define DepthOffset 2
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -98,7 +98,8 @@ void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl
 		Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
 		Position /= 2.0;
 		MarkedRegionScreenCoord.push_back(Position);
-		Position *= Resolution;
+		Position.x() *= Resolution;
+		Position.y() *= Resolution;
 		Eigen::Vector3f Coord{ Position.x(), Position.y(), Position.z() };
 		
 		if (Coord[0] > 0 && Coord[0] < Resolution && Coord[1] > 0 && Coord[1] < Resolution && Coord[2] < Raster[Coord[0]][Coord[1]].first)
@@ -117,7 +118,7 @@ void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl
 			{
 				Eigen::Vector2f CoordXY = { MarkedRegionScreenCoord[Pair.second][0] * vWindowSize.first, MarkedRegionScreenCoord[Pair.second][1] * vWindowSize.second };
 				float Rate = (CoordXY - vCenter).norm() / vRadius;
-				if (Rate < vHardness)
+				if (Rate <= vHardness)
 					voPointHardnessSet[Pair.second] = 1;
 				else if(Rate > vHardness && Rate < 1)
 					voPointHardnessSet[Pair.second] = NormalDistribution<float>(2 * (Rate - vHardness) /(1 - vHardness));
