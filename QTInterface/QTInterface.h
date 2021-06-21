@@ -50,6 +50,7 @@ namespace hiveObliquePhotography
             bool __messageDockWidgetOutputText(QString vString);
             void __connectSignals();
             void __setActionsMutex();
+            void __setActionsEnabled();
             template <class T>
             bool __readConfigFile(const std::string& vFileName, T* vInstance);
             std::string __getFileName(const std::string& vFilePath);
