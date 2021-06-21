@@ -15,6 +15,13 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 	m_PointLabelSet.init(m_Scene.getNumPoint());
 	m_pConfig = vConfig;
 
+	if (_IS_STR_IDENTICAL(vConfig->getSubconfigAt(0)->getSubconfigType(), std::string("POINT_CLOUD_RETOUCN_CONFIG")))
+	{
+		_ASSERTE(vConfig->getNumSubconfig());
+		if (_IS_STR_IDENTICAL(vConfig->getSubconfigAt(0)->getName(), std::string("Retouch")))
+			vConfig = vConfig->getSubconfigAt(0);
+	}
+
 	for (auto i = 0; i < vConfig->getNumSubconfig(); i++)
 	{
 		const hiveConfig::CHiveConfig* pConfig = vConfig->getSubconfigAt(i);

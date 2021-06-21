@@ -15,7 +15,7 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 {
 	CPointCluster* pInitialCluster = new CPointCluster;
 
-	std::vector<float> PointHardnessSet(vUserMarkedRegion.size(),0.0);
+	std::vector<float> PointHardnessSet(vUserMarkedRegion.size(), 0.0);
 	__generateHardness4EveryPoint(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, PointHardnessSet);
 
 	pcl::index_t ClusterCenter = __computeClusterCenter(vUserMarkedRegion, PointHardnessSet, vCenter, vPvMatrix, vWindowSize);
