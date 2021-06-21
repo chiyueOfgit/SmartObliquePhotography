@@ -15,7 +15,7 @@ namespace hiveObliquePhotography
 
 			void reset(PointCloud_t::Ptr vPointCloud);
 
-			void refresh(bool vResetCamera = false);
+			void refresh(const std::vector<std::size_t>& vPointLabel, bool vResetCamera = false);
 
 			void run();
 

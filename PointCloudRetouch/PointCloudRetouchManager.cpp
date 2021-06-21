@@ -56,6 +56,25 @@ CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::ve
 	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vHardness, vRadius, vTargetLabel, vCenter, vPvMatrix, vWindowSize, pClusterConfig);
 }
 
+bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::__dumpPointLabel4Visualizer(std::vector<std::size_t>& voPointLabel) const
+{
+	auto NumPoints = m_Scene.getNumPoint();
+	if (NumPoints > 0)
+	{
+		voPointLabel.clear();
+
+		for (int i = 0; i < NumPoints; i++)
+		{
+			auto Label = m_PointLabelSet.getLabelAt(i);
+			voPointLabel.push_back(static_cast<std::size_t>(Label));
+		}
+
+		return true;
+	}
+	else
+		return false;
+}
+
 //*****************************************************************
 //FUNCTION: 
 bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel)

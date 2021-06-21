@@ -9,9 +9,9 @@ void hiveObliquePhotography::Visualization::hiveInitVisualizer(PointCloud_t::Ptr
 	CPointCloudVisualizer::getInstance()->init(vPointCloud, vIsInQt);
 }
 
-void hiveObliquePhotography::Visualization::hiveRefreshVisualizer(bool vResetCamera)
+void hiveObliquePhotography::Visualization::hiveRefreshVisualizer(const std::vector<std::size_t>& vPointLabel, bool vResetCamera)
 {
-	CPointCloudVisualizer::getInstance()->refresh(vResetCamera);
+	CPointCloudVisualizer::getInstance()->refresh(vPointLabel, vResetCamera);
 }
 
 void hiveObliquePhotography::Visualization::hiveRunVisualizerLoop()

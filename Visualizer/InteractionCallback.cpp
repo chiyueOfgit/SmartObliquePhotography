@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "InteractionCallback.h"
 #include "PointCloudVisualizer.h"
-#include "AutoRetouchInterface.h"
 #include "VisualizationConfig.h"
 #include "PointCloudRetouchScene.h"
 #include <common/ConfigInterface.h>
@@ -19,7 +18,6 @@ CInteractionCallback::CInteractionCallback(pcl::visualization::PCLVisualizer* vV
 	vVisualizer->registerAreaPickingCallback([&](const auto& vEvent) { areaPicking(vEvent); });
 
 	m_pVisualizationConfig = CVisualizationConfig::getInstance();
-	AutoRetouch::hiveGetAutoRetouchConfig(m_pAutoRetouchConfig);
 }
 
 //*****************************************************************
@@ -36,20 +34,20 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 
 	if (vEvent.keyDown())
 	{
-		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(VIEW_BINARY_RESULT).value())
-		{
-			std::string ClusterType;
-			if (m_pAutoRetouchConfig->getAttribute<bool>(KEY_WORDS::ENABLE_VFH).value())
-				ClusterType = "vfh";
-			else if (m_pAutoRetouchConfig->getAttribute<bool>(KEY_WORDS::ENABLE_SCORE).value())
-				ClusterType = "score";
-			else if (m_pAutoRetouchConfig->getAttribute<bool>(KEY_WORDS::ENABLE_NORMAL).value())
-				ClusterType = "normal";
-			AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY, ClusterType);
-			m_pVisualizer->refresh();
-		}
+		//if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(VIEW_BINARY_RESULT).value())
+		//{
+		//	std::string ClusterType;
+		//	if (m_pAutoRetouchConfig->getAttribute<bool>(KEY_WORDS::ENABLE_VFH).value())
+		//		ClusterType = "vfh";
+		//	else if (m_pAutoRetouchConfig->getAttribute<bool>(KEY_WORDS::ENABLE_SCORE).value())
+		//		ClusterType = "score";
+		//	else if (m_pAutoRetouchConfig->getAttribute<bool>(KEY_WORDS::ENABLE_NORMAL).value())
+		//		ClusterType = "normal";
+		//	AutoRetouch::hiveExecuteBinaryClassifier(AutoRetouch::CLASSIFIER_BINARY, ClusterType);
+		//	m_pVisualizer->refresh();
+		//}
 
-		else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_BINARY_GROWING).value())
+		/*else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_BINARY_GROWING).value())
 		{
 			m_PartitionMode = !m_PartitionMode;
 		}
@@ -94,7 +92,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			else
 				AutoRetouch::hiveSwitchPointLabel(AutoRetouch::EPointLabel::UNWANTED, AutoRetouch::EPointLabel::DISCARDED);
 			m_pVisualizer->refresh();
-		}
+		}*/
 	}
 
 }
@@ -132,9 +130,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + DeltaX, PosY + DeltaY, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
 			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
-			AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
+			//AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
 
-			m_pVisualizer->refresh();
+			//m_pVisualizer->refresh();
 			
 		}
 	}
@@ -144,9 +142,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 //FUNCTION: 
 void hiveObliquePhotography::Visualization::CInteractionCallback::pointPicking(const pcl::visualization::PointPickingEvent& vEvent)
 {
-	auto Index = vEvent.getPointIndex();
-	float GroundHeight = m_pVisualizer->m_pSceneCloud->points[Index].z + 0.1f;
-		m_pAutoRetouchConfig->overwriteAttribute(KEY_WORDS::GROUND_TEST_THRESHOLD, GroundHeight);
+	//auto Index = vEvent.getPointIndex();
+	//float GroundHeight = m_pVisualizer->m_pSceneCloud->points[Index].z + 0.1f;
+	//	m_pAutoRetouchConfig->overwriteAttribute(KEY_WORDS::GROUND_TEST_THRESHOLD, GroundHeight);
 }
 
 //*****************************************************************
@@ -164,10 +162,10 @@ void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEven
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	
-	if (m_PartitionMode)
-		AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, PvMatrix);
-	else
-		AutoRetouch::hiveExecuteCompositeClusterAndGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, PvMatrix);
+	//if (m_PartitionMode)
+	//	AutoRetouch::hiveExecuteClusterAlg2CreateCluster(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, PvMatrix);
+	//else
+	//	AutoRetouch::hiveExecuteCompositeClusterAndGrowing(pIndices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::KEPT, CameraPos, PvMatrix);
 
-	m_pVisualizer->refresh();
+	//m_pVisualizer->refresh();
 }

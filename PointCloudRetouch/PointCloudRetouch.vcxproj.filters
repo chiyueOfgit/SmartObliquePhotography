@@ -60,13 +60,13 @@
     <ClInclude Include="VfhFeature.h">
       <Filter>PointCluster\Feature</Filter>
     </ClInclude>
-    <ClInclude Include="ColorFeature.h">
-      <Filter>PointCluster</Filter>
-    </ClInclude>
     <ClInclude Include="EuclideanNeighborhoodBuilder.h">
       <Filter>NeighborhoodBuilder</Filter>
     </ClInclude>
     <ClInclude Include="PointCloudRetouchConfig.h" />
+    <ClInclude Include="ColorFeature.h">
+      <Filter>PointCluster\Feature</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -103,13 +103,13 @@
     <ClCompile Include="VfhFeature.cpp">
       <Filter>PointCluster\Feature</Filter>
     </ClCompile>
-    <ClCompile Include="ColorFeature.cpp">
-      <Filter>PointCluster</Filter>
-    </ClCompile>
     <ClCompile Include="EuclideanNeighborhoodBuilder.cpp">
       <Filter>NeighborhoodBuilder</Filter>
     </ClCompile>
     <ClCompile Include="PointCloudRetouchConfig.cpp" />
+    <ClCompile Include="ColorFeature.cpp">
+      <Filter>PointCluster\Feature</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
