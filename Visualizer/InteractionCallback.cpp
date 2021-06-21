@@ -178,7 +178,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			//move to config
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - 10, PosY - 10, PosX + 10, PosY + 10, PickedIndices);
 			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
-			//AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE).value() ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
 			
 			if (m_UnwantedMode)
 				PointCloudRetouch::hiveMarkLitter(*Indices, 0.8, 10.0, { PosX, PosY }, PvMatrix, { Camera.window_size[0], Camera.window_size[1] });
@@ -186,6 +185,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				PointCloudRetouch::hiveMarkBackground(*Indices, 0.8, 10.0, { PosX, PosY }, PvMatrix, { Camera.window_size[0], Camera.window_size[1] });
 
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
+
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel4Visualizer(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
 		}
 	}
 }
