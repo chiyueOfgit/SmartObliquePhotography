@@ -47,7 +47,7 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 //FUNCTION: 
 void CPointClusterExpander::__initExpandingCandidateQueue(const CPointCluster* vCluster, std::queue<pcl::index_t>& voCandidateQueue)
 {
-
+	
 }
 
 //*****************************************************************
