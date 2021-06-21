@@ -60,6 +60,18 @@
     <ClInclude Include="..\PointCloudRetouch\NeighborhoodBuilder.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\PointCloudRetouch\ColorFeature.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PointCloudRetouch\framework.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PointCloudRetouch\PlanarityFeature.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PointCloudRetouch\VfhFeature.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp">
@@ -90,6 +102,21 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\PointCloudRetouch\RetouchTask.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\ColorFeature.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\dllmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\NeighborhoodBuilder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\PlanarityFeature.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\VfhFeature.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
