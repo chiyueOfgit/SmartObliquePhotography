@@ -52,7 +52,8 @@ CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::ve
 	const hiveConfig::CHiveConfig* pClusterConfig = (vTargetLabel == EPointLabel::KEPT) ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig();
 	_ASSERTE(pClusterConfig);
 
-	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vHardness, vRadius, vTargetLabel, vCenter, vPvMatrix, vWindowSize, pClusterConfig);
+	return nullptr;
+	//return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vHardness, vRadius, vTargetLabel, vCenter, vPvMatrix, vWindowSize, pClusterConfig);
 }
 
 //*****************************************************************

@@ -51,7 +51,7 @@ namespace hiveObliquePhotography
 			CPointCloudRetouchScene  m_Scene;
 			CRetouchTask             m_LitterMarker;
 			CRetouchTask             m_BackgroundMarker;
-			CInitialClusterCreator   m_InitialClusterCreator;
+			//CInitialClusterCreator   m_InitialClusterCreator;
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			hiveConfig::CHiveConfig* m_pConfig;
 			
