@@ -14,7 +14,9 @@ namespace hiveObliquePhotography
 			~CPointClusterExpander() = default;
 
 			virtual void runV(const CPointCluster* vCluster);
-
+#ifdef _UNIT_TEST
+			void initExpandingCandidateQueue(const CPointCluster* vCluster, std::queue<pcl::index_t>& voCandidateQueue){ __initExpandingCandidateQueue(const CPointCluster * vCluster, std::queue<pcl::index_t>&voCandidateQueue) };
+#endif // _UNIT_TEST
 		private:
 			void __initExpandingCandidateQueue(const CPointCluster* vCluster, std::queue<pcl::index_t>& voCandidateQueue);
 

@@ -18,6 +18,10 @@ namespace hiveObliquePhotography
 
 			const hiveConfig::CHiveConfig* getClusterConfig() const;
 
+#ifdef _UNIT_TEST
+			const auto getExpander() const { return m_pPointClusterExpander; }
+#endif
+
 		private:
 			CPointClusterExpander *m_pPointClusterExpander = nullptr;
 			const hiveConfig::CHiveConfig* m_pConfig;

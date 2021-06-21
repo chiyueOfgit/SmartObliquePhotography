@@ -11,6 +11,8 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 {
 	CPointCluster* pInitialCluster = new CPointCluster;
 
+	__cullingMarkedRegion2Circle(vUserMarkedRegion, vRadius, vCameraPos, vPvMatrix);
+
 	std::vector<double> PointHardnessSet;
 	__generateHardness4EveryPoint(vUserMarkedRegion, vRadius, vHardness, vCameraPos, vPvMatrix, PointHardnessSet);
 
@@ -35,20 +37,43 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 //FUNCTION: 
 void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<double> vPointHardnessSet, double vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet)
 {
-//TODO：根据阈值和点的hardness，把vUserMarkedRegion分为两个集合
+	for(size_t i = 0;i <vUserMarkedRegion.size();i++)
+	{
+		if (vPointHardnessSet[i] < vDivideThreshold)
+			voValidationSet.push_back(vUserMarkedRegion[i]);
+		else
+			voFeatureGenerationSet.push_back(vUserMarkedRegion[i]);
+	}
 }
 
 //*****************************************************************
 //FUNCTION: 
 pcl::index_t CInitialClusterCreator::__computeClusterCenter(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<double> vPointHardnessSet)
 {
-//TODO: 挑选hardness最高的点最为聚类中心
-	return 0;
+	double Max = -DBL_MAX;
+	size_t Position = 0;
+	for(size_t i = 0; i < vUserMarkedRegion.size(); i++)
+	{
+		if(vPointHardnessSet[i] > Max)
+		{
+			Position = i;
+			Max = vPointHardnessSet[i];
+		}
+	}
+	return vUserMarkedRegion[Position];
 }
 
 //*****************************************************************
 //FUNCTION: 
 void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, double vRadius, double vHardness, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, std::vector<double>& voPointHardnessSet)
 {
-//TODO: 为每个点计算一个hardness
+	for(auto& Index: vUserMarkedRegion)
+	{
+		const auto pCloud = PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getRetouchScene().getPointCloudScene();
+		Eigen::Vector4d Position = pCloud->at(Index).getVector4fMap().cast<double>();
+		Position.w() = 1.0;
+		Position = vPvMatrix * Position;
+		Position /= Position.eval().w();
+		Eigen::Vector2d Coord{ Position.x(), Position.y() };
+	}
 }
