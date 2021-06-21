@@ -60,6 +60,9 @@
     <ClInclude Include="ColorFeature.h">
       <Filter>PointCluster</Filter>
     </ClInclude>
+    <ClInclude Include="EuclideanNeighborhoodBuilder.h">
+      <Filter>NeighborhoodBuilder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -98,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="ColorFeature.cpp">
       <Filter>PointCluster</Filter>
+    </ClCompile>
+    <ClCompile Include="EuclideanNeighborhoodBuilder.cpp">
+      <Filter>NeighborhoodBuilder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

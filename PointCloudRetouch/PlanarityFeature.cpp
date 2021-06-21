@@ -5,6 +5,8 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
+_REGISTER_EXCLUSIVE_PRODUCT(CPlanarityFeature, KEYWORD::PLANARITY_FEATURE)
+
 //*****************************************************************
 //FUNCTION: 
 double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)

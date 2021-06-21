@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ColorFeature.h" />
+    <ClInclude Include="EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="Feature.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InitialClusterCreator.h" />
@@ -176,6 +177,7 @@
   <ItemGroup>
     <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="EuclideanNeighborhoodBuilder.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
     <ClCompile Include="NeighborhoodBuilder.cpp" />
     <ClCompile Include="pch.cpp">
