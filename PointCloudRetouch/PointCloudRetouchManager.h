@@ -37,7 +37,6 @@ namespace hiveObliquePhotography
 #ifdef _UNIT_TEST
 			const auto& getClusterSet() const { return m_PointClusterSet; }
 			const auto& getLabelSet() const { return m_PointLabelSet; }
-			const auto& getRetouchScene() const { return m_Scene; }
 			const auto& getLitterMarker() const { return m_LitterMarker; }
 			const auto& getBackgroundMarker() const { return m_BackgroundMarker; }
 #endif // _UNIT_TEST

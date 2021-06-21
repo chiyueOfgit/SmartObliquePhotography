@@ -16,7 +16,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 
 	//todo: 从配置文件建立builder
 	std::string BuilderSig = "";
-	m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(BuilderSig, vPointCloud, m_PointLabelSet);
+	m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(BuilderSig, vPointCloud, &m_PointLabelSet);
 	_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, "Fail to create specific neighborhood builder.", false);
 
 	for (auto i = 0; i < vConfig->getNumSubconfig(); i++)

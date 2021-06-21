@@ -7,6 +7,7 @@
 //  * GenerateHardness4EveryPoint: 能够以期望方式生成硬度
 //  * ComputeClusterCenter: 能够正确算出中心点
 //  * DivideUserSpecifiedRegion: 能够以期望方式划分区域
+//  * InitPointCluster: 能够正常初始化Cluster
 // 
 //  * CreateInitialCluster: 能够正确创建初始簇
 
