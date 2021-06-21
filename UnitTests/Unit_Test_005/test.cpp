@@ -32,7 +32,7 @@ TEST(Test_PointCloudVisualizer, TestInitAndRefresh)
 	hiveConfig::hiveParseConfig("PointCloudRetouchConfig.xml", hiveConfig::EConfigType::XML, pConfig);
 
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
-	pcl::io::loadPCDFile("TestModel/slice 3.pcd", *pCloud);
+	pcl::io::loadPCDFile(FilePaths.front(), *pCloud);
 
 	//auto pCloud = hiveInitPointCloudScene(FilePaths);
 	PointCloudRetouch::hiveInit(pCloud, pConfig);
