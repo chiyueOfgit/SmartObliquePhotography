@@ -5,6 +5,8 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
+_REGISTER_EXCLUSIVE_PRODUCT(CPlanarityFeature, KEYWORD::PLANARITY_FEATURE)
+
 //*****************************************************************
 //FUNCTION: 
 double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
@@ -14,10 +16,18 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	m_Peak = __computePeakDistance(pDeterminantCloud, m_Plane);
 	
 	float SumMatch = 0.0f;
+	int VaildNum = 0;
 	for (auto& i : vValidationSet)
-		SumMatch += evaluateFeatureMatchFactorV(i);
+	{
+		auto Match = evaluateFeatureMatchFactorV(i);
+		if (Match > 0)
+		{
+			++VaildNum;
+			SumMatch += Match;
+		}
+	}
 
-	return SumMatch / vValidationSet.size();
+	return SumMatch / VaildNum;
 }
 
 //*****************************************************************
@@ -27,14 +37,14 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	const auto& Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(vInputPoint);
 	float Distance = m_Plane.dot(Position);
 
+	if (Distance > m_Peak.second || Distance < m_Peak.first)
+		return 0;
+
 	if (Distance < 0)
-	{
-		return NormalDistribution(Distance / m_Peak.first * 2);
-	}
+		Distance /= m_Peak.first;
 	else
-	{
-		return NormalDistribution(Distance / m_Peak.second * 2);
-	}
+		Distance /= m_Peak.second;
+	return pow(Distance, 4) - 2.0f * pow(Distance, 2) + 1.0f;
 }
 
 //*****************************************************************
@@ -49,6 +59,8 @@ PointCloud_t::Ptr CPlanarityFeature::__createPositionCloud(const std::vector<pcl
 		Point.x = Position.x();
 		Point.y = Position.y();
 		Point.z = Position.z();
+
+		pCloud->push_back(Point);
 	}
 	return pCloud;
 }
@@ -59,7 +71,7 @@ Eigen::Vector4f CPlanarityFeature::__fitPlane(PointCloud_t::Ptr vCloud) const
 {
 	Eigen::VectorXf Coeff;
 	pcl::SampleConsensusModelPlane<PointCloud_t::PointType>::Ptr ModelPlane
-	(new pcl::SampleConsensusModelPlane<PointCloud_t::PointType>(vCloud));
+		(new pcl::SampleConsensusModelPlane<PointCloud_t::PointType>(vCloud));
 	pcl::RandomSampleConsensus<PointCloud_t::PointType> Ransac(ModelPlane);
 	//TODO: move to config
 	Ransac.setDistanceThreshold(0.3);

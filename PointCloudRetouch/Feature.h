@@ -8,7 +8,7 @@ namespace hiveObliquePhotography
 		{
 		public:
 			IFeature() = default;
-			virtual ~IFeature();
+			virtual ~IFeature() = default;
 
 			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vFeatureConfig)
 			{

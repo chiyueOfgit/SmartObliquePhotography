@@ -7,8 +7,8 @@ namespace hiveObliquePhotography
 		class IPointClassifier : public hiveDesignPattern::IProduct
 		{
 		public:
-			IPointClassifier();
-			~IPointClassifier();
+			IPointClassifier() = default;
+			~IPointClassifier() = default;
 
 			template<class TConcreteClassifier, class... TArgs>
 			bool execute(TArgs&&... vArgs)

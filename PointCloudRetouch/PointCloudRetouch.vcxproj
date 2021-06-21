@@ -153,6 +153,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ColorFeature.h" />
+    <ClInclude Include="EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="Feature.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="InitialClusterCreator.h" />
@@ -173,7 +175,9 @@
     <ClInclude Include="VfhFeature.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="EuclideanNeighborhoodBuilder.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
     <ClCompile Include="NeighborhoodBuilder.cpp" />
     <ClCompile Include="pch.cpp">
@@ -195,6 +199,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="PointCloudRetouchConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

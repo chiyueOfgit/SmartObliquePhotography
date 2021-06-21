@@ -37,6 +37,4 @@
 #include "PointCloudRetouchCommon.h"
 #include "PointCloudRetouchManager.h"
 
-using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
-
 #endif //PCH_H
