@@ -42,7 +42,6 @@ TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchScene)
 
 	Scene.init(pCloud);
 	ASSERT_EQ(Scene.getNumPoint(), 16145);
-	ASSERT_EQ(Scene.getPointCloudScene(), pCloud);
 }
 
 TEST(Test_InitPointCloudRetouch, DeathTest_InitSceneWithErrorPtr)
