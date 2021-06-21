@@ -18,7 +18,7 @@ namespace hiveObliquePhotography
 			std::vector<Eigen::Vector3i> __kMeansCluster(const std::vector<Eigen::Vector3i>& vData, std::size_t vK) const;
 
 			PointCloud_t::Ptr m_pCloud = nullptr;
-			std::vector<Eigen::Vector3i> m_MainColors;
+			std::vector<Eigen::Vector3i> m_MainBaseColors;
 		};
 	}
 

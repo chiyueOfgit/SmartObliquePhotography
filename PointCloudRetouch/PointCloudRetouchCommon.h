@@ -4,6 +4,8 @@ namespace hiveObliquePhotography
 {
 	namespace PointCloudRetouch
 	{
+		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+
 		namespace KEYWORD
 		{
 			const std::string VFH_FEATURE = "VFH_FEATURE";

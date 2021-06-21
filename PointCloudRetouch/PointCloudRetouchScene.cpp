@@ -20,25 +20,25 @@ void CPointCloudRetouchScene::init(PointCloud_t::Ptr vPointCloudScene)
 	m_pPointCloudScene = vPointCloudScene;
 }
 
-Eigen::Vector4f CPointCloudRetouchScene::getPositionAt(std::size_t vIndex) const
+Eigen::Vector4f CPointCloudRetouchScene::getPositionAt(pcl::index_t vIndex) const
 {
 	_ASSERTE(vIndex < m_pPointCloudScene->size());
 	return { m_pPointCloudScene->points[vIndex].x, m_pPointCloudScene->points[vIndex].y, m_pPointCloudScene->points[vIndex].z, 1.0 };
 }
 
-Eigen::Vector4f CPointCloudRetouchScene::getNormalAt(std::size_t vIndex) const
+Eigen::Vector4f CPointCloudRetouchScene::getNormalAt(pcl::index_t vIndex) const
 {
 	_ASSERTE(vIndex < m_pPointCloudScene->size());
 	return { m_pPointCloudScene->points[vIndex].normal_x, m_pPointCloudScene->points[vIndex].normal_y, m_pPointCloudScene->points[vIndex].normal_z, 0.0 };
 }
 
-Eigen::Vector4i CPointCloudRetouchScene::getColorAt(std::size_t vIndex) const
+Eigen::Vector3i CPointCloudRetouchScene::getColorAt(pcl::index_t vIndex) const
 {
 	_ASSERTE(vIndex < m_pPointCloudScene->size());
 	return __extractRgba(m_pPointCloudScene->points[vIndex].rgb);
 }
 
-Eigen::Vector4i CPointCloudRetouchScene::__extractRgba(float vRgba) const
+Eigen::Vector3i CPointCloudRetouchScene::__extractRgba(float vRgba) const
 {
 	union ColorLayout
 	{
@@ -54,12 +54,11 @@ Eigen::Vector4i CPointCloudRetouchScene::__extractRgba(float vRgba) const
 	ColorLayout Color;
 	Color.rgba = vRgba;
 
-	Eigen::Vector4i Rgba;
-	Rgba.x() = Color.r;
-	Rgba.y() = Color.g;
-	Rgba.z() = Color.b;
-	Rgba.w() = 255;	//todo: 透明度现在写死
+	Eigen::Vector3i Rgb;
+	Rgb.x() = Color.r;
+	Rgb.y() = Color.g;
+	Rgb.z() = Color.b;
 
-	return Rgba;
+	return Rgb;
 }
 
