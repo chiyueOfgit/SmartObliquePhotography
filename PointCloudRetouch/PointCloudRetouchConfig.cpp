@@ -20,6 +20,7 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("NEAREST_N", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	_defineAttribute("RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("INIT_RESOLUTION", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
+	_defineAttribute("HARDNESS_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("DEPTH_OFFSET", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("EXPECT_PROBABILITY", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("DISTANCE_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);

@@ -4,7 +4,7 @@
 #include "PointCloudRetouchManager.h"
 #include "PointCloudRetouchCommon.h"
 
-#define initResolution 256
+#define initResolution 512
 #define DepthOffset 2
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
