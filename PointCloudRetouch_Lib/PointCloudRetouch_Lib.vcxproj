@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\PointCloudRetouch\ColorFeature.h" />
+    <ClInclude Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="..\PointCloudRetouch\Feature.h" />
     <ClInclude Include="..\PointCloudRetouch\framework.h" />
     <ClInclude Include="..\PointCloudRetouch\InitialClusterCreator.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="..\PointCloudRetouch\PlanarityFeature.h" />
     <ClInclude Include="..\PointCloudRetouch\PointClassifier.h" />
     <ClInclude Include="..\PointCloudRetouch\PointCloudRetouchCommon.h" />
+    <ClInclude Include="..\PointCloudRetouch\PointCloudRetouchConfig.h" />
     <ClInclude Include="..\PointCloudRetouch\PointCloudRetouchExport.h" />
     <ClInclude Include="..\PointCloudRetouch\PointCloudRetouchInterface.h" />
     <ClInclude Include="..\PointCloudRetouch\PointCloudRetouchManager.h" />
@@ -176,9 +178,11 @@
   <ItemGroup>
     <ClCompile Include="..\PointCloudRetouch\ColorFeature.cpp" />
     <ClCompile Include="..\PointCloudRetouch\dllmain.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.cpp" />
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp" />
     <ClCompile Include="..\PointCloudRetouch\NeighborhoodBuilder.cpp" />
     <ClCompile Include="..\PointCloudRetouch\PlanarityFeature.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\PointCloudRetouchConfig.cpp" />
     <ClCompile Include="..\PointCloudRetouch\PointCloudRetouchInterface.cpp" />
     <ClCompile Include="..\PointCloudRetouch\PointCloudRetouchManager.cpp" />
     <ClCompile Include="..\PointCloudRetouch\PointCloudRetouchScene.cpp" />

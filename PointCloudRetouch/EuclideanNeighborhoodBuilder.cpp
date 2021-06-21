@@ -4,7 +4,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_EXCLUSIVE_PRODUCT(CEuclideanNeighborhoodBuilder, KEYWORD::EUCLIDEAN_NEIGHBOR_BUILDER)
+_REGISTER_NORMAL_PRODUCT(CEuclideanNeighborhoodBuilder, KEYWORD::EUCLIDEAN_NEIGHBOR_BUILDER)
 
 //*****************************************************************
 //FUNCTION: 
@@ -25,7 +25,7 @@ void CEuclideanNeighborhoodBuilder::__extraInitV()
 		m_pCloud->push_back(TempPoint);
 	}
 
-	m_pTree->setInputCloud(m_pCloud);
+//	m_pTree->setInputCloud(m_pCloud);  程序会在这里崩掉
 }
 
 //*****************************************************************
