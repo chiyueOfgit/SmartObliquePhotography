@@ -170,6 +170,7 @@
     <ClInclude Include="PointClusterSet.h" />
     <ClInclude Include="PointLabelSet.h" />
     <ClInclude Include="RetouchTask.h" />
+    <ClInclude Include="VfhFeature.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="PointClusterSet.cpp" />
     <ClCompile Include="PointLabelSet.cpp" />
     <ClCompile Include="RetouchTask.cpp" />
+    <ClCompile Include="VfhFeature.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

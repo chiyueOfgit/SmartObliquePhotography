@@ -12,10 +12,11 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 
 	double Probability = 0;
 
-	for (auto i=0; i<m_FeatureSet.size(); i++)
+	for (auto i = 0; i < m_FeatureSet.size(); i++)
 	{
 		if (m_FeatureWeightSet[i] == 0) continue;
-
+		
+		Probability += m_FeatureWeightSet[i] * m_FeatureSet[i]->evaluateFeatureMatchFactorV(vInputPoint);
 	}
 
 	_ASSERTE((Probability >= 0) && (Probability <= 1));
@@ -47,11 +48,22 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 //FUNCTION: 
 void CPointCluster::__createFeatureObjectSet()
 {
+
 }
 
 //*****************************************************************
 //FUNCTION: 
 bool CPointCluster::isBelongingTo(double vProbability) const
 {
-	return true;
+	int Num = 0;
+	float ExpectRatio = 60.0f;
+	for (auto pFeature : m_FeatureSet)
+	{
+		if (vProbability > pFeature->getExpectProbability())
+			Num++;
+	}
+	if (Num / m_FeatureSet.size() >= ExpectRatio)
+		return true;
+	else
+		return false;
 }
