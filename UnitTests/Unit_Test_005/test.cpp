@@ -3,6 +3,8 @@
 #include "ObliquePhotographyDataInterface.h"
 #include "PointCloudRetouchInterface.h"
 #include "VisualizationInterface.h"
+#include "PointCloudRetouchConfig.h"
+#include "pcl/io/pcd_io.h"
 
 using namespace hiveObliquePhotography;
 
@@ -26,9 +28,17 @@ TEST(Test_PointCloudVisualizer, TestInitAndRefresh)
 	//
 	//system("pause");
 
-	auto pCloud = hiveInitPointCloudScene(FilePaths);
-	PointCloudRetouch::hiveInit(pCloud, )
+	hiveConfig::CHiveConfig* pConfig = new PointCloudRetouch::CPointCloudRetouchConfig;
+	hiveConfig::hiveParseConfig("PointCloudRetouchConfig.xml", hiveConfig::EConfigType::XML, pConfig);
+
+	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	pcl::io::loadPCDFile("TestModel/slice 3.pcd", *pCloud);
+
+	//auto pCloud = hiveInitPointCloudScene(FilePaths);
+	PointCloudRetouch::hiveInit(pCloud, pConfig);
 	Visualization::hiveInitVisualizer(pCloud, false);
-	Visualization::hiveRefreshVisualizer(true);
+	std::vector<std::size_t> PointLabel;
+	PointCloudRetouch::hiveDumpPointLabel4Visualizer(PointLabel);
+	Visualization::hiveRefreshVisualizer(PointLabel, true);
 	Visualization::hiveRunVisualizerLoop();
 }
