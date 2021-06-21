@@ -275,11 +275,26 @@ namespace pcl
             iren->SetEventPosition(EndX, EndY);
 
             int result = picking->performLinePick(iren, Width, voIndices);
-            delete picking;
             return result;
         }
 
 
+        inline int
+        areaPick(float StartX, float StartY, float EndX, float EndY, float Width, std::vector<int>& voIndices)
+        {
+            auto picking = PointPickingCallback::New();
+            auto iren = this->GetInteractor();
+
+            picking->x_ = StartX;
+            picking->y_ = StartY;
+            iren->SetEventPosition(EndX, EndY);
+
+            int result = picking->performAreaPick(iren, voIndices);
+            return result;
+        }
+
+        inline void switchMode(bool vPick);
+    	
        protected:
         /** \brief Set to true after initialization is complete. */
         bool init_;
