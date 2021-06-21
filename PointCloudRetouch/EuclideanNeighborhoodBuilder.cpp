@@ -28,6 +28,8 @@ void CEuclideanNeighborhoodBuilder::__extraInitV()
 	m_pTree->setInputCloud(m_pCloud);
 }
 
+//*****************************************************************
+//FUNCTION: 
 void CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed, std::vector<pcl::index_t>& voNeighborhood)
 {
 	//config

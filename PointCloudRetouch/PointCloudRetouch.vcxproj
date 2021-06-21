@@ -163,6 +163,7 @@
     <ClInclude Include="PlanarityFeature.h" />
     <ClInclude Include="PointClassifier.h" />
     <ClInclude Include="PointCloudRetouchCommon.h" />
+    <ClInclude Include="PointCloudRetouchConfig.h" />
     <ClInclude Include="PointCloudRetouchExport.h" />
     <ClInclude Include="PointCloudRetouchInterface.h" />
     <ClInclude Include="PointCloudRetouchManager.h" />
@@ -187,6 +188,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PlanarityFeature.cpp" />
+    <ClCompile Include="PointCloudRetouchConfig.cpp" />
     <ClCompile Include="PointCloudRetouchInterface.cpp" />
     <ClCompile Include="PointCloudRetouchManager.cpp" />
     <ClCompile Include="PointCloudRetouchScene.cpp" />

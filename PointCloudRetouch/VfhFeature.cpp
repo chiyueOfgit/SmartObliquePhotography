@@ -83,13 +83,9 @@ void CVfhFeature::__computeVfhDescriptor(const std::vector<pcl::index_t>& vPoint
 		voVfhDescriptor = Result.getMatrixXfMap(pcl::VFHSignature308::descriptorSize(), pcl::VFHSignature308::descriptorSize(), 0).col(0);
 }
 
-<<<<<<< HEAD
 //*****************************************************************
 //FUNCTION: 
-double CVfhFeature::__blockDotVfhDescriptor(const Eigen::Matrix<float, 308, 1>& vLVfh, const Eigen::Matrix<float, 308, 1>& vRVfh, std::size_t vBlockSize) const
-=======
 double CVfhFeature::__blockDotVfhDescriptor(const Eigen::Matrix<float, VfhDimension, 1>& vLVfh, const Eigen::Matrix<float, VfhDimension, 1>& vRVfh, std::size_t vBlockSize) const
->>>>>>> 944e3923129530ed6493b5cad0b547ef4c94ff75
 {
 	if (vBlockSize <= 0)
 		vBlockSize = 5;

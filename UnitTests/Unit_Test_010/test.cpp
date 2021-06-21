@@ -5,6 +5,7 @@
 #include "NeighborhoodBuilder.h"
 #include "RetouchTask.h"
 #include "PointCloudRetouchManager.h"
+#include "PointCloudRetouchConfig.h"
 
 //主要围绕CPointCloudRetouchManager::init()进行测试
 //注意不要直接一来就直接测试这个函数，看看这个函数的实现，目前在其内部调用了其他几个类的公有函数，要分别针对这些公有函数
@@ -152,14 +153,13 @@ TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchManager)
 {
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(g_CloudPath, *pCloud);
-	hiveConfig::CHiveConfig* pConfig = nullptr;
-	hiveConfig::hiveParseConfig(g_ConfigPath, hiveConfig::EConfigType::XML, pConfig);
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	hiveConfig::hiveParseConfig("PointCloudRetouchConfig.xml", hiveConfig::EConfigType::XML, pConfig);
 	auto pManager = CPointCloudRetouchManager::getInstance();
 
 	pManager->init(pCloud, pConfig);
 	ASSERT_EQ(pManager->getClusterSet().getNumCluster(), 0);
 	ASSERT_EQ(pManager->getLabelSet().getSize(), pCloud->size());
-	ASSERT_EQ(pManager->getRetouchScene().getPointCloudScene(), pCloud);
 	ASSERT_NE(pManager->getLitterMarker().getExpander(), nullptr);
 	ASSERT_NE(pManager->getBackgroundMarker().getExpander(), nullptr);
 }
