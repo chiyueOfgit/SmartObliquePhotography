@@ -24,7 +24,7 @@ namespace hiveObliquePhotography
 			}
 
 			bool init(PointCloud_t::Ptr vPointCloud, const hiveConfig::CHiveConfig* vConfig);
-			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel);
+			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2d& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<double, double>& vWindowSize, EPointLabel vTargetLabel);
 
 			std::size_t   getNumCluster() const { return m_PointClusterSet.getNumCluster(); }
 			std::uint32_t addAndGetTimestamp() { m_Timestamp++; return m_Timestamp; }
@@ -55,7 +55,7 @@ namespace hiveObliquePhotography
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			hiveConfig::CHiveConfig* m_pConfig;
 			
-			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector3f& vCameraPos, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel);
+			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2d& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<double, double>& vWindowSize, EPointLabel vTargetLabel);
 
 		friend class hiveDesignPattern::CSingleton<CPointCloudRetouchManager>;
 		};
