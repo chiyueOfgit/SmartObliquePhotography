@@ -3,6 +3,7 @@
 #include "PointCloudVisualizer.h"
 #include "AutoRetouchInterface.h"
 #include "VisualizationConfig.h"
+#include "PointCloudRetouchScene.h"
 #include <common/ConfigInterface.h>
 
 using namespace hiveObliquePhotography::Visualization;

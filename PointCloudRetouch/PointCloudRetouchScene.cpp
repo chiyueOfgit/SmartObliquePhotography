@@ -20,19 +20,19 @@ void CPointCloudRetouchScene::init(PointCloud_t::Ptr vPointCloudScene)
 	m_pPointCloudScene = vPointCloudScene;
 }
 
-Eigen::Vector4d CPointCloudRetouchScene::getPositionAt(std::size_t vIndex)
+Eigen::Vector4d CPointCloudRetouchScene::getPositionAt(pcl::index_t vIndex)
 {
 	_ASSERTE(vIndex < m_pPointCloudScene->size());
 	return { m_pPointCloudScene->points[vIndex].x, m_pPointCloudScene->points[vIndex].y, m_pPointCloudScene->points[vIndex].z, 1.0 };
 }
 
-Eigen::Vector4d CPointCloudRetouchScene::getNormalAt(std::size_t vIndex)
+Eigen::Vector4d CPointCloudRetouchScene::getNormalAt(pcl::index_t vIndex)
 {
 	_ASSERTE(vIndex < m_pPointCloudScene->size());
 	return { m_pPointCloudScene->points[vIndex].normal_x, m_pPointCloudScene->points[vIndex].normal_y, m_pPointCloudScene->points[vIndex].normal_z, 0.0 };
 }
 
-Eigen::Vector4i CPointCloudRetouchScene::getColorAt(std::size_t vIndex)
+Eigen::Vector4i CPointCloudRetouchScene::getColorAt(pcl::index_t vIndex)
 {
 	_ASSERTE(vIndex < m_pPointCloudScene->size());
 	return __extractRgba(m_pPointCloudScene->points[vIndex].rgb);
