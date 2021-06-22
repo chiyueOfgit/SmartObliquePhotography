@@ -16,13 +16,13 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	
 	auto pDeterminantCloud = __createPositionCloud(vDeterminantPointSet);
 	auto Plane = __fitPlane(pDeterminantCloud);
-	if (Plane.norm() == 0)
+	if (Plane.norm() < 1.0f)
 		return 0.0;
 	else
 		m_Plane = Plane;
 	m_Peak = __computePeakDistance(pDeterminantCloud, m_Plane);
 	
-	float SumMatch = 0.0f;
+	double SumMatch = 0.0;
 	for (auto& i : vValidationSet)
 	{
 		SumMatch += evaluateFeatureMatchFactorV(i);
