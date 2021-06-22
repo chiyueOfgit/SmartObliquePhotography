@@ -21,9 +21,12 @@
 #include <pcl/point_cloud.h>
 
 #include "common/Product.h"
-#include "common/Factory.h"
 #include "common/Singleton.h"
+#include "common/CommonMicro.h"
 #include "common/CommonInterface.h"
 #include "common/EventLoggerInterface.h"
 #include "common/DesignPatternInterface.h"
+#include "common/HiveConfig.h"
+#include "common/ConfigInterface.h"
 
+using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;

@@ -40,6 +40,7 @@ namespace hiveObliquePhotography
             QDockWidget* m_pPointPickingDockWidget = nullptr;
 
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
+            hiveConfig::CHiveConfig* m_pPointCloudRetouchConfig = nullptr;
             //PointCloudRetouch::CPointCloudRetouchConfig* m_pPointCloudRetouchConfig = nullptr;
 
             void __initialVTKWidget();
@@ -48,8 +49,9 @@ namespace hiveObliquePhotography
             void __initialMessageDockWidget();
             void __initialDockWidgetTitleBar(QDockWidget* vParentWidget, const std::string& vTitleBarText);
             void __initialSlider(const QStringList& vFilePathList);
-            bool __messageDockWidgetOutputText(QString vString);
             void __connectSignals();
+            void __parseConfigFile();
+            bool __messageDockWidgetOutputText(QString vString);
             std::string __getFileName(const std::string& vFilePath);
             std::string __getDirectory(const std::string& vFilePath);
 
