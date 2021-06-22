@@ -10,6 +10,9 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 {
 	_ASSERTE(!m_FeatureSet.empty() && !m_FeatureWeightSet.empty());
 
+	if (vInputPoint < 0 || vInputPoint > CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint())
+		_THROW_RUNTIME_ERROR("Index is out of range");
+	
 	double Probability = 0;
 
 	for (auto i = 0; i < m_FeatureSet.size(); i++)
