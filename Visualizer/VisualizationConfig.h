@@ -16,6 +16,7 @@ namespace hiveObliquePhotography
 		const std::string LINEWIDTH = "LINEWIDTH";
 		const std::string UNDO = "UNDO";
 		const std::string SCREEN_CIRCLE_RADIUS = "SCREEN_CIRCLE_RADIUS";
+		const std::string SCREEN_CIRCLE_HARDNESS = "SCREEN_CIRCLE_HARDNESS";
 
 		class CVisualizationConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CVisualizationConfig>
 		{
@@ -51,7 +52,8 @@ namespace hiveObliquePhotography
 				_defineAttribute(UNDO, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(LINEWIDTH, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 				_defineAttribute(SCREEN_CIRCLE_RADIUS, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
-				
+				_defineAttribute(SCREEN_CIRCLE_HARDNESS, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+
 				_defineAttribute(POINT_SHOW_SIZE, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 				_defineAttribute(POINT_SHOW_SIZE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 
