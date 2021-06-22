@@ -29,7 +29,6 @@
 #include "VisualizationInterface.h"
 #include "PointCloudRetouchConfig.h"
 
-
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
 
@@ -131,6 +130,22 @@ void QTInterface::__parseConfigFile()
     }
 }
 
+bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
+{
+    const auto& FileName = QTInterface::__getFileName(vFilePath);
+
+    QStandardItem* StandardItem = new QStandardItem(QString::fromStdString(FileName));
+    StandardItem->setCheckable(true);
+    StandardItem->setCheckState(Qt::Checked);
+    StandardItem->setEditable(false);
+    m_pResourceSpaceStandardItemModels->appendRow(StandardItem);
+
+    m_CurrentCloud = FileName;
+    QTInterface::__messageDockWidgetOutputText(QString::fromStdString(vFilePath + " is opened."));
+
+    return true;
+}
+
 bool QTInterface::__messageDockWidgetOutputText(QString vString)
 {
     QDateTime CurrentDateTime = QDateTime::currentDateTime();
@@ -186,20 +201,23 @@ void QTInterface::onActionOpen()
     {
         m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
         PointCloudRetouch::hiveInit(pCloud, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(pCloud);
+        Visualization::hiveInitVisualizer(pCloud, true);
         //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         QTInterface::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel, true);
+        Visualization::hiveRunVisualizerLoop();
         QTInterface::__initialSlider(FilePathList);
 
         if (FilePathSet.size() == 1)
         {
+            QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
         }
         else
         {
             m_SceneIndex++;
+            QTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
         }
     }
 }
