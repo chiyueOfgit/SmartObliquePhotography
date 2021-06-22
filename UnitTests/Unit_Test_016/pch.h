@@ -24,10 +24,10 @@
 #include "common/Product.h"
 #include "common/Singleton.h"
 #include "common/CommonMicro.h"
+#include "common/HiveConfig.h"
 #include "common/CommonInterface.h"
 #include "common/EventLoggerInterface.h"
 #include "common/DesignPatternInterface.h"
-#include "common/HiveConfig.h"
 #include "common/ConfigInterface.h"
 #include "common/MathInterface.h"
 
