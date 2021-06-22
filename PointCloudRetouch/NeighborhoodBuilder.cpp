@@ -11,7 +11,7 @@ INeighborhoodBuilder::~INeighborhoodBuilder()
 
 //*****************************************************************
 //FUNCTION: 
-bool INeighborhoodBuilder::onProductCreatedV(PointCloud_t::Ptr vPointCloudScene, const CPointLabelSet* vPointLabelSet)
+bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, PointCloud_t::Ptr vPointCloudScene, const CPointLabelSet* vPointLabelSet)
 {
 	_ASSERTE(vPointCloudScene && vPointLabelSet);
 	m_pPointCloudScene = vPointCloudScene;
@@ -20,7 +20,7 @@ bool INeighborhoodBuilder::onProductCreatedV(PointCloud_t::Ptr vPointCloudScene,
 	m_pVisitedTag = new bool[m_pPointCloudScene->size()];
 	reset();
 
-	__extraInitV();
+	__extraInitV(vConfig);
 	return true;
 }
 
