@@ -58,7 +58,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		}
 
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(CLUSTER_EXPANDER_MODE).value())
-			m_AreaMode = true;
+		{
+			static bool bCircleMode = m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value();
+			bCircleMode = !bCircleMode;
+			m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", bCircleMode);
+		}
 
 		//else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_LINEPICK).value())
 		//{
@@ -100,12 +104,6 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->refresh(PointLabel);
 		}
 	}
-	
-	if (vEvent.keyUp())
-	{
-		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(CLUSTER_EXPANDER_MODE).value())
-			m_AreaMode = false;
-	}
 }
 
 //*****************************************************************
@@ -126,11 +124,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	PosX = vEvent.getX();
 	PosY = vEvent.getY();
 	
-	if (m_AreaMode && m_MousePressStatus[0])
+	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value() && m_MousePressStatus[1])
 	{
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
 
-		if (m_pVisualizationConfig);
+		if (m_pVisualizationConfig)
 		{
 			std::optional<float> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>("SCREEN_CIRCLE_RADIUS");
 			if (ScreenCircleRadius.has_value())
@@ -161,7 +159,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->refresh(PointLabel);
 
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
-		m_AreaMode = false;
 
 	}
 

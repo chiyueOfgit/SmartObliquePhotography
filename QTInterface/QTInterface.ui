@@ -293,6 +293,9 @@ background-color: rgb(255, 255, 255);</string>
    </property>
   </action>
   <action name="actionPointPicking">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
      <normaloff>:/QTInterface/Icon/pointPicking.png</normaloff>:/QTInterface/Icon/pointPicking.png</iconset>
