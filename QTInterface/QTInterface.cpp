@@ -26,6 +26,9 @@
 #include "SliderSizeDockWidget.h"
 #include "ObliquePhotographyDataInterface.h"
 #include "PointCloudRetouchInterface.h"
+#include "VisualizationInterface.h"
+#include "PointCloudRetouchConfig.h"
+
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -116,6 +119,17 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     pSubWindow->show();
 }
 
+void QTInterface::__parseConfigFile()
+{
+    const std::string ConfigPath = "PointCloudRetouchConfig.xml";
+    m_pPointCloudRetouchConfig = new PointCloudRetouch::CPointCloudRetouchConfig;
+    if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, m_pPointCloudRetouchConfig) != hiveConfig::EParseResult::SUCCEED)
+    {
+        _HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+        return;
+    }
+}
+
 bool QTInterface::__messageDockWidgetOutputText(QString vString)
 {
     QDateTime CurrentDateTime = QDateTime::currentDateTime();
@@ -161,7 +175,7 @@ void QTInterface::onActionOpen()
     if (FilePathSet.empty())
         return;
 
-    auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
+    PointCloud_t::Ptr pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
     m_pCloud = pCloud;
 
     if (pCloud == nullptr)
@@ -170,22 +184,21 @@ void QTInterface::onActionOpen()
     if (FileOpenSuccessFlag)
     {
         m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
-        PointCloudRetouch::hiveInitPointCloudScene(pCloud);
+        PointCloudRetouch::hiveInit(pCloud, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(pCloud);
         //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         QTInterface::__initialVTKWidget();
-        Visualization::hiveRefreshVisualizer(true);
+        std::vector<std::size_t> PointLabel;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+        Visualization::hiveRefreshVisualizer(PointLabel, true);
         QTInterface::__initialSlider(FilePathList);
-        QTInterface::__setActionsEnabled();
 
         if (FilePathSet.size() == 1)
         {
-            QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
         }
         else
         {
             m_SceneIndex++;
-            QTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
         }
     }
 }
