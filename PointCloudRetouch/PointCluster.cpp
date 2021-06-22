@@ -51,7 +51,28 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 //FUNCTION: 
 void CPointCluster::__createFeatureObjectSet()
 {
-	
+	for (auto i = 0; i < m_pConfig->getNumSubconfig(); i++)
+	{
+		const hiveConfig::CHiveConfig* pConfig = m_pConfig->getSubconfigAt(i);
+		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("FEATURE")))
+		{
+			auto pCreateFunc = [&](const std::string& vFeatureName)
+			{
+				if (_IS_STR_IDENTICAL(pConfig->getName(), vFeatureName))
+				{
+					std::optional<std::string> PlanarFeatureSig = pConfig->getAttribute<std::string>("SIG");
+					_ASSERTE(PlanarFeatureSig.has_value());
+					auto pFeature = hiveDesignPattern::hiveGetOrCreateProduct<IFeature>(PlanarFeatureSig.value(), pConfig);
+					_HIVE_EARLY_EXIT(!pFeature, _FORMAT_STR1("Fail to execute cluster expander due to the failure of creating [%1%].", PlanarFeatureSig.value()));
+					m_FeatureSet.push_back(pFeature);
+				}
+			};
+			
+			pCreateFunc("PlanarFeature");
+			pCreateFunc("VFHFeature");
+			pCreateFunc("ColorFeature");
+		}
+	}
 }
 
 //*****************************************************************
