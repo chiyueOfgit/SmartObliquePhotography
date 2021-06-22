@@ -33,6 +33,7 @@ namespace hiveObliquePhotography
 			EPointLabel  m_Label;
 			pcl::index_t m_ClusterCenter;
 			std::vector<pcl::index_t> m_ClusterCoreRegion;
+			float m_ExpectProbability;
 
 			void __createFeatureObjectSet();
 		};

@@ -145,7 +145,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, 0.8, Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 
 		std::vector<std::size_t> PointLabel;
-		PointCloudRetouch::hiveDumpPointLabel4Visualizer(PointLabel);
+		PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 		m_pVisualizer->refresh(PointLabel);
 
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
