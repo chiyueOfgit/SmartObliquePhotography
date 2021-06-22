@@ -24,14 +24,13 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	for (auto& i : vValidationSet)
 	{
 		auto Match = evaluateFeatureMatchFactorV(i);
-		if (Match > 0)
-		{
-			++VaildNum;
-			SumMatch += Match;
-		}
+		++VaildNum;
+		SumMatch += Match;
 	}
-
-	return SumMatch / VaildNum;
+	if (VaildNum == 0)
+		return 0;
+	else
+		return SumMatch / VaildNum;
 }
 
 //*****************************************************************
