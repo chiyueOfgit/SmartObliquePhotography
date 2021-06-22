@@ -38,10 +38,10 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 
 	for (auto e : __buildNeighborhoodV(vSeed))
 	{
-		if (m_ClusterTag[e] != vSeedClusterIndex)
+		if (std::find(m_ClusterTag[e].begin(), m_ClusterTag[e].end(), vSeedClusterIndex) == m_ClusterTag[e].end())
 		{
 			Neighborhood.push_back(e);
-			m_ClusterTag[e] = vSeedClusterIndex;
+			m_ClusterTag[e].push_back(vSeedClusterIndex);
 		}
 	}
 	//发生NRVO
@@ -52,6 +52,7 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 //FUNCTION: 
 void INeighborhoodBuilder::reset()
 {
-	_ASSERTE(m_pVisitedTag);
-	for (auto i = 0; i < m_pPointCloudScene->size(); i++) m_ClusterTag[i] = 0;
+	//清空 哪些Cluster访问过这个点
+	for (auto i = 0; i < m_pPointCloudScene->size(); i++)
+		m_ClusterTag[i].clear();
 }
