@@ -67,6 +67,7 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
     QObject::connect(ui.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
     QObject::connect(ui.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
+    QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionDelete()));
     
 }
 
@@ -260,6 +261,15 @@ void QTInterface::onActionDiscardAndRecover()
         PointCloudRetouch::hiveDiscardUnwantedPoints();
     else
         PointCloudRetouch::hiveRecoverDiscardPoints2Unwanted();
+
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::hiveRefreshVisualizer(PointLabel);
+}
+
+void QTInterface::onActionDelete()
+{
+    PointCloudRetouch::hiveClearMarkerResult();
 
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);

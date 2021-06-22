@@ -64,6 +64,7 @@ namespace hiveObliquePhotography
             void onActionPointPicking();
             void onActionOpen();
             void onActionDiscardAndRecover();
+            void onActionDelete();
         };
     }
 }
