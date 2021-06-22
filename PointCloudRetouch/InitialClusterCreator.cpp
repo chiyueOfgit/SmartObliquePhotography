@@ -114,7 +114,7 @@ void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl
 	for(auto& Lines: Raster)
 		for(auto& Pair: Lines)
 		{
-			if(Pair.second > -1 && (Pair.first - MinDepth) < vClusterConfig->getAttribute<float>("DEPTH_OFFSET").value())
+			if(Pair.second > -1 && (Pair.first - MinDepth) / MinDepth < vClusterConfig->getAttribute<float>("DEPTH_OFFSET").value())
 			{
 				Eigen::Vector2f CoordXY = { MarkedRegionScreenCoord[Pair.second][0] * vWindowSize.first, MarkedRegionScreenCoord[Pair.second][1] * vWindowSize.second };
 				float Rate = (CoordXY - vCenter).norm() / vRadius;
