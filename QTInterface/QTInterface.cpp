@@ -124,6 +124,21 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     m_pPointSizeSlider->setSingleStep(1);
     m_pPointSizeSlider->setTickInterval(1);
     m_pPointSizeSlider->setTickPosition(QSlider::TicksAbove);
+    m_pPointSizeSlider->setValue(*m_pVisualizationConfig->getAttribute<int>("POINT_SHOW_SIZE"));
+
+    connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
+        {
+            m_PointSize = m_pPointSizeSlider->value();
+            auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute("POINT_SHOW_SIZE", m_PointSize);
+            auto q = *m_pVisualizationConfig->getAttribute<int>("POINT_SHOW_SIZE");
+            if (OverwriteSuccess)
+            {
+                std::vector<std::size_t> PointLabel;
+                PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+                Visualization::hiveRefreshVisualizer(PointLabel);
+            }
+        }
+    );
 
     pSubWindow->setWidget(m_pPointSizeSlider);
     pSubWindow->resize(200, 50);                // magic
