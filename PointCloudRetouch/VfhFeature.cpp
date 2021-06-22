@@ -68,7 +68,11 @@ double CVfhFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermina
 double CVfhFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
 	Eigen::Matrix<float, VfhDimension, 1> PointVfhDescriptor;
-	__computeVfhDescriptor({ vInputPoint }, PointVfhDescriptor);
+	const std::size_t K = 20;
+	std::vector<pcl::index_t> Neighbor;
+	std::vector<float> Distance;
+	m_pTree->nearestKSearch(vInputPoint, K, Neighbor, Distance);
+	__computeVfhDescriptor(Neighbor, PointVfhDescriptor);
 	auto PointDotResult = __KernelDotVfhDescriptor(PointVfhDescriptor, m_DeterminantVfhDescriptor, m_KernelSize);
 	double PointRate = PointDotResult / m_BaseDotResult;
 	return PointRate > 1.0 ? 1.0 : PointRate;
@@ -98,6 +102,7 @@ void CVfhFeature::__computeVfhDescriptor(const std::vector<pcl::index_t>& vPoint
 //FUNCTION: 
 double CVfhFeature::__KernelDotVfhDescriptor(const Eigen::Matrix<float, VfhDimension, 1>& vLVfh, const Eigen::Matrix<float, VfhDimension, 1>& vRVfh, std::size_t vBlockSize) const
 {
+	//todo: 目前只用是否有值，值大小未使用
 	if (vBlockSize <= 0)
 		vBlockSize = 5;
 	else if (vBlockSize > VfhDimension)
@@ -109,8 +114,8 @@ double CVfhFeature::__KernelDotVfhDescriptor(const Eigen::Matrix<float, VfhDimen
 		float LTemp = 0.0f, RTemp = 0.0f;
 		for (int j = 0; j < vBlockSize && (i + j) < VfhDimension; j++)
 		{
-			LTemp += vLVfh.row(i + j).value();
-			RTemp += vRVfh.row(i + j).value();
+			LTemp += (vLVfh.row(i + j).value() > 0) ? 1 : 0;
+			RTemp += (vRVfh.row(i + j).value() > 0) ? 1 : 0;
 		}
 		BlockDot += LTemp * RTemp;
 	}
