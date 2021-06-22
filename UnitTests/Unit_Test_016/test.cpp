@@ -25,7 +25,7 @@ protected:
 	void TearDown() override
 	{}
 
-	INeighborhoodBuilder* generateRandomTestee(int vPointNum, int vFrom, int vTo)
+	CPointCloudRetouchManager* generateRandomTestee(int vPointNum, int vFrom, int vTo)
 	{
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
 		for (int i = 0; i < vPointNum; i++)
@@ -42,38 +42,34 @@ protected:
 
 		auto pManager = CPointCloudRetouchManager::getInstance();
 		pManager->init(pCloud, pConfig->findSubconfigByName("Retouch"));
-		
-		CPointLabelSet PointLabelSet;
-		PointLabelSet.init(pCloud->size());
-		
-		return hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(Signature, pCloud, &PointLabelSet);
+
+		return pManager;
 	}
 };
 
 TEST_F(CTestNeighborhoodBuilder, Illegal_Input_Test)
 {
-	auto pNeighborhoodBuilder = generateRandomTestee(1000, -100, 100);
-	/*ASSERT_NO_THROW(pNeighborhoodBuilder = hiveDesignPattern::hiveGetOrCreateProduct<INeighborhoodBuilder>(Signature, pScene, &PointLabelSet));*/
-
+	auto pManager = generateRandomTestee(1000, -100, 100);
+	
 	std::vector<pcl::index_t> Neighborhood;
-	ASSERT_ANY_THROW(pNeighborhoodBuilder->buildNeighborhood(50, 0, Neighborhood));
-	ASSERT_ANY_THROW(pNeighborhoodBuilder->buildNeighborhood(-1, -1, Neighborhood));
-	ASSERT_ANY_THROW(pNeighborhoodBuilder->buildNeighborhood(999, 999, Neighborhood));
+	ASSERT_NO_THROW(pManager->buildNeighborhood(50, 1, Neighborhood));
+	ASSERT_ANY_THROW(pManager->buildNeighborhood(-1, 1, Neighborhood));
+	ASSERT_ANY_THROW(pManager->buildNeighborhood(999, 1, Neighborhood));
 }
 
 TEST_F(CTestNeighborhoodBuilder, Symmetry_Test)
 {
-	auto pNeighborhoodBuilder = generateRandomTestee(1000, -100, 100);
+	auto pManager = generateRandomTestee(1000, -100, 100);
 
 	for (size_t i = 0; i < 500; i++)
 	{
 		auto TestIndex = hiveMath::hiveGenerateRandomInteger(0, 999);
 
 		std::vector<pcl::index_t> Neighborhood;
-		pNeighborhoodBuilder->buildNeighborhood(TestIndex, 0, Neighborhood);
+		pManager->buildNeighborhood(TestIndex, 0, Neighborhood);
 		auto Neighbor = Neighborhood.front();
 
-		pNeighborhoodBuilder->buildNeighborhood(Neighbor, 0, Neighborhood);
+		pManager->buildNeighborhood(Neighbor, 0, Neighborhood);
 		auto k = Neighborhood.begin();
 		for (; k != Neighborhood.end(); k++)
 			if (*k == TestIndex)
@@ -85,14 +81,14 @@ TEST_F(CTestNeighborhoodBuilder, Symmetry_Test)
 
 TEST_F(CTestNeighborhoodBuilder, Anti_Reflexive_Test)
 {
-	auto pNeighborhoodBuilder = generateRandomTestee(1000, -100, 100);
+	auto pManager = generateRandomTestee(1000, -100, 100);
 
 	for (size_t i = 0; i < 500; i++)
 	{
 		auto TestIndex = hiveMath::hiveGenerateRandomInteger(0, 999);
 
 		std::vector<pcl::index_t> Neighborhood;
-		pNeighborhoodBuilder->buildNeighborhood(TestIndex, 0, Neighborhood);
+		pManager->buildNeighborhood(TestIndex, 0, Neighborhood);
 
 		auto k = Neighborhood.begin();
 		for (; k != Neighborhood.end(); k++)
