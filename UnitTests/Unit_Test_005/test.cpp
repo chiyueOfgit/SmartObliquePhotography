@@ -38,7 +38,7 @@ TEST(Test_PointCloudVisualizer, TestInitAndRefresh)
 	PointCloudRetouch::hiveInit(pCloud, pConfig);
 	Visualization::hiveInitVisualizer(pCloud, false);
 	std::vector<std::size_t> PointLabel;
-	PointCloudRetouch::hiveDumpPointLabel4Visualizer(PointLabel);
+	PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 	Visualization::hiveRefreshVisualizer(PointLabel, true);
 	Visualization::hiveRunVisualizerLoop();
 }
