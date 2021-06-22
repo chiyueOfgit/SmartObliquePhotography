@@ -27,19 +27,17 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 		std::uint32_t OldClusterIndex = pManager->getClusterIndexAt(Candidate);
 		_ASSERTE(OldClusterIndex != vCluster->getClusterIndex());
 
-		bool IsClusterIndexRequired2Change = false;
 		double CurrentProbability = vCluster->evaluateProbability(Candidate);
 		if (vCluster->isBelongingTo(CurrentProbability))
-		{
-			IsClusterIndexRequired2Change = (OldClusterIndex == 0) ? true :
-				__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(Candidate), OldClusterIndex);
-		}
-
-		if (IsClusterIndexRequired2Change)
-		{
-			pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
-			pManager->buildNeighborhood(Candidate, vCluster->getClusterIndex(), Neighborhood);
-			for (auto e : Neighborhood) ExpandingCandidateQueue.push(e);
+		{	
+			if (OldClusterIndex == 0 ||
+				__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(Candidate), OldClusterIndex))
+			{
+				pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
+				pManager->buildNeighborhood(Candidate, vCluster->getClusterIndex(), Neighborhood);
+				for (auto e : Neighborhood) 
+					ExpandingCandidateQueue.push(e);
+			}
 		}
 	}
 }
