@@ -127,7 +127,8 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex, std::vector<pcl::index_t>& voNeighborhood)
+std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex)
 {
-	m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vSeedClusterIndex, voNeighborhood);
+	//·¢ÉúNRVO
+	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vSeedClusterIndex);
 }
