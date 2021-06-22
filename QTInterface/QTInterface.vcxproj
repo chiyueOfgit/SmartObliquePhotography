@@ -112,6 +112,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SliderSizeDockWidget.cpp" />
     <QtRcc Include="QTInterface.qrc" />
     <QtUic Include="DisplayOptionsSettingDialog.ui" />
     <QtUic Include="QTInterface.ui" />

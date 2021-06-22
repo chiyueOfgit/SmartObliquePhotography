@@ -28,14 +28,14 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="1">
-     <widget class="QSlider" name="SliderHardness">
+     <widget class="QFloatSlider" name="SliderHardness">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QSlider" name="SliderRadius">
+     <widget class="QFloatSlider" name="SliderRadius">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -58,6 +58,13 @@
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QFloatSlider</class>
+   <extends>QSlider</extends>
+   <header>FloatSlider.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
