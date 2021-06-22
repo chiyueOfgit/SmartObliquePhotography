@@ -4,6 +4,7 @@
 #include "pcl/io/pcd_io.h"
 #include "InitialClusterCreator.h"
 #include "PointCloudRetouchConfig.h"
+#include "PointCloudRetouchManager.h"
 
 
 //²âÊÔÓÃÀýÁÐ±í£º
@@ -13,53 +14,29 @@
 
 using namespace hiveObliquePhotography;
 
-const std::string ConfigPath = "../../UnitTests/Unit_Test_012/PointCloudRetouchConfig.xml";
+constexpr char ConfigPath[] = "../../UnitTests/Unit_Test_012/Unit_Test_012Config.xml";
 
 class TestPointCluster : public testing::Test
 {
 public:
-    hiveConfig::CHiveConfig* pConfig = new PointCloudRetouch::CPointCloudRetouchConfig;
+    hiveConfig::CHiveConfig* pConfig = nullptr;
 	const hiveConfig::CHiveConfig* pClusterConfig = nullptr;
 protected:
 	
 	void SetUp() override
 	{
-		if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig)!= hiveConfig::EParseResult::SUCCEED)
+		PointCloud_t::Ptr pCloud(new PointCloud_t);
+		pcl::io::loadPCDFile("slice 3.pcd", *pCloud);
+		ASSERT_GT(pCloud->size(), 0);
+		
+		pConfig = new PointCloudRetouch::CPointCloudRetouchConfig;
+		if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
 		{
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 			return;
 		}
-		PointCloud_t::Ptr pCloud(new PointCloud_t);
-		pcl::io::loadPCDFile("slice 3.pcd", *pCloud);
-		_ASSERTE(pCloud->size() > 0);
-		PointCloudRetouch::hiveInit(pCloud, pConfig);
 
-		for (auto i = 0; i < pConfig->getNumSubconfig(); i++)
-		{
-			const hiveConfig::CHiveConfig* TempConfig = pConfig->getSubconfigAt(i);
-			if (_IS_STR_IDENTICAL(TempConfig->getSubconfigType(), std::string("TASK")))
-			{
-				for (auto k = 0; k < TempConfig->getNumSubconfig(); k++)
-				{
-					const hiveConfig::CHiveConfig* cConfig = pConfig->getSubconfigAt(k);
-					if (_IS_STR_IDENTICAL(cConfig->getSubconfigType(), std::string("CLUSTER")))
-					{
-						if (!pClusterConfig)
-				        {
-					        pClusterConfig = cConfig;
-				        }
-				        else
-				        {
-					       _HIVE_OUTPUT_WARNING("It is NOT allowed to define cluster twice.");
-				        }
-					}
-					continue;
-					
-				}
-				
-				continue;
-			}
-		}
+		pClusterConfig = pConfig->findSubconfigByName("LitterCluster");
 	}
 
 	void TearDown() override
