@@ -62,6 +62,10 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 		m_FeatureWeightSet.emplace_back(e->generateFeatureV(m_ClusterCoreRegion, vValidationSet, m_ClusterCenter));
 	}
 
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Num Enabled Features: [%1%]\nFeature Weights: ", m_FeatureSet.size()));
+	for (auto Weight : m_FeatureWeightSet)
+		hiveEventLogger::hiveOutputEvent(std::to_string(Weight) + " ");
+
 	return true;
 }
 

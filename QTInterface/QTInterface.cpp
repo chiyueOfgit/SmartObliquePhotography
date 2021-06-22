@@ -14,8 +14,6 @@
 #include <QtWidgets/qmainwindow.h>
 #include <QMainWindow>
 #include <vtkAutoInit.h>
-#include <common/ConfigCommon.h>
-#include <common/ConfigInterface.h>
 #include <algorithm>
 #include <tuple>
 #include <typeinfo>
@@ -29,6 +27,7 @@
 #include "VisualizationInterface.h"
 #include "PointCloudRetouchConfig.h"
 
+#include "pcl/io/pcd_io.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -58,11 +57,16 @@ QTInterface::~QTInterface()
 
 void QTInterface::__connectSignals()
 {
+    QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
     QObject::connect(ui.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
 }
 
 void QTInterface::__initialVTKWidget()
 {
+    auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
+    ui.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
+    pViewer->setupInteractor(ui.VTKWidget->GetInteractor(), ui.VTKWidget->GetRenderWindow());
+    ui.VTKWidget->update();
 }
 
 void QTInterface::__initialResourceSpaceDockWidget()
@@ -123,7 +127,7 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
 void QTInterface::__parseConfigFile()
 {
     const std::string ConfigPath = "PointCloudRetouchConfig.xml";
-    m_pPointCloudRetouchConfig = new PointCloudRetouch::CPointCloudRetouchConfig;
+    m_pPointCloudRetouchConfig = new hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchConfig;
     if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, m_pPointCloudRetouchConfig) != hiveConfig::EParseResult::SUCCEED)
     {
         _HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
@@ -176,7 +180,9 @@ void QTInterface::onActionOpen()
     if (FilePathSet.empty())
         return;
 
-    PointCloud_t::Ptr pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
+    PointCloud_t::Ptr pCloud(new PointCloud_t);
+    pcl::io::loadPCDFile(FilePathSet.front(), *pCloud);
+    //PointCloud_t::Ptr pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
     m_pCloud = pCloud;
 
     if (pCloud == nullptr)
