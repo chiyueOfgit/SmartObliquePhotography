@@ -25,13 +25,19 @@ namespace hiveObliquePhotography
 			std::size_t getSize() const { return m_LabelSet.size(); }
 #endif
 
-			EPointLabel   getLabelAt(std::size_t vIndex) const { _ASSERTE(vIndex < m_LabelSet.size()); return m_LabelSet[vIndex].PointLabel; }
-			std::uint32_t getClusterIndexAt(std::size_t vIndex) const { _ASSERTE(vIndex < m_LabelSet.size()); return m_LabelSet[vIndex].ClusterIndex; }
+			EPointLabel getLabelAt(std::size_t vIndex) const { __throwLabelIndexOutOfRange(vIndex); return m_LabelSet[vIndex].PointLabel; }
+			std::uint32_t getClusterIndexAt(std::size_t vIndex) const { __throwLabelIndexOutOfRange(vIndex); return m_LabelSet[vIndex].ClusterIndex; }
 
-			double getClusterBelongingProbabilityAt(std::size_t vIndex) const { _ASSERTE(vIndex < m_LabelSet.size()); return m_LabelSet[vIndex].Probability; }
+			double getClusterBelongingProbabilityAt(std::size_t vIndex) const { __throwLabelIndexOutOfRange(vIndex); return m_LabelSet[vIndex].Probability; }
 
 		private:
 			std::vector<SPointLabel> m_LabelSet;
+
+			void __throwLabelIndexOutOfRange(std::size_t vIndex) const
+			{
+				if (vIndex < 0 || vIndex >= m_LabelSet.size())
+					_THROW_RUNTIME_ERROR("Label index is out of range");
+			}
 		};
 	}
 }
