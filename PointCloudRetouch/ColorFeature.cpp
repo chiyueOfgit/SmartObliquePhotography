@@ -24,7 +24,7 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 			m_NumMainColors = NumMainColors.value();
 	}
 	
-	if (vDeterminantPointSet.empty())
+	if (vDeterminantPointSet.empty() || vValidationSet.empty())
 		return 0.0;
 
 	__computeMainColors(vDeterminantPointSet, m_MainBaseColors, m_NumMainColors);
@@ -33,7 +33,7 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 	for (auto ValidationIndex : vValidationSet)
 	{
 		Score += evaluateFeatureMatchFactorV(ValidationIndex);
-	}
+	}	
 	return Score / vValidationSet.size();
 }
 
@@ -68,16 +68,16 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 {
 	std::vector<int> PointTag4Cluster(vData.size(), -1);
 	std::vector<Eigen::Vector3i> ClusterCentroids;
-	double Variance = 0;
+	double Variance = 30;
 
 	for (int i = 0; i < vK; i++)
 	{
 		ClusterCentroids.emplace_back(vData[i]);
 	}
 
-	while (Variance > EPSILON)
+	while (Variance --)
 	{
-		Variance = 0;
+		//Variance = 0;
 		for (int i = 0; i < vData.size(); i++)
 		{
 			double MinDistance = DBL_MAX;
@@ -85,7 +85,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 			for (int j = 0; j < vK; j++)
 			{
 				double Temp = (vData[i] - ClusterCentroids[j]).norm();
-				if (Temp < MinDistance)
+				if (Temp < MinDistance && Temp < m_ColorThreshold)
 				{
 					MinDistance = Temp;
 					MinClusterIndex = j;
@@ -131,9 +131,9 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 					ClusterPointsData.emplace_back(vData[j]);
 			}
 			ClusterCentroids[i] = calcentroid(ClusterPointsData);
-			Variance += calvariance(ClusterPointsData, ClusterCentroids[i]);
+			//Variance += calvariance(ClusterPointsData, ClusterCentroids[i]);
 		}
-		Variance /= vK;
+		//Variance /= vK;
 	}
 	return ClusterCentroids;
 
