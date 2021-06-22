@@ -68,7 +68,7 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
     QObject::connect(ui.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
     QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionDelete()));
-    
+
 }
 
 void QTInterface::__initialVTKWidget()
@@ -201,6 +201,9 @@ void QTInterface::onActionPointPicking()
     m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
     m_pPointPickingDockWidget->show();
     QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking.")); 
+
+    if (m_pVisualizationConfig)
+        m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", ui.actionPointPicking->isChecked());
 }
 
 void QTInterface::onActionOpen()
@@ -221,27 +224,23 @@ void QTInterface::onActionOpen()
     if (FilePathSet.empty())
         return;
 
-    PointCloud_t::Ptr pCloud(new PointCloud_t);
-    //pcl::io::loadPCDFile(FilePathSet.front(), *pCloud);
-    pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
-    m_pCloud = pCloud;
+    m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
 
-    if (pCloud == nullptr)
+    if (m_pCloud == nullptr)
         FileOpenSuccessFlag = false;
 
     if (FileOpenSuccessFlag)
     {
         m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
-        PointCloudRetouch::hiveInit(pCloud, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(pCloud, true);
+        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
+        Visualization::hiveInitVisualizer(m_pCloud, true);
         //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         QTInterface::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel, true);
-        Visualization::hiveRunVisualizerLoop();
         QTInterface::__initialSlider(FilePathList);
-
+        
         if (FilePathSet.size() == 1)
         {
             QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
