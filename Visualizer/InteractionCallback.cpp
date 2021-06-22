@@ -127,11 +127,15 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	{
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
 
-		_ASSERTE(m_pVisualizationConfig);
+		if (m_pVisualizationConfig);
 		{
-			std::optional<float> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<float>("SCREEN_CIRCLE_RADIUS");
+			std::optional<float> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>("SCREEN_CIRCLE_RADIUS");
 			if (ScreenCircleRadius.has_value())
 				m_Radius = ScreenCircleRadius.value();
+
+			std::optional<float> ScreenCircleHardness = m_pVisualizationConfig->getAttribute<double>("SCREEN_CIRCLE_HARDNESS");
+			if (ScreenCircleHardness.has_value())
+				m_Hardness = ScreenCircleHardness.value();
 		}
 
 		std::vector<pcl::index_t> PickedIndices;
@@ -145,9 +149,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Camera.computeViewMatrix(View);
 
 		if (m_UnwantedMode)
-			PointCloudRetouch::hiveMarkLitter(PickedIndices, 0.8, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
+			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 		else
-			PointCloudRetouch::hiveMarkBackground(PickedIndices, 0.8, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
+			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 
 		std::vector<std::size_t> PointLabel;
 		PointCloudRetouch::hiveDumpPointLabel(PointLabel);
