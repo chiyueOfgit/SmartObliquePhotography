@@ -23,6 +23,9 @@ namespace hiveObliquePhotography
             QTInterface(QWidget* vParent = Q_NULLPTR);
             ~QTInterface();
 
+        protected:
+            virtual void keyPressEvent(QKeyEvent* vEvent);
+
         private:
             Ui::QTInterfaceClass ui;
 

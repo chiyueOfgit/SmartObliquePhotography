@@ -18,6 +18,8 @@
 #include <tuple>
 #include <typeinfo>
 #include <qpushbutton.h>
+#include <qcursor.h>
+#include <qevent.h>
 
 #include "QTDockWidgetTitleBar.h"
 #include "QTInterfaceConfig.h"
@@ -43,6 +45,12 @@ QTInterface::QTInterface(QWidget * vParent)
     }
 
     ui.setupUi(this);
+
+    QCursor* myCursor = new QCursor(QPixmap("Icon/pointPicking.png"), -1, -1);    //-1,-1表示热点位于图片中心
+    this->setCursor(*myCursor);
+    this->unsetCursor();
+
+    //this->grabKeyboard();
 
     __connectSignals();
     __initialResourceSpaceDockWidget();
@@ -220,11 +228,23 @@ void QTInterface::onActionOpen()
         if (FilePathSet.size() == 1)
         {
             QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
-        }
+        }                                                                           
         else
         {
             m_SceneIndex++;
             QTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
         }
+    }
+}
+
+void QTInterface::keyPressEvent(QKeyEvent* vEvent)
+{
+    switch (vEvent->key())
+    {
+    case Qt::Key_Escape:
+        __messageDockWidgetOutputText(QString("esc"));
+        break;
+    default:
+        break;
     }
 }
