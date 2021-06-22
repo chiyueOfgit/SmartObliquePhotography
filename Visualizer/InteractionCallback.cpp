@@ -97,7 +97,12 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		//	m_pVisualizer->refresh();
 		//}
 	}
-
+	
+	if (vEvent.keyUp())
+	{
+		if (KeyString == "w")
+			m_AreaMode = false;
+	}
 }
 
 //*****************************************************************

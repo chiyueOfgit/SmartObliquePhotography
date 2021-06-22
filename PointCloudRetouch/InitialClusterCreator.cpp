@@ -16,7 +16,7 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 	CPointCluster* pInitialCluster = new CPointCluster;
 
 	std::vector<float> PointHardnessSet(vUserMarkedRegion.size(), 0.0);
-	__generateHardness4EveryPoint(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, PointHardnessSet);
+	__generateHardness4EveryPoint(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, PointHardnessSet, vClusterConfig);
 
 	pcl::index_t ClusterCenter = __computeClusterCenter(vUserMarkedRegion, PointHardnessSet, vCenter, vPvMatrix, vWindowSize);
 
@@ -79,11 +79,11 @@ pcl::index_t CInitialClusterCreator::__computeClusterCenter(const std::vector<pc
 
 //*****************************************************************
 //FUNCTION: 
-void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, float vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, std::vector<float>& voPointHardnessSet)
+void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, float vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, std::vector<float>& voPointHardnessSet, const hiveConfig::CHiveConfig* vClusterConfig)
 {
 	_ASSERTE(vRadius);
 	
-	int Resolution = initResolution;
+	int Resolution = vClusterConfig->getAttribute<int>("INIT_RESOLUTION").value();
 	float MinDepth = FLT_MAX;
 	std::vector<Eigen::Vector4f> MarkedRegionScreenCoord;
 	std::vector<std::vector<std::pair<float,int>>> Raster(Resolution, std::vector(Resolution, std::pair(FLT_MAX,-1)));
@@ -114,7 +114,7 @@ void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl
 	for(auto& Lines: Raster)
 		for(auto& Pair: Lines)
 		{
-			if(Pair.second > -1 && (Pair.first - MinDepth) < DepthOffset)
+			if(Pair.second > -1 && (Pair.first - MinDepth) < vClusterConfig->getAttribute<float>("DEPTH_OFFSET").value())
 			{
 				Eigen::Vector2f CoordXY = { MarkedRegionScreenCoord[Pair.second][0] * vWindowSize.first, MarkedRegionScreenCoord[Pair.second][1] * vWindowSize.second };
 				float Rate = (CoordXY - vCenter).norm() / vRadius;
