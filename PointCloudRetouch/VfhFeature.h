@@ -18,13 +18,13 @@ namespace hiveObliquePhotography
 
 		private:
 			void __computeVfhDescriptor(const std::vector<pcl::index_t>& vPointIndices, Eigen::Matrix<float, VfhDimension, 1>& voVfhDescriptor) const;
-			double __blockDotVfhDescriptor(const Eigen::Matrix<float, VfhDimension, 1>& vLVfh, const Eigen::Matrix<float, VfhDimension, 1>& vRVfh, std::size_t vBlockSize = 1) const;
+			double __KernelDotVfhDescriptor(const Eigen::Matrix<float, VfhDimension, 1>& vLVfh, const Eigen::Matrix<float, VfhDimension, 1>& vRVfh, std::size_t vBlockSize = 1) const;
 
 			PointCloud_t::Ptr m_pCloud = nullptr;
 			pcl::search::KdTree<pcl::PointSurfel>::Ptr m_pTree = nullptr;
 			Eigen::Matrix<float, VfhDimension, 1> m_DeterminantVfhDescriptor;
 			double m_BaseDotResult = 0.0;
-			std::size_t m_BlockSize = 5;
+			std::size_t m_KernelSize = 5;
 		};
 	}
 

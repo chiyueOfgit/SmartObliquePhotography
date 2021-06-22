@@ -13,7 +13,7 @@
 
 using namespace hiveObliquePhotography;
 
-const std::string ConfigPath = "PointCloudRetouchConfig.xml";
+const std::string ConfigPath = "../../UnitTests/Unit_Test_012/PointCloudRetouchConfig.xml";
 
 class TestPointCluster : public testing::Test
 {
@@ -31,6 +31,7 @@ protected:
 		}
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
 		pcl::io::loadPCDFile("slice 3.pcd", *pCloud);
+		_ASSERTE(pCloud->size() > 0);
 		PointCloudRetouch::hiveInit(pCloud, pConfig);
 
 		for (auto i = 0; i < pConfig->getNumSubconfig(); i++)
@@ -67,6 +68,7 @@ protected:
 		delete pClusterConfig;
 	}
 };
+
 TEST_F(TestPointCluster, DeathTest_Uninitialized)
 {
 	pcl::index_t TestIndex = 1;
@@ -85,7 +87,6 @@ TEST_F(TestPointCluster, DeathTest_InvalidIndex)
 	auto PointCluster = Creator.createInitialCluster(UserMarkedRegion, 0.8, 10, PointCloudRetouch::EPointLabel::KEPT, { 400,400 }, Pv, {1000,800}, pClusterConfig);
 	ASSERT_ANY_THROW(double Res = PointCluster->evaluateProbability(TestIndex));
 }
-
 
 TEST_F(TestPointCluster, FalseProbability_Test)
 {

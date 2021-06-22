@@ -13,14 +13,17 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 	if (vInputPoint < 0 || vInputPoint > CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint())
 		_THROW_RUNTIME_ERROR("Index is out of range");
 	
-	double Probability = 0;
-
+	double Probability = 0.0;
+	double SumWeight = 0.0;
 	for (auto i = 0; i < m_FeatureSet.size(); i++)
 	{
-		if (m_FeatureWeightSet[i] == 0) continue;
+		if (m_FeatureWeightSet[i] == 0)
+			continue;
 		
 		Probability += m_FeatureWeightSet[i] * m_FeatureSet[i]->evaluateFeatureMatchFactorV(vInputPoint);
+		SumWeight += m_FeatureWeightSet[i];
 	}
+	Probability /= SumWeight;
 
 	_ASSERTE((Probability >= 0) && (Probability <= 1));
 	return Probability;
@@ -45,6 +48,16 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 	m_ClusterCenter = vClusterCenter;
 	m_Label = vLabel;
 	m_ClusterCoreRegion = vFeatureGenerationSet;  //·¢Éústd::vector¿½±´
+
+	_ASSERTE(m_pConfig);
+	{
+		std::optional<float> ExpectProbability = m_pConfig->getAttribute<float>("EXPECT_PROBABILITY");
+		if (ExpectProbability.has_value())
+			m_ExpectProbability = ExpectProbability.value();
+	}
+
+	__createFeatureObjectSet();
+
 	for (auto e : m_FeatureSet)
 	{
 		m_FeatureWeightSet.emplace_back(e->generateFeatureV(m_ClusterCoreRegion, vValidationSet, m_ClusterCenter));
@@ -92,9 +105,5 @@ void CPointCluster::__createFeatureObjectSet()
 //FUNCTION: 
 bool CPointCluster::isBelongingTo(double vProbability) const
 {
-	const float ExpectProbability = 0.6f;
-	if (vProbability >= ExpectProbability)
-		return true;
-	else
-		return false;
+	return vProbability >= m_ExpectProbability ? true : false;
 }
