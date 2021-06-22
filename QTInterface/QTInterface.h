@@ -40,7 +40,7 @@ namespace hiveObliquePhotography
             QDockWidget* m_pPointPickingDockWidget = nullptr;
 
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
-            PointCloudRetouch::CPointCloudRetouchConfig* m_pPointCloudRetouchConfig = nullptr;
+            //PointCloudRetouch::CPointCloudRetouchConfig* m_pPointCloudRetouchConfig = nullptr;
 
             void __initialVTKWidget();
             void __initialResourceSpaceDockWidget();
@@ -55,7 +55,7 @@ namespace hiveObliquePhotography
 
         private slots:
             void onActionPointPicking();
-
+            void onActionOpen();
         };
     }
 }

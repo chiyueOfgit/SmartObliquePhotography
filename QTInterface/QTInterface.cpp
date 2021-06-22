@@ -24,6 +24,8 @@
 #include "QTDockWidgetTitleBar.h"
 #include "QTInterfaceConfig.h"
 #include "SliderSizeDockWidget.h"
+#include "ObliquePhotographyDataInterface.h"
+#include "PointCloudRetouchInterface.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -139,4 +141,51 @@ void QTInterface::onActionPointPicking()
     m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
     m_pPointPickingDockWidget->show();
     QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking.")); 
+}
+
+void QTInterface::onActionOpen()
+{
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_DirectoryOpenPath), tr("Open PointCloud files(*.pcd)"));
+    std::vector<std::string> FilePathSet;
+    bool FileOpenSuccessFlag = true;
+
+    if (FilePathList.empty())
+        return;
+
+    foreach(QString FilePathQString, FilePathList)
+    {
+        std::string FilePathString = FilePathQString.toStdString();
+        FilePathSet.push_back(FilePathString);
+    }
+
+    if (FilePathSet.empty())
+        return;
+
+    auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
+    m_pCloud = pCloud;
+
+    if (pCloud == nullptr)
+        FileOpenSuccessFlag = false;
+
+    if (FileOpenSuccessFlag)
+    {
+        m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
+        PointCloudRetouch::hiveInitPointCloudScene(pCloud);
+        Visualization::hiveInitVisualizer(pCloud);
+        //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
+        QTInterface::__initialVTKWidget();
+        Visualization::hiveRefreshVisualizer(true);
+        QTInterface::__initialSlider(FilePathList);
+        QTInterface::__setActionsEnabled();
+
+        if (FilePathSet.size() == 1)
+        {
+            QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
+        }
+        else
+        {
+            m_SceneIndex++;
+            QTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
+        }
+    }
 }
