@@ -6,7 +6,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 INeighborhoodBuilder::~INeighborhoodBuilder()
 {
-	delete[] m_pVisitedTag;
+
 }
 
 //*****************************************************************
@@ -17,7 +17,7 @@ bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vCon
 	m_pPointCloudScene = vPointCloudScene;
 	m_pPointLabelSet = vPointLabelSet;
 
-	m_pVisitedTag = new bool[m_pPointCloudScene->size()];
+	m_ClusterTag.resize(vPointCloudScene->size());
 	reset();
 
 	__extraInitV(vConfig);
@@ -38,10 +38,10 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 
 	for (auto e : __buildNeighborhoodV(vSeed))
 	{
-		if ((m_pPointLabelSet->getClusterIndexAt(e) != vSeedClusterIndex) && !m_pVisitedTag[e])
+		if (m_ClusterTag[e] != vSeedClusterIndex)
 		{
 			Neighborhood.push_back(e);
-			m_pVisitedTag[e] = true;
+			m_ClusterTag[e] = vSeedClusterIndex;
 		}
 	}
 	//·¢ÉúNRVO
@@ -53,5 +53,5 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 void INeighborhoodBuilder::reset()
 {
 	_ASSERTE(m_pVisitedTag);
-	for (auto i = 0; i < m_pPointCloudScene->size(); i++) m_pVisitedTag[i] = false;
+	for (auto i = 0; i < m_pPointCloudScene->size(); i++) m_ClusterTag[i] = -1;
 }

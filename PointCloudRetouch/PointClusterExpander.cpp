@@ -28,7 +28,7 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 
 		double CurrentProbability = vCluster->evaluateProbability(Candidate);
 		if (vCluster->isBelongingTo(CurrentProbability))
-		{	
+		{
 			if (OldClusterIndex == 0 ||
 				__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(Candidate), OldClusterIndex))
 			{
@@ -60,6 +60,6 @@ std::queue<pcl::index_t> CPointClusterExpander::__initExpandingCandidateQueue(co
 //FUNCTION: 
 bool CPointClusterExpander::__isReassigned2CurrentCluster(double vCurrentProbability, std::uint32_t vCurrentTimestamp, double vOldProbability, std::uint32_t vOldTimestamp)
 {
-	return vCurrentProbability > vOldProbability || (vCurrentProbability > vOldProbability / 2 && vCurrentTimestamp - vOldTimestamp > 2);
+	return vCurrentProbability > vOldProbability || (vCurrentProbability > vOldProbability / 2 && vCurrentTimestamp - vOldTimestamp > 1);
 
 }

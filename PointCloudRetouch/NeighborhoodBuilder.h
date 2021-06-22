@@ -28,7 +28,7 @@ namespace hiveObliquePhotography
 
 		private:
 			const CPointLabelSet* m_pPointLabelSet = nullptr;
-			bool* m_pVisitedTag = nullptr;
+			std::vector<int> m_ClusterTag;
 
 			virtual void __extraInitV(const hiveConfig::CHiveConfig* vConfig) {}
 			virtual std::vector<pcl::index_t> __buildNeighborhoodV(pcl::index_t vSeed) = 0;
