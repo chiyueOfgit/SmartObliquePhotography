@@ -66,7 +66,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\visualization\include;..\Visualizer;..\AutoRetouch;..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\visualization\include;..\Visualizer;..\ObliquePhotographyData;..\PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -150,6 +150,11 @@
     <Xml Include="..\Configs\AutoRetouchConfig.xml" />
     <Xml Include="..\Configs\QTInterfaceConfig.xml" />
     <Xml Include="..\Configs\VisualizationConfig.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PointCloudRetouch\PointCloudRetouch.vcxproj">
+      <Project>{60928201-7a4d-49df-9579-3ccdde7a134f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

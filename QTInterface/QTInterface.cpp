@@ -135,15 +135,7 @@ std::string QTInterface::__getDirectory(const std::string& vFilePath)
 
 void QTInterface::onActionPointPicking()
 {
-
-    //if (m_pBrushSizeDockWidget != nullptr)
-    /*m_pBrushSizeDockWidget->close();
-    m_pRubberSizeDockWidget = new CSliderSizeDockWidget(ui.VTKWidget);
-    m_pRubberSizeDockWidget->setWindowTitle(QString("Rubber Size"));
-    m_pRubberSizeDockWidget->show();
-    QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to rubber."));*/
-
-    QDockWidget* m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget);
+    m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget);
     m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
     m_pPointPickingDockWidget->show();
     QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking.")); 

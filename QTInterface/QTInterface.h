@@ -35,10 +35,12 @@ namespace hiveObliquePhotography
             int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;
             pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
-            //QDockWidget* m_pRubberSizeDockWidget = nullptr;
-            //QDockWidget* m_pBrushSizeDockWidget = nullptr;
+            QDockWidget* m_pRubberSizeDockWidget = nullptr;
+            QDockWidget* m_pBrushSizeDockWidget = nullptr;
+            QDockWidget* m_pPointPickingDockWidget = nullptr;
 
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
+            PointCloudRetouch::CPointCloudRetouchConfig* m_pPointCloudRetouchConfig = nullptr;
 
             void __initialVTKWidget();
             void __initialResourceSpaceDockWidget();
