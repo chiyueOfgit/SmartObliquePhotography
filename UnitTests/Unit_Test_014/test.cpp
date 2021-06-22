@@ -15,6 +15,7 @@
 using namespace  hiveObliquePhotography::PointCloudRetouch;
 
 constexpr char ConfigPath[] = "../../UnitTests/Unit_Test_014/PointCloudRetouchConfig.xml";
+constexpr char ModelPath[] = "../../UnitTests/Unit_Test_014/slice 3.pcd";
 
 class TestExpander : public testing::Test
 {
@@ -26,7 +27,7 @@ protected:
 	void SetUp() override
 	{
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
-		pcl::io::loadPCDFile("../../UnitTests/Unit_Test_014/slice 3.pcd", *pCloud);
+		pcl::io::loadPCDFile(ModelPath, *pCloud);
 		ASSERT_GT(pCloud->size(), 0);
 
 		pConfig = new CPointCloudRetouchConfig;
@@ -35,10 +36,10 @@ protected:
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 			return;
 		}
-
+		
 		pManager = CPointCloudRetouchManager::getInstance();
 		pManager->init(pCloud, pConfig);
-	}
+;	}
 
 	void TearDown() override
 	{
@@ -48,7 +49,7 @@ protected:
 
 TEST_F(TestExpander, EmptyInput)
 {
-	CPointClusterExpander* pPointClusterExpander;
+	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
 
 	std::vector<pcl::index_t> UserMarkedRegion{};
 	Eigen::Matrix4d Pv;
@@ -59,7 +60,7 @@ TEST_F(TestExpander, EmptyInput)
 
 TEST_F(TestExpander, NullptrInput)
 {
-	CPointClusterExpander* pPointClusterExpander;
+	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
 	CPointCluster* UserSpecifiedCluster = nullptr;
 
 	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
@@ -67,7 +68,7 @@ TEST_F(TestExpander, NullptrInput)
 
 TEST_F(TestExpander, NoRepeatIndex)
 {
-	CPointClusterExpander* pPointClusterExpander;
+	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
 
 	std::vector<pcl::index_t> UserMarkedRegion{1,2,3,4};
 	Eigen::Matrix4d Pv;
