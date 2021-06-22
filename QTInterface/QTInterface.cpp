@@ -205,8 +205,8 @@ void QTInterface::onActionOpen()
         return;
 
     PointCloud_t::Ptr pCloud(new PointCloud_t);
-    pcl::io::loadPCDFile(FilePathSet.front(), *pCloud);
-    //PointCloud_t::Ptr pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
+    //pcl::io::loadPCDFile(FilePathSet.front(), *pCloud);
+    pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
     m_pCloud = pCloud;
 
     if (pCloud == nullptr)

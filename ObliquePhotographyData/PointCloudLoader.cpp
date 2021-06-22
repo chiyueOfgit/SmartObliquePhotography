@@ -10,7 +10,7 @@ PointCloud_t::Ptr IPointCloudLoader::loadDataFromFile(const std::string& vFileNa
 	_ASSERTE(!vFileName.empty());
 
 	std::string FileName = hiveUtility::hiveLocateFile(vFileName);
-	_HIVE_EARLY_RETURN(!FileName.empty(), _FORMAT_STR1("Fail to load file [%1%] because it does not exist.", vFileName), nullptr);
+	_HIVE_EARLY_RETURN(FileName.empty(), _FORMAT_STR1("Fail to load file [%1%] because it does not exist.", vFileName), nullptr);
 
 	PointCloud_t::Ptr pPointCloud(new PointCloud_t);
 

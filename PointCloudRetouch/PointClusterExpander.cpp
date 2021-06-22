@@ -16,9 +16,7 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 
 	CPointCloudRetouchManager *pManager = CPointCloudRetouchManager::getInstance();
 
-	std::queue<pcl::index_t> ExpandingCandidateQueue;
-
-	__initExpandingCandidateQueue(vCluster, ExpandingCandidateQueue);
+	std::queue<pcl::index_t> ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
 
 	std::vector<pcl::index_t> Neighborhood;
 	while (!ExpandingCandidateQueue.empty())
@@ -48,16 +46,19 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 
 //*****************************************************************
 //FUNCTION: 
-void CPointClusterExpander::__initExpandingCandidateQueue(const CPointCluster* vCluster, std::queue<pcl::index_t>& voCandidateQueue)
+std::queue<pcl::index_t> CPointClusterExpander::__initExpandingCandidateQueue(const CPointCluster* vCluster)
 {
+	std::queue<pcl::index_t> CandidateQueue;
 	const auto SeedClusterIndex = vCluster->getClusterIndex();
 	for(auto Index : vCluster->getCoreRegion())
 	{
 		std::vector<pcl::index_t> Neighborhood;
 		CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index, SeedClusterIndex, Neighborhood);
 		for (auto Neighbor : Neighborhood) 
-			voCandidateQueue.push(Neighbor);
+			CandidateQueue.push(Neighbor);
 	}
+	//·¢ÉúNRVO
+	return CandidateQueue;
 }
 
 //*****************************************************************

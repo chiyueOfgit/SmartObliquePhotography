@@ -74,8 +74,7 @@ TEST_F(TestExpander, NoRepeatIndex)
 	Eigen::Matrix4d Pv;
 	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, EPointLabel::KEPT);
 
-	std::queue<pcl::index_t> CandidateQueue;
-	pPointClusterExpander->initExpandingCandidateQueue(UserSpecifiedCluster, CandidateQueue);
+	std::queue<pcl::index_t> CandidateQueue = pPointClusterExpander->initExpandingCandidateQueue(UserSpecifiedCluster);
 	int Sum = 0;
 	while(!CandidateQueue.empty())
 	{
