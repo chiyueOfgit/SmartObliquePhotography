@@ -65,6 +65,7 @@ std::queue<pcl::index_t> CPointClusterExpander::__initExpandingCandidateQueue(co
 //FUNCTION: 
 bool CPointClusterExpander::__isReassigned2CurrentCluster(double vCurrentProbability, std::uint32_t vCurrentTimestamp, double vOldProbability, std::uint32_t vOldTimestamp)
 {
+	return true;
 	return vCurrentProbability > vOldProbability || (vCurrentProbability > vOldProbability / 2 && vCurrentTimestamp - vOldTimestamp > 5);
 
 }
