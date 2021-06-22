@@ -23,11 +23,14 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 		if (NumMainColors.has_value())
 			m_NumMainColors = NumMainColors.value();
 	}
+	
+	if (vDeterminantPointSet.empty())
+		return 0.0;
 
 	__computeMainColors(vDeterminantPointSet, m_MainBaseColors, m_NumMainColors);
 
 	double Score = 0.0;
-	for (auto ValidationIndex: vValidationSet)
+	for (auto ValidationIndex : vValidationSet)
 	{
 		Score += evaluateFeatureMatchFactorV(ValidationIndex);
 	}

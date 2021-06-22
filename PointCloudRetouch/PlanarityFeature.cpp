@@ -12,7 +12,11 @@ _REGISTER_EXCLUSIVE_PRODUCT(CPlanarityFeature, KEYWORD::PLANARITY_FEATURE)
 double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
 	auto pDeterminantCloud = __createPositionCloud(vDeterminantPointSet);
-	m_Plane = __fitPlane(pDeterminantCloud);
+	auto Plane = __fitPlane(pDeterminantCloud);
+	if (Plane.norm() == 0)
+		return 0.0;
+	else
+		m_Plane = Plane;
 	m_Peak = __computePeakDistance(pDeterminantCloud, m_Plane);
 	
 	float SumMatch = 0.0f;
@@ -69,15 +73,17 @@ PointCloud_t::Ptr CPlanarityFeature::__createPositionCloud(const std::vector<pcl
 //FUNCTION: 
 Eigen::Vector4f CPlanarityFeature::__fitPlane(PointCloud_t::Ptr vCloud) const
 {
+	_ASSERTE(m_pConfig);
 	Eigen::VectorXf Coeff;
 	pcl::SampleConsensusModelPlane<PointCloud_t::PointType>::Ptr ModelPlane
 		(new pcl::SampleConsensusModelPlane<PointCloud_t::PointType>(vCloud));
 	pcl::RandomSampleConsensus<PointCloud_t::PointType> Ransac(ModelPlane);
-	//TODO: move to config
-	Ransac.setDistanceThreshold(0.3);
+	
+	Ransac.setDistanceThreshold(m_pConfig->getAttribute<float>("DISTANCE_THRESHOLD").value());
 	Ransac.computeModel();
 	Ransac.getModelCoefficients(Coeff);
-
+	if (!Coeff.size())
+		return { 0, 0, 0, 0 };
 	const Eigen::Vector3f Normal(Coeff.x(), Coeff.y(), Coeff.z());
 	//TODO: move to config
 	const Eigen::Vector3f Up(0.0f, 0.0f, 1.0f);

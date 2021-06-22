@@ -41,16 +41,26 @@ CVfhFeature::CVfhFeature()
 //FUNCTION: 
 double CVfhFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
+	_ASSERTE(m_pConfig);
+	{
+		std::optional<int> KernelSize = m_pConfig->getAttribute<int>("CONVOLUTION_KERNEL_SIZE");
+		if (KernelSize.has_value())
+			m_KernelSize = KernelSize.value();
+	}
+
+	if (vDeterminantPointSet.empty())
+		return 0.0;
+
 	__computeVfhDescriptor(vDeterminantPointSet, m_DeterminantVfhDescriptor);
-	Eigen::Matrix<float, VfhDimension, 1> CenterVfhDescriptor;
-	__computeVfhDescriptor({ vClusterCenter }, CenterVfhDescriptor);
-	m_BaseDotResult = __blockDotVfhDescriptor(CenterVfhDescriptor, m_DeterminantVfhDescriptor, m_BlockSize);
+	m_BaseDotResult = __KernelDotVfhDescriptor(m_DeterminantVfhDescriptor, m_DeterminantVfhDescriptor, m_KernelSize);
 	
 	Eigen::Matrix<float, VfhDimension, 1> ValidationVfhDescriptor;
 	__computeVfhDescriptor(vValidationSet, ValidationVfhDescriptor);
-	auto ValidationDotResult = __blockDotVfhDescriptor(ValidationVfhDescriptor, m_DeterminantVfhDescriptor, m_BlockSize);
+	auto ValidationDotResult = __KernelDotVfhDescriptor(ValidationVfhDescriptor, m_DeterminantVfhDescriptor, m_KernelSize);
 
-	return ValidationDotResult / m_BaseDotResult;
+	_ASSERTE(m_BaseDotResult > 0);
+	double ValidationRate = ValidationDotResult / m_BaseDotResult;
+	return ValidationRate > 1.0 ? 1.0 : ValidationRate;
 }
 
 //*****************************************************************
@@ -59,8 +69,9 @@ double CVfhFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
 	Eigen::Matrix<float, VfhDimension, 1> PointVfhDescriptor;
 	__computeVfhDescriptor({ vInputPoint }, PointVfhDescriptor);
-	auto PointDotResult = __blockDotVfhDescriptor(PointVfhDescriptor, m_DeterminantVfhDescriptor, m_BlockSize);
-	return PointDotResult / m_BaseDotResult;
+	auto PointDotResult = __KernelDotVfhDescriptor(PointVfhDescriptor, m_DeterminantVfhDescriptor, m_KernelSize);
+	double PointRate = PointDotResult / m_BaseDotResult;
+	return PointRate > 1.0 ? 1.0 : PointRate;
 }
 
 //*****************************************************************
@@ -85,7 +96,7 @@ void CVfhFeature::__computeVfhDescriptor(const std::vector<pcl::index_t>& vPoint
 
 //*****************************************************************
 //FUNCTION: 
-double CVfhFeature::__blockDotVfhDescriptor(const Eigen::Matrix<float, VfhDimension, 1>& vLVfh, const Eigen::Matrix<float, VfhDimension, 1>& vRVfh, std::size_t vBlockSize) const
+double CVfhFeature::__KernelDotVfhDescriptor(const Eigen::Matrix<float, VfhDimension, 1>& vLVfh, const Eigen::Matrix<float, VfhDimension, 1>& vRVfh, std::size_t vBlockSize) const
 {
 	if (vBlockSize <= 0)
 		vBlockSize = 5;
