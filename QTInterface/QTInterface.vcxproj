@@ -158,6 +158,9 @@
     <ProjectReference Include="..\PointCloudRetouch\PointCloudRetouch.vcxproj">
       <Project>{60928201-7a4d-49df-9579-3ccdde7a134f}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Visualizer\Visualization.vcxproj">
+      <Project>{6673a1f9-724d-47a0-8159-6ca26b818506}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
