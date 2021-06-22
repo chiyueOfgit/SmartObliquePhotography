@@ -80,11 +80,9 @@
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
    <addaction name="separator"/>
+   <addaction name="actionPointPicking"/>
    <addaction name="actionBrush"/>
    <addaction name="actionRubber"/>
-   <addaction name="actionRegionGrowing"/>
-   <addaction name="actionDichotomy"/>
-   <addaction name="actionBlend"/>
    <addaction name="actionUpdate"/>
    <addaction name="separator"/>
    <addaction name="actionDelete"/>
@@ -292,6 +290,15 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>Blend</string>
+   </property>
+  </action>
+  <action name="actionPointPicking">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/pointPicking.png</normaloff>:/QTInterface/Icon/pointPicking.png</iconset>
+   </property>
+   <property name="text">
+    <string>PointPicking</string>
    </property>
   </action>
  </widget>
