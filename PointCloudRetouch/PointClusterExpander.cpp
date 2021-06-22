@@ -11,7 +11,6 @@ _REGISTER_NORMAL_PRODUCT(CPointClusterExpander, KEYWORD::CLUSTER_EXPANDER)
 //FUNCTION: 
 void CPointClusterExpander::runV(const CPointCluster* vCluster)
 {
-	_ASSERTE(vCluster);
 	if (vCluster == nullptr)
 		_THROW_RUNTIME_ERROR("Expander input error");
 
@@ -51,15 +50,13 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 //FUNCTION: 
 void CPointClusterExpander::__initExpandingCandidateQueue(const CPointCluster* vCluster, std::queue<pcl::index_t>& voCandidateQueue)
 {
-	CPointCloudRetouchManager* pManager = CPointCloudRetouchManager::getInstance();
-	auto RegionIndices = vCluster->getCoreRegion();
-	std::vector<pcl::index_t> Neighborhood;
-	for(auto& Index: RegionIndices)
+	const auto SeedClusterIndex = vCluster->getClusterIndex();
+	for(auto Index : vCluster->getCoreRegion())
 	{
-		pManager->buildNeighborhood(Index, vCluster->getClusterIndex(), Neighborhood);
-		if(Neighborhood.empty()) continue;
-		for (auto Neighbor : Neighborhood) voCandidateQueue.push(Neighbor);
-		Neighborhood.clear();
+		std::vector<pcl::index_t> Neighborhood;
+		CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index, SeedClusterIndex, Neighborhood);
+		for (auto Neighbor : Neighborhood) 
+			voCandidateQueue.push(Neighbor);
 	}
 }
 
@@ -67,8 +64,6 @@ void CPointClusterExpander::__initExpandingCandidateQueue(const CPointCluster* v
 //FUNCTION: 
 bool CPointClusterExpander::__isReassigned2CurrentCluster(double vCurrentProbability, std::uint32_t vCurrentTimestamp, double vOldProbability, std::uint32_t vOldTimestamp)
 {
-	if (vCurrentProbability > vOldProbability || (vCurrentProbability > vOldProbability / 2 && vCurrentTimestamp - vOldTimestamp > 5))
-		return true;
-	else
-		return false;
+	return vCurrentProbability > vOldProbability || (vCurrentProbability > vOldProbability / 2 && vCurrentTimestamp - vOldTimestamp > 5);
+
 }

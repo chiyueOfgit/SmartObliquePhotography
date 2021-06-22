@@ -18,6 +18,8 @@
 #include <tuple>
 #include <typeinfo>
 #include <qpushbutton.h>
+#include <qcursor.h>
+#include <qevent.h>
 
 #include "QTDockWidgetTitleBar.h"
 #include "QTInterfaceConfig.h"
@@ -43,6 +45,12 @@ QTInterface::QTInterface(QWidget * vParent)
     }
 
     ui.setupUi(this);
+
+    QCursor* myCursor = new QCursor(QPixmap("Icon/pointPicking.png"), -1, -1);    //-1,-1表示热点位于图片中心
+    this->setCursor(*myCursor);
+    this->unsetCursor();
+
+    //this->grabKeyboard();
 
     __connectSignals();
     __initialResourceSpaceDockWidget();
@@ -135,6 +143,22 @@ void QTInterface::__parseConfigFile()
     }
 }
 
+bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
+{
+    const auto& FileName = QTInterface::__getFileName(vFilePath);
+
+    QStandardItem* StandardItem = new QStandardItem(QString::fromStdString(FileName));
+    StandardItem->setCheckable(true);
+    StandardItem->setCheckState(Qt::Checked);
+    StandardItem->setEditable(false);
+    m_pResourceSpaceStandardItemModels->appendRow(StandardItem);
+
+    m_CurrentCloud = FileName;
+    QTInterface::__messageDockWidgetOutputText(QString::fromStdString(vFilePath + " is opened."));
+
+    return true;
+}
+
 bool QTInterface::__messageDockWidgetOutputText(QString vString)
 {
     QDateTime CurrentDateTime = QDateTime::currentDateTime();
@@ -192,20 +216,86 @@ void QTInterface::onActionOpen()
     {
         m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
         PointCloudRetouch::hiveInit(pCloud, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(pCloud);
+        Visualization::hiveInitVisualizer(pCloud, true);
         //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         QTInterface::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel, true);
+        Visualization::hiveRunVisualizerLoop();
         QTInterface::__initialSlider(FilePathList);
 
         if (FilePathSet.size() == 1)
         {
-        }
+            QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
+        }                                                                           
         else
         {
             m_SceneIndex++;
+            QTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
         }
+    }
+}
+
+void QTInterface::keyPressEvent(QKeyEvent* vEvent)
+{
+    switch (vEvent->key())
+    {
+    case Qt::Key_Escape:
+        __messageDockWidgetOutputText(QString("esc"));
+        break;
+    default:
+        break;
+    }
+}
+
+void QTInterface::closeEvent(QCloseEvent* vEvent)
+{
+    QDialog* ExitDialog = new QDialog(this);
+    ExitDialog->setWindowFlag(Qt::FramelessWindowHint);
+    ExitDialog->deleteLater();
+    ExitDialog->resize(200, 100);
+    QLabel* Label = new QLabel(ExitDialog);
+    Label->setText("Are you sure?");
+
+    Label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    QPushButton* YesButton = new QPushButton(ExitDialog);
+    QPushButton* NoButton = new QPushButton(ExitDialog);
+    YesButton->setStyleSheet("QPushButton{color: black;min-width:75px;max-width:75px;min-height:20px;border:1px solid white;border-radius:5px;}"
+        "QPushButton:hover{background-color: #2292DD;border-color: #000000;color:rgb(255, 255, 255);}"
+        "QPushButton:pressed{background-color: #111111;border-color: #333333;color: blue;}");
+    NoButton->setStyleSheet("QPushButton{color: black;min-width:75px;max-width:75px;min-height:20px;border:1px solid white;border-radius:5px;}"
+        "QPushButton:hover{background-color: #2292DD;border-color: #000000;color:rgb(255, 255, 255);}"
+        "QPushButton:pressed{background-color: #111111;border-color: #333333;color: blue;}");
+    YesButton->setText("Yes");
+    NoButton->setText("No");
+    YesButton->setMaximumWidth(100);
+    NoButton->setMaximumWidth(100);
+
+    QObject::connect(YesButton, &QPushButton::clicked, [=]()
+        {
+            ExitDialog->done(1);
+        });
+    QObject::connect(NoButton, &QPushButton::clicked, [=]()
+        {
+            ExitDialog->done(0);
+        });
+
+    QHBoxLayout* hLayout = new QHBoxLayout();
+    hLayout->setSpacing(5);
+    hLayout->addStretch();
+    hLayout->addWidget(YesButton);
+    hLayout->addWidget(NoButton);
+    QVBoxLayout* v = new QVBoxLayout();
+    v->addWidget(Label);
+    v->addItem(hLayout);
+    ExitDialog->setLayout(v);
+    if (1 == ExitDialog->exec())
+    {
+        vEvent->accept();
+    }
+    else
+    {
+        vEvent->ignore();
     }
 }
