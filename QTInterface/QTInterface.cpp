@@ -49,6 +49,7 @@ QTInterface::QTInterface(QWidget * vParent)
     __initialResourceSpaceDockWidget();
     __initialWorkSpaceDockWidget();
     __initialMessageDockWidget();
+    __parseConfigFile();
 }
 
 QTInterface::~QTInterface()
