@@ -11,26 +11,23 @@ _REGISTER_EXCLUSIVE_PRODUCT(CPlanarityFeature, KEYWORD::PLANARITY_FEATURE)
 //FUNCTION: 
 double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
+	if (vDeterminantPointSet.empty() || vValidationSet.empty())
+		return 0.0;
+	
 	auto pDeterminantCloud = __createPositionCloud(vDeterminantPointSet);
 	auto Plane = __fitPlane(pDeterminantCloud);
-	if (Plane.norm() == 0)
+	if (Plane.norm() < 1.0f)
 		return 0.0;
 	else
 		m_Plane = Plane;
 	m_Peak = __computePeakDistance(pDeterminantCloud, m_Plane);
 	
-	float SumMatch = 0.0f;
-	int VaildNum = 0;
+	double SumMatch = 0.0;
 	for (auto& i : vValidationSet)
 	{
-		auto Match = evaluateFeatureMatchFactorV(i);
-		++VaildNum;
-		SumMatch += Match;
+		SumMatch += evaluateFeatureMatchFactorV(i);
 	}
-	if (VaildNum == 0)
-		return 0;
-	else
-		return SumMatch / VaildNum;
+	return SumMatch / vValidationSet.size();
 }
 
 //*****************************************************************
