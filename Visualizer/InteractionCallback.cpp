@@ -57,7 +57,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_UnwantedMode = !m_UnwantedMode;
 		}
 
-		if (KeyString == "w")
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(CLUSTER_EXPANDER_MODE).value())
 			m_AreaMode = true;
 
 		//else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_LINEPICK).value())
@@ -86,21 +86,24 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		//	m_pVisualizer->refresh();
 		//}
 		//
-		//else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
-		//{
-		//	static int i = 0;
-		//	i++;
-		//	if (i % 2)
-		//		AutoRetouch::hiveSwitchPointLabel(AutoRetouch::EPointLabel::DISCARDED, AutoRetouch::EPointLabel::UNWANTED);
-		//	else
-		//		AutoRetouch::hiveSwitchPointLabel(AutoRetouch::EPointLabel::UNWANTED, AutoRetouch::EPointLabel::DISCARDED);
-		//	m_pVisualizer->refresh();
-		//}
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
+		{
+			static int i = 0;
+			i++;
+			if (i % 2)
+				PointCloudRetouch::hiveDiscardUnwantedPoints();
+			else
+				PointCloudRetouch::hiveRecoverDiscardPoints2Unwanted();
+
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
 	}
 	
 	if (vEvent.keyUp())
 	{
-		if (KeyString == "w")
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(CLUSTER_EXPANDER_MODE).value())
 			m_AreaMode = false;
 	}
 }

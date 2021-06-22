@@ -17,6 +17,7 @@ namespace hiveObliquePhotography
 		const std::string UNDO = "UNDO";
 		const std::string SCREEN_CIRCLE_RADIUS = "SCREEN_CIRCLE_RADIUS";
 		const std::string SCREEN_CIRCLE_HARDNESS = "SCREEN_CIRCLE_HARDNESS";
+		const std::string CLUSTER_EXPANDER_MODE = "CLUSTER_EXPANDER_MODE";
 
 		class CVisualizationConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CVisualizationConfig>
 		{
@@ -50,6 +51,8 @@ namespace hiveObliquePhotography
 				_defineAttribute(SWITCH_BINARY_CLUSTER_LABEL, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(SWITCH_LINEPICK, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(UNDO, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(CLUSTER_EXPANDER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				
 				_defineAttribute(LINEWIDTH, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 				_defineAttribute(SCREEN_CIRCLE_RADIUS, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 				_defineAttribute(SCREEN_CIRCLE_HARDNESS, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);

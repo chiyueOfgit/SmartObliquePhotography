@@ -14,7 +14,7 @@ namespace hiveObliquePhotography
 
 		class CPointCloudRetouchManager : public hiveDesignPattern::CSingleton<CPointCloudRetouchManager>
 		{
-		public:	
+		public:
 			~CPointCloudRetouchManager() = default;
 
 			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex);
@@ -32,6 +32,8 @@ namespace hiveObliquePhotography
 			std::uint32_t getClusterIndexAt(std::size_t vIndex) const { return m_PointLabelSet.getClusterIndexAt(vIndex); }
 
 			double getClusterBelongingProbabilityAt(std::size_t vIndex) const { return m_PointLabelSet.getClusterBelongingProbabilityAt(vIndex); }
+
+			void switchLabel(EPointLabel vTo, EPointLabel vFrom);
 
 			const auto& getRetouchScene() const { return m_Scene; }
 			

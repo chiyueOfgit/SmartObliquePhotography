@@ -85,7 +85,7 @@ bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::dumpP
 			auto Label = m_PointLabelSet.getLabelAt(i);
 			voPointLabel.push_back(static_cast<std::size_t>(Label));
 		}
-
+		
 		return true;
 	}
 	else
@@ -123,6 +123,18 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 
 	}
 	return false;
+}
+
+void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::switchLabel(EPointLabel vTo, EPointLabel vFrom)
+{
+	auto NumPoints = m_Scene.getNumPoint();
+	_ASSERTE(NumPoints > 0);
+
+	for (int i = 0; i < NumPoints; i++)
+	{
+		if (m_PointLabelSet.getLabelAt(i) == vFrom)
+			m_PointLabelSet.tagPointLabel(i, vTo, m_PointLabelSet.getClusterIndexAt(i), m_PointLabelSet.getClusterBelongingProbabilityAt(i));
+	}
 }
 
 //*****************************************************************

@@ -66,6 +66,8 @@ void QTInterface::__connectSignals()
 {
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
     QObject::connect(ui.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
+    QObject::connect(ui.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
+    
 }
 
 void QTInterface::__initialVTKWidget()
@@ -251,12 +253,26 @@ void QTInterface::onActionOpen()
     }
 }
 
+void QTInterface::onActionDiscardAndRecover()
+{
+    static int i = 1;
+    if (i++ % 2)
+        PointCloudRetouch::hiveDiscardUnwantedPoints();
+    else
+        PointCloudRetouch::hiveRecoverDiscardPoints2Unwanted();
+
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::hiveRefreshVisualizer(PointLabel);
+}
+
 void QTInterface::keyPressEvent(QKeyEvent* vEvent)
 {
     switch (vEvent->key())
     {
     case Qt::Key_Escape:
-        __messageDockWidgetOutputText(QString("esc"));
+        //__messageDockWidgetOutputText(QString("esc"));
+        this->close();
         break;
     default:
         break;
