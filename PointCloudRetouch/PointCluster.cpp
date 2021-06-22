@@ -48,7 +48,40 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 //FUNCTION: 
 void CPointCluster::__createFeatureObjectSet()
 {
-	
+	for (auto i = 0; i < m_pConfig->getNumSubconfig(); i++)
+	{
+		const hiveConfig::CHiveConfig* pConfig = m_pConfig->getSubconfigAt(i);
+		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("FEATURE")))
+		{
+			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("PlanarFeature")))
+			{
+				std::optional<std::string> PlanarFeatureSig = pConfig->getAttribute<std::string>("SIG");
+				_ASSERTE(PlanarFeatureSig.has_value());
+				auto pFeature = hiveDesignPattern::hiveCreateProduct<IFeature>(PlanarFeatureSig.value(), pConfig);
+				_HIVE_EARLY_RETURN(true, _FORMAT_STR1("Fail to execute cluster expander due to the failure of creating [%1%].", PlanarFeatureSig.value()));
+				m_FeatureSet.push_back(pFeature);
+				continue;
+			}
+			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("VFHFeature")))
+			{
+				std::optional<std::string> VfhFeatureSig = pConfig->getAttribute<std::string>("SIG");
+				_ASSERTE(VfhFeatureSig.has_value());
+				auto pFeature = hiveDesignPattern::hiveCreateProduct<IFeature>(VfhFeatureSig.value(), pConfig);
+				_HIVE_EARLY_RETURN(true, _FORMAT_STR1("Fail to execute cluster expander due to the failure of creating [%1%].", VfhFeatureSig.value()));
+				m_FeatureSet.push_back(pFeature);
+				continue;
+			}
+			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("ColorFeature")))
+			{
+				std::optional<std::string> ColorFeatureSig = pConfig->getAttribute<std::string>("SIG");
+				_ASSERTE(ColorFeatureSig.has_value());
+				auto pFeature = hiveDesignPattern::hiveCreateProduct<IFeature>(ColorFeatureSig.value(), pConfig);
+				_HIVE_EARLY_RETURN(true, _FORMAT_STR1("Fail to execute cluster expander due to the failure of creating [%1%].", ColorFeatureSig.value()));
+				m_FeatureSet.push_back(pFeature);
+				continue;
+			}
+		}
+	}
 }
 
 //*****************************************************************
