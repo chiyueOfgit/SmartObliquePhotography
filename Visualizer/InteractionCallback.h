@@ -38,6 +38,8 @@ namespace hiveObliquePhotography
 
 			bool m_AreaMode = false;
 
+			double m_Radius = 40.0;
+
 			CPointCloudVisualizer* m_pVisualizer = nullptr;
 
 			CVisualizationConfig* m_pVisualizationConfig = nullptr;
