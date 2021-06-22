@@ -8,38 +8,23 @@ _REGISTER_NORMAL_PRODUCT(CEuclideanNeighborhoodBuilder, KEYWORD::EUCLIDEAN_NEIGH
 
 //*****************************************************************
 //FUNCTION: 
-void CEuclideanNeighborhoodBuilder::__extraInitV()
+void CEuclideanNeighborhoodBuilder::__extraInitV(const hiveConfig::CHiveConfig* vConfig)
 {
-	m_pCloud.reset(new PointCloud_t);
 	m_pTree.reset(new pcl::search::KdTree<pcl::PointSurfel>);
+	m_pTree->setInputCloud(m_pPointCloudScene);
 
-	auto CloudSize = CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint();
-	for (int i = 0; i < CloudSize; i++)
-	{
-		pcl::PointSurfel TempPoint;
-		auto Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(i);
-		TempPoint.x = Position.x();
-		TempPoint.y = Position.y();
-		TempPoint.z = Position.z();
-		
-		m_pCloud->push_back(TempPoint);
-	}
-
-	m_pTree->setInputCloud(m_pCloud);  //程序会在这里崩掉
+	m_SearchMode = *vConfig->getAttribute<std::string>("SEARCH_MODE");
+	m_NearestN = *vConfig->getAttribute<int>("NEAREST_N");
+	m_Radius = *vConfig->getAttribute<float>("RADIUS");
 }
 
 //*****************************************************************
 //FUNCTION: 
 void CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed, std::vector<pcl::index_t>& voNeighborhood)
 {
-	//config
-	const std::string SEARCH_MODE = "NEAREST";
-	const int NEAREST_N = 10;
-	const float RADIUS = 0.5;
-
 	std::vector<float> Distance;
-	if (SEARCH_MODE == "NEAREST")
-		m_pTree->nearestKSearch(m_pCloud->points[vSeed], NEAREST_N, voNeighborhood, Distance);
-	else if (SEARCH_MODE == "RADIUS")
-		m_pTree->radiusSearch(m_pCloud->points[vSeed], RADIUS, voNeighborhood, Distance);
+	if (m_SearchMode == "NEAREST")
+		m_pTree->nearestKSearch(m_pPointCloudScene->points[vSeed], m_NearestN, voNeighborhood, Distance);
+	else if (m_SearchMode == "RADIUS")
+		m_pTree->radiusSearch(m_pPointCloudScene->points[vSeed], m_Radius, voNeighborhood, Distance);
 }

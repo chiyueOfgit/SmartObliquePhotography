@@ -48,7 +48,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 		{
 			std::optional<std::string> NeighborhoodBuilderSig = pConfig->getAttribute<std::string>("SIG");
 			_ASSERTE(NeighborhoodBuilderSig.has_value());
-			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), vPointCloud, &m_PointLabelSet);
+			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), pConfig, vPointCloud, &m_PointLabelSet);
 			_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating  neighborhood builder [%1%].", NeighborhoodBuilderSig.value()), false);
 			continue;
 		}
@@ -71,7 +71,9 @@ CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::ve
 	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vHardness, vRadius, vTargetLabel, vCenter, vPvMatrix, vWindowSize, pClusterConfig);
 }
 
-bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::__dumpPointLabel4Visualizer(std::vector<std::size_t>& voPointLabel) const
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::dumpPointLabel(std::vector<std::size_t>& voPointLabel) const
 {
 	auto NumPoints = m_Scene.getNumPoint();
 	if (NumPoints > 0)

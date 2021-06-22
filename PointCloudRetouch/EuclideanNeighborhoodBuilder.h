@@ -12,11 +12,14 @@ namespace hiveObliquePhotography
 			~CEuclideanNeighborhoodBuilder() = default;
 
 		private:
-			virtual void __extraInitV() override;
+			virtual void __extraInitV(const hiveConfig::CHiveConfig* vConfig) override;
 			virtual void __buildNeighborhoodV(pcl::index_t vSeed, std::vector<pcl::index_t>& voNeighborhood) override;
 
-			PointCloud_t::Ptr m_pCloud = nullptr;
 			pcl::search::KdTree<pcl::PointSurfel>::Ptr m_pTree = nullptr;
+
+			std::string m_SearchMode;
+			int m_NearestN;
+			float m_Radius;
 		};
 	}
 }

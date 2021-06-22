@@ -8,26 +8,30 @@ _REGISTER_EXCLUSIVE_PRODUCT(CColorFeature, KEYWORD::COLOR_FEATURE)
 
 #define EPSILON 1e-2
 
-const float ColorThreshold = 30;
-const std::size_t K = 3;
 //*****************************************************************
 //FUNCTION: 
 double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
-	//todo: ÅäÖÃÎÄ¼þµÄK
-	__computeMainColors(vDeterminantPointSet, m_MainBaseColors, K);
-	std::vector<Eigen::Vector3i> ValidationColors;
-	__computeMainColors(vValidationSet, ValidationColors, K);
-
-	for (const auto& TestColor : ValidationColors)
+	_ASSERTE(m_pConfig);
 	{
-		for (const auto& MainColor : m_MainBaseColors)
-		{
-			if ((TestColor - MainColor).norm() < ColorThreshold)
-				return 1.0;
-		}	
+		std::optional<float> ColorThreshold = m_pConfig->getAttribute<float>("COLOR_THRESHOLD");
+		if (ColorThreshold.has_value())
+			m_ColorThreshold = ColorThreshold.value();
 	}
-	return 0.0;
+	{
+		std::optional<int> NumMainColors = m_pConfig->getAttribute<int>("NUM_MAIN_COLORS");
+		if (NumMainColors.has_value())
+			m_NumMainColors = NumMainColors.value();
+	}
+
+	__computeMainColors(vDeterminantPointSet, m_MainBaseColors, m_NumMainColors);
+
+	double Score = 0.0;
+	for (auto ValidationIndex: vValidationSet)
+	{
+		Score += evaluateFeatureMatchFactorV(ValidationIndex);
+	}
+	return Score / vValidationSet.size();
 }
 
 //*****************************************************************
@@ -38,7 +42,7 @@ double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	{
 		auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(vInputPoint);
 
-		if ((Color - MainColor).norm() < ColorThreshold)
+		if ((Color - MainColor).norm() < m_ColorThreshold)
 			return 1.0;
 	}
 	return 0.0;
@@ -59,10 +63,7 @@ void CColorFeature::__computeMainColors(const std::vector<pcl::index_t>& vPointI
 //FUNCTION: 
 std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Eigen::Vector3i>& vData, std::size_t vK) const
 {
-	const std::size_t MaxNumCluster = 5;
-	_ASSERTE(vK > 0 && vK < MaxNumCluster);
-
-	std::vector<int> PointTag4Cluster(vData.size());
+	std::vector<int> PointTag4Cluster(vData.size(), -1);
 	std::vector<Eigen::Vector3i> ClusterCentroids;
 	double Variance = 0;
 
@@ -76,16 +77,18 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 		Variance = 0;
 		for (int i = 0; i < vData.size(); i++)
 		{
-			double Distance = 0;
+			double MinDistance = DBL_MAX;
+			int MinClusterIndex = -1;
 			for (int j = 0; j < vK; j++)
 			{
 				double Temp = (vData[i] - ClusterCentroids[j]).norm();
-				if (Distance > Temp)
+				if (Temp < MinDistance)
 				{
-					Distance = Temp;
-					PointTag4Cluster[i] = j;
+					MinDistance = Temp;
+					MinClusterIndex = j;
 				}
 			}
+			PointTag4Cluster[i] = MinClusterIndex;
 		}
 
 		auto calcentroid = [](const std::vector<Eigen::Vector3i>& vClusterPointsData) -> Eigen::Vector3i
@@ -104,7 +107,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 			return Centroid;
 		};
 
-		auto calvariance = [](std::vector<Eigen::Vector3i>& vClusterPointsData, const Eigen::Vector3i& vCentroid) -> double
+		auto calvariance = [](const std::vector<Eigen::Vector3i>& vClusterPointsData, const Eigen::Vector3i& vCentroid) -> double
 		{
 			double Variance = 0;
 
