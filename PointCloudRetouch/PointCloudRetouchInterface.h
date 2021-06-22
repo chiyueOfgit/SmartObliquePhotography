@@ -11,5 +11,6 @@ namespace hiveObliquePhotography
 		RETOUCH_DECLSPEC bool hiveDumpPointLabel(std::vector<std::size_t>& voPointLabel);
 		RETOUCH_DECLSPEC void hiveDiscardUnwantedPoints();
 		RETOUCH_DECLSPEC void hiveRecoverDiscardPoints2Unwanted();
+		RETOUCH_DECLSPEC void hiveClearMarkerResult();
 	}
 }

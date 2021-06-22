@@ -25,6 +25,7 @@ namespace hiveObliquePhotography
 			bool dumpPointLabel(std::vector<std::size_t>& voPointLabel) const;
 
 			bool init(PointCloud_t::Ptr vPointCloud, const hiveConfig::CHiveConfig* vConfig);
+			void clearMarkerResult();
 			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel);
 
 			std::size_t   getNumCluster() const { return m_PointClusterSet.getNumCluster(); }

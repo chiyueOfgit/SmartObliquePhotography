@@ -12,7 +12,7 @@ namespace hiveObliquePhotography
 			CPointClusterSet() = default;
 			~CPointClusterSet();
 
-			void reset(std::uint64_t vTimestamp);
+			void reset();
 
 			std::size_t getNumCluster() const { return m_ClusterSet.size(); }
 

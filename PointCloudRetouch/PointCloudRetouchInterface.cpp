@@ -42,3 +42,8 @@ void hiveObliquePhotography::PointCloudRetouch::hiveRecoverDiscardPoints2Unwante
 {
 	CPointCloudRetouchManager::getInstance()->switchLabel(EPointLabel::UNWANTED, EPointLabel::DISCARDED);
 }
+
+void hiveObliquePhotography::PointCloudRetouch::hiveClearMarkerResult()
+{
+	CPointCloudRetouchManager::getInstance()->clearMarkerResult();
+}

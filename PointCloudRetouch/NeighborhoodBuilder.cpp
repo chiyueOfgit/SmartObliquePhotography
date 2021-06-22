@@ -53,5 +53,5 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 void INeighborhoodBuilder::reset()
 {
 	_ASSERTE(m_pVisitedTag);
-	for (auto i = 0; i < m_pPointCloudScene->size(); i++) m_ClusterTag[i] = -1;
+	for (auto i = 0; i < m_pPointCloudScene->size(); i++) m_ClusterTag[i] = 0;
 }
