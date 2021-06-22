@@ -40,8 +40,7 @@ QTInterface::QTInterface(QWidget * vParent)
     : QMainWindow(vParent)
 {
     {
-        //Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
-        //AutoRetouch::hiveGetAutoRetouchConfig(m_pAutoRetouchConfig );
+        Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
     }
 
     ui.setupUi(this);
@@ -180,12 +179,10 @@ std::string QTInterface::__getDirectory(const std::string& vFilePath)
 
 void QTInterface::onActionPointPicking()
 {
-    m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget, m_pPointCloudRetouchConfig);
+    m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget, m_pVisualizationConfig);
     m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
     m_pPointPickingDockWidget->show();
     QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking.")); 
-
-    //float Radius = m_pPointCloudRetouchConfig->getAttribute<float>("RADIUS").value();
 }
 
 void QTInterface::onActionOpen()
