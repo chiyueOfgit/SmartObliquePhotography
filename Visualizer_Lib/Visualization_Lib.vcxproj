@@ -161,6 +161,7 @@
     <ClInclude Include="..\Visualizer\InteractionCallback.h" />
     <ClInclude Include="..\Visualizer\pch.h" />
     <ClInclude Include="..\Visualizer\PointCloudVisualizer.h" />
+    <ClInclude Include="..\Visualizer\VisualizationConfig.h" />
     <ClInclude Include="..\Visualizer\VisualizationExport.h" />
     <ClInclude Include="..\Visualizer\VisualizationInterface.h" />
   </ItemGroup>

@@ -34,7 +34,7 @@ namespace hiveObliquePhotography
 
 			bool m_UnwantedMode = true;
 			bool m_PartitionMode = true;
-			bool m_LineMode = true;
+			bool m_LineMode = false;
 
 			bool m_AreaMode = false;
 
