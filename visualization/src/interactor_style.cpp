@@ -72,6 +72,38 @@
 #define ORIENT_MODE 0
 #define SELECT_MODE 1
 
+
+//    "     +/- [+ ALT] : zoom in/out \n"
+//    "    r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]\n"
+//    "    CTRL + s, S  : save camera parameters\n"
+//    "    CTRL + r, R  : restore camera parameters\n"
+//    "    ALT + s, S   : turn stereo mode on/off\n"
+//    "    ALT + f, F   : switch between maximized window mode and original size\n"
+//    "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
+//    "          0..9 [+ CTRL]  : switch between different color handlers (where available)\n"
+//    "    SHIFT + left click   : select a point (start with -use_point_picking)\n"
+
+std::map<std::string, char> KeyMap
+{
+    {"print help", 'H'},
+    {"print available handlers", 'L'},
+    {"print camera parameters", 'C'},
+    {"display scale grid", 'G'},
+    {"display lookup table", 'U'},
+    {"switch representation to points", 'P'},
+    {"switch representation to wireframe", 'W'},
+    {"switch representation to surface", 'S'},
+    {"switch projection", 'O'},
+    //{"exit", 'E'},
+    {"quit", 'Q'},
+    {"increment point size", '+'},
+    {"decrement point size", '-'},
+	{"reset camera", 'R'},
+    {"screen capture", 'J'},
+    {"fly to point", 'F'},
+    {"area pick", 'X'},
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
@@ -755,417 +787,378 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
   else if (key.find ("XF86ZoomOut") != std::string::npos)
     zoomOut ();
 
-  switch (Interactor->GetKeyCode ())
+  auto KeyCode = Interactor->GetKeyCode();
+  if (std::islower(KeyCode))
+      KeyCode = std::toupper(KeyCode);
+
+  if (KeyCode == KeyMap["print help"])
   {
-    case 'h': case 'H':
-    {
-      pcl::console::print_info ("| Help:\n"
-                  "-------\n"
-                  "          p, P   : switch to a point-based representation\n"
-                  "          w, W   : switch to a wireframe-based representation (where available)\n"
-                  "          s, S   : switch to a surface-based representation (where available)\n"
-                  "\n"
-                  "          j, J   : take a .PNG snapshot of the current window view\n"
-                  "          c, C   : display current camera/window parameters\n"
-                  "          f, F   : fly to point mode\n"
-                  "\n"
-                  "          e, E   : exit the interactor\n"
-                  "          q, Q   : stop and call VTK's TerminateApp\n"
-                  "\n"
-                  "           +/-   : increment/decrement overall point size\n"
-                  "     +/- [+ ALT] : zoom in/out \n"
-                  "\n"
-                  "          g, G   : display scale grid (on/off)\n"
-                  "          u, U   : display lookup table (on/off)\n"
-                  "\n"
-                  "    o, O         : switch between perspective/parallel projection (default = perspective)\n"
-                  "    r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]\n"
-                  "    CTRL + s, S  : save camera parameters\n"
-                  "    CTRL + r, R  : restore camera parameters\n"
-                  "\n"
-                  "    ALT + s, S   : turn stereo mode on/off\n"
-                  "    ALT + f, F   : switch between maximized window mode and original size\n"
-                  "\n"
-                  "          l, L           : list all available geometric and color handlers for the current actor map\n"
-                  "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
-                  "          0..9 [+ CTRL]  : switch between different color handlers (where available)\n"
-                  "\n"
-                  "    SHIFT + left click   : select a point (start with -use_point_picking)\n"
-                  "\n"
-                  "          x, X   : toggle rubber band selection mode for left mouse button\n"
-          );
-      break;
-    }
-
-    // Get the list of available handlers
-    case 'l': case 'L':
-    {
+      pcl::console::print_info("| Help:\n"
+          "-------\n"
+          "          p, P   : switch to a point-based representation\n"
+          "          w, W   : switch to a wireframe-based representation (where available)\n"
+          "          s, S   : switch to a surface-based representation (where available)\n"
+          "\n"
+          "          j, J   : take a .PNG snapshot of the current window view\n"
+          "          c, C   : display current camera/window parameters\n"
+          "          f, F   : fly to point mode\n"
+          "\n"
+          "          e, E   : exit the interactor\n"
+          "          q, Q   : stop and call VTK's TerminateApp\n"
+          "\n"
+          "           +/-   : increment/decrement overall point size\n"
+          "     +/- [+ ALT] : zoom in/out \n"
+          "\n"
+          "          g, G   : display scale grid (on/off)\n"
+          "          u, U   : display lookup table (on/off)\n"
+          "\n"
+          "    o, O         : switch between perspective/parallel projection (default = perspective)\n"
+          "    r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]\n"
+          "    CTRL + s, S  : save camera parameters\n"
+          "    CTRL + r, R  : restore camera parameters\n"
+          "\n"
+          "    ALT + s, S   : turn stereo mode on/off\n"
+          "    ALT + f, F   : switch between maximized window mode and original size\n"
+          "\n"
+          "          l, L           : list all available geometric and color handlers for the current actor map\n"
+          "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
+          "          0..9 [+ CTRL]  : switch between different color handlers (where available)\n"
+          "\n"
+          "    SHIFT + left click   : select a point (start with -use_point_picking)\n"
+          "\n"
+          "          x, X   : toggle rubber band selection mode for left mouse button\n"
+      );
+  }
+  else if (KeyCode == KeyMap["print available handlers"])
+  {
       // Iterate over the entire actors list and extract the geomotry/color handlers list
-      for (auto &actor : *cloud_actors_)
+      for (auto& actor : *cloud_actors_)
       {
-        std::list<std::string> geometry_handlers_list, color_handlers_list;
-        CloudActor *act = &actor.second;
-        for (auto &geometry_handler : act->geometry_handlers)
-          geometry_handlers_list.push_back (geometry_handler->getFieldName ());
-        for (auto &color_handler : act->color_handlers)
-          color_handlers_list.push_back (color_handler->getFieldName ());
+          std::list<std::string> geometry_handlers_list, color_handlers_list;
+          CloudActor* act = &actor.second;
+          for (auto& geometry_handler : act->geometry_handlers)
+              geometry_handlers_list.push_back(geometry_handler->getFieldName());
+          for (auto& color_handler : act->color_handlers)
+              color_handlers_list.push_back(color_handler->getFieldName());
 
-        if (!geometry_handlers_list.empty ())
-        {
-          int i = 0;
-          pcl::console::print_info ("List of available geometry handlers for actor "); pcl::console::print_value ("%s: ", actor.first.c_str ());
-          for (auto &git : geometry_handlers_list)
-            pcl::console::print_value ("%s(%d) ", git.c_str (), ++i);
-          pcl::console::print_info ("\n");
-        }
-        if (!color_handlers_list.empty ())
-        {
-          int i = 0;
-          pcl::console::print_info ("List of available color handlers for actor "); pcl::console::print_value ("%s: ", actor.first.c_str ());
-          for (auto &cit : color_handlers_list)
-            pcl::console::print_value ("%s(%d) ", cit.c_str (), ++i);
-          pcl::console::print_info ("\n");
-        }
-      }
-
-      break;
-    }
-
-    // Switch representation to points
-    case 'p': case 'P':
-    {
-      vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
-      vtkCollectionSimpleIterator ait;
-      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
-      {
-        for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
-        {
-          vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode ()->GetViewProp ());
-          apart->GetProperty ()->SetRepresentationToPoints ();
-        }
-      }
-      break;
-    }
-
-    // Switch representation to wireframe (override default behavior)
-    case 'w': case 'W':
-    {
-      vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
-      vtkCollectionSimpleIterator ait;
-      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
-      {
-        for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
-        {
-          vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode ()->GetViewProp ());
-          apart->GetProperty ()->SetRepresentationToWireframe ();
-          apart->GetProperty ()->SetLighting (false);
-        }
-      }
-      break;
-    }
-
-    // Save a PNG snapshot with the current screen
-    case 'j': case 'J':
-    {
-      char cam_fn[80], snapshot_fn[80];
-      unsigned t = static_cast<unsigned> (time (nullptr));
-      sprintf (snapshot_fn, "screenshot-%d.png" , t);
-      saveScreenshot (snapshot_fn);
-
-      sprintf (cam_fn, "screenshot-%d.cam", t);
-      saveCameraParameters (cam_fn);
-
-      pcl::console::print_info ("Screenshot (%s) and camera information (%s) successfully captured.\n", snapshot_fn, cam_fn);
-      break;
-    }
-    // display current camera settings/parameters
-    case 'c': case 'C':
-    {
-      Camera cam (*CurrentRenderer->GetActiveCamera (), *Interactor->GetRenderWindow ());
-      std::cerr <<  "Clipping plane [near,far] "  << cam.clip[0] << ", " << cam.clip[1] << std::endl <<
-                    "Focal point [x,y,z] " << cam.focal[0] << ", " << cam.focal[1] << ", " << cam.focal[2] << std::endl <<
-                    "Position [x,y,z] " << cam.pos[0] << ", " << cam.pos[1] << ", " << cam.pos[2] << std::endl <<
-                    "View up [x,y,z] " << cam.view[0]  << ", " << cam.view[1]  << ", " << cam.view[2] << std::endl <<
-                    "Camera view angle [degrees] " << rad2deg (cam.fovy) << std::endl <<
-                    "Window size [x,y] " << cam.window_size[0] << ", " << cam.window_size[1] << std::endl <<
-                    "Window position [x,y] " << cam.window_pos[0] << ", " << cam.window_pos[1] << std::endl;
-      break;
-    }
-    case '=':
-    {
-      zoomIn();
-      break;
-    }
-    case 43:        // KEY_PLUS
-    {
-      if(alt)
-        zoomIn ();
-      else
-      {
-        vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
-        vtkCollectionSimpleIterator ait;
-        for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
-        {
-          for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
+          if (!geometry_handlers_list.empty())
           {
-            vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode ()->GetViewProp ());
-            float psize = apart->GetProperty ()->GetPointSize ();
-            if (psize < 63.0f)
-              apart->GetProperty ()->SetPointSize (psize + 1.0f);
+              int i = 0;
+              pcl::console::print_info("List of available geometry handlers for actor "); pcl::console::print_value("%s: ", actor.first.c_str());
+              for (auto& git : geometry_handlers_list)
+                  pcl::console::print_value("%s(%d) ", git.c_str(), ++i);
+              pcl::console::print_info("\n");
           }
-        }
-      }
-      break;
-    }
-    case 45:        // KEY_MINUS
-    {
-      if(alt)
-        zoomOut ();
-      else
-      {
-        vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
-        vtkCollectionSimpleIterator ait;
-        for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
-        {
-          for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
+          if (!color_handlers_list.empty())
           {
-            vtkSmartPointer<vtkActor> apart = static_cast<vtkActor*> (path->GetLastNode ()->GetViewProp ());
-            float psize = apart->GetProperty ()->GetPointSize ();
-            if (psize > 1.0f)
-              apart->GetProperty ()->SetPointSize (psize - 1.0f);
+              int i = 0;
+              pcl::console::print_info("List of available color handlers for actor "); pcl::console::print_value("%s: ", actor.first.c_str());
+              for (auto& cit : color_handlers_list)
+                  pcl::console::print_value("%s(%d) ", cit.c_str(), ++i);
+              pcl::console::print_info("\n");
           }
-        }
       }
-      break;
-    }
-    // Switch between maximize and original window size
-    case 'f': case 'F':
-    {
-      if (keymod)
-      {
-        // Get screen size
-        int *temp = Interactor->GetRenderWindow ()->GetScreenSize ();
-        int scr_size[2]; scr_size[0] = temp[0]; scr_size[1] = temp[1];
-
-        // Get window size
-        temp = Interactor->GetRenderWindow ()->GetSize ();
-        int win_size[2]; win_size[0] = temp[0]; win_size[1] = temp[1];
-        // Is window size = max?
-        if (win_size[0] == max_win_height_ && win_size[1] == max_win_width_)
-        {
-          // Set the previously saved 'current' window size
-          Interactor->GetRenderWindow ()->SetSize (win_height_, win_width_);
-          // Set the previously saved window position
-          Interactor->GetRenderWindow ()->SetPosition (win_pos_x_, win_pos_y_);
-          Interactor->GetRenderWindow ()->Render ();
-          Interactor->Render ();
-        }
-        // Set to max
-        else
-        {
-          int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
-          // Save the current window position
-          win_pos_x_  = win_pos[0];
-          win_pos_y_  = win_pos[1];
-          // Save the current window size
-          win_height_ = win_size[0];
-          win_width_  = win_size[1];
-          // Set the maximum window size
-          Interactor->GetRenderWindow ()->SetSize (scr_size[0], scr_size[1]);
-          Interactor->GetRenderWindow ()->Render ();
-          Interactor->Render ();
-          int *win_size = Interactor->GetRenderWindow ()->GetSize ();
-          // Save the maximum window size
-          max_win_height_ = win_size[0];
-          max_win_width_  = win_size[1];
-        }
-      }
-      else
-      {
-        AnimState = VTKIS_ANIM_ON;
-        vtkAssemblyPath *path = nullptr;
-        Interactor->GetPicker ()->Pick (Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1], 0.0, CurrentRenderer);
-        vtkAbstractPropPicker *picker;
-        if ((picker = vtkAbstractPropPicker::SafeDownCast (Interactor->GetPicker ())))
-          path = picker->GetPath ();
-        if (path)
-          Interactor->FlyTo (CurrentRenderer, picker->GetPickPosition ());
-        AnimState = VTKIS_ANIM_OFF;
-      }
-      break;
-    }
-    // 's'/'S' w/out ALT
-    case 's': case 'S':
-    {
-      if (keymod)
-      {
-        int stereo_render = Interactor->GetRenderWindow ()->GetStereoRender ();
-        if (!stereo_render)
-        {
-          if (stereo_anaglyph_mask_default_)
-          {
-            Interactor->GetRenderWindow ()->SetAnaglyphColorMask (4, 3);
-            stereo_anaglyph_mask_default_ = false;
-          }
-          else
-          {
-            Interactor->GetRenderWindow ()->SetAnaglyphColorMask (2, 5);
-            stereo_anaglyph_mask_default_ = true;
-          }
-        }
-        Interactor->GetRenderWindow ()->SetStereoRender (!stereo_render);
-        Interactor->GetRenderWindow ()->Render ();
-        Interactor->Render ();
-      }
-      else
-      {
-        Superclass::OnKeyDown();
-        vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
-        vtkCollectionSimpleIterator ait;
-        for (ac->InitTraversal(ait); vtkActor* actor = ac->GetNextActor(ait);)
-        {
-          for (actor->InitPathTraversal(); vtkAssemblyPath* path = actor->GetNextPath();)
-          {
-            vtkSmartPointer<vtkActor> apart = reinterpret_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
-            apart->GetProperty()->SetRepresentationToSurface();
-            apart->GetProperty()->SetLighting(true);
-          }
-        }
-      }
-      break;
-    }
-
-    // Display a grid/scale over the screen
-    case 'g': case 'G':
-    {
+  }
+  else if (KeyCode == KeyMap["print camera parameters"])
+  {
+      Camera cam(*CurrentRenderer->GetActiveCamera(), *Interactor->GetRenderWindow());
+      std::cerr << "Clipping plane [near,far] " << cam.clip[0] << ", " << cam.clip[1] << std::endl <<
+          "Focal point [x,y,z] " << cam.focal[0] << ", " << cam.focal[1] << ", " << cam.focal[2] << std::endl <<
+          "Position [x,y,z] " << cam.pos[0] << ", " << cam.pos[1] << ", " << cam.pos[2] << std::endl <<
+          "View up [x,y,z] " << cam.view[0] << ", " << cam.view[1] << ", " << cam.view[2] << std::endl <<
+          "Camera view angle [degrees] " << rad2deg(cam.fovy) << std::endl <<
+          "Window size [x,y] " << cam.window_size[0] << ", " << cam.window_size[1] << std::endl <<
+          "Window position [x,y] " << cam.window_pos[0] << ", " << cam.window_pos[1] << std::endl;
+  }
+  else if (KeyCode == KeyMap["display scale grid"])
+  {
       if (!grid_enabled_)
       {
-        grid_actor_->TopAxisVisibilityOn ();
-        CurrentRenderer->AddViewProp (grid_actor_);
-        grid_enabled_ = true;
+          grid_actor_->TopAxisVisibilityOn();
+          CurrentRenderer->AddViewProp(grid_actor_);
+          grid_enabled_ = true;
       }
       else
       {
-        CurrentRenderer->RemoveViewProp (grid_actor_);
-        grid_enabled_ = false;
+          CurrentRenderer->RemoveViewProp(grid_actor_);
+          grid_enabled_ = false;
       }
-      break;
-    }
-
-    case 'o': case 'O':
-    {
-      vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
-      int flag = cam->GetParallelProjection ();
-      cam->SetParallelProjection (!flag);
-
-      CurrentRenderer->SetActiveCamera (cam);
-      CurrentRenderer->Render ();
-      break;
-    }
-    // Display a LUT actor on screen
-    case 'u': case 'U':
-    {
-      updateLookUpTableDisplay (true);
-      break;
-    }
-
-    // Overwrite the camera reset
-    case 'r': case 'R':
-    {
-      if (!keymod)
+  }
+  else if (KeyCode == KeyMap["display lookup table"])
+  {
+      updateLookUpTableDisplay(true);
+  }
+  else if (KeyCode == KeyMap["switch representation to points"])
+  {
+      vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
+      vtkCollectionSimpleIterator ait;
+      for (ac->InitTraversal(ait); vtkActor * actor = ac->GetNextActor(ait); )
       {
-        FindPokedRenderer(Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
-        if(CurrentRenderer)
-          CurrentRenderer->ResetCamera ();
-        else
-          PCL_WARN ("no current renderer on the interactor style.");
-
-        CurrentRenderer->Render ();
-        break;
+          for (actor->InitPathTraversal(); vtkAssemblyPath * path = actor->GetNextPath(); )
+          {
+              vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode()->GetViewProp());
+              apart->GetProperty()->SetRepresentationToPoints();
+          }
       }
+  }
+  else if (KeyCode == KeyMap["switch representation to wireframe"])
+  {
+      vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
+      vtkCollectionSimpleIterator ait;
+      for (ac->InitTraversal(ait); vtkActor * actor = ac->GetNextActor(ait); )
+      {
+          for (actor->InitPathTraversal(); vtkAssemblyPath * path = actor->GetNextPath(); )
+          {
+              vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode()->GetViewProp());
+              apart->GetProperty()->SetRepresentationToWireframe();
+              apart->GetProperty()->SetLighting(false);
+          }
+      }
+  }
+  else if (KeyCode == KeyMap["switch representation to surface"])
+  {
+      if (keymod)
+      {
+          int stereo_render = Interactor->GetRenderWindow()->GetStereoRender();
+          if (!stereo_render)
+          {
+              if (stereo_anaglyph_mask_default_)
+              {
+                  Interactor->GetRenderWindow()->SetAnaglyphColorMask(4, 3);
+                  stereo_anaglyph_mask_default_ = false;
+              }
+              else
+              {
+                  Interactor->GetRenderWindow()->SetAnaglyphColorMask(2, 5);
+                  stereo_anaglyph_mask_default_ = true;
+              }
+          }
+          Interactor->GetRenderWindow()->SetStereoRender(!stereo_render);
+          Interactor->GetRenderWindow()->Render();
+          Interactor->Render();
+      }
+      else
+      {
+          Superclass::OnKeyDown();
+          vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
+          vtkCollectionSimpleIterator ait;
+          for (ac->InitTraversal(ait); vtkActor * actor = ac->GetNextActor(ait);)
+          {
+              for (actor->InitPathTraversal(); vtkAssemblyPath * path = actor->GetNextPath();)
+              {
+                  vtkSmartPointer<vtkActor> apart = reinterpret_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
+                  apart->GetProperty()->SetRepresentationToSurface();
+                  apart->GetProperty()->SetLighting(true);
+              }
+          }
+      }
+  }
+  else if (KeyCode == KeyMap["switch projection"])
+  {
+      vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera();
+      int flag = cam->GetParallelProjection();
+      cam->SetParallelProjection(!flag);
 
-      vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
-      
-      static CloudActorMap::iterator it = cloud_actors_->begin ();
+      CurrentRenderer->SetActiveCamera(cam);
+      CurrentRenderer->Render();
+  }
+  //else if (KeyCode == KeyMap["exit"]){}
+  else if (KeyCode == KeyMap["quit"])
+  {
+      Interactor->ExitCallback();
+  }
+  else if (KeyCode == KeyMap["increment point size"])
+  {
+      if (alt)
+          zoomIn();
+      else
+      {
+          vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
+          vtkCollectionSimpleIterator ait;
+          for (ac->InitTraversal(ait); vtkActor * actor = ac->GetNextActor(ait); )
+          {
+              for (actor->InitPathTraversal(); vtkAssemblyPath * path = actor->GetNextPath(); )
+              {
+                  vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode()->GetViewProp());
+                  float psize = apart->GetProperty()->GetPointSize();
+                  if (psize < 63.0f)
+                      apart->GetProperty()->SetPointSize(psize + 1.0f);
+              }
+          }
+      }
+  }
+  else if (KeyCode == KeyMap["decrement point size"])
+  {
+      if (alt)
+          zoomOut();
+      else
+      {
+          vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
+          vtkCollectionSimpleIterator ait;
+          for (ac->InitTraversal(ait); vtkActor * actor = ac->GetNextActor(ait); )
+          {
+              for (actor->InitPathTraversal(); vtkAssemblyPath * path = actor->GetNextPath(); )
+              {
+                  vtkSmartPointer<vtkActor> apart = static_cast<vtkActor*> (path->GetLastNode()->GetViewProp());
+                  float psize = apart->GetProperty()->GetPointSize();
+                  if (psize > 1.0f)
+                      apart->GetProperty()->SetPointSize(psize - 1.0f);
+              }
+          }
+      }
+  }
+  else if (KeyCode == KeyMap["reset camera"])
+  {
+  if (!keymod)
+  {
+      FindPokedRenderer(Interactor->GetEventPosition()[0], Interactor->GetEventPosition()[1]);
+      if (CurrentRenderer)
+          CurrentRenderer->ResetCamera();
+      else
+          PCL_WARN("no current renderer on the interactor style.");
+
+      CurrentRenderer->Render();
+  }
+  else
+  {
+      vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera();
+
+      static CloudActorMap::iterator it = cloud_actors_->begin();
       // it might be that some actors don't have a valid transformation set -> we skip them to avoid a seg fault.
       bool found_transformation = false;
-      for (unsigned idx = 0; idx < cloud_actors_->size (); ++idx, ++it)
+      for (unsigned idx = 0; idx < cloud_actors_->size(); ++idx, ++it)
       {
-        if (it == cloud_actors_->end ())
-          it = cloud_actors_->begin ();
-        
-        const CloudActor& actor = it->second;
-        if (actor.viewpoint_transformation_.GetPointer ())
-        {
-          found_transformation = true;
-          break;
-        }
+          if (it == cloud_actors_->end())
+              it = cloud_actors_->begin();
+
+          const CloudActor& actor = it->second;
+          if (actor.viewpoint_transformation_.GetPointer())
+          {
+              found_transformation = true;
+              break;
+          }
       }
-      
+
       // if a valid transformation was found, use it otherwise fall back to default view point.
       if (found_transformation)
       {
-        const CloudActor& actor = it->second;
-        cam->SetPosition (actor.viewpoint_transformation_->GetElement (0, 3),
-                          actor.viewpoint_transformation_->GetElement (1, 3),
-                          actor.viewpoint_transformation_->GetElement (2, 3));
+          const CloudActor& actor = it->second;
+          cam->SetPosition(actor.viewpoint_transformation_->GetElement(0, 3),
+              actor.viewpoint_transformation_->GetElement(1, 3),
+              actor.viewpoint_transformation_->GetElement(2, 3));
 
-        cam->SetFocalPoint (actor.viewpoint_transformation_->GetElement (0, 3) - actor.viewpoint_transformation_->GetElement (0, 2),
-                            actor.viewpoint_transformation_->GetElement (1, 3) - actor.viewpoint_transformation_->GetElement (1, 2),
-                            actor.viewpoint_transformation_->GetElement (2, 3) - actor.viewpoint_transformation_->GetElement (2, 2));
+          cam->SetFocalPoint(actor.viewpoint_transformation_->GetElement(0, 3) - actor.viewpoint_transformation_->GetElement(0, 2),
+              actor.viewpoint_transformation_->GetElement(1, 3) - actor.viewpoint_transformation_->GetElement(1, 2),
+              actor.viewpoint_transformation_->GetElement(2, 3) - actor.viewpoint_transformation_->GetElement(2, 2));
 
-        cam->SetViewUp (actor.viewpoint_transformation_->GetElement (0, 1),
-                        actor.viewpoint_transformation_->GetElement (1, 1),
-                        actor.viewpoint_transformation_->GetElement (2, 1));
+          cam->SetViewUp(actor.viewpoint_transformation_->GetElement(0, 1),
+              actor.viewpoint_transformation_->GetElement(1, 1),
+              actor.viewpoint_transformation_->GetElement(2, 1));
       }
       else
       {
-        cam->SetPosition (0, 0, 0);
-        cam->SetFocalPoint (0, 0, 1);
-        cam->SetViewUp (0, -1, 0);
+          cam->SetPosition(0, 0, 0);
+          cam->SetFocalPoint(0, 0, 1);
+          cam->SetViewUp(0, -1, 0);
       }
 
       // go to the next actor for the next key-press event.
-      if (it != cloud_actors_->end ())
-        ++it;
+      if (it != cloud_actors_->end())
+          ++it;
       else
-        it = cloud_actors_->begin ();
-      
-      CurrentRenderer->SetActiveCamera (cam);
-      CurrentRenderer->ResetCameraClippingRange ();
-      CurrentRenderer->Render ();
-      break;
-    }
+          it = cloud_actors_->begin();
 
-    case 'x' : case 'X' :
-    {
+      CurrentRenderer->SetActiveCamera(cam);
+      CurrentRenderer->ResetCameraClippingRange();
+      CurrentRenderer->Render();
+  }
+  }
+  else if (KeyCode == KeyMap["screen capture"])
+  {
+      char cam_fn[80], snapshot_fn[80];
+      unsigned t = static_cast<unsigned> (time(nullptr));
+      sprintf(snapshot_fn, "screenshot-%d.png", t);
+      saveScreenshot(snapshot_fn);
+
+      sprintf(cam_fn, "screenshot-%d.cam", t);
+      saveCameraParameters(cam_fn);
+
+      pcl::console::print_info("Screenshot (%s) and camera information (%s) successfully captured.\n", snapshot_fn, cam_fn);
+  }
+  else if (KeyCode == KeyMap["fly to point"])
+  {
+      if (keymod)
+      {
+          // Get screen size
+          int* temp = Interactor->GetRenderWindow()->GetScreenSize();
+          int scr_size[2]; scr_size[0] = temp[0]; scr_size[1] = temp[1];
+
+          // Get window size
+          temp = Interactor->GetRenderWindow()->GetSize();
+          int win_size[2]; win_size[0] = temp[0]; win_size[1] = temp[1];
+          // Is window size = max?
+          if (win_size[0] == max_win_height_ && win_size[1] == max_win_width_)
+          {
+              // Set the previously saved 'current' window size
+              Interactor->GetRenderWindow()->SetSize(win_height_, win_width_);
+              // Set the previously saved window position
+              Interactor->GetRenderWindow()->SetPosition(win_pos_x_, win_pos_y_);
+              Interactor->GetRenderWindow()->Render();
+              Interactor->Render();
+          }
+          // Set to max
+          else
+          {
+              int* win_pos = Interactor->GetRenderWindow()->GetPosition();
+              // Save the current window position
+              win_pos_x_ = win_pos[0];
+              win_pos_y_ = win_pos[1];
+              // Save the current window size
+              win_height_ = win_size[0];
+              win_width_ = win_size[1];
+              // Set the maximum window size
+              Interactor->GetRenderWindow()->SetSize(scr_size[0], scr_size[1]);
+              Interactor->GetRenderWindow()->Render();
+              Interactor->Render();
+              int* win_size = Interactor->GetRenderWindow()->GetSize();
+              // Save the maximum window size
+              max_win_height_ = win_size[0];
+              max_win_width_ = win_size[1];
+          }
+      }
+      else
+      {
+          AnimState = VTKIS_ANIM_ON;
+          vtkAssemblyPath* path = nullptr;
+          Interactor->GetPicker()->Pick(Interactor->GetEventPosition()[0], Interactor->GetEventPosition()[1], 0.0, CurrentRenderer);
+          vtkAbstractPropPicker* picker;
+          if ((picker = vtkAbstractPropPicker::SafeDownCast(Interactor->GetPicker())))
+              path = picker->GetPath();
+          if (path)
+              Interactor->FlyTo(CurrentRenderer, picker->GetPickPosition());
+          AnimState = VTKIS_ANIM_OFF;
+      }
+  }
+  else if (KeyCode == KeyMap["area pick"])
+  {
       CurrentMode = (CurrentMode == ORIENT_MODE) ? SELECT_MODE : ORIENT_MODE;
       if (CurrentMode == SELECT_MODE)
       {
-        // Save the point picker
-        point_picker_ = static_cast<vtkPointPicker*> (Interactor->GetPicker ());
-        // Switch for an area picker
-        vtkSmartPointer<vtkAreaPicker> area_picker = vtkSmartPointer<vtkAreaPicker>::New ();
-        Interactor->SetPicker (area_picker);
+          // Save the point picker
+          point_picker_ = static_cast<vtkPointPicker*> (Interactor->GetPicker());
+          // Switch for an area picker
+          vtkSmartPointer<vtkAreaPicker> area_picker = vtkSmartPointer<vtkAreaPicker>::New();
+          Interactor->SetPicker(area_picker);
       }
       else
       {
-        // Restore point picker
-        Interactor->SetPicker (point_picker_);
+          // Restore point picker
+          Interactor->SetPicker(point_picker_);
       }
-      break;
-    }
-
-    case 'q': case 'Q':
-    {
-      Interactor->ExitCallback ();
-      return;
-    }
-    default:
-    {
-      Superclass::OnKeyDown ();
-      break;
-    }
+  }
+  else
+  {
+      Superclass::OnKeyDown();
   }
 
   KeyboardEvent event (true, Interactor->GetKeySym (), Interactor->GetKeyCode (), Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
