@@ -36,14 +36,6 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 	_ASSERTE(vConfig && !vFeatureGenerationSet.empty() && !vValidationSet.empty() && !m_pConfig);
 	m_pConfig = vConfig;
 
-	__createFeatureObjectSet();
-	if (m_FeatureSet.empty())
-	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to initialize cluster [%1%] because no feature object is created.", m_pConfig->getName()));
-		m_pConfig = nullptr;
-		return false;
-	}
-
 	m_CreationTimestamp = vCreationTimestamp;
 	m_ClusterCenter = vClusterCenter;
 	m_Label = vLabel;
@@ -57,6 +49,12 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 	}
 
 	__createFeatureObjectSet();
+	if (m_FeatureSet.empty())
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to initialize cluster [%1%] because no feature object is created.", m_pConfig->getName()));
+		m_pConfig = nullptr;
+		return false;
+	}
 
 	for (auto e : m_FeatureSet)
 	{
