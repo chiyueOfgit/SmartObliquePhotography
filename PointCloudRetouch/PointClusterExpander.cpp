@@ -12,6 +12,8 @@ _REGISTER_NORMAL_PRODUCT(CPointClusterExpander, KEYWORD::CLUSTER_EXPANDER)
 void CPointClusterExpander::runV(const CPointCluster* vCluster)
 {
 	_ASSERTE(vCluster);
+	if (vCluster == nullptr)
+		_THROW_RUNTIME_ERROR("Expander input error");
 
 	CPointCloudRetouchManager *pManager = CPointCloudRetouchManager::getInstance();
 
