@@ -17,7 +17,8 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 	double SumWeight = 0.0;
 	for (auto i = 0; i < m_FeatureSet.size(); i++)
 	{
-		if (m_FeatureWeightSet[i] == 0) continue;
+		if (m_FeatureWeightSet[i] == 0)
+			continue;
 		
 		Probability += m_FeatureWeightSet[i] * m_FeatureSet[i]->evaluateFeatureMatchFactorV(vInputPoint);
 		SumWeight += m_FeatureWeightSet[i];

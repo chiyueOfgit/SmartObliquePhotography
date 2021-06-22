@@ -48,6 +48,9 @@ double CVfhFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermina
 			m_KernelSize = KernelSize.value();
 	}
 
+	if (vDeterminantPointSet.empty())
+		return 0.0;
+
 	__computeVfhDescriptor(vDeterminantPointSet, m_DeterminantVfhDescriptor);
 	m_BaseDotResult = __KernelDotVfhDescriptor(m_DeterminantVfhDescriptor, m_DeterminantVfhDescriptor, m_KernelSize);
 	
