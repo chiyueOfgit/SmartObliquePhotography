@@ -57,7 +57,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_UnwantedMode = !m_UnwantedMode;
 		}
 
-		if (KeyString == "t")
+		if (KeyString == "w")
 			m_AreaMode = true;
 
 		//else if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_LINEPICK).value())
@@ -120,8 +120,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	
 	if (m_AreaMode && m_MousePressStatus[0])
 	{
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
+
+		double Radius = 40.0;
+
 		std::vector<pcl::index_t> PickedIndices;
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - 5, PosY - 5, PosX + 5, PosY + 5, PickedIndices);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - Radius, PosY - Radius, PosX + Radius, PosY + Radius, PickedIndices);
 
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
@@ -131,14 +135,20 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Camera.computeViewMatrix(View);
 
 		if (m_UnwantedMode)
-			PointCloudRetouch::hiveMarkLitter(PickedIndices, 0.8, 0.5, { PosX, PosY }, Proj * View, {Camera.window_pos[0], Camera.window_pos[1]});
+			PointCloudRetouch::hiveMarkLitter(PickedIndices, 0.8, Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 		else
-			PointCloudRetouch::hiveMarkBackground(PickedIndices, 0.8, 0.5, { PosX, PosY }, Proj * View, { Camera.window_pos[0], Camera.window_pos[1] });
+			PointCloudRetouch::hiveMarkBackground(PickedIndices, 0.8, Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 
+		std::vector<std::size_t> PointLabel;
+		PointCloudRetouch::hiveDumpPointLabel4Visualizer(PointLabel);
+		m_pVisualizer->refresh(PointLabel);
+
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 		m_AreaMode = false;
+
 	}
 
-	if(m_LineMode)
+	//if(m_LineMode)
 	{
 		//if (m_MousePressStatus[0] || m_MousePressStatus[1])
 		//{
@@ -158,38 +168,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		//	//m_pVisualizer->refresh();
 		//	
 		//}
-
-		if (vEvent.getType() == pcl::visualization::MouseEvent::MouseButtonRelease
-			&& vEvent.getButton() == pcl::visualization::MouseEvent::LeftButton
-			&& m_KeyPressStatus['l'])
-		{
-			//»º´æ
-			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
-
-			std::vector<int> PickedIndices;
-			pcl::visualization::Camera Camera;
-			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-			const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
-			Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
-			Camera.computeViewMatrix(ViewMatrix);
-			Camera.computeProjectionMatrix(ProjectionMatrix);
-			const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-
-			//move to config
-			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - 10, PosY - 10, PosX + 10, PosY + 10, PickedIndices);
-			pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
-			
-			if (m_UnwantedMode)
-				PointCloudRetouch::hiveMarkLitter(*Indices, 0.8, 10.0, { PosX, PosY }, PvMatrix, { Camera.window_size[0], Camera.window_size[1] });
-			else
-				PointCloudRetouch::hiveMarkBackground(*Indices, 0.8, 10.0, { PosX, PosY }, PvMatrix, { Camera.window_size[0], Camera.window_size[1] });
-
-			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
-
-			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpPointLabel4Visualizer(PointLabel);
-			m_pVisualizer->refresh(PointLabel);
-		}
+		
 	}
 }
 
@@ -206,16 +185,16 @@ void hiveObliquePhotography::Visualization::CInteractionCallback::pointPicking(c
 //FUNCTION: 
 void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEvent& vEvent)
 {
-	const pcl::IndicesPtr pIndices(new pcl::Indices);
-	vEvent.getPointsIndices(*pIndices);
+	//const pcl::IndicesPtr pIndices(new pcl::Indices);
+	//vEvent.getPointsIndices(*pIndices);
 
-	pcl::visualization::Camera Camera;
-	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-    const Eigen::Vector3f CameraPos = { static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
-	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
-	Camera.computeViewMatrix(ViewMatrix);
-	Camera.computeProjectionMatrix(ProjectionMatrix);
-	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	
-	//m_pVisualizer->refresh();
+	//pcl::visualization::Camera Camera;
+	//m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+ //   const Eigen::Vector3f CameraPos = { static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
+	//Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	//Camera.computeViewMatrix(ViewMatrix);
+	//Camera.computeProjectionMatrix(ProjectionMatrix);
+	//const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	//
+	////m_pVisualizer->refresh();
 }
