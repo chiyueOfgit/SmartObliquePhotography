@@ -66,7 +66,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\AutoRetouch;..\ObliquePhotographyData;..\visualization\include;..\Visualizer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\visualization\include;..\Visualizer;..\ObliquePhotographyData;..\PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -125,6 +125,7 @@
     <ClCompile Include="QTDockWidgetTitleBar.cpp" />
     <ClCompile Include="QTInterface.cpp" />
     <ClCompile Include="main.cpp" />
+    <QtUic Include="SliderSizeDockWidget.ui" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -140,28 +141,23 @@
     <QtMoc Include="FloatSpinBox.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AutoRetouch\AutoRetouch.vcxproj">
-      <Project>{a8f8e3db-1ace-4584-9acd-f180cbac22ee}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\ObliquePhotographyData\ObliquePhotographyData.vcxproj">
-      <Project>{983716c5-47d1-4ff5-a982-aa578144f2b2}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\visualization\pcl_visualization.vcxproj">
-      <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Visualizer\Visualization.vcxproj">
-      <Project>{6673a1f9-724d-47a0-8159-6ca26b818506}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="QTInterfaceConfig.h" />
+    <QtMoc Include="SliderSizeDockWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Configs\AutoRetouchConfig.xml" />
     <Xml Include="..\Configs\QTInterfaceConfig.xml" />
     <Xml Include="..\Configs\VisualizationConfig.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ObliquePhotographyData\ObliquePhotographyData.vcxproj">
+      <Project>{983716c5-47d1-4ff5-a982-aa578144f2b2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\PointCloudRetouch\PointCloudRetouch.vcxproj">
+      <Project>{60928201-7a4d-49df-9579-3ccdde7a134f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -69,9 +69,15 @@
     <QtMoc Include="FloatSpinBox.hpp">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="SliderSizeDockWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="DisplayOptionsSettingDialog.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="SliderSizeDockWidget.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

@@ -22,7 +22,6 @@ namespace hiveObliquePhotography
         public:
             QTInterface(QWidget* vParent = Q_NULLPTR);
             ~QTInterface();
-            void closeEvent(QCloseEvent* vEvent) override;
 
         private:
             Ui::QTInterfaceClass ui;
@@ -36,8 +35,12 @@ namespace hiveObliquePhotography
             int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;
             pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
+            QDockWidget* m_pRubberSizeDockWidget = nullptr;
+            QDockWidget* m_pBrushSizeDockWidget = nullptr;
+            QDockWidget* m_pPointPickingDockWidget = nullptr;
 
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
+            //PointCloudRetouch::CPointCloudRetouchConfig* m_pPointCloudRetouchConfig = nullptr;
 
             void __initialVTKWidget();
             void __initialResourceSpaceDockWidget();
@@ -45,29 +48,14 @@ namespace hiveObliquePhotography
             void __initialMessageDockWidget();
             void __initialDockWidgetTitleBar(QDockWidget* vParentWidget, const std::string& vTitleBarText);
             void __initialSlider(const QStringList& vFilePathList);
-            bool __addResourceSpaceCloudItem(const std::string& vFilePath);
-            bool __deleteResourceSpaceCloudItem(const std::string& vFilePath);
             bool __messageDockWidgetOutputText(QString vString);
             void __connectSignals();
-            void __setActionsMutex();
-            void __setActionsEnabled();
-            template <class T>
-            bool __readConfigFile(const std::string& vFileName, T* vInstance);
             std::string __getFileName(const std::string& vFilePath);
             std::string __getDirectory(const std::string& vFilePath);
 
         private slots:
+            void onActionPointPicking();
             void onActionOpen();
-            void onActionSave();
-            void onActionSetting();
-            void onActionResetSelectStatus();
-            void onActionRegionGrowing();
-            void onActionDichotomy();
-            void onActionBlend();
-            void onActionBrush();
-            void onActionRubber();
-            void onResourceSpaceItemDoubleClick(const QModelIndex& vIndex);
-
         };
     }
 }

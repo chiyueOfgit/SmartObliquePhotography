@@ -10,5 +10,7 @@
         <file>Icon/regionGrowing.png</file>
         <file>Icon/rubber.png</file>
         <file>Icon/blend.png</file>
+        <file>Icon/circleAreaPicking.png</file>
+        <file>Icon/pointPicking.png</file>
     </qresource>
 </RCC>
