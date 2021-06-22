@@ -22,6 +22,10 @@ namespace hiveObliquePhotography
         public:
             QTInterface(QWidget* vParent = Q_NULLPTR);
             ~QTInterface();
+            void closeEvent(QCloseEvent* vEvent) override;
+
+        protected:
+            virtual void keyPressEvent(QKeyEvent* vEvent);
 
         private:
             Ui::QTInterfaceClass ui;
@@ -41,7 +45,6 @@ namespace hiveObliquePhotography
 
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
             hiveConfig::CHiveConfig* m_pPointCloudRetouchConfig = nullptr;
-            //PointCloudRetouch::CPointCloudRetouchConfig* m_pPointCloudRetouchConfig = nullptr;
 
             void __initialVTKWidget();
             void __initialResourceSpaceDockWidget();
@@ -52,6 +55,8 @@ namespace hiveObliquePhotography
             void __connectSignals();
             void __parseConfigFile();
             bool __messageDockWidgetOutputText(QString vString);
+            bool __addResourceSpaceCloudItem(const std::string& vFilePath);
+
             std::string __getFileName(const std::string& vFilePath);
             std::string __getDirectory(const std::string& vFilePath);
 

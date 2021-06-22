@@ -6,7 +6,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_EXCLUSIVE_PRODUCT(CColorFeature, KEYWORD::COLOR_FEATURE)
 
-#define EPSILON 1e-2
+#define EPSILON 50
 
 //*****************************************************************
 //FUNCTION: 
@@ -75,7 +75,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 		ClusterCentroids.emplace_back(vData[i]);
 	}
 
-	while (Variance < EPSILON)
+	while (Variance > EPSILON)
 	{
 		Variance = 0;
 		for (int i = 0; i < vData.size(); i++)
