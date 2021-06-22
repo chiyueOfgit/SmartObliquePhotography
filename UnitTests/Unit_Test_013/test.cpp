@@ -36,9 +36,8 @@ TEST(TestPointLabelSet, Illegal_Input_Test)
 	EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(-1, {}, -1, 0.5));
 	EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(999, {}, 999, 0.5));
 	EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(50, {}, 50, -1));
-	EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(50, {}, 50, 10));
-	EXPECT_ANY_THROW(PointLabelSet.tagCoreRegion4Cluster({}, {}, 50));
-	EXPECT_ANY_THROW(PointLabelSet.tagCoreRegion4Cluster({ -1 }, {}, -1));
+	//EXPECT_ANY_THROW(PointLabelSet.tagPointLabel(50, {}, 50, 10)); //Probability是可能大于一的
+	EXPECT_ANY_THROW(PointLabelSet.tagCoreRegion4Cluster({ -1 }, {}, 1));
 	EXPECT_ANY_THROW(PointLabelSet.tagCoreRegion4Cluster({ 999 }, {}, 999));
 	EXPECT_ANY_THROW(PointLabelSet.getLabelAt(-1));
 	EXPECT_ANY_THROW(PointLabelSet.getLabelAt(999));

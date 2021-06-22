@@ -1,7 +1,11 @@
 #include "pch.h"
+
+#include "PointCloudRetouchConfig.h"
 #include "PointCloudRetouchInterface.h"
+#include "PointCloudRetouchManager.h"
 #include "PointCluster.h"
 #include "PointClusterExpander.h"
+#include "pcl/io/pcd_io.h"
 
 //测试用例列表：
 //  * DeathTest_EmptyInput:尝试输入空的集合；
@@ -10,15 +14,50 @@
 
 using namespace  hiveObliquePhotography::PointCloudRetouch;
 
-TEST(DeathTest_EmptyInput, EmptyInput)
+constexpr char ConfigPath[] = "../../UnitTests/Unit_Test_014/PointCloudRetouchConfig.xml";
+
+class TestExpander : public testing::Test
+{
+public:
+	hiveConfig::CHiveConfig* pConfig = nullptr;
+	CPointCloudRetouchManager* pManager = nullptr;
+protected:
+
+	void SetUp() override
+	{
+		PointCloud_t::Ptr pCloud(new PointCloud_t);
+		pcl::io::loadPCDFile("../../UnitTests/Unit_Test_014/slice 3.pcd", *pCloud);
+		ASSERT_GT(pCloud->size(), 0);
+
+		pConfig = new CPointCloudRetouchConfig;
+		if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+		{
+			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+			return;
+		}
+
+		pManager = CPointCloudRetouchManager::getInstance();
+		pManager->init(pCloud, pConfig);
+	}
+
+	void TearDown() override
+	{
+		delete pConfig;
+	}
+};
+
+TEST_F(TestExpander, EmptyInput)
 {
 	CPointClusterExpander* pPointClusterExpander;
-	CPointCluster* UserSpecifiedCluster;
+
+	std::vector<pcl::index_t> UserMarkedRegion{};
+	Eigen::Matrix4d Pv;
+	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, EPointLabel::KEPT);
 	
 	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
 }
 
-TEST(DeathTest_NullptrInput, NullptrInput)
+TEST_F(TestExpander, NullptrInput)
 {
 	CPointClusterExpander* pPointClusterExpander;
 	CPointCluster* UserSpecifiedCluster = nullptr;
@@ -26,10 +65,13 @@ TEST(DeathTest_NullptrInput, NullptrInput)
 	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
 }
 
-TEST(No_RepeatIndex_Test, NoRepeatIndex)
+TEST_F(TestExpander, NoRepeatIndex)
 {
 	CPointClusterExpander* pPointClusterExpander;
-	CPointCluster* UserSpecifiedCluster;
+
+	std::vector<pcl::index_t> UserMarkedRegion{1,2,3,4};
+	Eigen::Matrix4d Pv;
+	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, EPointLabel::KEPT);
 
 	std::queue<pcl::index_t> CandidateQueue;
 	pPointClusterExpander->initExpandingCandidateQueue(UserSpecifiedCluster, CandidateQueue);
