@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PointCloudRetouchInterface.h"
 #include "NeighborhoodBuilder.h"
+#include "PointCloudRetouchConfig.h"
 #include "PointCloudRetouchManager.h"
 #include "PointLabelSet.h"
 
@@ -14,39 +15,53 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 const auto Signature = KEYWORD::EUCLIDEAN_NEIGHBOR_BUILDER;
 
-INeighborhoodBuilder* generateRandomTestee(int vPointNum, int vFrom, int vTo)
+class CTestNeighborhoodBuilder :public testing::Test
 {
-	PointCloud_t::Ptr pScene(new PointCloud_t);
-	CPointLabelSet PointLabelSet;
+protected:
 
-	hiveConfig::CHiveConfig Config;
-	CPointCloudRetouchManager::getInstance()->init(pScene, &Config);
-	
-	for (int i = 0; i < vPointNum; i++)
+	void SetUp() override
+	{}
+
+	void TearDown() override
+	{}
+
+	INeighborhoodBuilder* generateRandomTestee(int vPointNum, int vFrom, int vTo)
 	{
-		PointCloud_t::PointType Point;
-		Point.x = hiveMath::hiveGenerateRandomInteger(vFrom, vTo);
-		Point.y = hiveMath::hiveGenerateRandomInteger(vFrom, vTo);
-		Point.z = hiveMath::hiveGenerateRandomInteger(vFrom, vTo);
-		pScene->push_back(Point);
+		PointCloud_t::Ptr pCloud(new PointCloud_t);
+		for (int i = 0; i < vPointNum; i++)
+		{
+			PointCloud_t::PointType Point;
+			Point.x = hiveMath::hiveGenerateRandomInteger(vFrom, vTo);
+			Point.y = hiveMath::hiveGenerateRandomInteger(vFrom, vTo);
+			Point.z = hiveMath::hiveGenerateRandomInteger(vFrom, vTo);
+			pCloud->push_back(Point);
+		}
+
+		hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+		hiveConfig::hiveParseConfig("../../UnitTests/Unit_Test_016/PointCloudRetouchConfig.xml", hiveConfig::EConfigType::XML, pConfig);
+
+		auto pManager = CPointCloudRetouchManager::getInstance();
+		pManager->init(pCloud, pConfig->findSubconfigByName("Retouch"));
+		
+		CPointLabelSet PointLabelSet;
+		PointLabelSet.init(pCloud->size());
+		
+		return hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(Signature, pCloud, &PointLabelSet);
 	}
-	PointLabelSet.init(pScene->size());
-	return hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(Signature, pScene, &PointLabelSet);
-}
+};
 
-
-TEST(TestNeighborhoodBuilder, Illegal_Input_Test)
+TEST_F(CTestNeighborhoodBuilder, Illegal_Input_Test)
 {
 	auto pNeighborhoodBuilder = generateRandomTestee(1000, -100, 100);
 	/*ASSERT_NO_THROW(pNeighborhoodBuilder = hiveDesignPattern::hiveGetOrCreateProduct<INeighborhoodBuilder>(Signature, pScene, &PointLabelSet));*/
 
 	std::vector<pcl::index_t> Neighborhood;
+	ASSERT_ANY_THROW(pNeighborhoodBuilder->buildNeighborhood(50, 0, Neighborhood));
 	ASSERT_ANY_THROW(pNeighborhoodBuilder->buildNeighborhood(-1, -1, Neighborhood));
 	ASSERT_ANY_THROW(pNeighborhoodBuilder->buildNeighborhood(999, 999, Neighborhood));
-	ASSERT_ANY_THROW(pNeighborhoodBuilder->buildNeighborhood(50, 50, Neighborhood));
 }
 
-TEST(TestNeighborhoodBuilder, Symmetry_Test)
+TEST_F(CTestNeighborhoodBuilder, Symmetry_Test)
 {
 	auto pNeighborhoodBuilder = generateRandomTestee(1000, -100, 100);
 
@@ -68,7 +83,7 @@ TEST(TestNeighborhoodBuilder, Symmetry_Test)
 	}
 }
 
-TEST(TestNeighborhoodBuilder, Anti_Reflexive_Test)
+TEST_F(CTestNeighborhoodBuilder, Anti_Reflexive_Test)
 {
 	auto pNeighborhoodBuilder = generateRandomTestee(1000, -100, 100);
 

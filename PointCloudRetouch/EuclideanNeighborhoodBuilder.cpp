@@ -10,22 +10,8 @@ _REGISTER_NORMAL_PRODUCT(CEuclideanNeighborhoodBuilder, KEYWORD::EUCLIDEAN_NEIGH
 //FUNCTION: 
 void CEuclideanNeighborhoodBuilder::__extraInitV()
 {
-	m_pCloud.reset(new PointCloud_t);
 	m_pTree.reset(new pcl::search::KdTree<pcl::PointSurfel>);
-
-	auto CloudSize = CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint();
-	for (int i = 0; i < CloudSize; i++)
-	{
-		pcl::PointSurfel TempPoint;
-		auto Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(i);
-		TempPoint.x = Position.x();
-		TempPoint.y = Position.y();
-		TempPoint.z = Position.z();
-		
-		m_pCloud->push_back(TempPoint);
-	}
-
-	m_pTree->setInputCloud(m_pCloud);  //程序会在这里崩掉
+	m_pTree->setInputCloud(m_pCloud);
 }
 
 //*****************************************************************
