@@ -8,6 +8,7 @@ namespace hiveObliquePhotography
 		class CColorFeature : public IFeature
 		{
 		public:
+			CColorFeature() = default;
 			~CColorFeature() = default;
 
 			virtual double generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter) override;
@@ -21,6 +22,9 @@ namespace hiveObliquePhotography
 
 			PointCloud_t::Ptr m_pCloud = nullptr;
 			std::vector<Eigen::Vector3i> m_MainBaseColors;
+
+			float m_ColorThreshold = 50;
+			std::size_t m_NumMainColors = 3;
 		};
 	}
 
