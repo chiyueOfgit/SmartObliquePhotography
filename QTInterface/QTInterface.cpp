@@ -248,3 +248,54 @@ void QTInterface::keyPressEvent(QKeyEvent* vEvent)
         break;
     }
 }
+
+void QTInterface::closeEvent(QCloseEvent* vEvent)
+{
+    QDialog* ExitDialog = new QDialog(this);
+    ExitDialog->setWindowFlag(Qt::FramelessWindowHint);
+    ExitDialog->deleteLater();
+    ExitDialog->resize(200, 100);
+    QLabel* Label = new QLabel(ExitDialog);
+    Label->setText("Are you sure?");
+
+    Label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    QPushButton* YesButton = new QPushButton(ExitDialog);
+    QPushButton* NoButton = new QPushButton(ExitDialog);
+    YesButton->setStyleSheet("QPushButton{color: black;min-width:75px;max-width:75px;min-height:20px;border:1px solid white;border-radius:5px;}"
+        "QPushButton:hover{background-color: #2292DD;border-color: #000000;color:rgb(255, 255, 255);}"
+        "QPushButton:pressed{background-color: #111111;border-color: #333333;color: blue;}");
+    NoButton->setStyleSheet("QPushButton{color: black;min-width:75px;max-width:75px;min-height:20px;border:1px solid white;border-radius:5px;}"
+        "QPushButton:hover{background-color: #2292DD;border-color: #000000;color:rgb(255, 255, 255);}"
+        "QPushButton:pressed{background-color: #111111;border-color: #333333;color: blue;}");
+    YesButton->setText("Yes");
+    NoButton->setText("No");
+    YesButton->setMaximumWidth(100);
+    NoButton->setMaximumWidth(100);
+
+    QObject::connect(YesButton, &QPushButton::clicked, [=]()
+        {
+            ExitDialog->done(1);
+        });
+    QObject::connect(NoButton, &QPushButton::clicked, [=]()
+        {
+            ExitDialog->done(0);
+        });
+
+    QHBoxLayout* hLayout = new QHBoxLayout();
+    hLayout->setSpacing(5);
+    hLayout->addStretch();
+    hLayout->addWidget(YesButton);
+    hLayout->addWidget(NoButton);
+    QVBoxLayout* v = new QVBoxLayout();
+    v->addWidget(Label);
+    v->addItem(hLayout);
+    ExitDialog->setLayout(v);
+    if (1 == ExitDialog->exec())
+    {
+        vEvent->accept();
+    }
+    else
+    {
+        vEvent->ignore();
+    }
+}
