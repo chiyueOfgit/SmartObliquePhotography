@@ -18,7 +18,6 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 
 	std::queue<pcl::index_t> ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
 
-	std::vector<pcl::index_t> Neighborhood;
 	while (!ExpandingCandidateQueue.empty())
 	{
 		pcl::index_t Candidate = ExpandingCandidateQueue.front();
@@ -34,8 +33,8 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 				__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(Candidate), OldClusterIndex))
 			{
 				pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
-				pManager->buildNeighborhood(Candidate, vCluster->getClusterIndex(), Neighborhood);
-				for (auto e : Neighborhood) 
+
+				for (auto e : pManager->buildNeighborhood(Candidate, vCluster->getClusterIndex()))
 					ExpandingCandidateQueue.push(e);
 			}
 		}
@@ -50,9 +49,7 @@ std::queue<pcl::index_t> CPointClusterExpander::__initExpandingCandidateQueue(co
 	const auto SeedClusterIndex = vCluster->getClusterIndex();
 	for(auto Index : vCluster->getCoreRegion())
 	{
-		std::vector<pcl::index_t> Neighborhood;
-		CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index, SeedClusterIndex, Neighborhood);
-		for (auto Neighbor : Neighborhood) 
+		for (auto Neighbor : CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index, SeedClusterIndex))
 			CandidateQueue.push(Neighbor);
 	}
 	//·¢ÉúNRVO
