@@ -69,12 +69,13 @@ PointCloud_t::Ptr CPlanarityFeature::__createPositionCloud(const std::vector<pcl
 //FUNCTION: 
 Eigen::Vector4f CPlanarityFeature::__fitPlane(PointCloud_t::Ptr vCloud) const
 {
+	_ASSERTE(m_pConfig);
 	Eigen::VectorXf Coeff;
 	pcl::SampleConsensusModelPlane<PointCloud_t::PointType>::Ptr ModelPlane
 		(new pcl::SampleConsensusModelPlane<PointCloud_t::PointType>(vCloud));
 	pcl::RandomSampleConsensus<PointCloud_t::PointType> Ransac(ModelPlane);
-	//TODO: move to config
-	Ransac.setDistanceThreshold(0.3);
+	
+	Ransac.setDistanceThreshold(m_pConfig->getAttribute<float>("DISTANCE_THRESHOLD").value());
 	Ransac.computeModel();
 	Ransac.getModelCoefficients(Coeff);
 
