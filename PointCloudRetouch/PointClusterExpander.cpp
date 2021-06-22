@@ -51,13 +51,13 @@ void CPointClusterExpander::__initExpandingCandidateQueue(const CPointCluster* v
 {
 	CPointCloudRetouchManager* pManager = CPointCloudRetouchManager::getInstance();
 	auto RegionIndices = vCluster->getCoreRegion();
+	std::vector<pcl::index_t> Neighborhood;
 	for(auto& Index: RegionIndices)
 	{
-		std::vector<pcl::index_t> Neighborhood;
 		pManager->buildNeighborhood(Index, vCluster->getClusterIndex(), Neighborhood);
-		if(Neighborhood.empty())
-			continue;
+		if(Neighborhood.empty()) continue;
 		for (auto Neighbor : Neighborhood) voCandidateQueue.push(Neighbor);
+		Neighborhood.clear();
 	}
 }
 
