@@ -40,7 +40,12 @@ namespace hiveObliquePhotography
 			const auto& getLabelSet() const { return m_PointLabelSet; }
 			const auto& getLitterMarker() const { return m_LitterMarker; }
 			const auto& getBackgroundMarker() const { return m_BackgroundMarker; }
+			CPointCluster* generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel)
+			{
+				return __generateInitialCluster(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, vTargetLabel);
+			}
 #endif // _UNIT_TEST
+
 
 		private:
 			CPointCloudRetouchManager() {};

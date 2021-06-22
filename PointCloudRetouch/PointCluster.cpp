@@ -8,8 +8,9 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //FUNCTION: 
 double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 {
-	_ASSERTE(!m_FeatureSet.empty() && !m_FeatureWeightSet.empty());
-
+	if (m_FeatureSet.empty() || m_FeatureWeightSet.empty())
+		_THROW_RUNTIME_ERROR("Point cluster is not uninitialized");
+	
 	if (vInputPoint < 0 || vInputPoint > CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint())
 		_THROW_RUNTIME_ERROR("Index is out of range");
 	

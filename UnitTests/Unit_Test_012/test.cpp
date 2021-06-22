@@ -14,19 +14,19 @@
 
 using namespace hiveObliquePhotography;
 
-constexpr char ConfigPath[] = "../../UnitTests/Unit_Test_012/Unit_Test_012Config.xml";
+constexpr char ConfigPath[] = "../../UnitTests/Unit_Test_012/PointCloudRetouchConfig.xml";
 
 class TestPointCluster : public testing::Test
 {
 public:
     hiveConfig::CHiveConfig* pConfig = nullptr;
-	const hiveConfig::CHiveConfig* pClusterConfig = nullptr;
+	PointCloudRetouch::CPointCloudRetouchManager* pManager = nullptr;
 protected:
 	
 	void SetUp() override
 	{
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
-		pcl::io::loadPCDFile("slice 3.pcd", *pCloud);
+		pcl::io::loadPCDFile("../../UnitTests/Unit_Test_012/slice 3.pcd", *pCloud);
 		ASSERT_GT(pCloud->size(), 0);
 		
 		pConfig = new PointCloudRetouch::CPointCloudRetouchConfig;
@@ -36,13 +36,13 @@ protected:
 			return;
 		}
 
-		pClusterConfig = pConfig->findSubconfigByName("LitterCluster");
+		pManager = PointCloudRetouch::CPointCloudRetouchManager::getInstance();
+		pManager->init(pCloud, pConfig);
 	}
 
 	void TearDown() override
 	{
 		delete pConfig;
-		delete pClusterConfig;
 	}
 };
 
@@ -60,9 +60,8 @@ TEST_F(TestPointCluster, DeathTest_InvalidIndex)
 	
 	pcl::index_t TestIndex = -1;
 	Eigen::Matrix4d Pv;
-	PointCloudRetouch::CInitialClusterCreator Creator;
-	auto PointCluster = Creator.createInitialCluster(UserMarkedRegion, 0.8, 10, PointCloudRetouch::EPointLabel::KEPT, { 400,400 }, Pv, {1000,800}, pClusterConfig);
-	ASSERT_ANY_THROW(double Res = PointCluster->evaluateProbability(TestIndex));
+	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, PointCloudRetouch::EPointLabel::KEPT);
+	ASSERT_ANY_THROW(double Res = pPointCluster->evaluateProbability(TestIndex));
 }
 
 TEST_F(TestPointCluster, FalseProbability_Test)
@@ -71,9 +70,8 @@ TEST_F(TestPointCluster, FalseProbability_Test)
 	
 	pcl::index_t TestIndex = 1;
 	Eigen::Matrix4d Pv;
-	PointCloudRetouch::CInitialClusterCreator Creator;
-	auto PointCluster = Creator.createInitialCluster(UserMarkedRegion, 0.8, 10, PointCloudRetouch::EPointLabel::KEPT, { 400,400 }, Pv, { 1000,800 }, pClusterConfig);
-	double Res = PointCluster->evaluateProbability(TestIndex);
+	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, PointCloudRetouch::EPointLabel::KEPT);
+	double Res = pPointCluster->evaluateProbability(TestIndex);
 	EXPECT_LE(Res, 1.0);
 	EXPECT_GE(Res, 0.0);
 }
