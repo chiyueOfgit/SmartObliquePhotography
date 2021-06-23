@@ -7,8 +7,6 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_EXCLUSIVE_PRODUCT(CPlanarityFeature, KEYWORD::PLANARITY_FEATURE)
 
-constexpr float Tolerance = 0.12f;
-
 //*****************************************************************
 //FUNCTION: 
 double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
@@ -42,18 +40,20 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	if (Distance >= m_Peak.second || Distance <= m_Peak.first)
 		return 0;
 
-	if (m_Peak.first * Tolerance <= Distance && Distance <= m_Peak.second * Tolerance)
+	auto m_Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
+
+	if (m_Peak.first * m_Tolerance <= Distance && Distance <= m_Peak.second * m_Tolerance)
 		return 1;
 
 	if (Distance < 0)
 	{
-		Distance -= m_Peak.first * Tolerance;
-		Distance /= m_Peak.first * (Tolerance - 1.0f);
+		Distance -= m_Peak.first * m_Tolerance;
+		Distance /= m_Peak.first * (m_Tolerance - 1.0f);
 	}
 	else
 	{
-		Distance -= m_Peak.second * Tolerance;
-		Distance /= m_Peak.second * (1.0f - Tolerance);
+		Distance -= m_Peak.second * m_Tolerance;
+		Distance /= m_Peak.second * (1.0f - m_Tolerance);
 	}
 	return { pow(Distance, 4.0f) - 2.0f * pow(Distance, 2.0f) + 1.0f };
 }

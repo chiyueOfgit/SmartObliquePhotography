@@ -20,6 +20,7 @@ namespace hiveObliquePhotography
 			//(normalized.normal.x, normalized.normal.y, normalized.normal.z, distance)
 			Eigen::Vector4f m_Plane;
 			std::pair<float, float> m_Peak;
+			float m_Tolerance = 0.12f;
 
 			PointCloud_t::Ptr __createPositionCloud(const std::vector<pcl::index_t>& vIndexSet);
 			Eigen::Vector4f __fitPlane(PointCloud_t::Ptr vCloud) const;
