@@ -154,7 +154,7 @@ void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::setLa
 	{
 		auto Label = m_PointLabelSet.getLabelAt(Index);
 		if (Label == EPointLabel::KEPT || Label == EPointLabel::UNWANTED)
-			m_PointLabelSet.tagPointLabel(Index, vTarget, m_PointLabelSet.getClusterIndexAt(Index), m_PointLabelSet.getClusterBelongingProbabilityAt(Index));
+			m_PointLabelSet.tagPointLabel(Index, vTarget, 0, 0);
 	}
 
 }
