@@ -65,9 +65,12 @@ QTInterface::~QTInterface()
 void QTInterface::__connectSignals()
 {
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
+    QObject::connect(ui.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
     QObject::connect(ui.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
     QObject::connect(ui.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
     QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionDelete()));
+    QObject::connect(ui.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
+    QObject::connect(ui.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
     QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
 
 }
@@ -252,6 +255,28 @@ void QTInterface::onActionOpen()
             QTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
         }
     }
+}
+
+void QTInterface::QTInterface::onActionSave()
+{
+    const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
+
+    PointCloud_t::Ptr pCloud(new PointCloud_t);
+    hiveObliquePhotography::PointCloudRetouch::hiveSave(pCloud);
+    if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
+    else
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
+}
+
+void QTInterface::QTInterface::onActionRubber()
+{
+    
+}
+
+void QTInterface::QTInterface::onActionBrush()
+{
+    
 }
 
 void QTInterface::onActionDiscardAndRecover()

@@ -44,7 +44,7 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 		Distance /= m_Peak.first;
 	else
 		Distance /= m_Peak.second;
-	return pow(Distance, 4.0f) - 2.0f * pow(Distance, 2.0f) + 1.0f;
+	return { pow(Distance, 4.0f) - 2.0f * pow(Distance, 2.0f) + 1.0f };
 }
 
 //*****************************************************************

@@ -51,10 +51,9 @@ TEST_F(CTestNeighborhoodBuilder, Illegal_Input_Test)
 {
 	auto pManager = generateRandomTestee(1000, -100, 100);
 	
-	std::vector<pcl::index_t> Neighborhood;
-	ASSERT_NO_THROW(pManager->buildNeighborhood(50, 1, Neighborhood));
-	ASSERT_ANY_THROW(pManager->buildNeighborhood(-1, 1, Neighborhood));
-	ASSERT_ANY_THROW(pManager->buildNeighborhood(1000000, 1, Neighborhood));
+	ASSERT_NO_THROW(pManager->buildNeighborhood(50, 1));
+	ASSERT_ANY_THROW(pManager->buildNeighborhood(-1, 1));
+	ASSERT_ANY_THROW(pManager->buildNeighborhood(1000000, 1));
 }
 
 TEST_F(CTestNeighborhoodBuilder, Symmetry_Test)
@@ -65,11 +64,9 @@ TEST_F(CTestNeighborhoodBuilder, Symmetry_Test)
 	{
 		auto TestIndex = hiveMath::hiveGenerateRandomInteger(0, 999);
 		
-		std::vector<pcl::index_t> Neighborhood;
-		pManager->buildNeighborhood(TestIndex, 1, Neighborhood);
-		auto Neighbor = Neighborhood.back();
+		auto Neighbor = pManager->buildNeighborhood(TestIndex, 1).back();
 		
-		pManager->buildNeighborhood(Neighbor, 1, Neighborhood);
+		auto Neighborhood = pManager->buildNeighborhood(Neighbor, 1);
 		auto k = Neighborhood.begin();
 		for (; k != Neighborhood.end(); ++k)
 			if (*k == TestIndex)
@@ -87,8 +84,7 @@ TEST_F(CTestNeighborhoodBuilder, Anti_Reflexive_Test)
 	{
 		auto TestIndex = hiveMath::hiveGenerateRandomInteger(0, 999);
 
-		std::vector<pcl::index_t> Neighborhood;
-		pManager->buildNeighborhood(TestIndex, 1, Neighborhood);
+		std::vector<pcl::index_t> Neighborhood = pManager->buildNeighborhood(TestIndex, 1);
 
 		auto k = Neighborhood.begin();
 		for (; k != Neighborhood.end(); k++)
