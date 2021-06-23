@@ -13,7 +13,7 @@ namespace hiveObliquePhotography
 
 			void init(PointCloud_t::Ptr vPointCloud, bool vIsInQt = true);
 
-			void reset(PointCloud_t::Ptr vPointCloud);
+			void reset(PointCloud_t::Ptr vPointCloud = nullptr, bool vIsInQt = true);
 
 			void refresh(const std::vector<std::size_t>& vPointLabel, bool vResetCamera = false);
 

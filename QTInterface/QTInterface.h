@@ -65,6 +65,7 @@ namespace hiveObliquePhotography
             void onActionOpen();
             void onActionDiscardAndRecover();
             void onActionDelete();
+            void onResourceSpaceItemDoubleClick(QModelIndex);
         };
     }
 }
