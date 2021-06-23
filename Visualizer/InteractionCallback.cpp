@@ -123,42 +123,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	DeltaY = vEvent.getY() - PosY;
 	PosX = vEvent.getX();
 	PosY = vEvent.getY();
-	
-	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value())
-	{
-		pcl::visualization::Camera Camera;
-		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-
-		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
-
-		Eigen::Matrix4d Proj, View;
-		Camera.computeProjectionMatrix(Proj);
-		Camera.computeViewMatrix(View);
-
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR3("CameraPos: [%1%], [%2%], [%3%]", Camera.pos[0], Camera.pos[1], Camera.pos[2]));
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("CameraClip: [%1%], [%2%]", Camera.clip[0], Camera.clip[1]));
-		PixelPosition = (Proj * View).inverse() * PixelPosition;
-		PixelPosition /= PixelPosition.w();
-
-		pcl::PointXYZ Circle;
-
-		Circle.x = PixelPosition.x();
-		Circle.y = PixelPosition.y();
-		Circle.z = PixelPosition.z();
-		
-		Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-		Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
-
-		auto Length = (CameraPos - PixelPos).norm();
-
-		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
-		if (!m_MousePressStatus[0])
-		{
-			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.001 * Length * m_pVisualizationConfig->getAttribute<double>("SCREEN_CIRCLE_RADIUS").value(), 255, 255, 0, "Circle");
-			m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");
-			m_pVisualizer->m_pPCLVisualizer->updateCamera();
-		}
-	}
 
 	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value() && m_MousePressStatus[1])
 	{
@@ -196,6 +160,42 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 
+	}
+
+	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value())
+	{
+		pcl::visualization::Camera Camera;
+		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+
+		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
+
+		Eigen::Matrix4d Proj, View;
+		Camera.computeProjectionMatrix(Proj);
+		Camera.computeViewMatrix(View);
+
+		hiveEventLogger::hiveOutputEvent(_FORMAT_STR3("CameraPos: [%1%], [%2%], [%3%]", Camera.pos[0], Camera.pos[1], Camera.pos[2]));
+		hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("CameraClip: [%1%], [%2%]", Camera.clip[0], Camera.clip[1]));
+		PixelPosition = (Proj * View).inverse() * PixelPosition;
+		PixelPosition /= PixelPosition.w();
+
+		pcl::PointXYZ Circle;
+
+		Circle.x = PixelPosition.x();
+		Circle.y = PixelPosition.y();
+		Circle.z = PixelPosition.z();
+
+		Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+		Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
+
+		auto Length = (CameraPos - PixelPos).norm();
+
+		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
+		if (!m_MousePressStatus[0])
+		{
+			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.001 * Length * m_pVisualizationConfig->getAttribute<double>("SCREEN_CIRCLE_RADIUS").value(), 255, 255, 0, "Circle");
+			m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");
+			m_pVisualizer->m_pPCLVisualizer->updateCamera();
+		}
 	}
 
 	//if(m_LineMode)

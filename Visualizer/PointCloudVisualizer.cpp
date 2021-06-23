@@ -57,6 +57,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	_ASSERTE(!m_pSceneCloud->empty());
 
 	m_pPCLVisualizer->removeAllPointClouds();
+	m_pPCLVisualizer->removeAllShapes();
 	
 	_ASSERTE(vPointLabel.size() == m_pSceneCloud->size());
 

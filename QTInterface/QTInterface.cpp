@@ -208,6 +208,13 @@ void QTInterface::onActionPointPicking()
 
     if (m_pVisualizationConfig)
         m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", ui.actionPointPicking->isChecked());
+
+    if (!ui.actionPointPicking->isChecked())
+    {
+        std::vector<std::size_t> PointLabel;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+        Visualization::hiveRefreshVisualizer(PointLabel);
+    }
 }
 
 void QTInterface::onActionOpen()
