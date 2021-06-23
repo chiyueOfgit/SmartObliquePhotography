@@ -126,6 +126,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value() && m_MousePressStatus[1])
 	{
+		{
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
 
 		if (m_pVisualizationConfig)
@@ -154,12 +160,13 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		else
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 
-		std::vector<std::size_t> PointLabel;
-		PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-		m_pVisualizer->refresh(PointLabel);
+		{
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
 
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
-
 	}
 
 	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value())
