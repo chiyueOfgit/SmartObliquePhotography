@@ -68,6 +68,7 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
     QObject::connect(ui.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
     QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionDelete()));
+    QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
 
 }
 
@@ -275,8 +276,13 @@ void QTInterface::onActionDelete()
     Visualization::hiveRefreshVisualizer(PointLabel);
 }
 
-void QTInterface::onDoubleClickCloudItem()
+void QTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
 {
+    Visualization::hiveResetVisualizer(m_pCloud, true);
+    __initialVTKWidget();
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::hiveRefreshVisualizer(PointLabel);
 
 }
 
