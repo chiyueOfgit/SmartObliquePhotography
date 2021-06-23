@@ -61,25 +61,30 @@ void CColorFeature::__computeMainColors(const std::vector<pcl::index_t>& vPointI
 //FUNCTION: 
 std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const
 {
-	std::vector<Eigen::Vector3i*> PointTag4Cluster(vColorSet.size(), nullptr);
-	std::vector<Eigen::Vector3i> ClusterCentroids(vK, Eigen::Vector3i(0, 0, 0));
-
+	std::vector<std::pair<Eigen::Vector3i*, Eigen::Vector3i>> TagAndColorSet(vColorSet.size(), { nullptr, Eigen::Vector3i() });
+	for (size_t i = 0; i < TagAndColorSet.size(); i++)
+	{
+		auto& [Tag, Color] = TagAndColorSet[i];
+		Color = vColorSet[i];
+	}
+	
+	std::vector<Eigen::Vector3i> ClusterCentroids(vK, Eigen::Vector3i());
 	for (auto& Centroid : ClusterCentroids)
-		Centroid = vColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), vColorSet.size() - 1)];
+		Centroid = TagAndColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), TagAndColorSet.size() - 1)].second;
 
 	for (std::size_t i = 0; i < 30; i++)
-	{
-		for (std::size_t k = 0; k < vColorSet.size(); k++)
+	{		
+		for (auto& [Tag, Color] : TagAndColorSet)
 		{
 			std::pair<float, Eigen::Vector3i*> MinPair(FLT_MAX, nullptr);
 			for (auto& Centroid : ClusterCentroids)
 			{
-				float ColorDistance = (vColorSet[k] - Centroid).norm();
+				float ColorDistance = (Color - Centroid).norm();
 
 				if (ColorDistance < m_ColorThreshold)
 					MinPair = std::min(MinPair, std::make_pair(ColorDistance, &Centroid));
 			}
-			PointTag4Cluster[k] = MinPair.second;
+			Tag = MinPair.second;
 		}
 
 		auto calcentroid = [](const std::vector<Eigen::Vector3i>& vClusterColorSet) -> Eigen::Vector3i
@@ -97,10 +102,9 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 		for (auto& Centroid : ClusterCentroids)
 		{
 			std::vector<Eigen::Vector3i> ClusterPointsData;
-			for (std::size_t k = 0; k < vColorSet.size(); k++)
-				if (PointTag4Cluster[k] == &Centroid)
-					ClusterPointsData.push_back(vColorSet[k]);
-			
+			for (auto& [Tag, Color] : TagAndColorSet)
+				if (Tag == &Centroid)
+					ClusterPointsData.push_back(Color);
 			Centroid = calcentroid(ClusterPointsData);
 		}
 	}
