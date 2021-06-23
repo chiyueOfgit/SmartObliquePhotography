@@ -1,5 +1,6 @@
 #pragma once
 #include <QSlider>
+#include <qlabel.h>
 
 class QFloatSlider : public QSlider
 {
@@ -15,6 +16,9 @@ public:
 	float maximum() const;
 	float value() const;
 
+protected:
+
+
 public slots:
 	void setValue(int value);
 	void setValue(float Value, bool BlockSignals = false);
@@ -26,4 +30,5 @@ signals:
 
 private:
 	float m_Multiplier;
+	QLabel* m_pDisplayLabel;
 };
