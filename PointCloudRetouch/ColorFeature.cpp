@@ -62,27 +62,24 @@ void CColorFeature::__computeMainColors(const std::vector<pcl::index_t>& vPointI
 std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const
 {
 	std::vector<Eigen::Vector3i*> PointTag4Cluster(vColorSet.size(), nullptr);
-	std::vector<Eigen::Vector3i> ClusterCentroids(vK, Eigen::Vector3i());
+	std::vector<Eigen::Vector3i> ClusterCentroids(vK, Eigen::Vector3i(0, 0, 0));
 
 	for (auto& Centroid : ClusterCentroids)
 		Centroid = vColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), vColorSet.size() - 1)];
 
 	for (std::size_t i = 0; i < 30; i++)
 	{
-		for (size_t k = 0; k < vColorSet.size(); k++)
+		for (std::size_t k = 0; k < vColorSet.size(); k++)
 		{
-			double MinDistance = DBL_MAX;
-			Eigen::Vector3i* MinClusterPtr = nullptr;
+			std::pair<float, Eigen::Vector3i*> MinPair(FLT_MAX, nullptr);
 			for (auto& Centroid : ClusterCentroids)
 			{
-				auto ColorDistance = (vColorSet[k] - Centroid).norm();
-				if (ColorDistance < MinDistance && ColorDistance < m_ColorThreshold)
-				{
-					MinDistance = ColorDistance;
-					MinClusterPtr = &Centroid;
-				}
+				float ColorDistance = (vColorSet[k] - Centroid).norm();
+
+				if (ColorDistance < m_ColorThreshold)
+					MinPair = std::min(MinPair, std::make_pair(ColorDistance, &Centroid));
 			}
-			PointTag4Cluster[k] = MinClusterPtr;
+			PointTag4Cluster[k] = MinPair.second;
 		}
 
 		auto calcentroid = [](const std::vector<Eigen::Vector3i>& vClusterColorSet) -> Eigen::Vector3i
@@ -100,7 +97,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 		for (auto& Centroid : ClusterCentroids)
 		{
 			std::vector<Eigen::Vector3i> ClusterPointsData;
-			for (int k = 0; k < vColorSet.size(); k++)
+			for (std::size_t k = 0; k < vColorSet.size(); k++)
 				if (PointTag4Cluster[k] == &Centroid)
 					ClusterPointsData.push_back(vColorSet[k]);
 			
