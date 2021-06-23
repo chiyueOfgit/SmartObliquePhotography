@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "PointClusterSet.h"
+#include "PointCluster.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
