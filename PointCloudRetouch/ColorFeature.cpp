@@ -62,10 +62,10 @@ void CColorFeature::__computeMainColors(const std::vector<pcl::index_t>& vPointI
 std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const
 {
 	std::vector<Eigen::Vector3i*> PointTag4Cluster(vColorSet.size(), nullptr);
-	std::vector<Eigen::Vector3i> ClusterCentroids;
+	std::vector<Eigen::Vector3i> ClusterCentroids(vK, Eigen::Vector3i());
 
-	for (std::size_t i = 0; i < vK; i++)
-		ClusterCentroids.push_back(vColorSet[i]);
+	for (auto& Centroid : ClusterCentroids)
+		Centroid = vColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), vColorSet.size() - 1)];
 
 	for (std::size_t i = 0; i < 30; i++)
 	{
@@ -85,19 +85,15 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 			PointTag4Cluster[k] = MinClusterPtr;
 		}
 
-		auto calcentroid = [](const std::vector<Eigen::Vector3i>& vClusterPointsData) -> Eigen::Vector3i
+		auto calcentroid = [](const std::vector<Eigen::Vector3i>& vClusterColorSet) -> Eigen::Vector3i
 		{
 			Eigen::Vector3i Centroid(0, 0, 0);
-			for (int i = 0; i < vClusterPointsData.size(); i++)
-			{
-				Centroid.x() += vClusterPointsData[i].x();
-				Centroid.y() += vClusterPointsData[i].y();
-				Centroid.z() += vClusterPointsData[i].z();
-			}
-			Centroid.x() = Centroid.x() / vClusterPointsData.size();
-			Centroid.y() = Centroid.y() / vClusterPointsData.size();
-			Centroid.z() = Centroid.z() / vClusterPointsData.size();
-
+			if (vClusterColorSet.empty())
+				return Centroid;
+			
+			for (auto& Color : vClusterColorSet)
+				Centroid += Color;
+			Centroid /= vClusterColorSet.size();
 			return Centroid;
 		};
 
