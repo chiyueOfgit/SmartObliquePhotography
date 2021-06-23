@@ -53,14 +53,15 @@ double CVfhFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermina
 
 	__computeVfhDescriptor(vDeterminantPointSet, m_DeterminantVfhDescriptor);
 	m_BaseDotResult = __KernelDotVfhDescriptor(m_DeterminantVfhDescriptor, m_DeterminantVfhDescriptor, m_KernelSize);
-	
-	Eigen::Matrix<float, VfhDimension, 1> ValidationVfhDescriptor;
-	__computeVfhDescriptor(vValidationSet, ValidationVfhDescriptor);
-	auto ValidationDotResult = __KernelDotVfhDescriptor(ValidationVfhDescriptor, m_DeterminantVfhDescriptor, m_KernelSize);
 
 	_ASSERTE(m_BaseDotResult > 0);
-	double ValidationRate = ValidationDotResult / m_BaseDotResult;
-	return ValidationRate > 1.0 ? 1.0 * 0.2: ValidationRate * 0.2;
+	double ValidationRate = 0.0;
+	for (auto Index : vValidationSet)
+		ValidationRate += evaluateFeatureMatchFactorV(Index);
+	if (vValidationSet.size())
+		ValidationRate /= vValidationSet.size();
+
+	return ValidationRate > 1.0 ? 1.0 : ValidationRate;
 }
 
 //*****************************************************************
