@@ -7,6 +7,8 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_EXCLUSIVE_PRODUCT(CPlanarityFeature, KEYWORD::PLANARITY_FEATURE)
 
+constexpr float Tolerance = 0.12f;
+
 //*****************************************************************
 //FUNCTION: 
 double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
@@ -37,13 +39,22 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	const auto& Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(vInputPoint);
 	float Distance = m_Plane.dot(Position);
 
-	if (Distance > m_Peak.second || Distance < m_Peak.first)
+	if (Distance >= m_Peak.second || Distance <= m_Peak.first)
 		return 0;
 
+	if (m_Peak.first * Tolerance <= Distance && Distance <= m_Peak.second * Tolerance)
+		return 1;
+
 	if (Distance < 0)
-		Distance /= m_Peak.first;
+	{
+		Distance -= m_Peak.first * Tolerance;
+		Distance /= m_Peak.first * (Tolerance - 1.0f);
+	}
 	else
-		Distance /= m_Peak.second;
+	{
+		Distance -= m_Peak.second * Tolerance;
+		Distance /= m_Peak.second * (1.0f - Tolerance);
+	}
 	return { pow(Distance, 4.0f) - 2.0f * pow(Distance, 2.0f) + 1.0f };
 }
 
