@@ -153,9 +153,12 @@ std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::inde
 	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vSeedClusterIndex);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::getIndicesByLabel(std::vector<pcl::index_t> vioIndices, EPointLabel vLabel)
+void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::getIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel)
 {
 	for (size_t i = 0; i < m_PointLabelSet.getSize(); i++)
-		if (m_PointLabelSet.getLabelAt(i) == vLabel)
-			vioIndices.push_back(i);
+	{
+		auto a = m_PointLabelSet.getLabelAt(i);
+			if (m_PointLabelSet.getLabelAt(i) == vLabel)
+				vioIndices.push_back(i);
+	}
 }

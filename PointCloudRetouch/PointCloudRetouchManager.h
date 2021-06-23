@@ -35,7 +35,7 @@ namespace hiveObliquePhotography
 			double getClusterBelongingProbabilityAt(std::size_t vIndex) const { return m_PointLabelSet.getClusterBelongingProbabilityAt(vIndex); }
 
 			void switchLabel(EPointLabel vTo, EPointLabel vFrom);
-			void getIndicesByLabel(std::vector<pcl::index_t> vioIndices, EPointLabel vLabel);
+			void getIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel);
 			
 			const auto& getRetouchScene() const { return m_Scene; }
 			//const auto& getPointLabelSet() const { return m_PointLabelSet; }
