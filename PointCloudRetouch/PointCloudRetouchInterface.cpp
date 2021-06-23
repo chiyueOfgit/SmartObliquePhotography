@@ -30,7 +30,7 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveSave(PointCloud_t::Ptr voPoi
 		TempPoint.normal_x = Normal.x();
 		TempPoint.normal_y = Normal.y();
 		TempPoint.normal_z = Normal.z();
-		auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getNormalAt(Index);
+		auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index);
 		TempPoint.r = Color.x();
 		TempPoint.g = Color.y();
 		TempPoint.b = Color.z();
