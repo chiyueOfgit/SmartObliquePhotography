@@ -20,6 +20,7 @@
 #include <qpushbutton.h>
 #include <qcursor.h>
 #include <qevent.h>
+#include <qpainter.h>
 
 #include "QTDockWidgetTitleBar.h"
 #include "QTInterfaceConfig.h"
