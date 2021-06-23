@@ -38,10 +38,14 @@ void CPointCloudVisualizer::init(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudVisualizer::reset(PointCloud_t::Ptr vPointCloud)
+void CPointCloudVisualizer::reset(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
 {
-	_ASSERTE(vPointCloud);
-	m_pSceneCloud = vPointCloud;
+	m_pPCLVisualizer->removeAllPointClouds();
+	delete m_pPCLVisualizer;
+	delete m_pCallback;
+	init(vPointCloud, vIsInQt);
+	if (vPointCloud != nullptr)
+		m_pSceneCloud = vPointCloud;
 }
 
 //*****************************************************************
@@ -53,6 +57,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	_ASSERTE(!m_pSceneCloud->empty());
 
 	m_pPCLVisualizer->removeAllPointClouds();
+	m_pPCLVisualizer->removeAllShapes();
 	
 	_ASSERTE(vPointLabel.size() == m_pSceneCloud->size());
 

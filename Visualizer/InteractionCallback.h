@@ -36,8 +36,6 @@ namespace hiveObliquePhotography
 			bool m_PartitionMode = true;
 			bool m_LineMode = false;
 
-			bool m_AreaMode = false;
-
 			double m_Radius = 40.0;
 			double m_Hardness = 0.8;
 

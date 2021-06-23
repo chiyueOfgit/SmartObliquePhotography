@@ -58,6 +58,14 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 	return true;
 }
 
+
+void CPointCloudRetouchManager::clearMarkerResult()
+{
+	m_PointLabelSet.reset();
+	m_pNeighborhoodBuilder->reset();
+	m_PointClusterSet.reset();
+}
+
 //*****************************************************************
 //FUNCTION: 
 CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel)
@@ -85,7 +93,7 @@ bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::dumpP
 			auto Label = m_PointLabelSet.getLabelAt(i);
 			voPointLabel.push_back(static_cast<std::size_t>(Label));
 		}
-
+		
 		return true;
 	}
 	else
@@ -125,10 +133,32 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 	return false;
 }
 
+void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::switchLabel(EPointLabel vTo, EPointLabel vFrom)
+{
+	auto NumPoints = m_Scene.getNumPoint();
+	_ASSERTE(NumPoints > 0);
+
+	for (int i = 0; i < NumPoints; i++)
+	{
+		if (m_PointLabelSet.getLabelAt(i) == vFrom)
+			m_PointLabelSet.tagPointLabel(i, vTo, m_PointLabelSet.getClusterIndexAt(i), m_PointLabelSet.getClusterBelongingProbabilityAt(i));
+	}
+}
+
 //*****************************************************************
 //FUNCTION: 
 std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex)
 {
 	//·¢ÉúNRVO
 	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vSeedClusterIndex);
+}
+
+void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::getIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel)
+{
+	for (size_t i = 0; i < m_PointLabelSet.getSize(); i++)
+	{
+		auto a = m_PointLabelSet.getLabelAt(i);
+			if (m_PointLabelSet.getLabelAt(i) == vLabel)
+				vioIndices.push_back(i);
+	}
 }

@@ -63,6 +63,12 @@ namespace hiveObliquePhotography
         private slots:
             void onActionPointPicking();
             void onActionOpen();
+            void onActionSave();
+            void onActionDiscardAndRecover();
+            void onActionDelete();
+            void onActionRubber();
+            void onActionBrush();
+            void onResourceSpaceItemDoubleClick(QModelIndex);
         };
     }
 }

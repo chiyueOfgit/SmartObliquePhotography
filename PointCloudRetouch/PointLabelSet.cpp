@@ -25,6 +25,11 @@ void CPointLabelSet::init(std::size_t vSize)
 	m_LabelSet = std::vector<SPointLabel>(vSize);
 }
 
+void CPointLabelSet::reset()
+{
+	m_LabelSet = std::vector<SPointLabel>(m_LabelSet.size());
+}
+
 //*****************************************************************
 //FUNCTION: 
 void CPointLabelSet::tagPointLabel(pcl::index_t vPoint, EPointLabel vTargetLabel, std::uint32_t vClusterIndex, double vClusterBelongingProbability)

@@ -66,7 +66,14 @@ QTInterface::~QTInterface()
 void QTInterface::__connectSignals()
 {
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
+    QObject::connect(ui.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
     QObject::connect(ui.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
+    QObject::connect(ui.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
+    QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionDelete()));
+    QObject::connect(ui.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
+    QObject::connect(ui.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
+    QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
+
 }
 
 void QTInterface::__initialVTKWidget()
@@ -200,12 +207,15 @@ void QTInterface::onActionPointPicking()
     m_pPointPickingDockWidget->show();
     QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking.")); 
 
-    //QPainter::drawArc(10, 10, 10, 10, 0, 360*16);
-    QRectF rectangle(10.0, 20.0, 80.0, 60.0);
+    if (m_pVisualizationConfig)
+        m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", ui.actionPointPicking->isChecked());
 
-    QPainter painter(this);
-    painter.drawEllipse(rectangle);
-
+    if (!ui.actionPointPicking->isChecked())
+    {
+        std::vector<std::size_t> PointLabel;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+        Visualization::hiveRefreshVisualizer(PointLabel);
+    }
 }
 
 void QTInterface::onActionOpen()
@@ -226,27 +236,23 @@ void QTInterface::onActionOpen()
     if (FilePathSet.empty())
         return;
 
-    PointCloud_t::Ptr pCloud(new PointCloud_t);
-    //pcl::io::loadPCDFile(FilePathSet.front(), *pCloud);
-    pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
-    m_pCloud = pCloud;
+    m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
 
-    if (pCloud == nullptr)
+    if (m_pCloud == nullptr)
         FileOpenSuccessFlag = false;
 
     if (FileOpenSuccessFlag)
     {
         m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
-        PointCloudRetouch::hiveInit(pCloud, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(pCloud, true);
+        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
+        Visualization::hiveInitVisualizer(m_pCloud, true);
         //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         QTInterface::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel, true);
-        Visualization::hiveRunVisualizerLoop();
         QTInterface::__initialSlider(FilePathList);
-
+        
         if (FilePathSet.size() == 1)
         {
             QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
@@ -259,12 +265,67 @@ void QTInterface::onActionOpen()
     }
 }
 
+void QTInterface::QTInterface::onActionSave()
+{
+    const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
+
+    PointCloud_t::Ptr pCloud(new PointCloud_t);
+    hiveObliquePhotography::PointCloudRetouch::hiveSave(pCloud);
+    if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
+    else
+        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
+}
+
+void QTInterface::QTInterface::onActionRubber()
+{
+    
+}
+
+void QTInterface::QTInterface::onActionBrush()
+{
+    
+}
+
+void QTInterface::onActionDiscardAndRecover()
+{
+    static int i = 1;
+    if (i++ % 2)
+        PointCloudRetouch::hiveDiscardUnwantedPoints();
+    else
+        PointCloudRetouch::hiveRecoverDiscardPoints2Unwanted();
+
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::hiveRefreshVisualizer(PointLabel);
+}
+
+void QTInterface::onActionDelete()
+{
+    PointCloudRetouch::hiveClearMarkerResult();
+
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::hiveRefreshVisualizer(PointLabel);
+}
+
+void QTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
+{
+    Visualization::hiveResetVisualizer(m_pCloud, true);
+    __initialVTKWidget();
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::hiveRefreshVisualizer(PointLabel);
+
+}
+
 void QTInterface::keyPressEvent(QKeyEvent* vEvent)
 {
     switch (vEvent->key())
     {
     case Qt::Key_Escape:
-        __messageDockWidgetOutputText(QString("esc"));
+        //__messageDockWidgetOutputText(QString("esc"));
+        this->close();
         break;
     default:
         break;
