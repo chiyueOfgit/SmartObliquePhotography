@@ -6,23 +6,13 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_EXCLUSIVE_PRODUCT(CColorFeature, KEYWORD::COLOR_FEATURE)
 
-#define EPSILON 50
-
 //*****************************************************************
 //FUNCTION: 
 double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
 	_ASSERTE(m_pConfig);
-	{
-		std::optional<float> ColorThreshold = m_pConfig->getAttribute<float>("COLOR_THRESHOLD");
-		if (ColorThreshold.has_value())
-			m_ColorThreshold = ColorThreshold.value();
-	}
-	{
-		std::optional<int> NumMainColors = m_pConfig->getAttribute<int>("NUM_MAIN_COLORS");
-		if (NumMainColors.has_value())
-			m_NumMainColors = NumMainColors.value();
-	}
+	m_ColorThreshold = *m_pConfig->getAttribute<float>("COLOR_THRESHOLD");
+	m_NumMainColors = *m_pConfig->getAttribute<int>("NUM_MAIN_COLORS");
 	
 	if (vDeterminantPointSet.empty() || vValidationSet.empty())
 		return 0.0;
@@ -64,34 +54,30 @@ void CColorFeature::__computeMainColors(const std::vector<pcl::index_t>& vPointI
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Eigen::Vector3i>& vData, std::size_t vK) const
+std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const
 {
-	std::vector<int> PointTag4Cluster(vData.size(), -1);
+	std::vector<Eigen::Vector3i*> PointTag4Cluster(vColorSet.size(), nullptr);
 	std::vector<Eigen::Vector3i> ClusterCentroids;
-	double Variance = 30;
 
-	for (int i = 0; i < vK; i++)
-	{
-		ClusterCentroids.emplace_back(vData[i]);
-	}
+	for (std::size_t i = 0; i < vK; i++)
+		ClusterCentroids.push_back(vColorSet[i]);
 
-	while (Variance --)
+	for (std::size_t i = 0; i < 30; i++)
 	{
-		//Variance = 0;
-		for (int i = 0; i < vData.size(); i++)
+		for (size_t k = 0; k < vColorSet.size(); k++)
 		{
 			double MinDistance = DBL_MAX;
-			int MinClusterIndex = -1;
-			for (int j = 0; j < vK; j++)
+			Eigen::Vector3i* MinClusterPtr = nullptr;
+			for (auto& Centroid : ClusterCentroids)
 			{
-				double Temp = (vData[i] - ClusterCentroids[j]).norm();
-				if (Temp < MinDistance && Temp < m_ColorThreshold)
+				auto ColorDistance = (vColorSet[k] - Centroid).norm();
+				if (ColorDistance < MinDistance && ColorDistance < m_ColorThreshold)
 				{
-					MinDistance = Temp;
-					MinClusterIndex = j;
+					MinDistance = ColorDistance;
+					MinClusterPtr = &Centroid;
 				}
 			}
-			PointTag4Cluster[i] = MinClusterIndex;
+			PointTag4Cluster[k] = MinClusterPtr;
 		}
 
 		auto calcentroid = [](const std::vector<Eigen::Vector3i>& vClusterPointsData) -> Eigen::Vector3i
@@ -110,34 +96,16 @@ std::vector<Eigen::Vector3i> CColorFeature::__kMeansCluster(const std::vector<Ei
 			return Centroid;
 		};
 
-		auto calvariance = [](const std::vector<Eigen::Vector3i>& vClusterPointsData, const Eigen::Vector3i& vCentroid) -> double
-		{
-			double Variance = 0;
-
-			for (int j = 0; j < vClusterPointsData.size(); j++)
-			{
-				Variance += (vClusterPointsData[j] - vCentroid).squaredNorm();
-			}
-			Variance /= vClusterPointsData.size();
-			return Variance;
-		};
-
-		for (int i = 0; i < vK; i++)
+		for (auto& Centroid : ClusterCentroids)
 		{
 			std::vector<Eigen::Vector3i> ClusterPointsData;
-			for (int j = 0; j < vData.size(); j++)
-			{
-				if (PointTag4Cluster[j] == i)
-					ClusterPointsData.emplace_back(vData[j]);
-			}
-			ClusterCentroids[i] = calcentroid(ClusterPointsData);
-			//Variance += calvariance(ClusterPointsData, ClusterCentroids[i]);
+			for (int k = 0; k < vColorSet.size(); k++)
+				if (PointTag4Cluster[k] == &Centroid)
+					ClusterPointsData.push_back(vColorSet[k]);
+			
+			Centroid = calcentroid(ClusterPointsData);
 		}
-		//Variance /= vK;
 	}
+	
 	return ClusterCentroids;
-
 }
-
-
-
