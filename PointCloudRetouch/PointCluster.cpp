@@ -23,6 +23,7 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 		
 		Probability += m_FeatureWeightSet[i] * m_FeatureSet[i]->evaluateFeatureMatchFactorV(vInputPoint);
 		SumWeight += m_FeatureWeightSet[i];
+		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("The MatchFactor: [%1%]\n ", m_FeatureSet[i]->evaluateFeatureMatchFactorV(vInputPoint)));
 	}
 	Probability /= SumWeight;
 

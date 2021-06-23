@@ -60,7 +60,7 @@ double CVfhFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermina
 
 	_ASSERTE(m_BaseDotResult > 0);
 	double ValidationRate = ValidationDotResult / m_BaseDotResult;
-	return ValidationRate > 1.0 ? 1.0 : ValidationRate;
+	return ValidationRate > 1.0 ? 1.0 * 0.2: ValidationRate * 0.2;
 }
 
 //*****************************************************************
