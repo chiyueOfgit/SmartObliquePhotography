@@ -112,9 +112,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InstructionsDialog.cpp" />
     <ClCompile Include="SliderSizeDockWidget.cpp" />
     <QtRcc Include="QTInterface.qrc" />
     <QtUic Include="DisplayOptionsSettingDialog.ui" />
+    <QtUic Include="InstructionsDialog.ui" />
     <QtUic Include="QTInterface.ui" />
     <QtMoc Include="QTInterface.h" />
     <ClCompile Include="DisplayOptionsSettingDialog.cpp" />
@@ -143,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <QtMoc Include="InstructionsDialog.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="QTInterfaceConfig.h" />
     <QtMoc Include="SliderSizeDockWidget.h" />

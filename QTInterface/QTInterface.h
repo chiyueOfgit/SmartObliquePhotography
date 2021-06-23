@@ -1,6 +1,7 @@
 #pragma once
 #include "ui_QTInterface.h"
 #include "QTDockWidgetTitleBar.h"
+#include "InstructionsDialog.h"
 
 class QStandardItem;
 class QStandardItemModel;
@@ -42,6 +43,7 @@ namespace hiveObliquePhotography
             QDockWidget* m_pRubberSizeDockWidget = nullptr;
             QDockWidget* m_pBrushSizeDockWidget = nullptr;
             QDockWidget* m_pPointPickingDockWidget = nullptr;
+            CInstructionsDialog* m_pInstructionsDialog = nullptr;
 
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
             hiveConfig::CHiveConfig* m_pPointCloudRetouchConfig = nullptr;
@@ -68,6 +70,7 @@ namespace hiveObliquePhotography
             void onActionDelete();
             void onActionRubber();
             void onActionBrush();
+            void onActionInstructions();
             void onResourceSpaceItemDoubleClick(QModelIndex);
         };
     }

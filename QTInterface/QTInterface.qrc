@@ -12,5 +12,6 @@
         <file>Icon/blend.png</file>
         <file>Icon/circleAreaPicking.png</file>
         <file>Icon/pointPicking.png</file>
+        <file>Icon/instructions.png</file>
     </qresource>
 </RCC>

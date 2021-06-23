@@ -73,7 +73,7 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
     QObject::connect(ui.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
     QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
-
+    QObject::connect(ui.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
 }
 
 void QTInterface::__initialVTKWidget()
@@ -307,6 +307,12 @@ void QTInterface::onActionDelete()
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
     Visualization::hiveRefreshVisualizer(PointLabel);
+}
+
+void QTInterface::onActionInstructions()
+{
+    m_pInstructionsDialog = new CInstructionsDialog(this);
+    m_pInstructionsDialog->exec();
 }
 
 void QTInterface::onResourceSpaceItemDoubleClick(QModelIndex)

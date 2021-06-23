@@ -55,6 +55,9 @@
     <ClCompile Include="SliderSizeDockWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InstructionsDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -75,12 +78,18 @@
     <QtMoc Include="SliderSizeDockWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="InstructionsDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="DisplayOptionsSettingDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="SliderSizeDockWidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="InstructionsDialog.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

@@ -88,6 +88,7 @@
    <addaction name="actionDelete"/>
    <addaction name="separator"/>
    <addaction name="actionSetting"/>
+   <addaction name="actionInstructions"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="resourceSpaceDockWidget">
@@ -302,6 +303,15 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>PointPicking</string>
+   </property>
+  </action>
+  <action name="actionInstructions">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/instructions.png</normaloff>:/QTInterface/Icon/instructions.png</iconset>
+   </property>
+   <property name="text">
+    <string>Instructions</string>
    </property>
   </action>
  </widget>
