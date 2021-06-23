@@ -23,7 +23,6 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 		
 		Probability += m_FeatureWeightSet[i] * m_FeatureSet[i]->evaluateFeatureMatchFactorV(vInputPoint);
 		SumWeight += m_FeatureWeightSet[i];
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("The MatchFactor: [%1%]\n ", m_FeatureSet[i]->evaluateFeatureMatchFactorV(vInputPoint)));
 	}
 	Probability /= SumWeight;
 
@@ -62,10 +61,6 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 	{
 		m_FeatureWeightSet.emplace_back(e->generateFeatureV(m_ClusterCoreRegion, vValidationSet, m_ClusterCenter));
 	}
-
-	hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Num Enabled Features: [%1%]\nFeature Weights: ", m_FeatureSet.size()));
-	for (auto Weight : m_FeatureWeightSet)
-		hiveEventLogger::hiveOutputEvent(std::to_string(Weight) + " ");
 
 	return true;
 }

@@ -180,8 +180,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Camera.computeProjectionMatrix(Proj);
 		Camera.computeViewMatrix(View);
 
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR3("CameraPos: [%1%], [%2%], [%3%]", Camera.pos[0], Camera.pos[1], Camera.pos[2]));
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("CameraClip: [%1%], [%2%]", Camera.clip[0], Camera.clip[1]));
 		PixelPosition = (Proj * View).inverse() * PixelPosition;
 		PixelPosition /= PixelPosition.w();
 

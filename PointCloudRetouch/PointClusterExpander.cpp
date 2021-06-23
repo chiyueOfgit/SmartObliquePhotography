@@ -39,11 +39,6 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 			}
 			
 		}
-		else
-		{
-			//pManager->tagPointLabel(Candidate, EPointLabel::KEPT, vCluster->getClusterIndex(), CurrentProbability);
-			hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("The abandon point currentProbability: [%1%]\n ", CurrentProbability));
-		}
 	}
 }
 
