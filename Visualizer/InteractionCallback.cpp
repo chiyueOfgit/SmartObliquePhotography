@@ -124,7 +124,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	PosX = vEvent.getX();
 	PosY = vEvent.getY();
 
-	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value() && m_MousePressStatus[1])
+	if (m_pVisualizationConfig->getAttribute<bool>("RUBBER_MODE").value())
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
+	else
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
+
+	if (m_pVisualizationConfig->getAttribute<bool>("RUBBER_MODE").value() && m_MousePressStatus[0])
 	{
 		{
 			std::vector<std::size_t> PointLabel;
@@ -132,7 +137,34 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			m_pVisualizer->refresh(PointLabel);
 		}
 
+		if (m_pVisualizationConfig)
+		{
+			std::optional<float> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>("SCREEN_CIRCLE_RADIUS");
+			if (ScreenCircleRadius.has_value())
+				m_Radius = ScreenCircleRadius.value();
+		}
+
+		std::vector<pcl::index_t> PickedIndices;
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
+
+		PointCloudRetouch::hiveExecuteRubber(PickedIndices);
+
+		{
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+	}
+
+	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value() && m_MousePressStatus[1])
+	{
+		{
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
 
 		if (m_pVisualizationConfig)
 		{
@@ -146,7 +178,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		}
 
 		std::vector<pcl::index_t> PickedIndices;
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
@@ -166,7 +200,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			m_pVisualizer->refresh(PointLabel);
 		}
 
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 	}
 
 	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value())

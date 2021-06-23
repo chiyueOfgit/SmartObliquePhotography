@@ -73,6 +73,7 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
     QObject::connect(ui.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
     QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
+    
 
 }
 
@@ -282,7 +283,7 @@ void QTInterface::QTInterface::onActionSave()
     const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
 
     PointCloud_t::Ptr pCloud(new PointCloud_t);
-    hiveObliquePhotography::PointCloudRetouch::hiveSave(pCloud);
+    PointCloudRetouch::hiveSave(pCloud);
     if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
         QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
     else
@@ -291,7 +292,10 @@ void QTInterface::QTInterface::onActionSave()
 
 void QTInterface::QTInterface::onActionRubber()
 {
-    
+    if (m_pVisualizationConfig)
+    {
+        m_pVisualizationConfig->overwriteAttribute("RUBBER_MODE", ui.actionRubber->isChecked());
+    }
 }
 
 void QTInterface::QTInterface::onActionBrush()

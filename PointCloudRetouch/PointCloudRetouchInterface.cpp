@@ -74,3 +74,8 @@ void hiveObliquePhotography::PointCloudRetouch::hiveClearMarkerResult()
 {
 	CPointCloudRetouchManager::getInstance()->clearMarkerResult();
 }
+
+void hiveObliquePhotography::PointCloudRetouch::hiveExecuteRubber(const std::vector<pcl::index_t>& vPoints)
+{
+	CPointCloudRetouchManager::getInstance()->setLabel(vPoints, EPointLabel::UNDETERMINED);
+}

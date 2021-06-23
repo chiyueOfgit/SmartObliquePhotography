@@ -145,6 +145,20 @@ void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::switc
 	}
 }
 
+void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::setLabel(const std::vector<pcl::index_t>& vPoints, EPointLabel vTarget)
+{
+	auto NumPoints = m_Scene.getNumPoint();
+	_ASSERTE(NumPoints > 0);
+
+	for (auto Index : vPoints)
+	{
+		auto Label = m_PointLabelSet.getLabelAt(Index);
+		if (Label == EPointLabel::KEPT || Label == EPointLabel::UNWANTED)
+			m_PointLabelSet.tagPointLabel(Index, vTarget, m_PointLabelSet.getClusterIndexAt(Index), m_PointLabelSet.getClusterBelongingProbabilityAt(Index));
+	}
+
+}
+
 //*****************************************************************
 //FUNCTION: 
 std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex)
