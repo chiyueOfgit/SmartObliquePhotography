@@ -20,6 +20,7 @@
 #include <qpushbutton.h>
 #include <qcursor.h>
 #include <qevent.h>
+#include <qpainter.h>
 
 #include "QTDockWidgetTitleBar.h"
 #include "QTInterfaceConfig.h"
@@ -198,6 +199,13 @@ void QTInterface::onActionPointPicking()
     m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
     m_pPointPickingDockWidget->show();
     QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking.")); 
+
+    //QPainter::drawArc(10, 10, 10, 10, 0, 360*16);
+    QRectF rectangle(10.0, 20.0, 80.0, 60.0);
+
+    QPainter painter(this);
+    painter.drawEllipse(rectangle);
+
 }
 
 void QTInterface::onActionOpen()

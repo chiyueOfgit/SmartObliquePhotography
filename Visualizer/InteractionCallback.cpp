@@ -122,7 +122,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	DeltaY = vEvent.getY() - PosY;
 	PosX = vEvent.getX();
 	PosY = vEvent.getY();
-	
+
 	if (m_AreaMode && m_MousePressStatus[0])
 	{
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
