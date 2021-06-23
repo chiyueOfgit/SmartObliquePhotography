@@ -14,6 +14,33 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveInit(PointCloud_t::Ptr vPoin
 
 //*****************************************************************
 //FUNCTION: 
+bool hiveObliquePhotography::PointCloudRetouch::hiveSave(PointCloud_t::Ptr voPointCloud)
+{
+	pcl::Indices PointIndices;
+	CPointCloudRetouchManager::getInstance()->getIndicesByLabel(PointIndices, EPointLabel::KEPT);
+	CPointCloudRetouchManager::getInstance()->getIndicesByLabel(PointIndices, EPointLabel::UNDETERMINED);
+	for (auto Index : PointIndices)
+	{
+		pcl::PointSurfel TempPoint;
+		auto Pos = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(Index);
+		TempPoint.x = Pos.x();
+		TempPoint.y = Pos.y();
+		TempPoint.z = Pos.z();
+		auto Normal = CPointCloudRetouchManager::getInstance()->getRetouchScene().getNormalAt(Index);
+		TempPoint.normal_x = Normal.x();
+		TempPoint.normal_y = Normal.y();
+		TempPoint.normal_z = Normal.z();
+		auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getNormalAt(Index);
+		TempPoint.r = Color.x();
+		TempPoint.g = Color.y();
+		TempPoint.b = Color.z();
+		voPointCloud->push_back(TempPoint);
+	}
+	return true;
+}
+
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::PointCloudRetouch::hiveMarkLitter(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize)
 {
 	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness,  vRadius, vCenter, vPvMatrix, vWindowSize, EPointLabel::UNWANTED);
