@@ -24,6 +24,7 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("DEPTH_OFFSET", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("EXPECT_PROBABILITY", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("DISTANCE_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+	_defineAttribute("DISTANCE_TOLERANCE", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("CONVOLUTION_KERNEL_SIZE", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	_defineAttribute("COLOR_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("NUM_MAIN_COLORS", hiveConfig::EConfigDataType::ATTRIBUTE_INT);

@@ -114,6 +114,7 @@
     <Xml Include="..\Configs\VisualizationConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+    <Xml Include="PointCloudRetouchConfig.xml" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Instructions.txt">

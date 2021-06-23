@@ -202,20 +202,32 @@ std::string QTInterface::__getDirectory(const std::string& vFilePath)
 
 void QTInterface::onActionPointPicking()
 {
-    m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget, m_pVisualizationConfig);
-    m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
-    m_pPointPickingDockWidget->show();
-    QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking.")); 
-
-    if (m_pVisualizationConfig)
-        m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", ui.actionPointPicking->isChecked());
-
-    if (!ui.actionPointPicking->isChecked())
+    if (m_pCloud)
     {
-        std::vector<std::size_t> PointLabel;
-        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-        Visualization::hiveRefreshVisualizer(PointLabel);
+
+        if (ui.actionPointPicking->isChecked())
+        {
+            m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget, m_pVisualizationConfig);
+            m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
+            m_pPointPickingDockWidget->show();
+            QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to select mode."));
+
+        }
+        else
+        {
+            m_pPointPickingDockWidget->close();
+            delete m_pPointPickingDockWidget;
+
+            std::vector<std::size_t> PointLabel;
+            PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+            Visualization::hiveRefreshVisualizer(PointLabel);
+            QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
+        }
+
+        if (m_pVisualizationConfig)
+            m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", ui.actionPointPicking->isChecked());
     }
+
 }
 
 void QTInterface::onActionOpen()
@@ -270,7 +282,7 @@ void QTInterface::QTInterface::onActionSave()
     const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
 
     PointCloud_t::Ptr pCloud(new PointCloud_t);
-    hiveObliquePhotography::PointCloudRetouch::hiveSave(pCloud);
+    PointCloudRetouch::hiveSave(pCloud);
     if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
         QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
     else
@@ -279,7 +291,10 @@ void QTInterface::QTInterface::onActionSave()
 
 void QTInterface::QTInterface::onActionRubber()
 {
-    
+    if (m_pVisualizationConfig)
+    {
+        m_pVisualizationConfig->overwriteAttribute("RUBBER_MODE", ui.actionRubber->isChecked());
+    }
 }
 
 void QTInterface::QTInterface::onActionBrush()

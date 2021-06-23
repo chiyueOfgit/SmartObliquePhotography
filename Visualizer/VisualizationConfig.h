@@ -19,6 +19,7 @@ namespace hiveObliquePhotography
 		const std::string SCREEN_CIRCLE_HARDNESS = "SCREEN_CIRCLE_HARDNESS";
 		const std::string CLUSTER_EXPANDER_MODE = "CLUSTER_EXPANDER_MODE";
 		const std::string CIRCLE_MODE = "CIRCLE_MODE";
+		const std::string RUBBER_MODE = "RUBBER_MODE";
 
 		class CVisualizationConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CVisualizationConfig>
 		{
@@ -54,6 +55,7 @@ namespace hiveObliquePhotography
 				_defineAttribute(UNDO, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(CLUSTER_EXPANDER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(CIRCLE_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(RUBBER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				
 				_defineAttribute(LINEWIDTH, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 				_defineAttribute(SCREEN_CIRCLE_RADIUS, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);

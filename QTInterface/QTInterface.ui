@@ -228,12 +228,18 @@ background-color: rgb(255, 255, 255);</string>
    <property name="checked">
     <bool>false</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
      <normaloff>:/QTInterface/Icon/brush.png</normaloff>:/QTInterface/Icon/brush.png</iconset>
    </property>
    <property name="text">
     <string>Brush</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionRubber">

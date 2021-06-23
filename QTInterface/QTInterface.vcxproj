@@ -71,6 +71,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -103,7 +105,7 @@
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -154,6 +156,7 @@
     <Xml Include="..\Configs\AutoRetouchConfig.xml" />
     <Xml Include="..\Configs\QTInterfaceConfig.xml" />
     <Xml Include="..\Configs\VisualizationConfig.xml" />
+    <Xml Include="PointCloudRetouchConfig.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ObliquePhotographyData\ObliquePhotographyData.vcxproj">

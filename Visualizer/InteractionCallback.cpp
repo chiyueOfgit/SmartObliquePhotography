@@ -124,9 +124,47 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	PosX = vEvent.getX();
 	PosY = vEvent.getY();
 
+	if (m_pVisualizationConfig->getAttribute<bool>("RUBBER_MODE").value())
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
+	else
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
+
+	if (m_pVisualizationConfig->getAttribute<bool>("RUBBER_MODE").value() && m_MousePressStatus[0])
+	{
+		{
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+
+		if (m_pVisualizationConfig)
+		{
+			std::optional<float> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>("SCREEN_CIRCLE_RADIUS");
+			if (ScreenCircleRadius.has_value())
+				m_Radius = ScreenCircleRadius.value();
+		}
+
+		std::vector<pcl::index_t> PickedIndices;
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
+
+		PointCloudRetouch::hiveExecuteRubber(PickedIndices);
+
+		{
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+	}
+
 	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value() && m_MousePressStatus[1])
 	{
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
+		{
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
 
 		if (m_pVisualizationConfig)
 		{
@@ -140,7 +178,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		}
 
 		std::vector<pcl::index_t> PickedIndices;
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
@@ -154,11 +194,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		else
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 
-		std::vector<std::size_t> PointLabel;
-		PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-		m_pVisualizer->refresh(PointLabel);
-
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
+		{
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
 
 	}
 
@@ -173,8 +213,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Camera.computeProjectionMatrix(Proj);
 		Camera.computeViewMatrix(View);
 
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR3("CameraPos: [%1%], [%2%], [%3%]", Camera.pos[0], Camera.pos[1], Camera.pos[2]));
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("CameraClip: [%1%], [%2%]", Camera.clip[0], Camera.clip[1]));
 		PixelPosition = (Proj * View).inverse() * PixelPosition;
 		PixelPosition /= PixelPosition.w();
 
