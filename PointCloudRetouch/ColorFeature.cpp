@@ -45,8 +45,13 @@ double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	{
 		auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(vInputPoint);
 
-		if ((Color - MainColor).norm() < m_ColorThreshold)
+		if ((Color - MainColor).norm() <= m_ColorThreshold)
 			return 1.0;
+		else if((Color - MainColor).norm() < m_ColorThreshold * 2)
+		{
+			auto a = (Color - MainColor).norm();
+			return 1.0 / ((Color - MainColor).norm() - m_ColorThreshold);
+		}
 	}
 	return 0.0;
 }
