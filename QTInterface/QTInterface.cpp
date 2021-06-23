@@ -275,6 +275,11 @@ void QTInterface::onActionDelete()
     Visualization::hiveRefreshVisualizer(PointLabel);
 }
 
+void QTInterface::onDoubleClickCloudItem()
+{
+
+}
+
 void QTInterface::keyPressEvent(QKeyEvent* vEvent)
 {
     switch (vEvent->key())
