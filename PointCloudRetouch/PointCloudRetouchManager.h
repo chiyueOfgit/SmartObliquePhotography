@@ -39,7 +39,6 @@ namespace hiveObliquePhotography
 			void getIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel);
 			
 			const auto& getRetouchScene() const { return m_Scene; }
-			//const auto& getPointLabelSet() const { return m_PointLabelSet; }
 			
 #ifdef _UNIT_TEST
 			const auto& getClusterSet() const { return m_PointClusterSet; }
