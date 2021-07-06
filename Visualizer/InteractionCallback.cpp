@@ -103,6 +103,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
 		}
+
+		if (KeyString == "t")
+		{
+			m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera");
+		}
 	}
 }
 
@@ -188,7 +193,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick [%1%] points.", PickedIndices.size()));
+		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
 
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);

@@ -94,8 +94,8 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 		}
 		case 4:
 		{
-			unsigned char StandardGreen[4] = { 0, 255, 0, 255 };
-			std::memcpy(&pCloud2Show->points[i].rgba, StandardGreen, sizeof(StandardGreen));
+			unsigned char StandardWhite[4] = { 255, 255, 255, 255 };
+			std::memcpy(&pCloud2Show->points[i].rgba, StandardWhite, sizeof(StandardWhite));
 			break;
 		}
 		}
