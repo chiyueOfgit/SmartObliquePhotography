@@ -34,7 +34,7 @@ namespace hiveObliquePhotography
 			PointCloud_t::Ptr m_pCloud = nullptr;
 			std::vector<Eigen::Vector3i> m_MainBaseColors;
 
-			float m_ColorThreshold = 30.0f;
+			float m_ColorThreshold = 10.0f;
 			std::size_t m_MaxNumMainColors = 5;
 			float m_MinReduceRatio = 0.8f;
 		};
