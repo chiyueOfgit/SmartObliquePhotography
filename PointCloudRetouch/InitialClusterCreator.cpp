@@ -47,7 +47,7 @@ void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::
 		{
 			voValidationSet.push_back(vUserMarkedRegion[i]);
 			std::string OutputOnePointMessage = "";
-			OutputOnePointMessage = "id: " + std::to_string(vUserMarkedRegion[i]) + "\t " + 
+			OutputOnePointMessage = "id: " + std::to_string(vUserMarkedRegion[i]) + "\t ";
 			OutputValidationSet += std::to_string(vUserMarkedRegion[i]);
 		}
 		else if(vPointHardnessSet[i] > vDivideThreshold)

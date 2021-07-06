@@ -50,13 +50,26 @@ double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
     }
 
     if (MinColorDifference < m_ColorThreshold)
-        return 1 - MinColorDifference / m_ColorThreshold;
+        return 1.0;
     else if (MinColorDifference < 2.0 * m_ColorThreshold)
     {
         return (2.0 * m_ColorThreshold - MinColorDifference) / m_ColorThreshold;
     }
     else
         return 0.0f;
+}
+
+//*****************************************************************
+//FUNCTION: 
+std::string CColorFeature::outputDebugInfosV(pcl::index_t vIndex) const
+{
+    std::string Infos;
+    Infos += _FORMAT_STR1("Color Feature:\nNum Main Colors are %1%, They are\n", m_MainBaseColors.size());
+    for (auto& Color : m_MainBaseColors)
+        Infos += _FORMAT_STR3("%1%, %2%, %3%\n", Color.x(), Color.y(), Color.z());
+    Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CColorFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
+
+    return Infos;
 }
 
 //*****************************************************************
