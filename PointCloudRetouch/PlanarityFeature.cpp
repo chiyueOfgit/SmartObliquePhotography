@@ -27,6 +27,11 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	{
 		SumMatch += evaluateFeatureMatchFactorV(i);
 	}
+
+	//DEBUG
+	hiveEventLogger::hiveOutputEvent((_FORMAT_STR1("Planarity Feature's Weight is: %1%\n", SumMatch / vValidationSet.size())));
+	//DEBUG
+
 	return SumMatch / vValidationSet.size();
 }
 
@@ -65,8 +70,8 @@ std::string CPlanarityFeature::outputDebugInfosV(pcl::index_t vIndex) const
 	std::string Infos;
 	Infos += "Planarity Feature:\n";
 	Infos += _FORMAT_STR3("Plane's Normal is: %1%, %2%, %3%\n", m_Plane.x(), m_Plane.y(), m_Plane.z());
-	Infos += _FORMAT_STR2("Plane's Pick is: %1%, %2%\n", m_Peak.first, m_Peak.second);
-	Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CPlanarityFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
+	Infos += _FORMAT_STR2("Plane's Peak is: %1%, %2%\n", m_Peak.first, m_Peak.second);
+	Infos += _FORMAT_STR1("Similarity is: %1%\n\n", const_cast<CPlanarityFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
 
 	return Infos;
 }
