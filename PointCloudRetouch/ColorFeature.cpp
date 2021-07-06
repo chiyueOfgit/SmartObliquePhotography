@@ -17,6 +17,7 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 	_ASSERTE(m_pConfig);
 	m_ColorThreshold = *m_pConfig->getAttribute<float>("COLOR_THRESHOLD");
 	m_MaxNumMainColors = *m_pConfig->getAttribute<int>("NUM_MAIN_COLORS");
+    m_MinReduceRatio = *m_pConfig->getAttribute<float>("MIN_REDUCE_RATIO");
 	
 	if (vDeterminantPointSet.empty() || vValidationSet.empty())
 		return 0.0;
@@ -124,8 +125,6 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
 
     std::pair<float, std::size_t> AverageDifferenceAndIndex(FLT_MAX, -1);
 
-    const float MinReduceRatio = 0.8f;
-
     for (int i = 0; i < ClusterResults.size(); i++)
     {
         auto& ClusterCentroids = ClusterResults[i];
@@ -145,8 +144,10 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
         }
         
         float AverageDifference = SumDifference / vColorSet.size();
-        if (AverageDifference < AverageDifferenceAndIndex.first && AverageDifference / AverageDifferenceAndIndex.first < MinReduceRatio)
+        if (AverageDifference < AverageDifferenceAndIndex.first && AverageDifference / AverageDifferenceAndIndex.first < m_MinReduceRatio)
             AverageDifferenceAndIndex = { AverageDifference, i };
+        else
+            break;
     }
 	
 	return ClusterResults[AverageDifferenceAndIndex.second];

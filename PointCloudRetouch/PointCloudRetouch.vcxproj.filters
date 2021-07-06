@@ -114,7 +114,4 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Xml Include="PointCloudRetouchConfig.xml" />
-  </ItemGroup>
 </Project>

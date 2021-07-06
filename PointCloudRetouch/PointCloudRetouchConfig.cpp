@@ -28,5 +28,6 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("CONVOLUTION_KERNEL_SIZE", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	_defineAttribute("COLOR_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("NUM_MAIN_COLORS", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
+	_defineAttribute("MIN_REDUCE_RATIO", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 
 }
