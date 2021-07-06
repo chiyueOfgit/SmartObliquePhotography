@@ -19,8 +19,8 @@ constexpr float SPACE_SIZE = 100.0f;
 //  * Color_Feature_SpecialTest_1: ；
 
 //PlaneFeatureBaseTest给定平面，随机生成带噪点的点云，要求以该点云拟合的平面与原平面差距在规定范围内；
-//  * Plane_Feature_BaseTest_1: 随机模拟平面50%干扰点，期望平面夹角小于30；
-//  * Plane_Feature_BaseTest_2: 随机模拟平面100%干扰点，期望平面夹角小于；
+//  * Plane_Feature_BaseTest_1: 随机模拟平面50%干扰点，期望平面夹角小于10°；
+//  * Plane_Feature_BaseTest_2: 随机模拟平面100%干扰点，期望平面夹角小于30°；
 //PlaneFeatureSpecialTest特定情况下的特殊结果正确
 //  * Plane_Feature_SpecialTest_1: ；
 
@@ -104,10 +104,9 @@ TEST(Color_Feature_BaseTest_1, Test_1)
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
 	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
 	
-	Eigen::Vector3i StandardColor{ 255,3,3 };
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
-		if ((Color - StandardColor).norm() > 8)
+		if ((Color - MainColor).norm() > 8)
 			Sum++;
 	GTEST_ASSERT_EQ(Sum, 0);
 }
@@ -133,23 +132,71 @@ TEST(Color_Feature_BaseTest_2, Test_2)
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
 	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
 	
-	Eigen::Vector3i StandardColor{ 255,3,3 };
-	Eigen::Vector3i OtherStandardColor{ 3,3,255 };
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
-		if ((Color - StandardColor).norm() < 8 || (Color - OtherStandardColor).norm() < 8)
+		if ((Color - MainColor).norm() < 8 || (Color - OtherColor).norm() < 8)
 			Sum++;
 	GTEST_ASSERT_GE(Sum, 2);
 }
 
 TEST(Color_Feature_BaseTest_3, Test_3)
 {
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+		return;
+	}
+	std::vector<Eigen::Vector3i> Data;
+	Eigen::Vector3i MainColor{ 255,3,3 };
+	Eigen::Vector3i OtherColor{ 3,3,255 };
+	Eigen::Vector3i AnotherColor{ 3,255,3 };
 	
+	generateRandomColorSet(Data, MainColor, 3, 50);
+	generateRandomColorSet(Data, OtherColor, 3, 50);
+	generateRandomColorSet(Data, AnotherColor, 3, 50);
+	generateNoiseColorSet(Data, 20);
+
+	std::vector<Eigen::Vector3i> MainColorSet;
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
+	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
+
+	int Sum = 0;
+	for (auto& Color : MainColorSet)
+		if ((Color - MainColor).norm() < 8 || (Color - OtherColor).norm() < 8 || (Color - AnotherColor).norm() < 8)
+			Sum++;
+	GTEST_ASSERT_GE(Sum, 3);
 }
 
 TEST(Color_Feature_BaseTest_4, Test_4)
 {
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+		return;
+	}
+	std::vector<Eigen::Vector3i> Data;
+	Eigen::Vector3i MainColor{ 255,3,3 };
+	Eigen::Vector3i OtherColor{ 3,3,255 };
+	Eigen::Vector3i AnotherColor{ 3,255,3 };
+	Eigen::Vector3i ForthColor{ 125,125,125 };
 
+	generateRandomColorSet(Data, MainColor, 3, 50);
+	generateRandomColorSet(Data, OtherColor, 3, 50);
+	generateRandomColorSet(Data, AnotherColor, 3, 50);
+	generateRandomColorSet(Data, ForthColor, 3, 50);
+	generateNoiseColorSet(Data, 30);
+
+	std::vector<Eigen::Vector3i> MainColorSet;
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
+	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
+
+	int Sum = 0;
+	for (auto& Color : MainColorSet)
+		if ((Color - MainColor).norm() < 8 || (Color - OtherColor).norm() < 8 || (Color - AnotherColor).norm() < 8 || (Color - ForthColor).norm() < 8)
+			Sum++;
+	GTEST_ASSERT_GE(Sum, 4);
 }
 
 TEST(Plane_Feature_BaseTest_1, Test_5)
