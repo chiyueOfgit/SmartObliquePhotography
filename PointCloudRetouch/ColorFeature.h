@@ -25,7 +25,6 @@ namespace hiveObliquePhotography
 			//std::vector<Eigen::Vector3i> kMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __kMeansCluster(vColorSet, vK); };
 #endif
 		private:
-			void __computeMainColors(const std::vector<pcl::index_t>& vPointIndices, std::vector<Eigen::Vector3i>& vMainColors, std::size_t vMaxK);
 			std::vector<Eigen::Vector3i> __adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const;
 
 			float __calcColorDifferences(const Eigen::Vector3i& vLColor, const Eigen::Vector3i& vRColor) const;
