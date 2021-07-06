@@ -70,10 +70,11 @@ void CColorFeature::__computeMainColors(const std::vector<pcl::index_t>& vPointI
 std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxK) const
 {
     _ASSERTE(!vColorSet.empty());
+    _ASSERTE(vMaxK != 0);
 
     std::vector<std::vector<Eigen::Vector3i>> ClusterResults;
 
-    for (int CurrentK = 0; CurrentK < vMaxK; CurrentK++)
+    for (int CurrentK = 1; CurrentK <= vMaxK; CurrentK++)
     {
         std::vector<std::pair<Eigen::Vector3i*, Eigen::Vector3i>> TagAndColorSet(vColorSet.size(), { nullptr, Eigen::Vector3i() });
         for (size_t i = 0; i < TagAndColorSet.size(); i++)
@@ -86,7 +87,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
         for (auto& Centroid : ClusterCentroids)
             Centroid = TagAndColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), TagAndColorSet.size() - 1)].second;
 
-        const int NumIteration = 5;
+        const int NumIteration = 30;
 
         for (std::size_t i = 0; i < NumIteration; i++)
         {

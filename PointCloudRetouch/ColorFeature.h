@@ -36,7 +36,7 @@ namespace hiveObliquePhotography
 			std::vector<Eigen::Vector3i> m_MainBaseColors;
 
 			float m_ColorThreshold = 30.0f;
-			std::size_t m_MaxNumMainColors = 3;
+			std::size_t m_MaxNumMainColors = 5;
 		};
 	}
 
