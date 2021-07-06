@@ -16,20 +16,22 @@ namespace hiveObliquePhotography
 
     namespace QTInterface
     {
-        class QTInterface : public QMainWindow
+        class CQTInterface : public QMainWindow
         {
             Q_OBJECT
 
         public:
-            QTInterface(QWidget* vParent = Q_NULLPTR);
-            ~QTInterface();
+            CQTInterface(QWidget* vParent = Q_NULLPTR);
+            ~CQTInterface();
+
+            void init();
             void closeEvent(QCloseEvent* vEvent) override;
 
         protected:
             virtual void keyPressEvent(QKeyEvent* vEvent);
 
         private:
-            Ui::QTInterfaceClass ui;
+            Ui::CQTInterfaceClass ui;
 
             QStandardItemModel* m_pResourceSpaceStandardItemModels = nullptr;
             QStandardItemModel* m_pWorkSpaceStandardItemModels = nullptr;

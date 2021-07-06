@@ -6,8 +6,9 @@
 int main(int argc, char *argv[])
 {
     vtkOutputWindow::SetGlobalWarningDisplay(0);
-    QApplication a(argc, argv);
-    hiveObliquePhotography::QTInterface::QTInterface w;
-    w.show();
-    return a.exec();
+    QApplication Application(argc, argv);
+    hiveObliquePhotography::QTInterface::CQTInterface Window;
+    Window.init();
+    Window.show();
+    return Application.exec();
 }

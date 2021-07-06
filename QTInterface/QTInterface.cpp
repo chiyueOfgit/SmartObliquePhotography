@@ -37,20 +37,21 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 
 using namespace hiveObliquePhotography::QTInterface;
 
-QTInterface::QTInterface(QWidget * vParent)
+CQTInterface::CQTInterface(QWidget * vParent)
     : QMainWindow(vParent)
+{
+    ui.setupUi(this);
+}
+
+CQTInterface::~CQTInterface()
+{
+}
+
+void CQTInterface::init()
 {
     {
         Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
     }
-
-    ui.setupUi(this);
-
-    QCursor* myCursor = new QCursor(QPixmap("Icon/pointPicking.png"), -1, -1);    //-1,-1表示热点位于图片中心
-    this->setCursor(*myCursor);
-    this->unsetCursor();
-
-    //this->grabKeyboard();
 
     __connectSignals();
     __initialResourceSpaceDockWidget();
@@ -59,11 +60,7 @@ QTInterface::QTInterface(QWidget * vParent)
     __parseConfigFile();
 }
 
-QTInterface::~QTInterface()
-{
-}
-
-void QTInterface::__connectSignals()
+void CQTInterface::__connectSignals()
 {
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
     QObject::connect(ui.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
@@ -76,7 +73,7 @@ void QTInterface::__connectSignals()
     QObject::connect(ui.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
 }
 
-void QTInterface::__initialVTKWidget()
+void CQTInterface::__initialVTKWidget()
 {
     auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
     ui.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
@@ -84,30 +81,30 @@ void QTInterface::__initialVTKWidget()
     ui.VTKWidget->update();
 }
 
-void QTInterface::__initialResourceSpaceDockWidget()
+void CQTInterface::__initialResourceSpaceDockWidget()
 {
     m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.resourceSpaceTreeView);
     ui.resourceSpaceTreeView->setModel(m_pResourceSpaceStandardItemModels);
     m_pResourceSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    QTInterface::__initialDockWidgetTitleBar(ui.resourceSpaceDockWidget, "Resource Space");
+    CQTInterface::__initialDockWidgetTitleBar(ui.resourceSpaceDockWidget, "Resource Space");
 }
 
-void QTInterface::__initialWorkSpaceDockWidget()
+void CQTInterface::__initialWorkSpaceDockWidget()
 {
     m_pWorkSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceTreeView);
     ui.workSpaceTreeView->setModel(m_pWorkSpaceStandardItemModels);
     m_pWorkSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    QTInterface::__initialDockWidgetTitleBar(ui.workSpaceDockWidget, "Work Space");
+    CQTInterface::__initialDockWidgetTitleBar(ui.workSpaceDockWidget, "Work Space");
 }
 
-void QTInterface::__initialMessageDockWidget()
+void CQTInterface::__initialMessageDockWidget()
 {
-    QTInterface::__initialDockWidgetTitleBar(ui.messageDockWidget, "Output Message");
+    CQTInterface::__initialDockWidgetTitleBar(ui.messageDockWidget, "Output Message");
 }
 
-void QTInterface::__initialDockWidgetTitleBar(QDockWidget* vParentWidget, const std::string& vTitleBarText)
+void CQTInterface::__initialDockWidgetTitleBar(QDockWidget* vParentWidget, const std::string& vTitleBarText)
 {
     auto BackgroundColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR");
     auto FontColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_FONTCOLOR");
@@ -119,10 +116,10 @@ void QTInterface::__initialDockWidgetTitleBar(QDockWidget* vParentWidget, const 
     vParentWidget->setTitleBarWidget(dockWidgetTitleBar);
 }
 
-void QTInterface::__initialSlider(const QStringList& vFilePathList)
+void CQTInterface::__initialSlider(const QStringList& vFilePathList)
 {
     const std::string& FirstCloudFilePath = vFilePathList[0].toStdString();
-    auto FileCloudFileName = QTInterface::__getFileName(FirstCloudFilePath);
+    auto FileCloudFileName = CQTInterface::__getFileName(FirstCloudFilePath);
 
     auto pSubWindow = new QMdiSubWindow(ui.VTKWidget);
 
@@ -154,7 +151,7 @@ void QTInterface::__initialSlider(const QStringList& vFilePathList)
     pSubWindow->show();
 }
 
-void QTInterface::__parseConfigFile()
+void CQTInterface::__parseConfigFile()
 {
     const std::string ConfigPath = "PointCloudRetouchConfig.xml";
     m_pPointCloudRetouchConfig = new hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchConfig;
@@ -165,9 +162,9 @@ void QTInterface::__parseConfigFile()
     }
 }
 
-bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
+bool CQTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
 {
-    const auto& FileName = QTInterface::__getFileName(vFilePath);
+    const auto& FileName = CQTInterface::__getFileName(vFilePath);
 
     QStandardItem* StandardItem = new QStandardItem(QString::fromStdString(FileName));
     StandardItem->setCheckable(true);
@@ -176,12 +173,12 @@ bool QTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
     m_pResourceSpaceStandardItemModels->appendRow(StandardItem);
 
     m_CurrentCloud = FileName;
-    QTInterface::__messageDockWidgetOutputText(QString::fromStdString(vFilePath + " is opened."));
+    CQTInterface::__messageDockWidgetOutputText(QString::fromStdString(vFilePath + " is opened."));
 
     return true;
 }
 
-bool QTInterface::__messageDockWidgetOutputText(QString vString)
+bool CQTInterface::__messageDockWidgetOutputText(QString vString)
 {
     QDateTime CurrentDateTime = QDateTime::currentDateTime();
     QString CurrentDateTimeString = CurrentDateTime.toString("[yyyy-MM-dd hh:mm:ss] ");
@@ -190,17 +187,17 @@ bool QTInterface::__messageDockWidgetOutputText(QString vString)
     return true;
 }
 
-std::string QTInterface::__getFileName(const std::string& vFilePath)
+std::string CQTInterface::__getFileName(const std::string& vFilePath)
 {
     return vFilePath.substr(vFilePath.find_last_of('/') + 1, vFilePath.find_last_of('.') - vFilePath.find_last_of('/') - 1);
 }
 
-std::string QTInterface::__getDirectory(const std::string& vFilePath)
+std::string CQTInterface::__getDirectory(const std::string& vFilePath)
 {
     return vFilePath.substr(0, vFilePath.find_last_of('/'));
 }
 
-void QTInterface::onActionPointPicking()
+void CQTInterface::onActionPointPicking()
 {
     if (m_pCloud)
     {
@@ -210,7 +207,7 @@ void QTInterface::onActionPointPicking()
             m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget, m_pVisualizationConfig);
             m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
             m_pPointPickingDockWidget->show();
-            QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to select mode."));
+            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to select mode."));
 
         }
         else
@@ -221,7 +218,7 @@ void QTInterface::onActionPointPicking()
             std::vector<std::size_t> PointLabel;
             PointCloudRetouch::hiveDumpPointLabel(PointLabel);
             Visualization::hiveRefreshVisualizer(PointLabel);
-            QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
+            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
         }
 
         if (m_pVisualizationConfig)
@@ -230,7 +227,7 @@ void QTInterface::onActionPointPicking()
 
 }
 
-void QTInterface::onActionOpen()
+void CQTInterface::onActionOpen()
 {
     QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_DirectoryOpenPath), tr("Open PointCloud files(*.pcd)"));
     std::vector<std::string> FilePathSet;
@@ -255,41 +252,41 @@ void QTInterface::onActionOpen()
 
     if (FileOpenSuccessFlag)
     {
-        m_DirectoryOpenPath = QTInterface::__getDirectory(FilePathSet.back());
+        m_DirectoryOpenPath = CQTInterface::__getDirectory(FilePathSet.back());
         PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_pCloud, true);
         //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
-        QTInterface::__initialVTKWidget();
+        CQTInterface::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel, true);
-        QTInterface::__initialSlider(FilePathList);
+        CQTInterface::__initialSlider(FilePathList);
         
         if (FilePathSet.size() == 1)
         {
-            QTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
+            CQTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
         }                                                                           
         else
         {
             m_SceneIndex++;
-            QTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
+            CQTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
         }
     }
 }
 
-void QTInterface::QTInterface::onActionSave()
+void CQTInterface::onActionSave()
 {
     const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
 
     PointCloud_t::Ptr pCloud(new PointCloud_t);
     PointCloudRetouch::hiveSave(pCloud);
     if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
-        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
+        CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
     else
-        QTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
+        CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
 }
 
-void QTInterface::QTInterface::onActionRubber()
+void CQTInterface::onActionRubber()
 {
     if (m_pVisualizationConfig)
     {
@@ -297,12 +294,12 @@ void QTInterface::QTInterface::onActionRubber()
     }
 }
 
-void QTInterface::QTInterface::onActionBrush()
+void CQTInterface::onActionBrush()
 {
     
 }
 
-void QTInterface::onActionDiscardAndRecover()
+void CQTInterface::onActionDiscardAndRecover()
 {
     static int i = 1;
     if (i++ % 2)
@@ -315,7 +312,7 @@ void QTInterface::onActionDiscardAndRecover()
     Visualization::hiveRefreshVisualizer(PointLabel);
 }
 
-void QTInterface::onActionDelete()
+void CQTInterface::onActionDelete()
 {
     PointCloudRetouch::hiveClearMarkerResult();
 
@@ -324,13 +321,13 @@ void QTInterface::onActionDelete()
     Visualization::hiveRefreshVisualizer(PointLabel);
 }
 
-void QTInterface::onActionInstructions()
+void CQTInterface::onActionInstructions()
 {
     m_pInstructionsDialog = new CInstructionsDialog(this);
     m_pInstructionsDialog->exec();
 }
 
-void QTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
+void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
 {
     Visualization::hiveResetVisualizer(m_pCloud, true);
     __initialVTKWidget();
@@ -340,7 +337,7 @@ void QTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
 
 }
 
-void QTInterface::keyPressEvent(QKeyEvent* vEvent)
+void CQTInterface::keyPressEvent(QKeyEvent* vEvent)
 {
     switch (vEvent->key())
     {
@@ -353,7 +350,7 @@ void QTInterface::keyPressEvent(QKeyEvent* vEvent)
     }
 }
 
-void QTInterface::closeEvent(QCloseEvent* vEvent)
+void CQTInterface::closeEvent(QCloseEvent* vEvent)
 {
     QDialog* ExitDialog = new QDialog(this);
     ExitDialog->setWindowFlag(Qt::FramelessWindowHint);
