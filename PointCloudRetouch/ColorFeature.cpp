@@ -146,6 +146,8 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
         float AverageDifference = SumDifference / vColorSet.size();
         if (AverageDifference < AverageDifferenceAndIndex.first && AverageDifference / AverageDifferenceAndIndex.first < m_MinReduceRatio)
             AverageDifferenceAndIndex = { AverageDifference, i };
+        else
+            break;
     }
 	
 	return ClusterResults[AverageDifferenceAndIndex.second];
