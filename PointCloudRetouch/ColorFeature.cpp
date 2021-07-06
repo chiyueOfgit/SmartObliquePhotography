@@ -113,7 +113,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
                 {
                     float ColorDifference = __calcColorDifferences(Color, Centroid);
 
-                    if (ColorDifference < m_ColorThreshold)
+                    if (ColorDifference < 0.5 * m_ColorThreshold)
                         MinPair = std::min(MinPair, std::make_pair(ColorDifference, &Centroid));
                 }
                 Tag = MinPair.second;
