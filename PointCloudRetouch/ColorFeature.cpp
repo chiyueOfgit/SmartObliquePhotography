@@ -35,20 +35,20 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 //FUNCTION: 
 double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-    float MaxColorDifference = -FLT_MAX;
+    float MinColorDifference = FLT_MAX;
     auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(vInputPoint);
     for (const auto& MainColor : m_MainBaseColors)
     {
         float TempColorDifference = __calcColorDifferences(Color, MainColor);
-        if (TempColorDifference > MaxColorDifference)
-            MaxColorDifference = TempColorDifference;
+        if (TempColorDifference < MinColorDifference)
+            MinColorDifference = TempColorDifference;
     }
 
-    if (MaxColorDifference < m_ColorThreshold)
-        return MaxColorDifference / m_ColorThreshold;
-    else if (MaxColorDifference < 2.0 * m_ColorThreshold)
+    if (MinColorDifference < m_ColorThreshold)
+        return 1 - MinColorDifference / m_ColorThreshold;
+    else if (MinColorDifference < 2.0 * m_ColorThreshold)
     {
-        return (2.0 * m_ColorThreshold - MaxColorDifference) / m_ColorThreshold;
+        return (2.0 * m_ColorThreshold - MinColorDifference) / m_ColorThreshold;
     }
     else
         return 0.0f;
@@ -69,6 +69,8 @@ void CColorFeature::__computeMainColors(const std::vector<pcl::index_t>& vPointI
 //FUNCTION: 
 std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxK) const
 {
+    _ASSERTE(!vColorSet.empty());
+
     std::vector<std::vector<Eigen::Vector3i>> ClusterResults;
 
     for (int CurrentK = 0; CurrentK < vMaxK; CurrentK++)
@@ -84,7 +86,9 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
         for (auto& Centroid : ClusterCentroids)
             Centroid = TagAndColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), TagAndColorSet.size() - 1)].second;
 
-        for (std::size_t i = 0; i < 30; i++)
+        const int NumIteration = 5;
+
+        for (std::size_t i = 0; i < NumIteration; i++)
         {
             for (auto& [Tag, Color] : TagAndColorSet)
             {
@@ -124,19 +128,32 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
         ClusterResults.push_back(ClusterCentroids);
     }
 
-    for (auto& ClusterCentroids : ClusterResults)
+    std::pair<float, std::size_t> AverageDifferenceAndIndex(FLT_MAX, -1);
+
+    for (int i = 0; i < ClusterResults.size(); i++)
     {
+        auto& ClusterCentroids = ClusterResults[i];
+        float SumDifference = 0.0f;
+
         for (auto& Color : vColorSet)
         {
             float MinDifference = -FLT_MAX;
             for (auto& Centroid : ClusterCentroids)
             {
-                __calcu
+                float TempDifference = __calcColorDifferences(Color, Centroid);
+                if (TempDifference < MinDifference)
+                    MinDifference = TempDifference;
             }
+            
+            SumDifference += MinDifference;
         }
+        
+        float AverageDifference = SumDifference / vColorSet.size();
+        if (AverageDifference < AverageDifferenceAndIndex.first)
+            AverageDifferenceAndIndex = { AverageDifference, i };
     }
 	
-	return ClusterCentroids;
+	return ClusterResults[AverageDifferenceAndIndex.second];
 }
 
 float CColorFeature::__calcColorDifferences(const Eigen::Vector3i& vLColor, const Eigen::Vector3i& vRColor) const
