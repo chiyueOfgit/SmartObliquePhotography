@@ -21,7 +21,11 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 	if (vDeterminantPointSet.empty() || vValidationSet.empty())
 		return 0.0;
 
-	__computeMainColors(vDeterminantPointSet, m_MainBaseColors, m_MaxNumMainColors);
+    std::vector<Eigen::Vector3i> PointCloudColors;
+    for (auto Index : vDeterminantPointSet)
+        PointCloudColors.push_back(CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index));
+
+    m_MainBaseColors = __adjustKMeansCluster(PointCloudColors, m_MaxNumMainColors);
 
 	double Score = 0.0;
 	for (auto ValidationIndex : vValidationSet)
@@ -52,17 +56,6 @@ double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
     }
     else
         return 0.0f;
-}
-
-//*****************************************************************
-//FUNCTION: 
-void CColorFeature::__computeMainColors(const std::vector<pcl::index_t>& vPointIndices, std::vector<Eigen::Vector3i>& vMainColors, std::size_t vMaxK)
-{
-	std::vector<Eigen::Vector3i> PointCloudColors;
-	for (auto Index : vPointIndices)
-		PointCloudColors.push_back(CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index));
-
-	vMainColors = __adjustKMeansCluster(PointCloudColors, vMaxK);
 }
 
 //*****************************************************************
@@ -159,6 +152,8 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
 	return ClusterResults[AverageDifferenceAndIndex.second];
 }
 
+//*****************************************************************
+//FUNCTION: 
 float CColorFeature::__calcColorDifferences(const Eigen::Vector3i& vLColor, const Eigen::Vector3i& vRColor) const
 {
     Eigen::Vector3f LRGBColor{ static_cast<float>(vLColor[0]),static_cast<float>(vLColor[1]),static_cast<float>(vLColor[2]) };
@@ -166,6 +161,8 @@ float CColorFeature::__calcColorDifferences(const Eigen::Vector3i& vLColor, cons
     return __calculateCIEDE2000(__RGB2LAB(LRGBColor), __RGB2LAB(RRGBColor));
 }
 
+//*****************************************************************
+//FUNCTION: 
 float CColorFeature::__calculateCIEDE2000(const LAB& lab1, const LAB& lab2) const
 {
     const float k_L = 1.0, k_C = 1.0, k_H = 1.0;
@@ -273,6 +270,8 @@ float CColorFeature::__calculateCIEDE2000(const LAB& lab1, const LAB& lab2) cons
     return (deltaE);
 }
 
+//*****************************************************************
+//FUNCTION: 
 LAB CColorFeature::__RGB2LAB(const Eigen::Vector3f& vRGBColor) const
 {
     float B = gamma(vRGBColor[2] / 255.0f);
