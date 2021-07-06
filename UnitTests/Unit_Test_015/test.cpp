@@ -37,7 +37,7 @@ PointCloud_t::PointType generateRandomPointByPlane(const Eigen::Vector4f& vPlane
 	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(-SPACE_SIZE, SPACE_SIZE, 3);
 	Eigen::Vector4f Point(RandomSet[0], RandomSet[1], RandomSet[2], 1.0f);
 
-	if (vOnThePlane)
+	if (!vOnThePlane)
 	{
 		float SignedDistance = Plane.dot(Point);
 		if (abs(vNoise) > EPSILON)
@@ -92,7 +92,7 @@ TEST(Color_Feature_BaseTest_1, Test_1)
 
 	std::vector<Eigen::Vector3i> MainColorSet;
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
-	MainColorSet = pTileLoader->kMeansCluster(Data, 3);
+	//MainColorSet = pTileLoader->kMeansCluster(Data, 3);
 	
 	Eigen::Vector3i StandardColor{ 255,3,3 };
 	int Sum = 0;
@@ -122,7 +122,7 @@ TEST(Color_Feature_BaseTest_2, Test_2)
 	
 	std::vector<Eigen::Vector3i> MainColorSet;
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
-	MainColorSet = pTileLoader->kMeansCluster(Data, 3);
+	//MainColorSet = pTileLoader->kMeansCluster(Data, 3);
 	
 	Eigen::Vector3i StandardColor{ 255,3,3 };
 	Eigen::Vector3i OtherStandardColor{ 3,255,3 };
@@ -187,7 +187,7 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 	for (size_t k = 0; k < 100; k++)
 		pCloud->push_back(generateRandomPointByPlane(Plane, true));
 
-	constexpr float OutlierFactor = 2.0f;
+	constexpr float OutlierFactor = 10.0f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
 		pCloud->push_back(generateRandomPointByPlane(Plane, false));
 
