@@ -22,10 +22,9 @@ namespace hiveObliquePhotography
 			virtual double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
 
 #ifdef _UNIT_TEST
-			std::vector<Eigen::Vector3i> kMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __kMeansCluster(vColorSet, vK); };
+			std::vector<Eigen::Vector3i> adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __adjustKMeansCluster(vColorSet, vK); };
 #endif
 		private:
-			void __computeMainColors(const std::vector<pcl::index_t>& vPointIndices, std::vector<Eigen::Vector3i>& vMainColors, std::size_t vMaxK);
 			std::vector<Eigen::Vector3i> __adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const;
 
 			float __calcColorDifferences(const Eigen::Vector3i& vLColor, const Eigen::Vector3i& vRColor) const;
@@ -35,8 +34,9 @@ namespace hiveObliquePhotography
 			PointCloud_t::Ptr m_pCloud = nullptr;
 			std::vector<Eigen::Vector3i> m_MainBaseColors;
 
-			float m_ColorThreshold = 30.0f;
-			std::size_t m_MaxNumMainColors = 3;
+			float m_ColorThreshold = 10.0f;
+			std::size_t m_MaxNumMainColors = 5;
+			float m_MinReduceRatio = 0.8f;
 		};
 	}
 
