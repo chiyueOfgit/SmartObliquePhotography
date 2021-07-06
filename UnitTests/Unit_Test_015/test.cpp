@@ -19,8 +19,8 @@ constexpr float SPACE_SIZE = 100.0f;
 //  * Color_Feature_SpecialTest_1: ；
 
 //PlaneFeatureBaseTest给定平面，随机生成带噪点的点云，要求以该点云拟合的平面与原平面差距在规定范围内；
-//  * Plane_Feature_BaseTest_1: 随机模拟平面50%干扰点，期望平面夹角小于10°；
-//  * Plane_Feature_BaseTest_2: 随机模拟平面100%干扰点，期望平面夹角小于30°；
+//  * Plane_Feature_BaseTest_1: 随机模拟平面20%干扰点，期望平面夹角小于10°；
+//  * Plane_Feature_BaseTest_2: 随机模拟平面50%干扰点，期望平面夹角小于30°；
 //PlaneFeatureSpecialTest特定情况下的特殊结果正确
 //  * Plane_Feature_SpecialTest_1: ；
 
@@ -49,6 +49,15 @@ PointCloud_t::PointType generateRandomPointByPlane(const Eigen::Vector4f& vPlane
 	PointCloud_t::PointType Output;
 	for (size_t i = 0; i < 3; i++)
 		Output.data[i] = Point[i];
+	return Output;
+}
+
+PointCloud_t::PointType generateNoisePoint()
+{
+	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(-SPACE_SIZE, SPACE_SIZE, 3);
+	PointCloud_t::PointType Output;
+	for (size_t i = 0; i < 3; i++)
+		Output.data[i] = RandomSet[i];
 	return Output;
 }
 
@@ -214,9 +223,10 @@ TEST(Plane_Feature_BaseTest_1, Test_5)
 	for (size_t k = 0; k < 100; k++)
 		pCloud->push_back(generateRandomPointByPlane(Plane, true));
 
-	constexpr float OutlierFactor = 0.2f;
+	constexpr float OutlierFactor = 0.01f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
-		pCloud->push_back(generateRandomPointByPlane(Plane, false));
+		//pCloud->push_back(generateRandomPointByPlane(Plane, false));
+		pCloud->push_back(generateNoisePoint());
 
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE, pConfig);
 	auto FittingPlane = pTileLoader->fitPlane(pCloud);
@@ -243,9 +253,10 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 	for (size_t k = 0; k < 100; k++)
 		pCloud->push_back(generateRandomPointByPlane(Plane, true));
 
-	constexpr float OutlierFactor = 10.0f;
+	constexpr float OutlierFactor = 40.0f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
-		pCloud->push_back(generateRandomPointByPlane(Plane, false));
+		//pCloud->push_back(generateRandomPointByPlane(Plane, false));
+		pCloud->push_back(generateNoisePoint());
 
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE, pConfig);
 	auto FittingPlane = pTileLoader->fitPlane(pCloud);
