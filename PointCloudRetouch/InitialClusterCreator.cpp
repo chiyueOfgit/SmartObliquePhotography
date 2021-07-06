@@ -47,14 +47,16 @@ void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::
 		{
 			voValidationSet.push_back(vUserMarkedRegion[i]);
 			std::string OutputOnePointMessage = "";
-			OutputOnePointMessage = "id: " + std::to_string(vUserMarkedRegion[i]) + "\t " + 
-			OutputValidationSet += std::to_string(vUserMarkedRegion[i]);
+			auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+			Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegion[i]);
+			OutputOnePointMessage = " id: " + std::to_string(vUserMarkedRegion[i]) + "\t\t(" + std::to_string(Position[0]) + ", " + std::to_string(Position[1]) + ", " + std::to_string(Position[2]) + ")\n ";
+			OutputValidationSet += OutputOnePointMessage;
 		}
 		else if(vPointHardnessSet[i] > vDivideThreshold)
 			voFeatureGenerationSet.push_back(vUserMarkedRegion[i]);
 	}
 
-	hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Remain [%1%] points after rasterization.", voValidationSet.size()));
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Remain [%1%] points after rasterization.\n %2%", voValidationSet.size(), OutputValidationSet));
 }
 
 //*****************************************************************
