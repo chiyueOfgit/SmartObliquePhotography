@@ -131,6 +131,8 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
 
     std::pair<float, std::size_t> AverageDifferenceAndIndex(FLT_MAX, -1);
 
+    const float MinReduceRatio = 0.8f;
+
     for (int i = 0; i < ClusterResults.size(); i++)
     {
         auto& ClusterCentroids = ClusterResults[i];
@@ -150,7 +152,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
         }
         
         float AverageDifference = SumDifference / vColorSet.size();
-        if (AverageDifference < AverageDifferenceAndIndex.first)
+        if (AverageDifference < AverageDifferenceAndIndex.first && AverageDifference / AverageDifferenceAndIndex.first < MinReduceRatio)
             AverageDifferenceAndIndex = { AverageDifference, i };
     }
 	
