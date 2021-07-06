@@ -35,28 +35,38 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 	return pInitialCluster;
 }
 
+void OutputMessage(pcl::index_t vUserMarkedRegionPoint, std::string& vioOutputString)
+{
+	std::string OutputOnePointMessage = "";
+	auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegionPoint);
+	OutputOnePointMessage = " id: " + std::to_string(vUserMarkedRegionPoint) + "\t\t(" + std::to_string(Position[0]) + ", " + std::to_string(Position[1]) + ", " + std::to_string(Position[2]) + ")\n ";
+	vioOutputString += OutputOnePointMessage;
+}
+
 //*****************************************************************
 //FUNCTION: 
 void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float> vPointHardnessSet, float vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet)
 {
 	std::string OutputValidationSet = "";
+	std::string OutputFeatureGenerationSet = "";
 
 	for(size_t i = 0;i <vUserMarkedRegion.size();i++)
 	{
 		if (vPointHardnessSet[i] < vDivideThreshold && vPointHardnessSet[i] != 0.0)
 		{
 			voValidationSet.push_back(vUserMarkedRegion[i]);
-			std::string OutputOnePointMessage = "";
-			auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-			Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegion[i]);
-			OutputOnePointMessage = " id: " + std::to_string(vUserMarkedRegion[i]) + "\t\t(" + std::to_string(Position[0]) + ", " + std::to_string(Position[1]) + ", " + std::to_string(Position[2]) + ")\n ";
-			OutputValidationSet += OutputOnePointMessage;
+			OutputMessage(vUserMarkedRegion[i], OutputValidationSet);
 		}
-		else if(vPointHardnessSet[i] > vDivideThreshold)
+		else if (vPointHardnessSet[i] > vDivideThreshold)
+		{
 			voFeatureGenerationSet.push_back(vUserMarkedRegion[i]);
+			OutputMessage(vUserMarkedRegion[i], OutputFeatureGenerationSet);
+		}
 	}
 
-	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Remain [%1%] points after rasterization.\n %2%", voValidationSet.size(), OutputValidationSet));
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Remain [%1%] Validation points.\n %2%", voValidationSet.size(), OutputValidationSet));
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Remain [%1%] FeatureGeneration points.\n %2%", voFeatureGenerationSet.size(), OutputFeatureGenerationSet));
 }
 
 //*****************************************************************

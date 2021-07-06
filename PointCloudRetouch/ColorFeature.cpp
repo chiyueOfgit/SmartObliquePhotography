@@ -28,11 +28,19 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 
     m_MainBaseColors = __adjustKMeansCluster(PointCloudColors, m_MaxNumMainColors);
 
+    std::string OutputMainBaseColors = "";
+    for (auto MainBaseColor : m_MainBaseColors)
+    {
+        OutputMainBaseColors += " (" + std::to_string(MainBaseColor[0]) + ", " + std::to_string(MainBaseColor[1]) + ", " + std::to_string(MainBaseColor[2]) + ")\n ";
+    }
+
+    hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("MainBaseColors: \n %1%", OutputMainBaseColors));
+
 	double Score = 0.0;
 	for (auto ValidationIndex : vValidationSet)
 	{
 		Score += evaluateFeatureMatchFactorV(ValidationIndex);
-	}	
+	}
 	return Score / vValidationSet.size();
 }
 
