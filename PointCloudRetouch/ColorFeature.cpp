@@ -67,6 +67,8 @@ std::string CColorFeature::outputDebugInfosV(pcl::index_t vIndex) const
     Infos += _FORMAT_STR1("Color Feature:\nNum Main Colors are %1%, They are\n", m_MainBaseColors.size());
     for (auto& Color : m_MainBaseColors)
         Infos += _FORMAT_STR3("%1%, %2%, %3%\n", Color.x(), Color.y(), Color.z());
+    auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(vIndex);
+    Infos += _FORMAT_STR3("Point's Color is: %1%, %2%, %3%\n", Color.x(), Color.y(), Color.z());
     Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CColorFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
 
     return Infos;
