@@ -20,6 +20,7 @@ namespace hiveObliquePhotography
 
 			virtual double generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter) override;
 			virtual double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
+			virtual std::string outputDebugInfosV(pcl::index_t vIndex) const override;
 
 #ifdef _UNIT_TEST
 			std::vector<Eigen::Vector3i> adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __adjustKMeansCluster(vColorSet, vK); };

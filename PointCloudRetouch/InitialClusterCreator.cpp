@@ -39,13 +39,24 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 //FUNCTION: 
 void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float> vPointHardnessSet, float vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet)
 {
+	std::string OutputValidationSet = "";
+
 	for(size_t i = 0;i <vUserMarkedRegion.size();i++)
 	{
 		if (vPointHardnessSet[i] < vDivideThreshold && vPointHardnessSet[i] != 0.0)
+		{
 			voValidationSet.push_back(vUserMarkedRegion[i]);
+			std::string OutputOnePointMessage = "";
+			auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+			Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegion[i]);
+			OutputOnePointMessage = " id: " + std::to_string(vUserMarkedRegion[i]) + "\t\t(" + std::to_string(Position[0]) + ", " + std::to_string(Position[1]) + ", " + std::to_string(Position[2]) + ")\n ";
+			OutputValidationSet += OutputOnePointMessage;
+		}
 		else if(vPointHardnessSet[i] > vDivideThreshold)
 			voFeatureGenerationSet.push_back(vUserMarkedRegion[i]);
 	}
+
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Remain [%1%] points after rasterization.\n %2%", voValidationSet.size(), OutputValidationSet));
 }
 
 //*****************************************************************

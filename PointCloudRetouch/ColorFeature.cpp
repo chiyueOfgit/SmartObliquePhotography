@@ -50,13 +50,26 @@ double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
     }
 
     if (MinColorDifference < m_ColorThreshold)
-        return 1 - MinColorDifference / m_ColorThreshold;
+        return 1.0;
     else if (MinColorDifference < 2.0 * m_ColorThreshold)
     {
         return (2.0 * m_ColorThreshold - MinColorDifference) / m_ColorThreshold;
     }
     else
         return 0.0f;
+}
+
+//*****************************************************************
+//FUNCTION: 
+std::string CColorFeature::outputDebugInfosV(pcl::index_t vIndex) const
+{
+    std::string Infos;
+    Infos += _FORMAT_STR1("Color Feature:\nNum Main Colors are %1%, They are\n", m_MainBaseColors.size());
+    for (auto& Color : m_MainBaseColors)
+        Infos += _FORMAT_STR3("%1%, %2%, %3%\n", Color.x(), Color.y(), Color.z());
+    Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CColorFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
+
+    return Infos;
 }
 
 //*****************************************************************
@@ -77,9 +90,30 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
             Color = vColorSet[i];
         }
 
-        std::vector<Eigen::Vector3i> ClusterCentroids(CurrentK, Eigen::Vector3i());
-        for (auto& Centroid : ClusterCentroids)
-            Centroid = TagAndColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), TagAndColorSet.size() - 1)].second;
+        std::vector<Eigen::Vector3i> ClusterCentroids;
+        for (int i = 0; i < CurrentK; i++)
+        {
+            Eigen::Vector3i SeedColor;
+            int Num = 0;
+            float MinColorDifference = FLT_MAX;
+            const int MaxAttemptNum = 30;
+
+            do
+            {
+                MinColorDifference = FLT_MAX;
+                SeedColor = TagAndColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), TagAndColorSet.size() - 1)].second;
+                for (int k = 0; k < i; k++)
+                {
+                    float TempDifference = __calcColorDifferences(SeedColor, ClusterCentroids[k]);
+                    if (TempDifference < MinColorDifference)
+                        MinColorDifference = TempDifference;
+                }
+                Num++;
+
+            } while (MinColorDifference < 2 * m_ColorThreshold && Num < MaxAttemptNum);
+            
+            ClusterCentroids.push_back(SeedColor);
+        }
 
         const int NumIteration = 30;
 

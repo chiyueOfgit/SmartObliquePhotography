@@ -103,6 +103,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
 		}
+
+		if (KeyString == "t")
+		{
+			m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera");
+		}
 	}
 }
 
@@ -112,11 +117,18 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 {
 	auto Button = vEvent.getButton();
 	bool PressStatus = (vEvent.getType() == pcl::visualization::MouseEvent::MouseButtonPress) ? true : false;
+	bool OnceMousePressStatus[2] = { false };
 
 	if (Button == pcl::visualization::MouseEvent::LeftButton)
+	{
 		m_MousePressStatus[0] = PressStatus;
+		OnceMousePressStatus[0] = PressStatus;
+	}
 	else if (Button == pcl::visualization::MouseEvent::RightButton)
+	{
 		m_MousePressStatus[1] = PressStatus;
+		OnceMousePressStatus[1] = PressStatus;
+	}
 
 	static int DeltaX, PosX, DeltaY, PosY;
 	DeltaX = vEvent.getX() - PosX;
@@ -158,7 +170,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		}
 	}
 
-	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value() && m_MousePressStatus[1])
+	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value() && m_MousePressStatus[1] && OnceMousePressStatus[1])
 	{
 		{
 			std::vector<std::size_t> PointLabel;
@@ -181,6 +193,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
+		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
 
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
@@ -189,7 +202,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Camera.computeProjectionMatrix(Proj);
 		Camera.computeViewMatrix(View);
 
-		if (m_UnwantedMode)
+		if (m_UnwantedMode)                                                                                   
 			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 		else
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });

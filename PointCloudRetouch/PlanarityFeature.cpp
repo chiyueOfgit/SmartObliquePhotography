@@ -60,6 +60,19 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 
 //*****************************************************************
 //FUNCTION: 
+std::string CPlanarityFeature::outputDebugInfosV(pcl::index_t vIndex) const
+{
+	std::string Infos;
+	Infos += "Planarity Feature:\n";
+	Infos += _FORMAT_STR3("Plane's Normal is: %1%, %2%, %3%\n", m_Plane.x(), m_Plane.y(), m_Plane.z());
+	Infos += _FORMAT_STR2("Plane's Pick is: %1%, %2%\n", m_Peak.first, m_Peak.second);
+	Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CPlanarityFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
+
+	return Infos;
+}
+
+//*****************************************************************
+//FUNCTION: 
 PointCloud_t::Ptr CPlanarityFeature::__createPositionCloud(const std::vector<pcl::index_t>& vIndexSet)
 {
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
