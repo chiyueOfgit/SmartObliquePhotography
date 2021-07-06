@@ -22,7 +22,7 @@ namespace hiveObliquePhotography
 			virtual double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
 
 #ifdef _UNIT_TEST
-			//std::vector<Eigen::Vector3i> kMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __kMeansCluster(vColorSet, vK); };
+			std::vector<Eigen::Vector3i> adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __adjustKMeansCluster(vColorSet, vK); };
 #endif
 		private:
 			std::vector<Eigen::Vector3i> __adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const;

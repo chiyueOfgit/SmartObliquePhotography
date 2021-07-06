@@ -61,18 +61,29 @@ Eigen::Vector4f generateRandomPlane()
 
 
 
-void generateRandomColorSet(std::vector<Eigen::Vector3i>& vioColorCluster, Eigen::Vector3i& vMainColor, int vRange, int vNum)
+void generateRandomColorSet(std::vector<Eigen::Vector3i>& vioColorCluster, const Eigen::Vector3i& vMainColor, int vRange, int vNum)
 {
 	while (vNum--)
 	{
+		auto TempColor = vMainColor;
 		auto RandomSet = hiveMath::hiveGenerateRandomRealSet(0.0f, SPACE_SIZE, 1);
 		int Offset = static_cast<int>(RandomSet[0]) % vRange;
 		int Value = static_cast<int>(RandomSet[0]) % vRange;
-		vMainColor[Offset] -= Value;
-		vioColorCluster.push_back(vMainColor);
+		TempColor[Offset] -= Value;
+
+		vioColorCluster.push_back(TempColor);
 	}
 }
 
+void generateNoiseColorSet(std::vector<Eigen::Vector3i>& vioColorCluster, int vNum)
+{
+	while (vNum--)
+	{
+		auto RandomSet = hiveMath::hiveGenerateRandomRealSet(0.0f, 255.0f, 3);
+		Eigen::Vector3i TempColor{ static_cast<int>(RandomSet[0]),static_cast<int>(RandomSet[1]),static_cast<int>(RandomSet[2]) };
+		vioColorCluster.push_back(TempColor);
+	}
+}
 
 
 TEST(Color_Feature_BaseTest_1, Test_1)
@@ -85,19 +96,18 @@ TEST(Color_Feature_BaseTest_1, Test_1)
 	}
 	std::vector<Eigen::Vector3i> Data;
 	Eigen::Vector3i MainColor{ 255,3,3 };
-	Eigen::Vector3i NoiseColor{ 100,100,100 };
 
 	generateRandomColorSet(Data, MainColor, 3, 50);
-	generateRandomColorSet(Data, NoiseColor, 30, 5);
+	generateNoiseColorSet(Data, 5);
 
 	std::vector<Eigen::Vector3i> MainColorSet;
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
-	//MainColorSet = pTileLoader->kMeansCluster(Data, 3);
+	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
 	
 	Eigen::Vector3i StandardColor{ 255,3,3 };
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
-		if ((Color - StandardColor).norm() > 5)
+		if ((Color - StandardColor).norm() > 8)
 			Sum++;
 	GTEST_ASSERT_EQ(Sum, 0);
 }
@@ -114,21 +124,20 @@ TEST(Color_Feature_BaseTest_2, Test_2)
 	std::vector<Eigen::Vector3i> Data;
 	Eigen::Vector3i MainColor{ 255,3,3 };
 	Eigen::Vector3i OtherColor{ 3,3,255 };
-	Eigen::Vector3i NoiseColor{ 100,100,100 };
 	
 	generateRandomColorSet(Data, MainColor, 3, 50);
 	generateRandomColorSet(Data, OtherColor, 3, 50);
-	generateRandomColorSet(Data, NoiseColor, 30, 8);
+	generateNoiseColorSet(Data, 8);
 	
 	std::vector<Eigen::Vector3i> MainColorSet;
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
-	//MainColorSet = pTileLoader->kMeansCluster(Data, 3);
+	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
 	
 	Eigen::Vector3i StandardColor{ 255,3,3 };
-	Eigen::Vector3i OtherStandardColor{ 3,255,3 };
+	Eigen::Vector3i OtherStandardColor{ 3,3,255 };
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
-		if ((Color - StandardColor).norm() < 3 || (Color - OtherStandardColor).norm() < 3)
+		if ((Color - StandardColor).norm() < 8 || (Color - OtherStandardColor).norm() < 8)
 			Sum++;
 	GTEST_ASSERT_GE(Sum, 2);
 }
