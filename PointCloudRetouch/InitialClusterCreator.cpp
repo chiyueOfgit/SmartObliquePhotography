@@ -39,13 +39,22 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 //FUNCTION: 
 void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float> vPointHardnessSet, float vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet)
 {
+	std::string OutputValidationSet = "";
+
 	for(size_t i = 0;i <vUserMarkedRegion.size();i++)
 	{
 		if (vPointHardnessSet[i] < vDivideThreshold && vPointHardnessSet[i] != 0.0)
+		{
 			voValidationSet.push_back(vUserMarkedRegion[i]);
+			std::string OutputOnePointMessage = "";
+			OutputOnePointMessage = "id: " + std::to_string(vUserMarkedRegion[i]) + "\t " + 
+			OutputValidationSet += std::to_string(vUserMarkedRegion[i]);
+		}
 		else if(vPointHardnessSet[i] > vDivideThreshold)
 			voFeatureGenerationSet.push_back(vUserMarkedRegion[i]);
 	}
+
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Remain [%1%] points after rasterization.", voValidationSet.size()));
 }
 
 //*****************************************************************
