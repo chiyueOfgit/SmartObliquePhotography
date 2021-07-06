@@ -77,17 +77,17 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
             Color = vColorSet[i];
         }
 
-        std::vector<Eigen::Vector3i> ClusterCentroids(CurrentK);
-        for (int i = 0; i < ClusterCentroids.size(); i++)
+        std::vector<Eigen::Vector3i> ClusterCentroids;
+        for (int i = 0; i < CurrentK; i++)
         {
-            float MinColorDifference = FLT_MAX;
             Eigen::Vector3i SeedColor;
             int Num = 0;
-
-            const int MaxAttemptNum = 10;
+            float MinColorDifference = FLT_MAX;
+            const int MaxAttemptNum = 30;
 
             do
             {
+                MinColorDifference = FLT_MAX;
                 SeedColor = TagAndColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), TagAndColorSet.size() - 1)].second;
                 for (int k = 0; k < i; k++)
                 {
