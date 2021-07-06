@@ -138,7 +138,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
 
         for (auto& Color : vColorSet)
         {
-            float MinDifference = -FLT_MAX;
+            float MinDifference = FLT_MAX;
             for (auto& Centroid : ClusterCentroids)
             {
                 float TempDifference = __calcColorDifferences(Color, Centroid);
