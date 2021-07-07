@@ -33,14 +33,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>msvc2017_64</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
-    <QtBuildConfig>debug</QtBuildConfig>
     <QtHeaderSearchPath>$(QtHeaderSearchPath)</QtHeaderSearchPath>
     <QtLibrarySearchPath>$(QtLibrarySearchPath)</QtLibrarySearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>msvc2017_64</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
-    <QtBuildConfig>release</QtBuildConfig>
     <QtHeaderSearchPath>$(QtHeaderSearchPath)</QtHeaderSearchPath>
     <QtLibrarySearchPath>$(QtLibrarySearchPath)</QtLibrarySearchPath>
   </PropertyGroup>
