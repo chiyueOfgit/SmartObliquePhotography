@@ -110,8 +110,11 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			{
 				for (auto Index : Record.PointSet)
 				{
-					unsigned char UserColor[4] = { Record.Color.z(), Record.Color.y(), Record.Color.x(), 255 };
-					std::memcpy(&pCloud2Show->points[Index].rgba, UserColor, sizeof(UserColor));
+					if (Index < m_pSceneCloud->size())
+					{
+						unsigned char UserColor[4] = { Record.Color.z(), Record.Color.y(), Record.Color.x(), 255 };
+						std::memcpy(&pCloud2Show->points[Index].rgba, UserColor, sizeof(UserColor));
+					}
 				}
 			}
 		}

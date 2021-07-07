@@ -50,3 +50,7 @@ bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster)
 
 	return m_pPointClusterExpander->execute<CPointClusterExpander>(vUserSpecifiedCluster);
 }
+
+void CRetouchTask::dumpTaskMarkedPoints(std::vector<pcl::index_t>& voMarkedPoints)
+{
+}

@@ -16,6 +16,8 @@ namespace hiveObliquePhotography
 			bool init(const hiveConfig::CHiveConfig* vConfig);
 			bool execute(const CPointCluster *vUserSpecifiedCluster);
 
+			void dumpTaskMarkedPoints(std::vector<pcl::index_t>& voMarkedPoints);
+
 			const hiveConfig::CHiveConfig* getClusterConfig() const { _ASSERTE(m_pClusterConfig); return m_pClusterConfig; }
 
 #ifdef _UNIT_TEST
