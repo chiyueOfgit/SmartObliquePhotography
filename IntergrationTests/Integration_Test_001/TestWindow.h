@@ -32,7 +32,6 @@ private:
     void __parseConfigFile();
 
     std::vector<int> __loadIndices(const std::string& vPath);
-
     std::string __getFileName(const std::string& vFilePath);
     std::string __getDirectory(const std::string& vFilePath);
 

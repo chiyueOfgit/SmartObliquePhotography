@@ -94,17 +94,6 @@ void CTestWindow::__parseConfigFile()
     }
 }
 
-std::vector<int> CTestWindow::__loadIndices(const std::string& vPath)
-{
-    std::vector<int> Indices;
-    const std::string Path{ vPath };
-    std::ifstream File(Path);
-    boost::archive::text_iarchive ia(File);
-    ia >> BOOST_SERIALIZATION_NVP(Indices);
-    File.close();
-    return Indices;
-}
-
 std::string CTestWindow::__getFileName(const std::string& vFilePath)
 {
     return vFilePath.substr(vFilePath.find_last_of('/') + 1, vFilePath.find_last_of('.') - vFilePath.find_last_of('/') - 1);
@@ -185,4 +174,15 @@ void CTestWindow::__loadCloud(const std::vector<std::string>& vFilePathSet)
         Visualization::hiveRefreshVisualizer(PointLabel, true);
         CTestWindow::__initialSlider();
     }
+}
+
+std::vector<int> CTestWindow::__loadIndices(const std::string& vPath)
+{
+    std::vector<int> Indices;
+    const std::string Path{ vPath };
+    std::ifstream File(Path);
+    boost::archive::text_iarchive ia(File);
+    ia >> BOOST_SERIALIZATION_NVP(Indices);
+    File.close();
+    return Indices;
 }
