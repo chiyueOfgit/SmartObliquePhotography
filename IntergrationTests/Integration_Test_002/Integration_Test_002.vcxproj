@@ -11,16 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{95ABEF10-4741-4162-93CC-6B3D1FAB252A}</ProjectGuid>
+    <ProjectGuid>{732A8EE3-B788-471E-B4CF-801F7C705AC8}</ProjectGuid>
     <Keyword>QtVS_v304</Keyword>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0.19041.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.19041.0</WindowsTargetPlatformVersion>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
-    <ProjectName>Integration_Test_001(highlight_point_set)</ProjectName>
+    <ProjectName>Integration_Test_002(single_step_expand)</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
@@ -33,7 +33,8 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>msvc2017_64</QtInstall>
-    <QtModules>core;xml;gui;widgets;designer</QtModules>
+    <QtModules>
+    </QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
@@ -61,9 +62,10 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>..\..\visualization\include;..\..\Visualizer;..\..\ObliquePhotographyData;..\..\PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>..\..\PointCloudRetouch;..\..\visualization\include;..\..\Visualizer;..\..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;_UNIT_TEST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -74,7 +76,6 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PreprocessorDefinitions>QT_PLUGIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -88,7 +89,6 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PreprocessorDefinitions>NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,21 +96,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ClCompile Include="SingleStepWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="IndicesTestWindow.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtMoc Include="IndicesTestWindow.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtUic Include="IndicesTestWindow.ui" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <QtMoc Include="SingleStepWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ObliquePhotographyData\ObliquePhotographyData.vcxproj">
@@ -125,6 +122,9 @@
     <ProjectReference Include="..\..\Visualizer\Visualization.vcxproj">
       <Project>{6673a1f9-724d-47a0-8159-6ca26b818506}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="SingleStepWindow.ui" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
@@ -147,11 +147,6 @@
     <Import Project="..\..\..\..\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets" Condition="Exists('..\..\..\..\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" />
     <Import Project="..\..\..\..\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets" Condition="Exists('..\..\..\..\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" />
   </ImportGroup>
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties IsDesignerPlugin="True" />
-    </VisualStudio>
-  </ProjectExtensions>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>

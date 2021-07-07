@@ -207,6 +207,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		else
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 
+		if (m_IsRefreshImmediately)
 		{
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);

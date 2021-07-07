@@ -61,6 +61,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration Tests", "Integr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_001", "IntergrationTests\Integration_Test_001\Integration_Test_001.vcxproj", "{95ABEF10-4741-4162-93CC-6B3D1FAB252A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_002", "IntergrationTests\Integration_Test_002\Integration_Test_002.vcxproj", "{732A8EE3-B788-471E-B4CF-801F7C705AC8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -271,6 +273,12 @@ Global
 		{95ABEF10-4741-4162-93CC-6B3D1FAB252A}.Release|x64.ActiveCfg = Release|x64
 		{95ABEF10-4741-4162-93CC-6B3D1FAB252A}.Release|x64.Build.0 = Release|x64
 		{95ABEF10-4741-4162-93CC-6B3D1FAB252A}.Release|x86.ActiveCfg = Release|x64
+		{732A8EE3-B788-471E-B4CF-801F7C705AC8}.Debug|x64.ActiveCfg = Debug|x64
+		{732A8EE3-B788-471E-B4CF-801F7C705AC8}.Debug|x64.Build.0 = Debug|x64
+		{732A8EE3-B788-471E-B4CF-801F7C705AC8}.Debug|x86.ActiveCfg = Debug|x64
+		{732A8EE3-B788-471E-B4CF-801F7C705AC8}.Release|x64.ActiveCfg = Release|x64
+		{732A8EE3-B788-471E-B4CF-801F7C705AC8}.Release|x64.Build.0 = Release|x64
+		{732A8EE3-B788-471E-B4CF-801F7C705AC8}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -295,6 +303,7 @@ Global
 		{01B846B9-E100-46F2-A764-4A8D63E11375} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{33E77495-AC7A-4C69-B498-DCE74A48397C} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{95ABEF10-4741-4162-93CC-6B3D1FAB252A} = {0ED66540-E913-4B7E-B88E-3A84508CCE63}
+		{732A8EE3-B788-471E-B4CF-801F7C705AC8} = {0ED66540-E913-4B7E-B88E-3A84508CCE63}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39CBE48C-AE02-4207-8AE0-74B21A939B18}

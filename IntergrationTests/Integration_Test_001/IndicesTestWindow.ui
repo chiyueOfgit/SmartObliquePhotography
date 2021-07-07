@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>QTInterfaceClass</class>
- <widget class="QMainWindow" name="QTInterfaceClass">
+ <class>CIndicesTestWindow</class>
+ <widget class="QMainWindow" name="CIndicesTestWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -212,7 +212,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="TestWindow.qrc"/>
+  <include location="IndicesTestWindow.qrc"/>
  </resources>
  <connections/>
 </ui>

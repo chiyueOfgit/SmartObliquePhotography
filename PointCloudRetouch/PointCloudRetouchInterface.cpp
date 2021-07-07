@@ -60,6 +60,11 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointLabel(std::vector<s
 	return CPointCloudRetouchManager::getInstance()->dumpPointLabel(voPointLabel);
 }
 
+void hiveObliquePhotography::PointCloudRetouch::hiveDumpExpandResult(std::vector<pcl::index_t>& voExpandPoints)
+{
+	CPointCloudRetouchManager::getInstance()->dumpExpandPoints(voExpandPoints);
+}
+
 void hiveObliquePhotography::PointCloudRetouch::hiveDiscardUnwantedPoints()
 {
 	CPointCloudRetouchManager::getInstance()->switchLabel(EPointLabel::DISCARDED, EPointLabel::UNWANTED);

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "TestWindow.h"
+#include "IndicesTestWindow.h"
 #include <QtWidgets/qmdisubwindow.h>
 #include <QSlider>
 #include <QtWidgets/QFileDialog>
@@ -21,39 +21,39 @@ VTK_MODULE_INIT(vtkInteractionStyle);
 
 using namespace hiveObliquePhotography;
 
-CTestWindow::CTestWindow(QWidget * vParent)
+CSingleStepWindow::CSingleStepWindow(QWidget * vParent)
     : QMainWindow(vParent)
 {
     Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
 
-    ui.setupUi(this);
+    m_WindowUI.setupUi(this);
 
     __connectSignals();
     __parseConfigFile();
 }
 
-CTestWindow::~CTestWindow()
+CSingleStepWindow::~CSingleStepWindow()
 {
 }
 
-void CTestWindow::__connectSignals()
+void CSingleStepWindow::__connectSignals()
 {
-    QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(__onActionOpen()));
-    QObject::connect(ui.actionLoad, SIGNAL(triggered()), this, SLOT(__onActionLoad()));
-    QObject::connect(ui.actionClear, SIGNAL(triggered()), this, SLOT(__onActionClear()));
+    QObject::connect(m_WindowUI.actionOpen, SIGNAL(triggered()), this, SLOT(__onActionOpen()));
+    QObject::connect(m_WindowUI.actionLoad, SIGNAL(triggered()), this, SLOT(__onActionLoad()));
+    QObject::connect(m_WindowUI.actionClear, SIGNAL(triggered()), this, SLOT(__onActionClear()));
 }
 
-void CTestWindow::__initialVTKWidget()
+void CSingleStepWindow::__initialVTKWidget()
 {
     auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
-    ui.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
-    pViewer->setupInteractor(ui.VTKWidget->GetInteractor(), ui.VTKWidget->GetRenderWindow());
-    ui.VTKWidget->update();
+    m_WindowUI.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
+    pViewer->setupInteractor(m_WindowUI.VTKWidget->GetInteractor(), m_WindowUI.VTKWidget->GetRenderWindow());
+    m_WindowUI.VTKWidget->update();
 }
 
-void CTestWindow::__initialSlider()
+void CSingleStepWindow::__initialSlider()
 {
-    auto pSubWindow = new QMdiSubWindow(ui.VTKWidget);
+    auto pSubWindow = new QMdiSubWindow(m_WindowUI.VTKWidget);
 
     m_pPointSizeSlider = new QSlider(Qt::Horizontal);
     m_pPointSizeSlider->setMinimum(1);
@@ -83,7 +83,7 @@ void CTestWindow::__initialSlider()
     pSubWindow->show();
 }
 
-void CTestWindow::__parseConfigFile()
+void CSingleStepWindow::__parseConfigFile()
 {
     const std::string ConfigPath = "PointCloudRetouchConfig.xml";
     m_pPointCloudRetouchConfig = new hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchConfig;
@@ -94,17 +94,17 @@ void CTestWindow::__parseConfigFile()
     }
 }
 
-std::string CTestWindow::__getFileName(const std::string& vFilePath)
+std::string CSingleStepWindow::__getFileName(const std::string& vFilePath)
 {
     return vFilePath.substr(vFilePath.find_last_of('/') + 1, vFilePath.find_last_of('.') - vFilePath.find_last_of('/') - 1);
 }
 
-std::string CTestWindow::__getDirectory(const std::string& vFilePath)
+std::string CSingleStepWindow::__getDirectory(const std::string& vFilePath)
 {
     return vFilePath.substr(0, vFilePath.find_last_of('/'));
 }
 
-void CTestWindow::__onActionOpen()
+void CSingleStepWindow::__onActionOpen()
 {
     QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_CloudPath), tr("Open PointCloud files(*.pcd)"));
     std::vector<std::string> FilePathSet;
@@ -124,7 +124,7 @@ void CTestWindow::__onActionOpen()
     __loadCloud(FilePathSet);
 }
 
-void CTestWindow::__onActionLoad()
+void CSingleStepWindow::__onActionLoad()
 {
     QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open Indices"), QString::fromStdString(m_IndicesPath), tr("Open PointCloud Indices(*.txt)"));
     std::vector<std::string> IndicesPathSet;
@@ -152,7 +152,7 @@ void CTestWindow::__onActionLoad()
     Visualization::hiveRefreshVisualizer(PointLabel);
 }
 
-void CTestWindow::__onActionClear()
+void CSingleStepWindow::__onActionClear()
 {
     Visualization::hiveClearPointsColor();
     std::vector<std::size_t> PointLabel;
@@ -160,23 +160,23 @@ void CTestWindow::__onActionClear()
     Visualization::hiveRefreshVisualizer(PointLabel);
 }
 
-void CTestWindow::__loadCloud(const std::vector<std::string>& vFilePathSet)
+void CSingleStepWindow::__loadCloud(const std::vector<std::string>& vFilePathSet)
 {
-    m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene(vFilePathSet);
+    m_pCloud = hiveInitPointCloudScene(vFilePathSet);
 
     if (m_pCloud)
     {
         PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_pCloud, true);
-        CTestWindow::__initialVTKWidget();
+        CSingleStepWindow::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel, true);
-        CTestWindow::__initialSlider();
+        CSingleStepWindow::__initialSlider();
     }
 }
 
-std::vector<int> CTestWindow::__loadIndices(const std::string& vPath)
+std::vector<int> CSingleStepWindow::__loadIndices(const std::string& vPath)
 {
     std::vector<int> Indices;
     const std::string Path{ vPath };

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CSingleStepWindow</class>
+ <widget class="QMainWindow" name="CSingleStepWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>832</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>QTInterface</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QVTKWidget" name="VTKWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionMark"/>
+   <addaction name="actionShow"/>
+   <addaction name="actionClear"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset>
+     <normaloff>open.png</normaloff>open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/save.png</normaloff>:/QTInterface/Icon/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSetting">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/setting.png</normaloff>:/QTInterface/Icon/setting.png</iconset>
+   </property>
+   <property name="text">
+    <string>Setting</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionAreaPicking">
+   <property name="text">
+    <string>AreaPicking</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="icon">
+    <iconset>
+     <normaloff>rubber.png</normaloff>rubber.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionBrush">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/brush.png</normaloff>:/QTInterface/Icon/brush.png</iconset>
+   </property>
+   <property name="text">
+    <string>Brush</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRubber">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/rubber.png</normaloff>:/QTInterface/Icon/rubber.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rubber</string>
+   </property>
+  </action>
+  <action name="actionDichotomy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/dichotomy.png</normaloff>:/QTInterface/Icon/dichotomy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dichotomy</string>
+   </property>
+  </action>
+  <action name="actionRegionGrowing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/regionGrowing.png</normaloff>:/QTInterface/Icon/regionGrowing.png</iconset>
+   </property>
+   <property name="text">
+    <string>RegionGrowing</string>
+   </property>
+  </action>
+  <action name="actionShow">
+   <property name="icon">
+    <iconset theme="update.png">
+     <normaloff>update.png</normaloff>update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Update</string>
+   </property>
+  </action>
+  <action name="actionBlend">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/blend.png</normaloff>:/QTInterface/Icon/blend.png</iconset>
+   </property>
+   <property name="text">
+    <string>Blend</string>
+   </property>
+  </action>
+  <action name="actionMark">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>pointPicking.png</normaloff>pointPicking.png</iconset>
+   </property>
+   <property name="text">
+    <string>PointPicking</string>
+   </property>
+  </action>
+  <action name="actionInstructions">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/instructions.png</normaloff>:/QTInterface/Icon/instructions.png</iconset>
+   </property>
+   <property name="text">
+    <string>Instructions</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QVTKWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">qvtkwidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="SingleStepWindow.qrc"/>
+ </resources>
+ <connections/>
+</ui>

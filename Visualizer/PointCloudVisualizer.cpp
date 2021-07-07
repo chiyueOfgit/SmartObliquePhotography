@@ -135,10 +135,8 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 
 	if (vResetCamera)
 		m_pPCLVisualizer->resetCamera();
-	else
-	{
-		m_pPCLVisualizer->updateCamera();
-	}
+
+	m_pPCLVisualizer->updateCamera();
 
 	RECORD_TIME_END(œ‘ æ)
 }
