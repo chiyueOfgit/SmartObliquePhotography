@@ -43,6 +43,7 @@ void CPointCloudVisualizer::reset(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
 	m_pPCLVisualizer->removeAllPointClouds();
 	delete m_pPCLVisualizer;
 	delete m_pCallback;
+	m_UserColoredPoints.clear();
 	init(vPointCloud, vIsInQt);
 	if (vPointCloud != nullptr)
 		m_pSceneCloud = vPointCloud;
@@ -101,6 +102,28 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 		}
 	}
 
+	//show user defined color
+	{
+		for (auto& Record : m_UserColoredPoints)
+		{
+			if (Record.Lifetime-- > 0)
+			{
+				for (auto Index : Record.PointSet)
+				{
+					unsigned char UserColor[4] = { Record.Color.z(), Record.Color.y(), Record.Color.x(), 255 };
+					std::memcpy(&pCloud2Show->points[Index].rgba, UserColor, sizeof(UserColor));
+				}
+			}
+		}
+		for (auto Iter = m_UserColoredPoints.begin(); Iter != m_UserColoredPoints.end();)
+		{
+			if (Iter->Lifetime <= 0)
+				Iter = m_UserColoredPoints.erase(Iter);
+			else
+				Iter++;
+		}
+	}
+
 	auto PointSize = *hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance()->getAttribute<int>("POINT_SHOW_SIZE");
 	
 	pcl::visualization::PointCloudColorHandlerRGBAField<PointCloud_t::PointType> RGBAColor(pCloud2Show);
@@ -123,4 +146,9 @@ void CPointCloudVisualizer::run()
 	{
 		m_pPCLVisualizer->spinOnce(16);
 	}
+}
+
+void CPointCloudVisualizer::__setPointsAndColor(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp)
+{
+	m_UserColoredPoints.push_back({ vPointSet, vColor, (vIsTemp ? 1 : 999) });
 }
