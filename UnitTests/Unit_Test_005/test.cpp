@@ -39,6 +39,12 @@ TEST(Test_PointCloudVisualizer, TestInitAndRefresh)
 	Visualization::hiveInitVisualizer(pCloud, false);
 	std::vector<std::size_t> PointLabel;
 	PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+
+	std::vector<pcl::index_t> TestPoints;
+	int Start = 5000, End = 20000;
+	for (int i = Start; i < End; i++)
+		TestPoints.push_back(i);
+	Visualization::hiveSetPointsColor(TestPoints, { 255, 0, 0 });
 	Visualization::hiveRefreshVisualizer(PointLabel, true);
 	Visualization::hiveRunVisualizerLoop();
 }
