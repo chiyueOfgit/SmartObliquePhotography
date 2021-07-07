@@ -13,6 +13,7 @@ namespace hiveObliquePhotography
 
 			double generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter) override;
 			double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
+			virtual std::string outputDebugInfosV(pcl::index_t vIndex) const override;
 #ifdef _UNIT_TEST
 			Eigen::Vector4f fitPlane(PointCloud_t::Ptr vCloud) { return __fitPlane(vCloud); };
 #endif

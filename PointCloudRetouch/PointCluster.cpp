@@ -67,6 +67,17 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 
 //*****************************************************************
 //FUNCTION: 
+void CPointCluster::outputDebugInfos(pcl::index_t vIndex) const
+{
+	std::string Infos;
+	for (auto pFeature : m_FeatureSet)
+		Infos += pFeature->outputDebugInfosV(vIndex);
+
+	hiveEventLogger::hiveOutputEvent(Infos);
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CPointCluster::__createFeatureObjectSet()
 {
 	for (auto i = 0; i < m_pConfig->getNumSubconfig(); i++)

@@ -61,6 +61,10 @@ double CVfhFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermina
 	if (vValidationSet.size())
 		ValidationRate /= vValidationSet.size();
 
+	//DEBUG
+	hiveEventLogger::hiveOutputEvent((_FORMAT_STR1("VFH Feature's Weight is: %1%\n", ValidationRate)));
+	//DEBUG
+
 	return ValidationRate > 1.0 ? 1.0 : ValidationRate;
 }
 
@@ -77,6 +81,15 @@ double CVfhFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	auto PointDotResult = __KernelDotVfhDescriptor(PointVfhDescriptor, m_DeterminantVfhDescriptor, m_KernelSize);
 	double PointRate = PointDotResult / m_BaseDotResult;
 	return PointRate > 1.0 ? 1.0 : PointRate;
+}
+
+std::string CVfhFeature::outputDebugInfosV(pcl::index_t vIndex) const
+{
+	std::string Infos;
+	Infos += "VFH Feature:\n";
+	Infos += _FORMAT_STR1("Similarity is: %1%\n\n", const_cast<CVfhFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
+
+	return Infos;
 }
 
 //*****************************************************************
