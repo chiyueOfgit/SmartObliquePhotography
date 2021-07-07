@@ -39,4 +39,5 @@ private:
 private slots:
     void __onActionOpen();
     void __onActionLoad();
+    void __onActionClear();
 };

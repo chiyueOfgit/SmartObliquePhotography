@@ -16,6 +16,8 @@ namespace hiveObliquePhotography
 		
 		VISUALIZATION_DECLSPEC void hiveSetPointsColor(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp = true);
 
+		VISUALIZATION_DECLSPEC void hiveClearPointsColor();
+
 		VISUALIZATION_DECLSPEC pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
 
 		VISUALIZATION_DECLSPEC bool hiveGetVisualizationConfig(CVisualizationConfig*& voConfig);

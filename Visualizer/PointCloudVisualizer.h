@@ -29,7 +29,8 @@ namespace hiveObliquePhotography
 		private:
 			CPointCloudVisualizer();
 
-			void __setPointsAndColor(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp = true);
+			void __setUserColoredPoints(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp = true);
+			void __clearUserColoredPoints();
 
 			pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 			CInteractionCallback* m_pCallback = nullptr;
@@ -42,6 +43,7 @@ namespace hiveObliquePhotography
 			friend class CInteractionCallback;
 			friend pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
 			friend void hiveSetPointsColor(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp);
+			friend void hiveClearPointsColor();
 		};
 	}
 }

@@ -29,7 +29,12 @@ void hiveObliquePhotography::Visualization::hiveSetPointsColor(const std::vector
 	auto MaxIter = std::max_element(vPointSet.begin(), vPointSet.end());
 	_ASSERTE(MaxIter != vPointSet.end() && *MaxIter < CPointCloudVisualizer::getInstance()->m_pSceneCloud->size());
 
-	CPointCloudVisualizer::getInstance()->__setPointsAndColor(vPointSet, vColor, vIsTemp);
+	CPointCloudVisualizer::getInstance()->__setUserColoredPoints(vPointSet, vColor, vIsTemp);
+}
+
+void hiveObliquePhotography::Visualization::hiveClearPointsColor()
+{
+	CPointCloudVisualizer::getInstance()->__clearUserColoredPoints();
 }
 
 pcl::visualization::PCLVisualizer*& hiveObliquePhotography::Visualization::hiveGetPCLVisualizer()

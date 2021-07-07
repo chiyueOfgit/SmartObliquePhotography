@@ -151,7 +151,12 @@ void CPointCloudVisualizer::run()
 	}
 }
 
-void CPointCloudVisualizer::__setPointsAndColor(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp)
+void CPointCloudVisualizer::__setUserColoredPoints(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp)
 {
 	m_UserColoredPoints.push_back({ vPointSet, vColor, (vIsTemp ? 1 : 999) });
+}
+
+void CPointCloudVisualizer::__clearUserColoredPoints()
+{
+	m_UserColoredPoints.clear();
 }

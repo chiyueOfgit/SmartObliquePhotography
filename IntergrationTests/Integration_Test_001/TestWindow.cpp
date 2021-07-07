@@ -40,6 +40,7 @@ void CTestWindow::__connectSignals()
 {
     QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(__onActionOpen()));
     QObject::connect(ui.actionLoad, SIGNAL(triggered()), this, SLOT(__onActionLoad()));
+    QObject::connect(ui.actionClear, SIGNAL(triggered()), this, SLOT(__onActionClear()));
 }
 
 void CTestWindow::__initialVTKWidget()
@@ -157,6 +158,14 @@ void CTestWindow::__onActionLoad()
         Visualization::hiveSetPointsColor(__loadIndices(IndicesPath), { RandomColor[0], RandomColor[1], RandomColor[2] });
     }
 
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::hiveRefreshVisualizer(PointLabel);
+}
+
+void CTestWindow::__onActionClear()
+{
+    Visualization::hiveClearPointsColor();
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
     Visualization::hiveRefreshVisualizer(PointLabel);
