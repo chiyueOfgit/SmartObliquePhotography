@@ -56,7 +56,6 @@
     <ClCompile>
       <AdditionalIncludeDirectories>.\include</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4800;4521;4251;4275;4305;4355</DisableSpecificWarnings>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -67,11 +66,11 @@
       <OpenMPSupport>true</OpenMPSupport>
       <Optimization>Disabled</Optimization>
       <ProcessorNumber>6</ProcessorNumber>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;BOOST_ALL_NO_LIB;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCL_ONLY_CORE_POINT_TYPES;__SSSE3__;__SSE2__;__SSE__;vtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL2);vtkRenderingCore_INCLUDE="pcl\visualization\vtk\vtkRenderingCore_AUTOINIT_vtkInteractionStyle_vtkRenderingFreeType_vtkRenderingOpenGL2.h";BOOST_LIB_DIAGNOSTIC;_ENABLE_EXTENDED_ALIGNED_STORAGE;LZ4_DLL_IMPORT=1;CMAKE_INTDIR="Release";PCLAPI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;NOMINMAX;BOOST_ALL_NO_LIB;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCL_ONLY_CORE_POINT_TYPES;__SSSE3__;__SSE2__;__SSE__;vtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL2);vtkRenderingCore_INCLUDE="pcl\visualization\vtk\vtkRenderingCore_AUTOINIT_vtkInteractionStyle_vtkRenderingFreeType_vtkRenderingOpenGL2.h";BOOST_LIB_DIAGNOSTIC;_ENABLE_EXTENDED_ALIGNED_STORAGE;LZ4_DLL_IMPORT=1;CMAKE_INTDIR="Release";PCLAPI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;BOOST_ALL_NO_LIB;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;NOMINMAX;PCL_ONLY_CORE_POINT_TYPES;__SSSE3__;__SSE2__;__SSE__;vtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL2);vtkRenderingCore_INCLUDE=\"E:/pcl-pcl-1.11.1/build/CMakeFiles/vtkRenderingCore_AUTOINIT_vtkInteractionStyle_vtkRenderingFreeType_vtkRenderingOpenGL2.h\";BOOST_LIB_DIAGNOSTIC;_ENABLE_EXTENDED_ALIGNED_STORAGE;LZ4_DLL_IMPORT=1;CMAKE_INTDIR=\"Debug\";PCLAPI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
