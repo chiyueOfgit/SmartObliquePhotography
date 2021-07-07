@@ -43,6 +43,7 @@ void CPointCloudVisualizer::reset(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
 	m_pPCLVisualizer->removeAllPointClouds();
 	delete m_pPCLVisualizer;
 	delete m_pCallback;
+	m_UserColoredPoints.clear();
 	init(vPointCloud, vIsInQt);
 	if (vPointCloud != nullptr)
 		m_pSceneCloud = vPointCloud;
@@ -94,10 +95,35 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 		}
 		case 4:
 		{
-			unsigned char StandardGreen[4] = { 0, 255, 0, 255 };
-			std::memcpy(&pCloud2Show->points[i].rgba, StandardGreen, sizeof(StandardGreen));
+			unsigned char StandardWhite[4] = { 255, 255, 255, 255 };
+			std::memcpy(&pCloud2Show->points[i].rgba, StandardWhite, sizeof(StandardWhite));
 			break;
 		}
+		}
+	}
+
+	//show user defined color
+	{
+		for (auto& Record : m_UserColoredPoints)
+		{
+			if (Record.Lifetime-- > 0)
+			{
+				for (auto Index : Record.PointSet)
+				{
+					if (Index < m_pSceneCloud->size())
+					{
+						unsigned char UserColor[4] = { Record.Color.z(), Record.Color.y(), Record.Color.x(), 255 };
+						std::memcpy(&pCloud2Show->points[Index].rgba, UserColor, sizeof(UserColor));
+					}
+				}
+			}
+		}
+		for (auto Iter = m_UserColoredPoints.begin(); Iter != m_UserColoredPoints.end();)
+		{
+			if (Iter->Lifetime <= 0)
+				Iter = m_UserColoredPoints.erase(Iter);
+			else
+				Iter++;
 		}
 	}
 
@@ -123,4 +149,9 @@ void CPointCloudVisualizer::run()
 	{
 		m_pPCLVisualizer->spinOnce(16);
 	}
+}
+
+void CPointCloudVisualizer::__setPointsAndColor(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp)
+{
+	m_UserColoredPoints.push_back({ vPointSet, vColor, (vIsTemp ? 1 : 999) });
 }
