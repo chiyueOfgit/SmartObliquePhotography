@@ -3,33 +3,18 @@
 #include <QtWidgets/qmdisubwindow.h>
 #include <QSlider>
 #include <QtWidgets/QFileDialog>
-#include <QStandardItem>
 #include <qobject.h>
 #include <vtkRenderWindow.h>
-#include <QDateTime>
-#include <QColor>
-#include <qlabel.h>
-#include <iostream>
-#include <string>
-#include <QtWidgets/qmainwindow.h>
-#include <QMainWindow>
 #include <vtkAutoInit.h>
-#include <algorithm>
-#include <tuple>
-#include <typeinfo>
-#include <qpushbutton.h>
-#include <qcursor.h>
-#include <qevent.h>
-#include <qpainter.h>
+
 #include "ObliquePhotographyDataInterface.h"
 #include "PointCloudRetouchInterface.h"
 #include "VisualizationInterface.h"
 #include "PointCloudRetouchConfig.h"
+
 #include <fstream>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
-
-#include "pcl/io/pcd_io.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
