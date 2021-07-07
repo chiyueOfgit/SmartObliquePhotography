@@ -20,3 +20,5 @@
 #include "common/EventLoggerInterface.h"
 
 #include "../../ObliquePhotographyData/ObliquePhotographyDataCommon.h"
+
+using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
