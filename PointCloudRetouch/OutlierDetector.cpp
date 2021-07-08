@@ -1,0 +1,57 @@
+#include "pch.h"
+#include "OutlierDetector.h"
+#include "PointCloudRetouchManager.h"
+#include <pcl/filters/statistical_outlier_removal.h>
+
+#include <pcl/filters/radius_outlier_removal.h>
+#include <pcl/filters/conditional_removal.h>
+
+
+using namespace hiveObliquePhotography::PointCloudRetouch;
+
+_REGISTER_NORMAL_PRODUCT(COutlierDetector, KEYWORD::OUTLIER_DETECTOR)
+
+//*****************************************************************
+//FUNCTION: 
+void COutlierDetector::runV(pcl::Indices& vInputSet, EPointLabel vExpectLabel)
+{
+	if (vInputSet.empty())
+		return;
+    auto pManager = CPointCloudRetouchManager::getInstance();
+	for (auto CurrentIndex : vInputSet)
+		if (CurrentIndex < 0 || CurrentIndex >= pManager->getRetouchScene().getNumPoint())
+			_THROW_RUNTIME_ERROR("Index is out of range");
+	
+	
+	PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
+	for (auto Index : vInputSet)
+	{
+		pcl::PointSurfel TempPoint;
+		auto Pos = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(Index);
+		TempPoint.x = Pos.x();
+		TempPoint.y = Pos.y();
+		TempPoint.z = Pos.z();
+		auto Normal = CPointCloudRetouchManager::getInstance()->getRetouchScene().getNormalAt(Index);
+		TempPoint.normal_x = Normal.x();
+		TempPoint.normal_y = Normal.y();
+		TempPoint.normal_z = Normal.z();
+		auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index);
+		TempPoint.r = Color.x();
+		TempPoint.g = Color.y();
+		TempPoint.b = Color.z();
+		TempPoint.curvature = Index;
+		pCloud->push_back(TempPoint);
+	}
+	PointCloud_t::Ptr pResultCloud(new pcl::PointCloud<pcl::PointSurfel>);
+	pcl::RadiusOutlierRemoval<pcl::PointSurfel> RadiusOutlier;
+	RadiusOutlier.setInputCloud(pCloud);
+	RadiusOutlier.setRadiusSearch(0.8);
+	RadiusOutlier.setMinNeighborsInRadius(20);
+	RadiusOutlier.setNegative(true);
+	RadiusOutlier.filter(*pResultCloud);
+
+	for (auto& Point : pResultCloud->points)
+	   pManager->tagPointLabel(Point.curvature, vExpectLabel, 0, 0);
+
+}
+

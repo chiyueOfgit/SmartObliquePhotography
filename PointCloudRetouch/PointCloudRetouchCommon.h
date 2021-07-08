@@ -15,6 +15,7 @@ namespace hiveObliquePhotography
 			const std::string EUCLIDEAN_NEIGHBOR_BUILDER = "EUCLIDEAN_NEIGHBOR_BUILDER";
 
 			const std::string CLUSTER_EXPANDER = "CLUSTER_EXPANDER";
+			const std::string OUTLIER_DETECTOR = "OUTLIER_DETECTOR";
 
 		}
 		enum class EPointLabel : unsigned char
