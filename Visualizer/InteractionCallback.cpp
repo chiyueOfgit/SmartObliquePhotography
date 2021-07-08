@@ -4,6 +4,8 @@
 #include "VisualizationConfig.h"
 #include "PointCloudRetouchInterface.h"
 #include <common/ConfigInterface.h>
+#include <omp.h>
+#include <mutex>
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -202,83 +204,96 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
 
-		Eigen::Matrix4d Proj, View;
-		Camera.computeProjectionMatrix(Proj);
-		Camera.computeViewMatrix(View);
-
 		// test ray
-		//m_Radius = (int)m_Radius;
-		//std::vector<float> PointsDepth(4 * m_Radius * m_Radius);
-		//std::vector<int> PointsIndices(4 * m_Radius * m_Radius);
-
-		//for (int Y = PosY - m_Radius; Y <= PosY + m_Radius; Y++)
-		//{
-		//	for (int X = PosX - m_Radius; X <= PosX + m_Radius; X++)
-		//	{
-		//		std::pair<float, int> DepthAndIndex{ FLT_MAX, -1 };
-
-		//		Eigen::Vector4d PixelPosition = { X / Camera.window_size[0] * 2 - 1, Y / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
-
-		//		Eigen::Matrix4d Proj, View;
-		//		Camera.computeProjectionMatrix(Proj);
-		//		Camera.computeViewMatrix(View);
-
-		//		PixelPosition = (Proj * View).inverse() * PixelPosition;
-		//		PixelPosition /= PixelPosition.w();
-
-		//		Eigen::Vector3f RayOrigin{ (float)Camera.pos[0], (float)Camera.pos[1], (float)Camera.pos[2] };
-		//		Eigen::Vector3f RayDirection = { (float)PixelPosition.x() - RayOrigin.x(), (float)PixelPosition.y() - RayOrigin.y(), (float)PixelPosition.z() - RayOrigin.z() };
-		//		RayDirection /= RayDirection.norm();
-
-		//		for (int i = 0; i < PickedIndices.size(); i++)
-		//		{
-		//			auto& Point = m_pVisualizer->m_pSceneCloud->points[PickedIndices[i]];
-		//			Eigen::Vector3f Pos{ Point.x, Point.y, Point.z };
-		//			Eigen::Vector3f Normal{ Point.normal_x, Point.normal_y, Point.normal_z };
-
-		//			float K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
-
-		//			Eigen::Vector3f IntersectPosition = RayOrigin + K * RayDirection;
-
-		//			const float SurfelRadius = 3.0f;	//surfel world radius
-
-		//			if ((IntersectPosition - Pos).norm() < SurfelRadius && K < DepthAndIndex.first && K > 0)
-		//			{
-		//				DepthAndIndex.first = K;
-		//				DepthAndIndex.second = PickedIndices[i];
-		//			}
-		//		}
-
-		//		int Offset = X - (PosX - m_Radius) + (Y - (PosY - m_Radius)) * 2 * m_Radius;
-		//		_ASSERTE(Offset >= 0);
-		//		PointsDepth[Offset] = DepthAndIndex.first;
-		//		PointsIndices[Offset] = DepthAndIndex.second;
-		//	}
-		//}
-
-		//std::set<int> Indices;
-		//for (auto Index : PointsIndices)
-		//	if (Index > 0)
-		//		Indices.insert(Index);
-
-		//std::vector<int> Points(Indices.begin(), Indices.end());
-		//m_pVisualizer->addUserColoredPoints(Points, { 255, 255, 255 });
-
-		if (m_UnwantedMode)                                                                                   
-			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
-		else
-			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
-
-		m_IsRefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY).value();
-
-		if (m_IsRefreshImmediately)
-		{
-			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-			m_pVisualizer->refresh(PointLabel);
-		}
-
-	}
+//		m_Radius = (int)m_Radius;
+//		int RectangleLength = 2 * m_Radius + 1;
+//		std::vector<float> PointsDepth(RectangleLength * RectangleLength, FLT_MAX);
+//		std::set<int> Points;
+//
+//		Eigen::Matrix4d Proj, View;
+//		Camera.computeProjectionMatrix(Proj);
+//		Camera.computeViewMatrix(View);
+//		Eigen::Matrix4d PV = Proj * View;
+//		Eigen::Matrix4d PVInverse = PV.inverse();
+//
+//		//auto Cloud = *m_pVisualizer->m_pSceneCloud;
+//		//for (auto& Point : Cloud)
+//		//{
+//		//	
+//		//}
+//
+//		std::mutex Mutex;
+//
+//#pragma omp parallel for
+//		for (int Y = PosY - m_Radius; Y <= int(PosY + m_Radius); Y++)
+//		{
+//			for (int X = PosX - m_Radius; X <= int(PosX + m_Radius); X++)
+//			{
+//				std::map<float, int> DepthAndIndices;
+//
+//				Eigen::Vector4d PixelPosition = { X / Camera.window_size[0] * 2 - 1, Y / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
+//
+//				PixelPosition = PVInverse * PixelPosition;
+//				PixelPosition /= PixelPosition.w();
+//
+//				Eigen::Vector3f RayOrigin{ (float)Camera.pos[0], (float)Camera.pos[1], (float)Camera.pos[2] };
+//				Eigen::Vector3f RayDirection = { (float)PixelPosition.x() - RayOrigin.x(), (float)PixelPosition.y() - RayOrigin.y(), (float)PixelPosition.z() - RayOrigin.z() };
+//				RayDirection /= RayDirection.norm();
+//
+//				for (int i = 0; i < PickedIndices.size(); i++)
+//				{
+//					auto& Point = m_pVisualizer->m_pSceneCloud->points[PickedIndices[i]];
+//					Eigen::Vector3f Pos{ Point.x, Point.y, Point.z };
+//					Eigen::Vector3f Normal{ Point.normal_x, Point.normal_y, Point.normal_z };
+//
+//					float K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
+//
+//					Eigen::Vector3f IntersectPosition = RayOrigin + K * RayDirection;
+//
+//					const float SurfelRadius = 1.0f;	//surfel world radius
+//
+//					if ((IntersectPosition - Pos).norm() < SurfelRadius)
+//							DepthAndIndices[K] = PickedIndices[i];
+//				}
+//
+//				int Offset = X - (PosX - m_Radius) + (Y - (PosY - m_Radius)) * RectangleLength;
+//				_ASSERTE(Offset >= 0);
+//
+//				const float WorldLengthLimit = 0.5f;	//magic
+//				if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
+//				{
+//					auto MinDepth = DepthAndIndices.begin()->first;
+//					for (auto& Pair : DepthAndIndices)
+//					{
+//						if (Pair.first - MinDepth < WorldLengthLimit)
+//						{
+//							Mutex.lock();
+//							Points.insert(Pair.second);
+//							Mutex.unlock();
+//						}
+//
+//					}
+//				}
+//			}
+//		}
+//
+//		m_pVisualizer->addUserColoredPoints({Points.begin(), Points.end()}, { 255, 255, 255 });
+//
+//		if (m_UnwantedMode)                                                                                   
+//			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
+//		else
+//			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
+//
+//		m_IsRefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY).value();
+//
+//		if (m_IsRefreshImmediately)
+//		{
+//			std::vector<std::size_t> PointLabel;
+//			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+//			m_pVisualizer->refresh(PointLabel);
+//		}
+//
+//	}
 
 	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value())
 	{
