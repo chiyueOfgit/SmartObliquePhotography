@@ -43,6 +43,7 @@ namespace hiveObliquePhotography
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
 			friend class CInteractionCallback;
 			friend pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
+			friend hiveHighlightPointSet(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor);
 
 		};
 	}
