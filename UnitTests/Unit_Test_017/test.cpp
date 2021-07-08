@@ -27,51 +27,51 @@
 std::string FilePaths[][3] =
 {
 	{
-		"../Test017_Model/CompleteTree/CompleteTreeInput.txt",
-		"../Test017_Model/CompleteTree/CompleteTreeCameraInfo.txt",
-		"../Test017_Model/CompleteTree/CompleteTreeGT.txt",
+		"../TestModel/Test017_Model/CompleteTree/CompleteTreeInput.txt",
+		"../TestModel/Test017_Model/CompleteTree/CompleteTreeCameraInfo.txt",
+		"../TestModel/Test017_Model/CompleteTree/CompleteTreeGT.txt",
 	},
 
 	{
-		"../Test017_Model/CompleteGround/CompleteGroundInput.txt",
-		"../Test017_Model/CompleteGround/CompleteGroundCameraInfo.txt",
-		"../Test017_Model/CompleteGround/CompleteGroundGT.txt",
+		"../TestModel/Test017_Model/CompleteGround/CompleteGroundInput.txt",
+		"../TestModel/Test017_Model/CompleteGround/CompleteGroundCameraInfo.txt",
+		"../TestModel/Test017_Model/CompleteGround/CompleteGroundGT.txt",
 	},
 
 	{
-		"../Test017_Model/CompleteBuilding/CompleteBuildingInput.txt",
-		"../Test017_Model/CompleteBuilding/CompleteBuildingCameraInfo.txt",
-		"../Test017_Model/CompleteBuilding/CompleteBuildingGt.txt",
+		"../TestModel/Test017_Model/CompleteBuilding/CompleteBuildingInput.txt",
+		"../TestModel/Test017_Model/CompleteBuilding/CompleteBuildingCameraInfo.txt",
+		"../TestModel/Test017_Model/CompleteBuilding/CompleteBuildingGt.txt",
 	},
 
 	{
-		"../Test017_Model/CompleteMoreTrees/MoreTreesInput.txt",
-		"../Test017_Model/CompleteMoreTrees/MoreTreesCameraInfo.txt",
-		"../Test017_Model/CompleteMoreTrees/MoreTreesGt.txt",
+		"../TestModel/Test017_Model/CompleteMoreTrees/MoreTreesInput.txt",
+		"../TestModel/Test017_Model/CompleteMoreTrees/MoreTreesCameraInfo.txt",
+		"../TestModel/Test017_Model/CompleteMoreTrees/MoreTreesGt.txt",
 	},
 	
 	{
-		"../Test017_Model/KeepTree/KeepTreeInput.txt",
-		"../Test017_Model/KeepTree/KeepTreeCameraInfo.txt",
-		"../Test017_Model/KeepTree/CompleteTreeGT.txt",
+		"../TestModel/Test017_Model/KeepTree/KeepTreeInput.txt",
+		"../TestModel/Test017_Model/KeepTree/KeepTreeCameraInfo.txt",
+		"../TestModel/Test017_Model/KeepTree/CompleteTreeGT.txt",
 	},
 	
 	{
-		"../Test017_Model/KeepGround/KeepGroundInput.txt",
-		"../Test017_Model/KeepGround/KeepGroundCameraInfo.txt",
-		"../Test017_Model/KeepGround/CompleteGroundGT.txt",
+		"../TestModel/Test017_Model/KeepGround/KeepGroundInput.txt",
+		"../TestModel/Test017_Model/KeepGround/KeepGroundCameraInfo.txt",
+		"../TestModel/Test017_Model/KeepGround/CompleteGroundGT.txt",
 	},
 	
 	{
-		"../Test017_Model/KeepBuilding/KeepBuildingInput.txt",
-		"../Test017_Model/KeepBuilding/KeepBuildingCameraInfo.txt",
-		"../Test017_Model/KeepBuilding/CompleteBuildingGt.txt",
+		"../TestModel/Test017_Model/KeepBuilding/KeepBuildingInput.txt",
+		"../TestModel/Test017_Model/KeepBuilding/KeepBuildingCameraInfo.txt",
+		"../TestModel/Test017_Model/KeepBuilding/CompleteBuildingGt.txt",
 	},
 	
 	{
-		"../Test017_Model/KeepMoreTrees/KeepMoreTreesInput.txt",
-		"../Test017_Model/KeepMoreTrees/KeepMoreTreesCameraInfo.txt",
-		"../Test017_Model/KeepMoreTrees/MoreTreesGt.txt",
+		"../TestModel/Test017_Model/KeepMoreTrees/KeepMoreTreesInput.txt",
+		"../TestModel/Test017_Model/KeepMoreTrees/KeepMoreTreesCameraInfo.txt",
+		"../TestModel/Test017_Model/KeepMoreTrees/MoreTreesGt.txt",
 	}
 	
 };
@@ -84,7 +84,7 @@ class TestSelecting : public testing::Test
 protected:
 	void SetUp() override
 	{
-		std::string ModelPath("../Test017_Model/slice 16 - Cloud.pcd");
+		std::string ModelPath("../TestModel/General/slice 16.pcd");
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
 		pcl::io::loadPCDFile(ModelPath, *pCloud);
 		
@@ -209,7 +209,7 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 	GTEST_ASSERT_LE(Difference.size(), 0);
 	
 	pcl::Indices AdditionIndices;
-	loadAddtionFile("../Test017_Model/CompleteMoreTrees/MoreTreesGt2.txt", AdditionIndices);
+	loadAddtionFile("../TestModel/Test017_Model/CompleteMoreTrees/MoreTreesGt2.txt", AdditionIndices);
 	pcl::Indices Interaction;
 	std::set_intersection(InputIndices.begin(), InputIndices.end(),
 		AdditionIndices.begin(), AdditionIndices.end(),
@@ -217,7 +217,7 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 	GTEST_ASSERT_GE(Interaction.size(), 1);
 
 	pcl::Indices OtherAdditionIndices;
-	loadAddtionFile("../Test017_Model/CompleteMoreTrees/MoreTreesGt3.txt", OtherAdditionIndices);
+	loadAddtionFile("../TestModel/Test017_Model/CompleteMoreTrees/MoreTreesGt3.txt", OtherAdditionIndices);
 	pcl::Indices OtherInteraction;
 	std::set_intersection(InputIndices.begin(), InputIndices.end(),
 		OtherAdditionIndices.begin(), OtherAdditionIndices.end(),
