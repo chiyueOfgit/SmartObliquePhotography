@@ -20,13 +20,6 @@ Report
 | <font color=#7E858B>Result</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#F0645A>Fail</font> | <font color=#F0645A>Fail</font> | <font color=#F0645A>Fail</font> |
 
 
-#### Unit_Test_005 (point_cloud_visualizer)
-
-| Test | TestInitAndRefresh |
-| :----: | :----: |
-| <font color=#7E858B>Result</font> | <font color=#3CC8B4>Pass</font> |
-
-
 #### Unit_Test_010 (init_point_cloud_retouch)
 
 | Test | InitPointCloudRetouchScene | DeathTest_InitSceneWithErrorPtr | InitPointLabelSet | DeathTest_InitSceneWithNegativeSize | InitRetouchTask | DeathTest_InitRetouchTaskWithErrorConfig | InitPointCloudRetouchManager |

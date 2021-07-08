@@ -50,7 +50,16 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitSceneWithErrorPtr)
 	//空指针
 	{
 		CPointCloudRetouchScene Scene;
-		EXPECT_ANY_THROW(Scene.init(nullptr));
+		try
+		{
+			Scene.init(nullptr);
+		}
+		catch (...)
+		{
+			throw "!~";
+		}
+
+		EXPECT_ANY_THROW();
 	}
 
 	//未定义的乱指针
