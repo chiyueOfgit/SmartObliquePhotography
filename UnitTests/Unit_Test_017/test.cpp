@@ -9,6 +9,7 @@
 #include <boost/serialization/vector.hpp>
 #include <pcl/io/pcd_io.h>
 
+#include "ScreenSpaceOperation.h"
 #include "pcl/visualization/pcl_visualizer.h"
 #include "pcl/visualization/common/common.h"
 
@@ -23,6 +24,9 @@
 //  * Selecting_CullingTest_KeepABuilding:选取区域大部分属于一栋建筑；
 //  * Selecting_CullingTest_KeepMoreTrees:选择区域大部分属于多棵树；
 //SelectingSpecialTest特定情况下的特殊结果正确
+
+
+using namespace hiveObliquePhotography::PointCloudRetouch;
 
 std::string FilePaths[][3] =
 {
@@ -76,22 +80,29 @@ std::string FilePaths[][3] =
 	
 };
 
-
-using namespace hiveObliquePhotography::PointCloudRetouch;
+constexpr char ConfigPath[] = "PointCloudRetouchConfig.xml";
 
 class TestSelecting : public testing::Test
 {
 protected:
+	hiveConfig::CHiveConfig* pConfig = nullptr;
+	
 	void SetUp() override
 	{
 		std::string ModelPath("../TestModel/General/slice 16.pcd");
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
 		pcl::io::loadPCDFile(ModelPath, *pCloud);
-		
+		pConfig = new CPointCloudRetouchConfig;
+		if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+		{
+			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+			return;
+		}
 	}
 
 	void TearDown() override
 	{
+		delete pConfig;
 	}
 
     void initTest(pcl::Indices& voInputIndices, pcl::visualization::Camera& voCamera, pcl::Indices& voGroundTruth, const std::string(vPath)[3])
@@ -130,6 +141,11 @@ void TestSelecting::_loadCamera(const std::string& vPath, pcl::visualization::Ca
 	pVisualizer->getCameraParameters(voCamera);
 }
 
+float distanceFunc(Eigen::Vector2f vInput)
+{
+	return -1;
+}
+
 TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteTree)
 {
 	const auto& Path = FilePaths[0];
@@ -141,6 +157,13 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteTree)
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
 	//TODO:根据接口执行选择剔除
+	std::vector<float> PointDistance;
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
+	CullingOperation.cull(InputIndices, PointDistance,pConfig);
 	
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -161,6 +184,13 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteGround)
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
 	//TODO:根据接口执行选择剔除
+	std::vector<float> PointDistance;
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
+	CullingOperation.cull(InputIndices, PointDistance, pConfig);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -181,6 +211,13 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
 	//TODO:根据接口执行选择剔除
+	std::vector<float> PointDistance;
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
+	CullingOperation.cull(InputIndices, PointDistance, pConfig);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -201,6 +238,13 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
 	//TODO:根据接口执行选择剔除
+	std::vector<float> PointDistance;
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
+	CullingOperation.cull(InputIndices, PointDistance, pConfig);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -225,3 +269,110 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 	GTEST_ASSERT_GE(OtherInteraction.size(), 1);
 }
 
+TEST_F(TestSelecting, Selecting_CullingTest_KeepATree)
+{
+	const auto& Path = FilePaths[4];
+
+	pcl::Indices InputIndices;
+	pcl::visualization::Camera Camera;
+	pcl::Indices GroundTruth;
+
+	initTest(InputIndices, Camera, GroundTruth, Path);
+
+	//TODO:根据接口执行选择剔除
+	std::vector<float> PointDistance;
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
+	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+
+	pcl::Indices Difference;
+	std::set_difference(InputIndices.begin(), InputIndices.end(),
+		GroundTruth.begin(), GroundTruth.end(),
+		std::inserter(Difference, Difference.begin()));
+
+	GTEST_ASSERT_LE(Difference.size(), 0);
+}
+
+TEST_F(TestSelecting, Selecting_CullingTest_KeepGround)
+{
+	const auto& Path = FilePaths[5];
+
+	pcl::Indices InputIndices;
+	pcl::visualization::Camera Camera;
+	pcl::Indices GroundTruth;
+
+	initTest(InputIndices, Camera, GroundTruth, Path);
+
+	//TODO:根据接口执行选择剔除
+	std::vector<float> PointDistance;
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
+	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+
+	pcl::Indices Difference;
+	std::set_difference(InputIndices.begin(), InputIndices.end(),
+		GroundTruth.begin(), GroundTruth.end(),
+		std::inserter(Difference, Difference.begin()));
+
+	GTEST_ASSERT_LE(Difference.size(), 0);
+}
+
+TEST_F(TestSelecting, Selecting_CullingTest_KeepABuilding)
+{
+	const auto& Path = FilePaths[6];
+
+	pcl::Indices InputIndices;
+	pcl::visualization::Camera Camera;
+	pcl::Indices GroundTruth;
+
+	initTest(InputIndices, Camera, GroundTruth, Path);
+
+	//TODO:根据接口执行选择剔除
+	std::vector<float> PointDistance;
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
+	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+
+	pcl::Indices Difference;
+	std::set_difference(InputIndices.begin(), InputIndices.end(),
+		GroundTruth.begin(), GroundTruth.end(),
+		std::inserter(Difference, Difference.begin()));
+
+	GTEST_ASSERT_LE(Difference.size(), 0);
+}
+
+TEST_F(TestSelecting, Selecting_CullingTest_KeepMoreTrees)
+{
+	const auto& Path = FilePaths[7];
+
+	pcl::Indices InputIndices;
+	pcl::visualization::Camera Camera;
+	pcl::Indices GroundTruth;
+
+	initTest(InputIndices, Camera, GroundTruth, Path);
+
+	//TODO:根据接口执行选择剔除
+	std::vector<float> PointDistance;
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
+	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+
+	pcl::Indices Difference;
+	std::set_difference(InputIndices.begin(), InputIndices.end(),
+		GroundTruth.begin(), GroundTruth.end(),
+		std::inserter(Difference, Difference.begin()));
+
+	GTEST_ASSERT_LE(Difference.size(), 0);
+}
