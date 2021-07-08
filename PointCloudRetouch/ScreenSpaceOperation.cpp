@@ -9,7 +9,6 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //FUNCTION: 
 void CScreenSpaceOperation::cullByDepth(std::vector<pcl::index_t>& vioPointIndices, const hiveConfig::CHiveConfig* vClusterConfig)
 {
-	// test ray
 	auto& Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
 	static int AreaWidth = m_RightDown.x() - m_LeftUp.x() + 1;
@@ -41,7 +40,7 @@ void CScreenSpaceOperation::cullByDepth(std::vector<pcl::index_t>& vioPointIndic
 			PixelPosition /= PixelPosition.w();
 
 			Eigen::Vector3f RayOrigin = m_ViewPos;
-			Eigen::Vector3f RayDirection = { (float)PixelPosition.x() - RayOrigin.x(), (float)PixelPosition.y() - RayOrigin.y(), (float)PixelPosition.z() - RayOrigin.z() };
+			Eigen::Vector3f RayDirection = Eigen::Vector3f(PixelPosition) - RayOrigin;
 			RayDirection /= RayDirection.norm();
 
 			for (int i = 0; i < vioPointIndices.size(); i++)
@@ -85,8 +84,39 @@ void CScreenSpaceOperation::cullByDepth(std::vector<pcl::index_t>& vioPointIndic
 
 //*****************************************************************
 //FUNCTION: 
-void CScreenSpaceOperation::cullByRadius(std::vector<pcl::index_t>& vioPointIndices, float vRadius, const hiveConfig::CHiveConfig* vClusterConfig)
+void CScreenSpaceOperation::cullByRadius(std::vector<pcl::index_t>& vioPointIndices, std::vector<float>& voPointDistance, float vRadius, const hiveConfig::CHiveConfig* vClusterConfig)
 {
-	
+	auto& Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+
+	static int AreaWidth = m_RightDown.x() - m_LeftUp.x() + 1;
+	static int AreaHeight = m_RightDown.y() - m_LeftUp.y() + 1;
+
+	std::vector<pcl::index_t> ResultPoints;
+	voPointDistance.clear();
+
+	Eigen::Vector2i CircleCenter = { m_LeftUp.x() + 0.5 * AreaWidth, m_LeftUp.y() + 0.5 * AreaHeight };
+
+	for (auto Index : vioPointIndices)
+	{
+		auto Position = Scene.getPositionAt(Index);
+		Position = m_PvMatrix.cast<float>() * Position;
+		Position /= Position.eval().w();
+		Position += Eigen::Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
+		Position /= 2.0f;
+		Position.x() *= m_WindowSize.x();
+		Position.y() *= m_WindowSize.y();
+
+		Eigen::Vector2i ScreenPos{ Position.x(), Position.y() };
+		float Distance = (ScreenPos - CircleCenter).norm();
+
+		if (Distance <= vRadius)
+		{
+			ResultPoints.push_back(Index);
+			voPointDistance.push_back(Distance);
+		}
+
+	}
+
+	vioPointIndices = ResultPoints;
 }
 
