@@ -47,14 +47,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_017 (selecting)",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration Tests", "Integration Tests", "{0ED66540-E913-4B7E-B88E-3A84508CCE63}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_001", "IntergrationTests\Integration_Test_001\Integration_Test_001.vcxproj", "{95ABEF10-4741-4162-93CC-6B3D1FAB252A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_001(highlight_point_set)", "IntergrationTests\Integration_Test_001\Integration_Test_001.vcxproj", "{95ABEF10-4741-4162-93CC-6B3D1FAB252A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_002", "IntergrationTests\Integration_Test_002\Integration_Test_002.vcxproj", "{732A8EE3-B788-471E-B4CF-801F7C705AC8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_002(single_step_expand)", "IntergrationTests\Integration_Test_002\Integration_Test_002.vcxproj", "{732A8EE3-B788-471E-B4CF-801F7C705AC8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "markdown", "markdown", "{D58CE4FB-BDF9-4589-A050-3327EBE37EB3}"
 	ProjectSection(SolutionItems) = preProject
 		UnitTests\Markdown\Report7.7.md = UnitTests\Markdown\Report7.7.md
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_014 (point_cluster_expander)", "UnitTests\Unit_Test_009\Unit_Test_009.vcxproj", "{4328358C-5988-4654-9998-BF998A36A4EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -224,6 +226,14 @@ Global
 		{732A8EE3-B788-471E-B4CF-801F7C705AC8}.Release|x64.ActiveCfg = Release|x64
 		{732A8EE3-B788-471E-B4CF-801F7C705AC8}.Release|x64.Build.0 = Release|x64
 		{732A8EE3-B788-471E-B4CF-801F7C705AC8}.Release|x86.ActiveCfg = Release|x64
+		{4328358C-5988-4654-9998-BF998A36A4EE}.Debug|x64.ActiveCfg = Debug|x64
+		{4328358C-5988-4654-9998-BF998A36A4EE}.Debug|x64.Build.0 = Debug|x64
+		{4328358C-5988-4654-9998-BF998A36A4EE}.Debug|x86.ActiveCfg = Debug|Win32
+		{4328358C-5988-4654-9998-BF998A36A4EE}.Debug|x86.Build.0 = Debug|Win32
+		{4328358C-5988-4654-9998-BF998A36A4EE}.Release|x64.ActiveCfg = Release|x64
+		{4328358C-5988-4654-9998-BF998A36A4EE}.Release|x64.Build.0 = Release|x64
+		{4328358C-5988-4654-9998-BF998A36A4EE}.Release|x86.ActiveCfg = Release|Win32
+		{4328358C-5988-4654-9998-BF998A36A4EE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -241,9 +251,10 @@ Global
 		{58566067-BF93-4F15-A99B-247F7C320C77} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{01B846B9-E100-46F2-A764-4A8D63E11375} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{33E77495-AC7A-4C69-B498-DCE74A48397C} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
-		{D58CE4FB-BDF9-4589-A050-3327EBE37EB3} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{95ABEF10-4741-4162-93CC-6B3D1FAB252A} = {0ED66540-E913-4B7E-B88E-3A84508CCE63}
 		{732A8EE3-B788-471E-B4CF-801F7C705AC8} = {0ED66540-E913-4B7E-B88E-3A84508CCE63}
+		{D58CE4FB-BDF9-4589-A050-3327EBE37EB3} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
+		{4328358C-5988-4654-9998-BF998A36A4EE} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39CBE48C-AE02-4207-8AE0-74B21A939B18}
