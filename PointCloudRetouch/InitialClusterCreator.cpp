@@ -3,6 +3,7 @@
 #include "PointCluster.h"
 #include "PointCloudRetouchManager.h"
 #include "PointCloudRetouchCommon.h"
+#include "ScreenSpaceOperation.h"
 
 #define initResolution 512
 #define DepthOffset 2
@@ -16,6 +17,12 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 	CPointCluster* pInitialCluster = new CPointCluster;
 
 	std::vector<float> PointHardnessSet(vUserMarkedRegion.size(), 0.0);
+
+	Eigen::Vector3f ViewPos;
+	Eigen::Vector2i LeftUp, RightDown;
+	CScreenSpaceOperation Cull(vPvMatrix, ViewPos, vWindowSize, LeftUp, RightDown);
+	//Cull.cullByDepth()
+	
 	__generateHardness4EveryPoint(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, PointHardnessSet, vClusterConfig);
 
 	pcl::index_t ClusterCenter = __computeClusterCenter(vUserMarkedRegion, PointHardnessSet, vCenter, vPvMatrix, vWindowSize);

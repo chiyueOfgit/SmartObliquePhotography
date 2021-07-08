@@ -10,8 +10,8 @@ namespace hiveObliquePhotography
 		class CScreenSpaceOperation
 		{
 		public:
-			CScreenSpaceOperation(const Eigen::Matrix4d& vPvMatrix, const Eigen::Vector3f& vViewPos, const Eigen::Vector2i& vWindowSize, const Eigen::Vector2i& vLeftUp, const Eigen::Vector2i& vRightDown)
-				: m_PvMatrix(vPvMatrix), m_ViewPos(vViewPos), m_WindowSize(vWindowSize), m_LeftUp(vLeftUp), m_RightDown(vRightDown)
+			CScreenSpaceOperation(Eigen::Matrix4d vPvMatrix, Eigen::Vector3f vViewPos, Eigen::Vector2i vWindowSize, Eigen::Vector2i vLeftUp, Eigen::Vector2i vRightDown)
+				: m_PvMatrix(std::move(vPvMatrix)), m_ViewPos(std::move(vViewPos)), m_WindowSize(std::move(vWindowSize)), m_LeftUp(std::move(vLeftUp)), m_RightDown(std::move(vRightDown))
 			{}
 			~CScreenSpaceOperation() = default;
 
