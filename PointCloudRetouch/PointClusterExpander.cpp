@@ -26,7 +26,7 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 		ExpandingCandidateQueue.pop();
 
 		std::uint32_t OldClusterIndex = pManager->getClusterIndexAt(Candidate);
-		_ASSERTE(OldClusterIndex != vCluster->getClusterIndex());
+		//_ASSERTE(OldClusterIndex != vCluster->getClusterIndex());
 
 		double CurrentProbability = vCluster->evaluateProbability(Candidate);
 		if (vCluster->isBelongingTo(CurrentProbability))
