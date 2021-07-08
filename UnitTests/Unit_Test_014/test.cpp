@@ -14,8 +14,8 @@
 
 using namespace  hiveObliquePhotography::PointCloudRetouch;
 
-constexpr char ConfigPath[] = "../../UnitTests/Unit_Test_014/PointCloudRetouchConfig.xml";
-constexpr char ModelPath[] = "../../UnitTests/Unit_Test_014/slice 3.pcd";
+constexpr char ConfigPath[] = "PointCloudRetouchConfig.xml";
+constexpr char ModelPath[] = "../TestModel/General/slice 3.pcd";
 
 class TestExpander : public testing::Test
 {
@@ -43,9 +43,29 @@ protected:
 
 	void TearDown() override
 	{
-		delete pConfig;
+
 	}
 };
+
+TEST_F(TestExpander, NoRepeatIndex)
+{
+	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
+
+	std::vector<pcl::index_t> UserMarkedRegion{ 1,2,3,4 };
+	Eigen::Matrix4d Pv;
+	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, EPointLabel::KEPT);
+
+	std::queue<pcl::index_t> CandidateQueue = pPointClusterExpander->initExpandingCandidateQueue(UserSpecifiedCluster);
+	int Sum = 0;
+	while (!CandidateQueue.empty())
+	{
+		pcl::index_t Index = CandidateQueue.front();
+		CandidateQueue.pop();
+		if (find(UserSpecifiedCluster->getCoreRegion().begin(), UserSpecifiedCluster->getCoreRegion().end(), Index) != UserSpecifiedCluster->getCoreRegion().end())
+			Sum++;
+	}
+	ASSERT_EQ(Sum, 0);
+}
 
 TEST_F(TestExpander, EmptyInput)
 {
@@ -64,24 +84,4 @@ TEST_F(TestExpander, NullptrInput)
 	CPointCluster* UserSpecifiedCluster = nullptr;
 
 	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
-}
-
-TEST_F(TestExpander, NoRepeatIndex)
-{
-	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
-
-	std::vector<pcl::index_t> UserMarkedRegion{1,2,3,4};
-	Eigen::Matrix4d Pv;
-	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, EPointLabel::KEPT);
-
-	std::queue<pcl::index_t> CandidateQueue = pPointClusterExpander->initExpandingCandidateQueue(UserSpecifiedCluster);
-	int Sum = 0;
-	while(!CandidateQueue.empty())
-	{
-		pcl::index_t Index = CandidateQueue.front();
-		CandidateQueue.pop();
-		if (find(UserSpecifiedCluster->getCoreRegion().begin(), UserSpecifiedCluster->getCoreRegion().end(), Index) != UserSpecifiedCluster->getCoreRegion().end())
-			Sum++;
-	}
-	ASSERT_EQ(Sum, 0);
 }

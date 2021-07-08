@@ -9,6 +9,17 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 bool CRetouchTask::init(const hiveConfig::CHiveConfig* vConfig)
 {
 	_ASSERTE(vConfig);
+
+	try 
+	{
+		auto NumSubconfig = vConfig->getNumSubconfig();
+	}
+	catch (...)
+	{
+		throw "vConfig Error";
+		return false;
+	}
+
 	m_pConfig = vConfig;
 
 	for (auto i = 0; i < vConfig->getNumSubconfig(); i++)

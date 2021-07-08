@@ -55,6 +55,13 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveMarkBackground(const std::ve
 
 //*****************************************************************
 //FUNCTION: 
+bool hiveObliquePhotography::PointCloudRetouch::hiveRemoveOutlier()
+{
+	return CPointCloudRetouchManager::getInstance()->executeRemoveOutlier();
+}
+
+//*****************************************************************
+//FUNCTION: 
 bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointLabel(std::vector<std::size_t>& voPointLabel)
 {
 	return CPointCloudRetouchManager::getInstance()->dumpPointLabel(voPointLabel);

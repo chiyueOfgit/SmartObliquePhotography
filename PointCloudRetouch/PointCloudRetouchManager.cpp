@@ -2,6 +2,7 @@
 #include "PointCloudRetouchManager.h"
 #include "PointCluster.h"
 #include "NeighborhoodBuilder.h"
+#include "OutlierDetector.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -172,4 +173,13 @@ void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::getIn
 	for (size_t i = 0; i < m_PointLabelSet.getSize(); i++)
 		if (m_PointLabelSet.getLabelAt(i) == vLabel)
 				vioIndices.push_back(i);
+}
+
+bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::executeRemoveOutlier()
+{
+	std::vector<pcl::index_t> Indeices;
+	getIndicesByLabel(Indeices, EPointLabel::UNDETERMINED);
+	getIndicesByLabel(Indeices, EPointLabel::KEPT);
+	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
+	return pOutlierDetector->execute<COutlierDetector>(Indeices, EPointLabel::UNWANTED);
 }
