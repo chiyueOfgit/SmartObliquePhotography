@@ -20,31 +20,29 @@ void CScreenSpaceOperation::cullByDepth(std::vector<pcl::index_t>& vioPointIndic
 	Eigen::Matrix4d PVInverse = m_PvMatrix.inverse();
 
 	//tile projection
-	const std::size_t NumPartitionX = 0.5 * m_Radius, NumPartitionY = 0.5 * m_Radius;
-	float TileDeltaX = (float)RectangleLength / NumPartitionX;
-	float TileDeltaY = (float)RectangleLength / NumPartitionY;
+	const std::size_t NumPartitionX = 0.5 * AreaWidth, NumPartitionY = 0.5 * AreaHeight;
+	float TileDeltaX = (float)AreaWidth / NumPartitionX;
+	float TileDeltaY = (float)AreaHeight / NumPartitionY;
 
 	std::vector<std::vector<pcl::index_t>> PointTile(NumPartitionX * NumPartitionY);
 
 	std::mutex Mutex;
 
 #pragma omp parallel for
-	for (int i = 0; i < PickedIndices.size(); i++)
+	for (int i = 0; i < vioPointIndices.size(); i++)
 	{
-		auto Index = PickedIndices[i];
-		auto& Point = Cloud[Index];
-		Eigen::Vector4f Position{ Point.x, Point.y, Point.z, 1.0f };
+		auto Index = vioPointIndices[i];
+		Eigen::Vector4f Position = Scene.getPositionAt(Index);
 
-		Position = PV * Position;
+		Position = m_PvMatrix * Position;
 		Position /= Position.eval().w();
 		Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
 		Position /= 2.0;
-		Position.x() *= Camera.window_size[0];
-		Position.y() *= Camera.window_size[1];
-		Eigen::Vector3f Coord{ Position.x(), Position.y(), Position.z() };
+		Position.x() *= m_WindowSize.x();
+		Position.y() *= m_WindowSize.y();
 
-		int TileIndexX = (Position.x() - BeginX) / TileDeltaX;
-		int TileIndexY = (Position.y() - BeginY) / TileDeltaY;
+		int TileIndexX = (Position.x() - m_LeftUp.x()) / TileDeltaX;
+		int TileIndexY = (Position.y() - m_LeftUp.y()) / TileDeltaY;
 
 		_ASSERTE(TileIndexX >= 0 && TileIndexY >= 0);
 
