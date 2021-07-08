@@ -20,6 +20,7 @@ namespace hiveObliquePhotography
 		const std::string CLUSTER_EXPANDER_MODE = "CLUSTER_EXPANDER_MODE";
 		const std::string CIRCLE_MODE = "CIRCLE_MODE";
 		const std::string RUBBER_MODE = "RUBBER_MODE";
+		const std::string REFRESH_IMMEDIATELY = "REFRESH_IMMEDIATELY";
 
 		class CVisualizationConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CVisualizationConfig>
 		{
@@ -31,14 +32,14 @@ namespace hiveObliquePhotography
 			{
 				CVisualizationConfig::__defineAttributesV();
 			
-				std::string RelativePath = "../";
-#ifdef _UNIT_TEST
-				RelativePath = "../../";
-#endif // _UNIT_TEST
+				//std::string RelativePath = "../Configs/";
+//#ifdef _UNIT_TEST
+//				RelativePath = "";
+//#endif // _UNIT_TEST
 
-				const std::string ConfigPath = "Configs/VisualizationConfig.xml";
+				const std::string ConfigPath = "VisualizationConfig.xml";
 
-				if (hiveConfig::hiveParseConfig(RelativePath + ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
+				if (hiveConfig::hiveParseConfig(/*RelativePath + */ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
 				{
 					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 					return;
@@ -56,6 +57,7 @@ namespace hiveObliquePhotography
 				_defineAttribute(CLUSTER_EXPANDER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(CIRCLE_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(RUBBER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(REFRESH_IMMEDIATELY, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				
 				_defineAttribute(LINEWIDTH, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 				_defineAttribute(SCREEN_CIRCLE_RADIUS, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);

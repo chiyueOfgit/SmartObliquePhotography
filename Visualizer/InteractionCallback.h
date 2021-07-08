@@ -35,7 +35,7 @@ namespace hiveObliquePhotography
 			bool m_UnwantedMode = true;
 			bool m_PartitionMode = true;
 			bool m_LineMode = false;
-			const bool m_IsRefreshImmediately = false;	//点选是否立即刷新
+			bool m_IsRefreshImmediately = true;	//点选是否立即刷新
 
 			double m_Radius = 40.0;
 			double m_Hardness = 0.8;
