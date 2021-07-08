@@ -144,7 +144,7 @@ int CPointCloudVisualizer::addUserColoredPoints(const std::vector<pcl::index_t>&
 	static int HighlightId = -1;
 	HighlightId++;
 	m_UserColoredPoints.push_back({ vPointSet, vColor, HighlightId });
-	return HighlightId++;
+	return HighlightId;
 }
 
 void CPointCloudVisualizer::removeUserColoredPoints(int vId)
