@@ -68,8 +68,6 @@ Eigen::Vector4f generateRandomPlane()
 	return { RandomSet[0], RandomSet[1], RandomSet[2], RandomSet[3] };
 }
 
-
-
 void generateRandomColorSet(std::vector<Eigen::Vector3i>& vioColorCluster, const Eigen::Vector3i& vMainColor, int vRange, int vNum)
 {
 	while (vNum--)
@@ -93,7 +91,6 @@ void generateNoiseColorSet(std::vector<Eigen::Vector3i>& vioColorCluster, int vN
 		vioColorCluster.push_back(TempColor);
 	}
 }
-
 
 TEST(Color_Feature_BaseTest_1, Test_1)
 {
@@ -119,7 +116,6 @@ TEST(Color_Feature_BaseTest_1, Test_1)
 			Sum++;
 	GTEST_ASSERT_EQ(Sum, 0);
 }
-
 
 TEST(Color_Feature_BaseTest_2, Test_2)
 {
@@ -223,7 +219,7 @@ TEST(Plane_Feature_BaseTest_1, Test_5)
 	for (size_t k = 0; k < 100; k++)
 		pCloud->push_back(generateRandomPointByPlane(Plane, true));
 
-	constexpr float OutlierFactor = 0.01f;
+	constexpr float OutlierFactor = 0.2f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
 		//pCloud->push_back(generateRandomPointByPlane(Plane, false));
 		pCloud->push_back(generateNoisePoint());
@@ -253,7 +249,7 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 	for (size_t k = 0; k < 100; k++)
 		pCloud->push_back(generateRandomPointByPlane(Plane, true));
 
-	constexpr float OutlierFactor = 40.0f;
+	constexpr float OutlierFactor = 0.4f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
 		//pCloud->push_back(generateRandomPointByPlane(Plane, false));
 		pCloud->push_back(generateNoisePoint());

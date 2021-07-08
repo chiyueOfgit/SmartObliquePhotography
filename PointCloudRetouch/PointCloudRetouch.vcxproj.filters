@@ -67,6 +67,9 @@
     <ClInclude Include="ColorFeature.h">
       <Filter>PointCluster\Feature</Filter>
     </ClInclude>
+    <ClInclude Include="OutlierDetector.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -109,6 +112,9 @@
     <ClCompile Include="PointCloudRetouchConfig.cpp" />
     <ClCompile Include="ColorFeature.cpp">
       <Filter>PointCluster\Feature</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlierDetector.cpp">
+      <Filter>Operation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
