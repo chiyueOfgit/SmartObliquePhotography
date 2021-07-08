@@ -28,7 +28,7 @@ namespace hiveObliquePhotography
 
 			bool init(PointCloud_t::Ptr vPointCloud, const hiveConfig::CHiveConfig* vConfig);
 			void clearMarkerResult();
-			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel);
+			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, const std::function<void(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel);
 			bool executeRemoveOutlier();
 			
 			std::size_t   getNumCluster() const { return m_PointClusterSet.getNumCluster(); }
@@ -69,7 +69,7 @@ namespace hiveObliquePhotography
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 			
-			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel);
+			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, const std::function<void(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel);
 
 		friend class hiveDesignPattern::CSingleton<CPointCloudRetouchManager>;
 		};

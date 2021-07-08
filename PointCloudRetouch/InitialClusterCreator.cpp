@@ -12,20 +12,20 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, float vRadius,  EPointLabel vLabel, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, const hiveConfig::CHiveConfig *vClusterConfig)
+CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, const std::function<void(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig *vClusterConfig)
 {
 	CPointCluster* pInitialCluster = new CPointCluster;
 
 	std::vector<float> PointHardnessSet(vUserMarkedRegion.size(), 0.0);
 
-	Eigen::Vector3f ViewPos;
-	Eigen::Vector2i LeftUp, RightDown;
-	CScreenSpaceOperation Cull(vPvMatrix, ViewPos, vWindowSize, LeftUp, RightDown);
-	//Cull.cullByDepth()
+	auto PointIndices = vUserMarkedRegion;
+	std::vector<float> PointDistances;
+	CScreenSpaceOperation Cull(vPvMatrix, vDistanceFunc);
+	Cull.cull(PointIndices, PointDistances, vClusterConfig);
 	
-	__generateHardness4EveryPoint(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, PointHardnessSet, vClusterConfig);
+	//__generateHardness4EveryPoint(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, PointHardnessSet, vClusterConfig);
 
-	pcl::index_t ClusterCenter = __computeClusterCenter(vUserMarkedRegion, PointHardnessSet, vCenter, vPvMatrix, vWindowSize);
+	//pcl::index_t ClusterCenter = __computeClusterCenter(vUserMarkedRegion, PointHardnessSet, vCenter, vPvMatrix, vWindowSize);
 
 	std::optional<float> DivideThreshold = vClusterConfig->getAttribute<float>("HARDNESS_THRESHOLD");
 	if (!DivideThreshold.has_value())
@@ -37,7 +37,7 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 	std::vector<pcl::index_t> FeatureGenerationSet, ValidationSet;
 	__divideUserSpecifiedRegion(vUserMarkedRegion, PointHardnessSet, DivideThreshold.value(), FeatureGenerationSet, ValidationSet);
 
-	pInitialCluster->init(vClusterConfig, ClusterCenter, vLabel, FeatureGenerationSet, ValidationSet, CPointCloudRetouchManager::getInstance()->addAndGetTimestamp());
+	//pInitialCluster->init(vClusterConfig, ClusterCenter, vTargetLabel, FeatureGenerationSet, ValidationSet, CPointCloudRetouchManager::getInstance()->addAndGetTimestamp());
 
 	return pInitialCluster;
 }

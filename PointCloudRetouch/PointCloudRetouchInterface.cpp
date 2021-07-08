@@ -41,16 +41,16 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveSave(PointCloud_t::Ptr voPoi
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveMarkLitter(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize)
+bool hiveObliquePhotography::PointCloudRetouch::hiveMarkLitter(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, const std::function<void(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix)
 {
-	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness,  vRadius, vCenter, vPvMatrix, vWindowSize, EPointLabel::UNWANTED);
+	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness, vDistanceFunc, vPvMatrix, EPointLabel::UNWANTED);
 }
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveMarkBackground(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize)
+bool hiveObliquePhotography::PointCloudRetouch::hiveMarkBackground(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, const std::function<void(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix)
 {
-	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, EPointLabel::KEPT);
+	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness, vDistanceFunc, vPvMatrix, EPointLabel::KEPT);
 }
 
 //*****************************************************************

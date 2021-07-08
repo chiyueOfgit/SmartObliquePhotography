@@ -69,7 +69,7 @@ void CPointCloudRetouchManager::clearMarkerResult()
 
 //*****************************************************************
 //FUNCTION: 
-CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel)
+CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, const std::function<void(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel)
 {
 	_ASSERTE(m_pConfig);
 	_ASSERTE((vTargetLabel == EPointLabel::KEPT) || (vTargetLabel == EPointLabel::UNWANTED));
@@ -77,7 +77,7 @@ CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::ve
 	const hiveConfig::CHiveConfig* pClusterConfig = (vTargetLabel == EPointLabel::KEPT) ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig();
 	_ASSERTE(pClusterConfig);
 
-	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vHardness, vRadius, vTargetLabel, vCenter, vPvMatrix, vWindowSize, pClusterConfig);
+	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vHardness, vDistanceFunc, vTargetLabel, vPvMatrix, pClusterConfig);
 }
 
 //*****************************************************************
@@ -103,13 +103,13 @@ bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::dumpP
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel)
+bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, const std::function<void(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel)
 {
 	_ASSERTE((vTargetLabel == EPointLabel::UNWANTED) || (vTargetLabel == EPointLabel::KEPT));
 
 	try
 	{
-		CPointCluster* pInitCluster = __generateInitialCluster(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, vTargetLabel);
+		CPointCluster* pInitCluster = __generateInitialCluster(vUserMarkedRegion, vHardness, vDistanceFunc, vPvMatrix, vTargetLabel);
 		_ASSERTE(pInitCluster);
 		m_PointLabelSet.tagCoreRegion4Cluster(pInitCluster->getCoreRegion(), vTargetLabel, pInitCluster->getClusterIndex());
 
