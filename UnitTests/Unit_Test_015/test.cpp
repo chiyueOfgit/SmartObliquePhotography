@@ -219,7 +219,7 @@ TEST(Plane_Feature_BaseTest_1, Test_5)
 	for (size_t k = 0; k < 100; k++)
 		pCloud->push_back(generateRandomPointByPlane(Plane, true));
 
-	constexpr float OutlierFactor = 0.01f;
+	constexpr float OutlierFactor = 0.2f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
 		//pCloud->push_back(generateRandomPointByPlane(Plane, false));
 		pCloud->push_back(generateNoisePoint());
@@ -249,7 +249,7 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 	for (size_t k = 0; k < 100; k++)
 		pCloud->push_back(generateRandomPointByPlane(Plane, true));
 
-	constexpr float OutlierFactor = 40.0f;
+	constexpr float OutlierFactor = 0.4f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
 		//pCloud->push_back(generateRandomPointByPlane(Plane, false));
 		pCloud->push_back(generateNoisePoint());
