@@ -14,7 +14,7 @@
 
 using namespace hiveObliquePhotography;
 
-constexpr char ConfigPath[] = "../../UnitTests/Unit_Test_012/PointCloudRetouchConfig.xml";
+constexpr char ConfigPath[] = "PointCloudRetouchConfig.xml";
 
 class TestPointCluster : public testing::Test
 {
@@ -26,7 +26,7 @@ protected:
 	void SetUp() override
 	{
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
-		pcl::io::loadPCDFile("../../UnitTests/Unit_Test_012/slice 3.pcd", *pCloud);
+		pcl::io::loadPCDFile("../TestModel/General/slice 3.pcd", *pCloud);
 		ASSERT_GT(pCloud->size(), 0);
 		
 		pConfig = new PointCloudRetouch::CPointCloudRetouchConfig;
@@ -42,7 +42,6 @@ protected:
 
 	void TearDown() override
 	{
-		delete pConfig;
 	}
 };
 
@@ -53,15 +52,15 @@ TEST_F(TestPointCluster, DeathTest_Uninitialized)
 	ASSERT_ANY_THROW(double Res = PointCluster.evaluateProbability(TestIndex));
 }
 
-
 TEST_F(TestPointCluster, DeathTest_InvalidIndex)
 {
 	std::vector<pcl::index_t> UserMarkedRegion{1,2,3,4,5,6,7};
 	
 	pcl::index_t TestIndex = -1;
 	Eigen::Matrix4d Pv;
-	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, PointCloudRetouch::EPointLabel::KEPT);
-	ASSERT_ANY_THROW(double Res = pPointCluster->evaluateProbability(TestIndex));
+	const auto* pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, PointCloudRetouch::EPointLabel::KEPT);
+	ASSERT_ANY_THROW(pPointCluster->evaluateProbability(TestIndex));
+	//double Res = pPointCluster->evaluteProbability(TestIndex);
 }
 
 TEST_F(TestPointCluster, FalseProbability_Test)
