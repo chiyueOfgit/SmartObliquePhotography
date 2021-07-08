@@ -12,7 +12,7 @@ namespace hiveObliquePhotography
 			CInitialClusterCreator() = default;
 			~CInitialClusterCreator() = default;
 
-			CPointCluster* createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, const std::function<void(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig *vClusterConfig);
+			CPointCluster* createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, const std::function<float(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig *vClusterConfig);
 
 		private:
 			void __divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float> vPointHardnessSet,  float vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet);

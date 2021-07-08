@@ -8,7 +8,7 @@ namespace hiveObliquePhotography
 		class CScreenSpaceOperation
 		{
 		public:
-			CScreenSpaceOperation(Eigen::Matrix4d vPvMatrix, const std::function<void(Eigen::Vector2f)>& vDistanceFunc)
+			CScreenSpaceOperation(Eigen::Matrix4d vPvMatrix, const std::function<float(Eigen::Vector2f)>& vDistanceFunc)
 				: m_PvMatrix(std::move(vPvMatrix)), m_DistanceFunc(vDistanceFunc)
 			{}
 			~CScreenSpaceOperation() = default;
@@ -19,7 +19,7 @@ namespace hiveObliquePhotography
 			
 		private:
 			Eigen::Matrix4d m_PvMatrix;
-			const std::function<void(Eigen::Vector2f)>& m_DistanceFunc;
+			const std::function<float(Eigen::Vector2f)>& m_DistanceFunc;
 		};
 	}
 }
