@@ -1,11 +1,14 @@
 #include "pch.h"
 
+#include "OutlierDetector.h"
 #include "PointCloudRetouchConfig.h"
 #include "PointCloudRetouchInterface.h"
 #include "PointCloudRetouchManager.h"
-#include "PointCluster.h"
-#include "PointClusterExpander.h"
 #include "pcl/io/pcd_io.h"
+#include <fstream>
+#include <boost/archive/text_oarchive.hpp> 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
 
 //²âÊÔÓÃÀýÁÐ±í£º
 //  * DeathTest_InvalidInput
@@ -16,9 +19,8 @@
 using namespace  hiveObliquePhotography::PointCloudRetouch;
 
 constexpr char ConfigPath[] = "PointCloudRetouchConfig.xml";
-constexpr char TestOneModelPath[] = "../TestModel/Test009_Model/test1.pcd";
-constexpr char TestTwoModelPath[] = "../TestModel/Test009_Model/test2.pcd";
-constexpr char TestThreeModelPath[] = "../TestModel/Test009_Model/test3.pcd";
+//constexpr std::string TestTwoModelPath = "../TestModel/Test009_Model/test2.pcd";
+//constexpr std::string TestThreeModelPath = "../TestModel/Test009_Model/test3.pcd";
 
 class TestOutlierDetector : public testing::Test
 {
@@ -38,13 +40,21 @@ protected:
 		}
 ;	}
 
-	void initTest(std::string& ModelPath)
+	void initTest(const std::string& vModelPath)
 	{
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
-		pcl::io::loadPCDFile(ModelPath, *pCloud);
+		pcl::io::loadPCDFile(vModelPath, *pCloud);
 		ASSERT_GT(pCloud->size(), 0);
 		pManager = CPointCloudRetouchManager::getInstance();
 		pManager->init(pCloud, pConfig);
+	}
+
+	void loadIndices(const std::string& vPath, pcl::Indices& voIndices)
+	{
+		std::ifstream File(vPath);
+		boost::archive::text_iarchive ia(File);
+		ia >> BOOST_SERIALIZATION_NVP(voIndices);
+		File.close();
 	}
 
 	void TearDown() override
@@ -54,3 +64,83 @@ protected:
 	}
 };
 
+
+//TEST_F(TestOutlierDetector, DeathTest_InvalidInput)
+//{
+//	initTest("../TestModel/Test009_Model/test1.pcd");
+//	pcl::Indices InputIndices;
+//	InputIndices.push_back(INT_MAX);
+//	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
+//	ASSERT_ANY_THROW(pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED));
+//	
+//}
+
+
+TEST_F(TestOutlierDetector, FunctionTest_Test1)
+{
+	initTest("../TestModel/Test009_Model/test1.pcd");
+	pcl::Indices InputIndices;
+	for (int i = 0; i < pManager->getRetouchScene().getNumPoint(); i++)
+		InputIndices.push_back(i);
+	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
+    pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED);
+	
+	pcl::Indices OutlierIndices;
+	pManager->getIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
+
+	pcl::Indices GroundTruth;
+	loadIndices("../TestModel/Test009_Model/test1_indices.txt", GroundTruth);
+
+	pcl::Indices Interaction;
+	std::set_intersection(OutlierIndices.begin(), OutlierIndices.end(),
+		GroundTruth.begin(), GroundTruth.end(),
+		std::inserter(Interaction, Interaction.begin()));
+	
+	GTEST_ASSERT_EQ(Interaction.size(), GroundTruth.size());
+}
+
+TEST_F(TestOutlierDetector, FunctionTest_Test2)
+{
+	initTest("../TestModel/Test009_Model/test2.pcd");
+	pcl::Indices InputIndices;
+	for (int i = 0; i < pManager->getRetouchScene().getNumPoint(); i++)
+		InputIndices.push_back(i);
+	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
+	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED);
+
+	pcl::Indices OutlierIndices;
+	pManager->getIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
+
+	pcl::Indices GroundTruth;
+	loadIndices("../TestModel/Test009_Model/test2_indices.txt", GroundTruth);
+
+	pcl::Indices Interaction;
+	std::set_intersection(OutlierIndices.begin(), OutlierIndices.end(),
+		GroundTruth.begin(), GroundTruth.end(),
+		std::inserter(Interaction, Interaction.begin()));
+
+	GTEST_ASSERT_EQ(Interaction.size(), GroundTruth.size());
+}
+
+TEST_F(TestOutlierDetector, FunctionTest_Test3)
+{
+	initTest("../TestModel/Test009_Model/test3.pcd");
+	pcl::Indices InputIndices;
+	for (int i = 0; i < pManager->getRetouchScene().getNumPoint(); i++)
+		InputIndices.push_back(i);
+	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
+	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED);
+
+	pcl::Indices OutlierIndices;
+	pManager->getIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
+
+	pcl::Indices GroundTruth;
+	loadIndices("../TestModel/Test009_Model/test3_indices.txt", GroundTruth);
+
+	pcl::Indices Interaction;
+	std::set_intersection(OutlierIndices.begin(), OutlierIndices.end(),
+		GroundTruth.begin(), GroundTruth.end(),
+		std::inserter(Interaction, Interaction.begin()));
+
+	GTEST_ASSERT_EQ(Interaction.size(), GroundTruth.size());
+}
