@@ -107,10 +107,10 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		if (KeyString == "t")
 		{
 			//m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera");
-			PointCloudRetouch::hiveRemoveOutlier();
+			/*PointCloudRetouch::hiveRemoveOutlier();
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-			m_pVisualizer->refresh(PointLabel);
+			m_pVisualizer->refresh(PointLabel);*/
 		}
 	}
 }
