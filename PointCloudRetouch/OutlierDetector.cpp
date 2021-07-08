@@ -13,18 +13,18 @@ _REGISTER_NORMAL_PRODUCT(COutlierDetector, KEYWORD::OUTLIER_DETECTOR)
 
 //*****************************************************************
 //FUNCTION: 
-void COutlierDetector::runV(pcl::Indices& vInputSet, EPointLabel vExpectLabel)
+void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vExpectLabel)
 {
-	if (vInputSet.empty())
+	if (vInputIndices.empty())
 		return;
     auto pManager = CPointCloudRetouchManager::getInstance();
-	for (auto CurrentIndex : vInputSet)
+	for (auto CurrentIndex : vInputIndices)
 		if (CurrentIndex < 0 || CurrentIndex >= pManager->getRetouchScene().getNumPoint())
 			_THROW_RUNTIME_ERROR("Index is out of range");
 	
 	
 	PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
-	for (auto Index : vInputSet)
+	for (auto Index : vInputIndices)
 	{
 		pcl::PointSurfel TempPoint;
 		auto Pos = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(Index);
