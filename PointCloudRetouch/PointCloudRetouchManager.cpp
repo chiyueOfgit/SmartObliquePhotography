@@ -123,7 +123,7 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 		}
 		return true;
 	}
-	catch (std::runtime_error& e)
+	catch (std::runtime_error&)
 	{
 
 	}
