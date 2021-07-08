@@ -315,7 +315,7 @@ void CQTInterface::onActionDiscardAndRecover()
 void CQTInterface::onActionDelete()
 {
     PointCloudRetouch::hiveClearMarkerResult();
-
+    Visualization::hiveCancelAllHighlighting();
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
     Visualization::hiveRefreshVisualizer(PointLabel);

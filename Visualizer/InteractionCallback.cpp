@@ -195,9 +195,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				m_Hardness = ScreenCircleHardness.value();
 		}
 
+		m_Radius = (int)m_Radius;
+
 		std::vector<pcl::index_t> PickedIndices;
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);	//rectangle
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
 
@@ -205,7 +207,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
 
 		// test ray
-		m_Radius = (int)m_Radius;
 		int RectangleLength = 2 * m_Radius + 1;
 		std::vector<float> PointsDepth(RectangleLength * RectangleLength, FLT_MAX);
 		std::set<int> Points;
@@ -213,46 +214,73 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Eigen::Matrix4d Proj, View;
 		Camera.computeProjectionMatrix(Proj);
 		Camera.computeViewMatrix(View);
-		Eigen::Matrix4d PV = Proj * View;
-		Eigen::Matrix4d PVInverse = PV.inverse();
+		Eigen::Matrix4f PV = (Proj * View).cast<float>();
+		Eigen::Matrix4f PVInverse = PV.inverse();
 
 		auto Cloud = *m_pVisualizer->m_pSceneCloud;
 
-		//tile projection
-		const std::size_t NumPartitionX = 4, NumPartitionY = 4;
-		for (auto& Point : Cloud)
-		{
-			Eigen::Vector4f Position{ Point.x, Point.y, Point.z, 1.0f };
+		int BeginX = PosX - m_Radius;
+		int BeginY = PosY - m_Radius;
 
-			Position /= Position.eval().w();
-			Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
-			Position /= 2.0;
-			Position.x() *= Camera.window_pos[0];
-			Position.y() *= Camera.window_pos[1];
-			Eigen::Vector3f Coord{ Position.x(), Position.y(), Position.z() };
-		}
+		//tile projection
+		const std::size_t NumPartitionX = 0.5 * m_Radius, NumPartitionY = 0.5 * m_Radius;
+		float TileDeltaX = (float)RectangleLength / NumPartitionX;
+		float TileDeltaY = (float)RectangleLength / NumPartitionY;
+
+		std::vector<std::vector<pcl::index_t>> PointTile(NumPartitionX * NumPartitionY);
 
 		std::mutex Mutex;
 
 #pragma omp parallel for
-		for (int Y = PosY - m_Radius; Y <= int(PosY + m_Radius); Y++)
+		for (int i = 0; i < PickedIndices.size(); i++ )
 		{
-			for (int X = PosX - m_Radius; X <= int(PosX + m_Radius); X++)
+			auto Index = PickedIndices[i];
+			auto& Point = Cloud[Index];
+			Eigen::Vector4f Position{ Point.x, Point.y, Point.z, 1.0f };
+
+			Position = PV * Position;
+			Position /= Position.eval().w();
+			Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
+			Position /= 2.0;
+			Position.x() *= Camera.window_size[0];
+			Position.y() *= Camera.window_size[1];
+			Eigen::Vector3f Coord{ Position.x(), Position.y(), Position.z() };
+
+			int TileIndexX = (Position.x() - BeginX) / TileDeltaX;
+			int TileIndexY = (Position.y() - BeginY) / TileDeltaY;
+
+			_ASSERTE(TileIndexX >= 0 && TileIndexY >= 0);
+
+			Mutex.lock();
+			PointTile[TileIndexX + TileIndexY * NumPartitionX].push_back(Index);
+			Mutex.unlock();
+		}
+
+#pragma omp parallel for
+		for (int Y = BeginY; Y <= int(PosY + m_Radius); Y++)
+		{
+#pragma omp parallel for
+			for (int X = BeginX; X <= int(PosX + m_Radius); X++)
 			{
 				std::map<float, int> DepthAndIndices;
 
-				Eigen::Vector4d PixelPosition = { X / Camera.window_size[0] * 2 - 1, Y / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
+				Eigen::Vector4f PixelPosition = { float(X / Camera.window_size[0] * 2 - 1), float(Y / Camera.window_size[1] * 2 - 1), 0.0f, 1.0f };
 
 				PixelPosition = PVInverse * PixelPosition;
 				PixelPosition /= PixelPosition.w();
 
 				Eigen::Vector3f RayOrigin{ (float)Camera.pos[0], (float)Camera.pos[1], (float)Camera.pos[2] };
-				Eigen::Vector3f RayDirection = { (float)PixelPosition.x() - RayOrigin.x(), (float)PixelPosition.y() - RayOrigin.y(), (float)PixelPosition.z() - RayOrigin.z() };
+				Eigen::Vector3f RayDirection = {PixelPosition.x() - RayOrigin.x(), PixelPosition.y() - RayOrigin.y(), PixelPosition.z() - RayOrigin.z() };
 				RayDirection /= RayDirection.norm();
 
-				for (int i = 0; i < PickedIndices.size(); i++)
+				int TileIndexX = (X - BeginX) / TileDeltaX;
+				int TileIndexY = (Y - BeginY) / TileDeltaY;
+
+				auto& Tile = PointTile[TileIndexX + TileIndexY * NumPartitionX];
+
+				for (auto Index : Tile)
 				{
-					auto& Point = m_pVisualizer->m_pSceneCloud->points[PickedIndices[i]];
+					auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
 					Eigen::Vector3f Pos{ Point.x, Point.y, Point.z };
 					Eigen::Vector3f Normal{ Point.normal_x, Point.normal_y, Point.normal_z };
 
@@ -263,10 +291,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 					const float SurfelRadius = 1.0f;	//surfel world radius
 
 					if ((IntersectPosition - Pos).norm() < SurfelRadius)
-							DepthAndIndices[K] = PickedIndices[i];
+							DepthAndIndices[K] = Index;
 				}
 
-				int Offset = X - (PosX - m_Radius) + (Y - (PosY - m_Radius)) * RectangleLength;
+				int Offset = X - BeginX + (Y - BeginY) * RectangleLength;
 				_ASSERTE(Offset >= 0);
 
 				const float WorldLengthLimit = 0.5f;	//magic
@@ -289,13 +317,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		m_pVisualizer->addUserColoredPoints({Points.begin(), Points.end()}, { 255, 255, 255 });
 
-		//if (m_UnwantedMode)                                                                                   
-		//	PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
-		//else
-		//	PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
+		if (m_UnwantedMode)                                                                                   
+			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
+		else
+			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
 
 		m_IsRefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY).value();
-
 		if (m_IsRefreshImmediately)
 		{
 			std::vector<std::size_t> PointLabel;
@@ -339,53 +366,18 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		}
 	}
 
-	//if(m_LineMode)
-	{
-		//if (m_MousePressStatus[0] || m_MousePressStatus[1])
-		//{
-		//	std::vector<int> PickedIndices;
-		//	pcl::visualization::Camera Camera;
-		//	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-  //          const Eigen::Vector3f CameraPos{ static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
-		//	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
-		//	Camera.computeViewMatrix(ViewMatrix);
-		//	Camera.computeProjectionMatrix(ProjectionMatrix);
-		//	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-		//	
-		//	m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->linePick(PosX, PosY, PosX + DeltaX, PosY + DeltaY, m_pVisualizationConfig->getAttribute<float>(LINEWIDTH).value(), PickedIndices);
-		//	pcl::IndicesPtr Indices = std::make_shared<pcl::Indices>(PickedIndices);
-		//	//AutoRetouch::hiveExecuteMaxVisibilityClustering(Indices, m_UnwantedMode ? AutoRetouch::EPointLabel::UNWANTED : AutoRetouch::EPointLabel::UNDETERMINED, CameraPos, PvMatrix);
-
-		//	//m_pVisualizer->refresh();
-		//	
-		//}
-		
-	}
 }
 
 //*****************************************************************
 //FUNCTION: 
 void hiveObliquePhotography::Visualization::CInteractionCallback::pointPicking(const pcl::visualization::PointPickingEvent& vEvent)
 {
-	//auto Index = vEvent.getPointIndex();
-	//float GroundHeight = m_pVisualizer->m_pSceneCloud->points[Index].z + 0.1f;
-	//	m_pAutoRetouchConfig->overwriteAttribute(KEY_WORDS::GROUND_TEST_THRESHOLD, GroundHeight);
+
 }
 
 //*****************************************************************
 //FUNCTION: 
 void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEvent& vEvent)
 {
-	//const pcl::IndicesPtr pIndices(new pcl::Indices);
-	//vEvent.getPointsIndices(*pIndices);
 
-	//pcl::visualization::Camera Camera;
-	//m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
- //   const Eigen::Vector3f CameraPos = { static_cast<float>(Camera.pos[0]),static_cast<float>(Camera.pos[1]),static_cast<float>(Camera.pos[2]) };
-	//Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
-	//Camera.computeViewMatrix(ViewMatrix);
-	//Camera.computeProjectionMatrix(ProjectionMatrix);
-	//const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	//
-	////m_pVisualizer->refresh();
 }
