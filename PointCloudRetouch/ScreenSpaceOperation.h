@@ -16,7 +16,7 @@ namespace hiveObliquePhotography
 			~CScreenSpaceOperation() = default;
 
 			void cullByDepth(std::vector<pcl::index_t>& vioPointIndices, const hiveConfig::CHiveConfig* vClusterConfig);
-			void cullByRadius(std::vector<pcl::index_t>& vioPointIndices, float vRadius, const hiveConfig::CHiveConfig* vClusterConfig);
+			void cullByRadius(std::vector<pcl::index_t>& vioPointIndices, std::vector<float>& voPointDistance, float vRadius, const hiveConfig::CHiveConfig* vClusterConfig);
 			
 		private:
 			Eigen::Matrix4d m_PvMatrix;
