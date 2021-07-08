@@ -1,2 +1,92 @@
 #include "pch.h"
-#include "ScreenSpaceOperation.cpp"
+#include "ScreenSpaceOperation.h"
+#include "PointCloudRetouchManager.h"
+#include <omp.h>
+
+using namespace hiveObliquePhotography::PointCloudRetouch;
+
+//*****************************************************************
+//FUNCTION: 
+void CScreenSpaceOperation::cullByDepth(std::vector<pcl::index_t>& vioPointIndices, const hiveConfig::CHiveConfig* vClusterConfig)
+{
+	// test ray
+	auto& Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+
+	static int AreaWidth = m_RightDown.x() - m_LeftUp.x() + 1;
+	static int AreaHeight = m_RightDown.y() - m_LeftUp.y() + 1;
+
+	std::vector<float> PointsDepth(AreaWidth * AreaHeight, FLT_MAX);
+	std::set<pcl::index_t> ResultPoints;
+
+	Eigen::Matrix4d PVInverse = m_PvMatrix.inverse();
+
+	//auto Cloud = *m_pVisualizer->m_pSceneCloud;
+	//for (auto& Point : Cloud)
+	//{
+	//	
+	//}
+
+	std::mutex Mutex;
+
+#pragma omp parallel for
+	for (int Y = m_LeftUp.y(); Y <= m_RightDown.y(); Y++)
+	{
+		for (int X = m_LeftUp.x(); X <= m_RightDown.x(); X++)
+		{
+			std::map<float, int> DepthAndIndices;
+
+			Eigen::Vector4d PixelPosition = { X / m_WindowSize.x() * 2 - 1, Y / m_WindowSize.y() * 2 - 1, 0.0f, 1.0f };
+
+			PixelPosition = PVInverse * PixelPosition;
+			PixelPosition /= PixelPosition.w();
+
+			Eigen::Vector3f RayOrigin = m_ViewPos;
+			Eigen::Vector3f RayDirection = { (float)PixelPosition.x() - RayOrigin.x(), (float)PixelPosition.y() - RayOrigin.y(), (float)PixelPosition.z() - RayOrigin.z() };
+			RayDirection /= RayDirection.norm();
+
+			for (int i = 0; i < vioPointIndices.size(); i++)
+			{
+				Eigen::Vector3f Pos{ Scene.getPositionAt(i) };
+				Eigen::Vector3f Normal{ Scene.getNormalAt(i) };
+
+				float K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
+
+				Eigen::Vector3f IntersectPosition = RayOrigin + K * RayDirection;
+
+				const float SurfelRadius = 1.0f;	//surfel world radius
+
+				if ((IntersectPosition - Pos).norm() < SurfelRadius)
+					DepthAndIndices[K] = vioPointIndices[i];
+			}
+
+			int Offset = X - m_LeftUp.x() + (Y - m_LeftUp.y()) * AreaWidth;
+			_ASSERTE(Offset >= 0);
+
+			const float WorldLengthLimit = 0.5f;	//magic
+			if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
+			{
+				auto MinDepth = DepthAndIndices.begin()->first;
+				for (auto& Pair : DepthAndIndices)
+				{
+					if (Pair.first - MinDepth < WorldLengthLimit)
+					{
+						Mutex.lock();
+						ResultPoints.insert(Pair.second);
+						Mutex.unlock();
+					}
+
+				}
+			}
+		}
+	}
+
+	vioPointIndices = { ResultPoints.begin(), ResultPoints.end() };
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CScreenSpaceOperation::cullByRadius(std::vector<pcl::index_t>& vioPointIndices, float vRadius, const hiveConfig::CHiveConfig* vClusterConfig)
+{
+	
+}
+
