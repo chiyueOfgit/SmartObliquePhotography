@@ -177,12 +177,12 @@ void CSingleStepWindow::__onActionShow()
 
         float ChangeRate = (float)CurrentPoint / m_ExpandPoints.size();
 
-        Visualization::hiveSetPointsColor(SingleStepPoints, 
+        Visualization::hiveHighlightPointSet(SingleStepPoints, 
             {
             m_BeginColor.x() + (int)(DeltaColor.x() * ChangeRate),
             m_BeginColor.y() + (int)(DeltaColor.y() * ChangeRate),
-            m_BeginColor.z() + (int)(DeltaColor.z() * ChangeRate) 
-            }, false);
+            m_BeginColor.z() + (int)(DeltaColor.z() * ChangeRate)
+            });
 
         if (CurrentPoint == m_ExpandPoints.size())
             PointCloudRetouch::hiveDumpPointLabel(m_PointLabel);
@@ -195,7 +195,7 @@ void CSingleStepWindow::__onActionClear()
     if (m_pCloud)
     {
         PointCloudRetouch::hiveClearMarkerResult();
-        Visualization::hiveClearPointsColor();
+        Visualization::hiveCancelAllHighlighting();
         PointCloudRetouch::hiveDumpPointLabel(m_PointLabel);
         Visualization::hiveRefreshVisualizer(m_PointLabel);
     }

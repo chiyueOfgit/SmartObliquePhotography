@@ -24,17 +24,23 @@ void hiveObliquePhotography::Visualization::hiveRunVisualizerLoop()
 	CPointCloudVisualizer::getInstance()->run();
 }
 
-void hiveObliquePhotography::Visualization::hiveSetPointsColor(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp)
+int hiveObliquePhotography::Visualization::hiveHighlightPointSet(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor)
 {
 	auto MaxIter = std::max_element(vPointSet.begin(), vPointSet.end());
 	_ASSERTE(MaxIter != vPointSet.end() && *MaxIter < CPointCloudVisualizer::getInstance()->m_pSceneCloud->size());
+	_ASSERTE(vColor.x() >= 0 && vColor.y() >= 0 && vColor.z() >= 0);
 
-	CPointCloudVisualizer::getInstance()->__setUserColoredPoints(vPointSet, vColor, vIsTemp);
+	return CPointCloudVisualizer::getInstance()->addUserColoredPoints(vPointSet, vColor);
 }
 
-void hiveObliquePhotography::Visualization::hiveClearPointsColor()
+void hiveObliquePhotography::Visualization::hiveCancelHighlighting(int vId)
 {
-	CPointCloudVisualizer::getInstance()->__clearUserColoredPoints();
+	CPointCloudVisualizer::getInstance()->removeUserColoredPoints(vId);
+}
+
+void hiveObliquePhotography::Visualization::hiveCancelAllHighlighting()
+{
+	CPointCloudVisualizer::getInstance()->removeAllUserColoredPoints();
 }
 
 pcl::visualization::PCLVisualizer*& hiveObliquePhotography::Visualization::hiveGetPCLVisualizer()
