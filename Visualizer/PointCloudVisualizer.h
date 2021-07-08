@@ -4,11 +4,11 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
-		struct SPointsRecord
+		struct SHighlightPoints
 		{
 			std::vector<pcl::index_t> PointSet;
 			Eigen::Vector3i Color{0, 0, 0};
-			int Lifetime = 1;
+			int Id = -1;
 		};
 
 		class CInteractionCallback;
@@ -26,24 +26,24 @@ namespace hiveObliquePhotography
 
 			void run();
 
+			int addUserColoredPoints(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor);
+			void removeUserColoredPoints(int vId);
+			void removeAllUserColoredPoints() { m_UserColoredPoints.clear(); }
+
 		private:
 			CPointCloudVisualizer();
-
-			void __setUserColoredPoints(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp = true);
-			void __clearUserColoredPoints();
 
 			pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 			CInteractionCallback* m_pCallback = nullptr;
 
 			PointCloud_t::Ptr m_pSceneCloud = nullptr;
 
-			std::vector<SPointsRecord> m_UserColoredPoints;
+			std::vector<SHighlightPoints> m_UserColoredPoints;
 
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
 			friend class CInteractionCallback;
 			friend pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
-			friend void hiveSetPointsColor(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, bool vIsTemp);
-			friend void hiveClearPointsColor();
+
 		};
 	}
 }

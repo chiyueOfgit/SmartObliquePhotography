@@ -144,7 +144,7 @@ void CSingleStepWindow::__onActionLoad()
     for (auto& IndicesPath : IndicesPathSet)
     {
         auto RandomColor = hiveMath::hiveGenerateRandomIntegerSet(100, 255, 3);
-        Visualization::hiveSetPointsColor(__loadIndices(IndicesPath), { RandomColor[0], RandomColor[1], RandomColor[2] });
+        Visualization::hiveHighlightPointSet(__loadIndices(IndicesPath), { RandomColor[0], RandomColor[1], RandomColor[2] });
     }
 
     std::vector<std::size_t> PointLabel;
@@ -154,7 +154,7 @@ void CSingleStepWindow::__onActionLoad()
 
 void CSingleStepWindow::__onActionClear()
 {
-    Visualization::hiveClearPointsColor();
+    Visualization::hiveCancelAllHighlighting();
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
     Visualization::hiveRefreshVisualizer(PointLabel);
