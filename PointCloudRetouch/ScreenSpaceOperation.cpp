@@ -19,12 +19,37 @@ void CScreenSpaceOperation::cullByDepth(std::vector<pcl::index_t>& vioPointIndic
 
 	Eigen::Matrix4d PVInverse = m_PvMatrix.inverse();
 
-	//auto Cloud = *m_pVisualizer->m_pSceneCloud;
-	//for (auto& Point : Cloud)
-	//{
-	//	
-	//}
+	//tile projection
+	const std::size_t NumPartitionX = 0.5 * AreaWidth, NumPartitionY = 0.5 * AreaHeight;
+	float TileDeltaX = (float)AreaWidth / NumPartitionX;
+	float TileDeltaY = (float)AreaHeight / NumPartitionY;
 
+	std::vector<std::vector<pcl::index_t>> PointTile(NumPartitionX * NumPartitionY);
+
+	std::mutex Mutex;
+
+#pragma omp parallel for
+	for (int i = 0; i < vioPointIndices.size(); i++)
+	{
+		auto Index = vioPointIndices[i];
+		Eigen::Vector4f Position = Scene.getPositionAt(Index);
+
+		Position = m_PvMatrix * Position;
+		Position /= Position.eval().w();
+		Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
+		Position /= 2.0;
+		Position.x() *= m_WindowSize.x();
+		Position.y() *= m_WindowSize.y();
+
+		int TileIndexX = (Position.x() - m_LeftUp.x()) / TileDeltaX;
+		int TileIndexY = (Position.y() - m_LeftUp.y()) / TileDeltaY;
+
+		_ASSERTE(TileIndexX >= 0 && TileIndexY >= 0);
+
+		Mutex.lock();
+		PointTile[TileIndexX + TileIndexY * NumPartitionX].push_back(Index);
+		Mutex.unlock();
+	}
 	std::mutex Mutex;
 
 #pragma omp parallel for
