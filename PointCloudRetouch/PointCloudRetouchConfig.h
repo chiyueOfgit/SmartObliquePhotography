@@ -5,14 +5,14 @@ namespace hiveObliquePhotography
 {
 	namespace PointCloudRetouch
 	{
-		RETOUCH_DECLSPEC class CPointCloudRetouchConfig : public hiveConfig::CHiveConfig
+		class RETOUCH_DECLSPEC CPointCloudRetouchConfig : public hiveConfig::CHiveConfig
 		{
 		public:
 			CPointCloudRetouchConfig() = default;
 			~CPointCloudRetouchConfig() = default;
 
 		private:
-			RETOUCH_DECLSPEC virtual void __defineAttributesV() override;
+			virtual void __defineAttributesV() override;
 		};
 	}
 }
