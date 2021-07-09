@@ -177,9 +177,9 @@ void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::getIn
 
 bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::executeRemoveOutlier()
 {
-	std::vector<pcl::index_t> Indeices;
-	getIndicesByLabel(Indeices, EPointLabel::UNDETERMINED);
-	getIndicesByLabel(Indeices, EPointLabel::KEPT);
+	std::vector<pcl::index_t> Indices;
+	getIndicesByLabel(Indices, EPointLabel::UNDETERMINED);
+	getIndicesByLabel(Indices, EPointLabel::KEPT);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
-	return pOutlierDetector->execute<COutlierDetector>(Indeices, EPointLabel::UNWANTED);
+	return pOutlierDetector->execute<COutlierDetector>(Indices, EPointLabel::UNWANTED);
 }

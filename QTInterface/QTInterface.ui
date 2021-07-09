@@ -89,6 +89,7 @@
    <addaction name="separator"/>
    <addaction name="actionSetting"/>
    <addaction name="actionInstructions"/>
+   <addaction name="actionOutlierDetection"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="resourceSpaceDockWidget">
@@ -318,6 +319,15 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>Instructions</string>
+   </property>
+  </action>
+  <action name="actionOutlierDetection">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/Outlier.png</normaloff>:/QTInterface/Icon/Outlier.png</iconset>
+   </property>
+   <property name="text">
+    <string>Outlier Detection</string>
    </property>
   </action>
  </widget>
