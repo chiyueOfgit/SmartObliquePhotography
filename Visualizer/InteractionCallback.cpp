@@ -293,7 +293,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 //			m_pVisualizer->refresh(PointLabel);
 //		}
 //
-//	}
+	}
 
 	if (m_pVisualizationConfig->getAttribute<bool>("CIRCLE_MODE").value())
 	{

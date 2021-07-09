@@ -120,3 +120,9 @@ void CScreenSpaceOperation::cullByRadius(std::vector<pcl::index_t>& vioPointIndi
 	vioPointIndices = ResultPoints;
 }
 
+//*****************************************************************
+//FUNCTION: 
+void CScreenSpaceOperation::cull(std::vector<pcl::index_t>& vioPointIndices, std::vector<float>& voPointDistance, const hiveConfig::CHiveConfig* vClusterConfig)
+{
+	return;
+}
