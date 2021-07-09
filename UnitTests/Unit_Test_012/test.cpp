@@ -14,7 +14,7 @@
 
 using namespace hiveObliquePhotography;
 
-constexpr char ConfigPath[] = "PointCloudRetouchConfig.xml";
+const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test012_PointCloudRetouchConfig.xml");
 
 class TestPointCluster : public testing::Test
 {
@@ -26,7 +26,7 @@ protected:
 	void SetUp() override
 	{
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
-		pcl::io::loadPCDFile("../TestModel/General/slice 3.pcd", *pCloud);
+		pcl::io::loadPCDFile(TESTMODEL_DIR + std::string("General/slice 3.pcd"), *pCloud);
 		ASSERT_GT(pCloud->size(), 0);
 		
 		pConfig = new PointCloudRetouch::CPointCloudRetouchConfig;

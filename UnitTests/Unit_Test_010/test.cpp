@@ -27,11 +27,11 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-const std::string g_CloudPath = "../TestModel/General/Panda.pcd";
+const std::string g_CloudPath = TESTMODEL_DIR + std::string("General/Panda.pcd");
 
 const std::string g_BuilderSig = "";
 
-const std::string g_ConfigPath = "PointCloudRetouchConfig.xml";
+const std::string g_ConfigPath = TESTMODEL_DIR + std::string("Config/Test010_PointCloudRetouchConfig.xml");
 const std::string g_LitterSig = "LitterMarker";
 const std::string g_BackgroundSig = "BackgroundMarker";
 

@@ -9,10 +9,10 @@ using namespace hiveObliquePhotography;
 //  * DeathTest_LoadInexistentTile：尝试载入一个不存在的点云文件
 //  * DeathTest_LoadUnsupportedFormat: 尝试载入一个不支持格式的点云文件
 
-const std::string g_ValidPLYFileName = "../TestModel/General/slice 1.ply";
-const std::string g_ValidPCDFileName = "../TestModel/General/slice 1.pcd";
-const std::string g_InexistentFileName = "../TestModel/General/slice 5.pcd";
-const std::string g_UnsupportedFileName = "../TestModel/General/slice 1.txt";
+const std::string g_ValidPLYFileName = TESTMODEL_DIR + std::string("General/slice 1.ply");
+const std::string g_ValidPCDFileName = TESTMODEL_DIR + std::string("General/slice 1.pcd");
+const std::string g_InexistentFileName = TESTMODEL_DIR + std::string("General/slice 5.pcd");
+const std::string g_UnsupportedFileName = TESTMODEL_DIR + std::string("General/slice 1.txt");
 
 TEST(Test_LoadPointCloudTile, LoadTilePly)
 {	

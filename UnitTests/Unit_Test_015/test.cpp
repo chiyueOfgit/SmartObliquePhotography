@@ -26,7 +26,7 @@ constexpr float SPACE_SIZE = 100.0f;
 
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
-const std::string ConfigPath = "PointCloudRetouchConfig.xml";
+const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig.xml");
 
 
 PointCloud_t::PointType generateRandomPointByPlane(const Eigen::Vector4f& vPlane, bool vOnThePlane, float vNoise = 0.0f)

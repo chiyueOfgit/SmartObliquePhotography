@@ -70,45 +70,6 @@
           </Rule>
         </Rule>
         <Rule Match="All">
-          <Property Name="Project" Value="Unit_Test_017 (selecting)" />
-          <Rule Match="Any">
-            <Rule Match="All">
-              <Property Name="Namespace" Value="" />
-              <Rule Match="Any">
-                <Rule Match="All">
-                  <Property Name="Class" Value="TestSelecting" />
-                  <Rule Match="Any">
-                    <Rule Match="All">
-                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_MultipleObjectsTest_CompleteMoreTrees" />
-                      <Rule Match="Any">
-                        <Property Name="DisplayName" Value="TestSelecting.Selecting_MultipleObjectsTest_CompleteMoreTrees" />
-                      </Rule>
-                    </Rule>
-                    <Rule Match="All">
-                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_NoThroughTest_CompleteBuilding" />
-                      <Rule Match="Any">
-                        <Property Name="DisplayName" Value="TestSelecting.Selecting_NoThroughTest_CompleteBuilding" />
-                      </Rule>
-                    </Rule>
-                    <Rule Match="All">
-                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_NoThroughTest_CompleteGround" />
-                      <Rule Match="Any">
-                        <Property Name="DisplayName" Value="TestSelecting.Selecting_NoThroughTest_CompleteGround" />
-                      </Rule>
-                    </Rule>
-                    <Rule Match="All">
-                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_NoThroughTest_CompleteTree" />
-                      <Rule Match="Any">
-                        <Property Name="DisplayName" Value="TestSelecting.Selecting_NoThroughTest_CompleteTree" />
-                      </Rule>
-                    </Rule>
-                  </Rule>
-                </Rule>
-              </Rule>
-            </Rule>
-          </Rule>
-        </Rule>
-        <Rule Match="All">
           <Property Name="Project" Value="Unit_Test_014 (point_cluster_expander)" />
           <Rule Match="Any">
             <Rule Match="All">
@@ -244,6 +205,82 @@
           </Rule>
         </Rule>
         <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_015 (feature)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_1" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_1.Test_1" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_1.Test_1" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_2" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_2.Test_2" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_2.Test_2" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_3" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_3.Test_3" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_3.Test_3" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_4" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_4.Test_4" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_4.Test_4" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Plane_Feature_BaseTest_1" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Plane_Feature_BaseTest_1.Test_5" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Plane_Feature_BaseTest_1.Test_5" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Plane_Feature_BaseTest_2" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Plane_Feature_BaseTest_2.Test_6" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Plane_Feature_BaseTest_2.Test_6" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
           <Property Name="Project" Value="Unit_Test_001 (load_point_cloud_tile)" />
           <Rule Match="Any">
             <Rule Match="All">
@@ -268,6 +305,45 @@
                       <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_LoadPointCloudTile.LoadTilePly" />
                       <Rule Match="Any">
                         <Property Name="DisplayName" Value="Test_LoadPointCloudTile.LoadTilePly" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_017 (selecting)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="TestSelecting" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_MultipleObjectsTest_CompleteMoreTrees" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_MultipleObjectsTest_CompleteMoreTrees" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_NoThroughTest_CompleteBuilding" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_NoThroughTest_CompleteBuilding" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_NoThroughTest_CompleteGround" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_NoThroughTest_CompleteGround" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_NoThroughTest_CompleteTree" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_NoThroughTest_CompleteTree" />
                       </Rule>
                     </Rule>
                   </Rule>

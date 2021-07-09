@@ -38,7 +38,7 @@ protected:
 		}
 
 		hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
-		hiveConfig::hiveParseConfig("PointCloudRetouchConfig.xml", hiveConfig::EConfigType::XML, pConfig);
+		hiveConfig::hiveParseConfig(TESTMODEL_DIR + std::string("Config/Test016_PointCloudRetouchConfig.xml"), hiveConfig::EConfigType::XML, pConfig);
 
 		auto pManager = CPointCloudRetouchManager::getInstance();
 		pManager->init(pCloud, pConfig->findSubconfigByName("Retouch"));

@@ -14,8 +14,8 @@
 
 using namespace  hiveObliquePhotography::PointCloudRetouch;
 
-constexpr char ConfigPath[] = "PointCloudRetouchConfig.xml";
-constexpr char ModelPath[] = "../TestModel/General/slice 3.pcd";
+const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test014_PointCloudRetouchConfig.xml");
+const std::string ModelPath = TESTMODEL_DIR + std::string("General/slice 3.pcd");
 
 class TestExpander : public testing::Test
 {

@@ -53,9 +53,6 @@
       <Project>{87879ac2-2e99-42c7-8ff9-a456d9350873}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Xml Include="PointCloudRetouchConfig.xml" />
-  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -96,7 +93,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestModel\)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
