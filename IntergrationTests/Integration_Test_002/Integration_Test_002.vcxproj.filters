@@ -25,6 +25,9 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="SingleStepWindow.h">
@@ -36,5 +39,8 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="SingleStepWindow.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="SingleStepWindow.qrc" />
   </ItemGroup>
 </Project>

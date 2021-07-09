@@ -12,10 +12,10 @@ using namespace hiveObliquePhotography;
 TEST(Test_LoadPointCloudScene, LoadScene)
 {
 	const std::vector<std::string> FilePaths{
-		"../TestModel/General/slice 1.ply", //148701
-		"../TestModel/General/slice 2.pcd", //225016
-		"../TestModel/General/slice 3.pcd", //227563
-		"../TestModel/General/slice 4.pcd"  //225220
+		TESTMODEL_DIR + std::string("General/slice 1.ply"), //148701
+		TESTMODEL_DIR + std::string("General/slice 2.pcd"), //225016
+		TESTMODEL_DIR + std::string("General/slice 3.pcd"), //227563
+		TESTMODEL_DIR + std::string("General/slice 4.pcd")  //225220
 	};
 	auto PointCloud = CPointCloudScene::getInstance()->loadScene(FilePaths);
 	auto num = CPointCloudScene::getInstance()->getNumTiles();
@@ -26,10 +26,10 @@ TEST(Test_LoadPointCloudScene, LoadScene)
 TEST(Test_LoadPointCloudScene, DeathTest_LoadDuplicatedFile1)
 {
 	const std::vector<std::string> FilePaths{
-		"../TestModel/General/slice 1.pcd",
-		"../TestModel/General/slice 2.pcd",
-		"../TestModel/General/slice 2.pcd",
-		"../TestModel/General/slice 3.pcd"
+		TESTMODEL_DIR + std::string("General/slice 1.pcd"),
+		TESTMODEL_DIR + std::string("General/slice 2.pcd"),
+		TESTMODEL_DIR + std::string("General/slice 2.pcd"),
+		TESTMODEL_DIR + std::string("General/slice 3.pcd")
 	};
 	
 	auto PointCloud = CPointCloudScene::getInstance()->loadScene(FilePaths);
@@ -41,10 +41,10 @@ TEST(Test_LoadPointCloudScene, DeathTest_LoadDuplicatedFile1)
 TEST(Test_LoadPointCloudScene, DeathTest_LoadDuplicatedFile2)
 {
 	const std::vector<std::string> FilePaths{
-		"../TestModel/General/slice 1.pcd",
-		"../TestModel/General/Slice 2.pcd",
-		"../TestModel/General/slice 2.pcd",
-		"../TestModel/General/slice 3.pcd"
+		TESTMODEL_DIR + std::string("General/slice 1.pcd"),
+		TESTMODEL_DIR + std::string("General/Slice 2.pcd"),
+		TESTMODEL_DIR + std::string("General/slice 2.pcd"),
+		TESTMODEL_DIR + std::string("General/slice 3.pcd")
 	};
 
 	auto PointCloud = CPointCloudScene::getInstance()->loadScene(FilePaths);

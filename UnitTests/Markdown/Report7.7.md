@@ -3,7 +3,7 @@ Report
 ###### 2021.07.07
 
 #### Overview
-所有测试用例都可以运行
+鎵�鏈夋祴璇曠敤渚嬮兘鍙互杩愯
 
 
 #### Unit_Test_001 (load_point_cloud_tile)
@@ -18,13 +18,6 @@ Report
 | Test | LoadScene | DeathTest_LoadDuplicatedFile1 | DeathTest_LoadDuplicatedFile2 | DeathTest_LoadPartiallyIncorrectFileSet | DeathTest_LoadIncorrectFileSet |
 | :----: | :----: | :----: | :----: | :----: | :----: |
 | <font color=#7E858B>Result</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#F0645A>Fail</font> | <font color=#F0645A>Fail</font> | <font color=#F0645A>Fail</font> |
-
-
-#### Unit_Test_005 (point_cloud_visualizer)
-
-| Test | TestInitAndRefresh |
-| :----: | :----: |
-| <font color=#7E858B>Result</font> | <font color=#3CC8B4>Pass</font> |
 
 
 #### Unit_Test_010 (init_point_cloud_retouch)

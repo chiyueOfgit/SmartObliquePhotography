@@ -46,7 +46,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset>
-     <normaloff>open.png</normaloff>open.png</iconset>
+     <normaloff>Icon/open.png</normaloff>Icon/open.png</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -86,7 +86,7 @@
   <action name="actionClear">
    <property name="icon">
     <iconset>
-     <normaloff>rubber.png</normaloff>rubber.png</iconset>
+     <normaloff>Icon/rubber.png</normaloff>Icon/rubber.png</iconset>
    </property>
    <property name="text">
     <string>Delete</string>
@@ -116,10 +116,6 @@
   <action name="actionRubber">
    <property name="checkable">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>:/QTInterface/Icon/rubber.png</normaloff>:/QTInterface/Icon/rubber.png</iconset>
    </property>
    <property name="text">
     <string>Rubber</string>
@@ -152,7 +148,7 @@
   <action name="actionShow">
    <property name="icon">
     <iconset theme="update.png">
-     <normaloff>update.png</normaloff>update.png</iconset>
+     <normaloff>Icon/update.png</normaloff>Icon/update.png</iconset>
    </property>
    <property name="text">
     <string>Update</string>
@@ -176,7 +172,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>pointPicking.png</normaloff>pointPicking.png</iconset>
+     <normaloff>Icon/pointPicking.png</normaloff>Icon/pointPicking.png</iconset>
    </property>
    <property name="text">
     <string>PointPicking</string>
