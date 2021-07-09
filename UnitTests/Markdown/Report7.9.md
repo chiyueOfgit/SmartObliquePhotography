@@ -66,7 +66,7 @@ Report
 
 | Test | Illegal_Input_Test | Symmetry_Test | Anti_Reflexive_Test |
 | :----: | :----: | :----: | :----: |
-| <font color=#7E858B>Result</font> | <font color=#3CC8B4>Pass</font> | <font color=#F0645A>Fail</font> | <font color=#F0645A>Fail</font> |
+| <font color=#7E858B>Result</font> | <font color=#F0645A>Fail</font> | <font color=#F0645A>Fail</font> | <font color=#F0645A>Fail</font> |
 
 
 #### Unit_Test_017 (selecting)
