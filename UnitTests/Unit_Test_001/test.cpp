@@ -33,7 +33,7 @@ TEST(Test_LoadPointCloudTile, LoadTilePcd)
 TEST(Test_LoadPointCloudTile, DeathTest_LoadInexistentTile)
 {
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(g_InexistentFileName));
-	auto pTile = pTileLoader->loadDataFromFile(g_InexistentFileName);
-
-	GTEST_ASSERT_EQ(pTile, nullptr);
+	std::shared_ptr<PointCloud_t> pTile;
+	EXPECT_THROW(pTile = pTileLoader->loadDataFromFile(g_InexistentFileName), std::runtime_error);
+	EXPECT_EQ(pTile, nullptr);
 }
