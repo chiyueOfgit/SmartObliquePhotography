@@ -16,7 +16,11 @@ CPointCloudRetouchScene::~CPointCloudRetouchScene()
 //FUNCTION: 
 void CPointCloudRetouchScene::init(PointCloud_t::Ptr vPointCloudScene)
 {
-	_ASSERTE(vPointCloudScene);
+	//_ASSERTE(vPointCloudScene);
+
+	if (vPointCloudScene == nullptr)
+		throw "vPointCloudScene is nullptr or undefined!";
+
 	m_pPointCloudScene = vPointCloudScene;
 }
 
