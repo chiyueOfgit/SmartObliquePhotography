@@ -12,21 +12,15 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, const std::function<float(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig *vClusterConfig)
+CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, float vHardness, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig *vClusterConfig)
 {
 	CPointCluster* pInitialCluster = new CPointCluster;
+	auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
-	std::vector<float> PointHardnessSet(vUserMarkedRegion.size(), 0.0);
-
-	auto PointIndices = vUserMarkedRegion;
-	std::vector<float> PointDistances;
-	CScreenSpaceOperation Cull(vPvMatrix, vDistanceFunc);
-	Cull.cull(PointIndices, PointDistances, vClusterConfig);
+	const auto DistanceSet = __computeDistanceSetFromCenter(vUserMarkedRegion, vPvMatrix);
+	const auto HardnessSet = __generateHardness4EveryPoint(DistanceSet, vHardness);
+	const std::uint32_t CenterIndex = std::min_element(DistanceSet.begin(), DistanceSet.end()) - DistanceSet.begin();
 	
-	//__generateHardness4EveryPoint(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, PointHardnessSet, vClusterConfig);
-
-	//pcl::index_t ClusterCenter = __computeClusterCenter(vUserMarkedRegion, PointHardnessSet, vCenter, vPvMatrix, vWindowSize);
-
 	std::optional<float> DivideThreshold = vClusterConfig->getAttribute<float>("HARDNESS_THRESHOLD");
 	if (!DivideThreshold.has_value())
 	{
@@ -35,11 +29,42 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 	}
 
 	std::vector<pcl::index_t> FeatureGenerationSet, ValidationSet;
-	__divideUserSpecifiedRegion(vUserMarkedRegion, PointHardnessSet, DivideThreshold.value(), FeatureGenerationSet, ValidationSet);
+	__divideUserSpecifiedRegion(vUserMarkedRegion, HardnessSet, DivideThreshold.value(), FeatureGenerationSet, ValidationSet);
 
-	//pInitialCluster->init(vClusterConfig, ClusterCenter, vTargetLabel, FeatureGenerationSet, ValidationSet, CPointCloudRetouchManager::getInstance()->addAndGetTimestamp());
+	pInitialCluster->init(vClusterConfig, CenterIndex, vTargetLabel, FeatureGenerationSet, ValidationSet, CPointCloudRetouchManager::getInstance()->addAndGetTimestamp());
 
 	return pInitialCluster;
+}
+
+//*****************************************************************
+//FUNCTION: 
+std::vector<float> CInitialClusterCreator::__computeDistanceSetFromCenter(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix)
+{
+	const auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto Size = vUserMarkedRegion.size();
+	
+	std::vector<Eigen::Vector2f> NdcCoordSet(Size);
+	for (size_t i = 0; i < Size; i++)
+	{
+		auto Position = CloudScene.getPositionAt(i);
+		Position = vPvMatrix.cast<float>() * Position;
+		Position /= Position.eval().w();
+		Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
+		Position /= 2.0;
+
+		NdcCoordSet[i] = { Position.x(), Position.y() };
+	}
+
+	Eigen::Vector2f Center(0.0f, 0.0f);
+	for (auto i : NdcCoordSet)
+		Center += i;
+	Center /= vUserMarkedRegion.size();
+
+	std::vector<float> DistanceSet(Size);
+	for (size_t i = 0; i < Size; i++)
+		DistanceSet[i] = (NdcCoordSet[i] - Center).norm();
+	
+	return DistanceSet;
 }
 
 void OutputMessage(pcl::index_t vUserMarkedRegionPoint, std::string& vioOutputString)
@@ -53,7 +78,7 @@ void OutputMessage(pcl::index_t vUserMarkedRegionPoint, std::string& vioOutputSt
 
 //*****************************************************************
 //FUNCTION: 
-void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float> vPointHardnessSet, float vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet)
+void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float>& vPointHardnessSet, float vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet)
 {
 	std::string OutputValidationSet = "";
 	std::string OutputFeatureGenerationSet = "";
@@ -78,78 +103,21 @@ void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::
 
 //*****************************************************************
 //FUNCTION: 
-pcl::index_t CInitialClusterCreator::__computeClusterCenter(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float> vPointHardnessSet, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize)
+std::vector<float> CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<float>& vDistanceSetFromCenter, float vHardness)
 {
-	pcl::index_t CenterIndex;
-	float MinDistance = FLT_MAX;
+	const auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto Size = vDistanceSetFromCenter.size();
 	
-	for(size_t i = 0; i < vUserMarkedRegion.size(); i++)
+	const auto MaxDistance = *std::max_element(vDistanceSetFromCenter.begin(), vDistanceSetFromCenter.end());
+	std::vector<float> HardnessSet;
+	HardnessSet.reserve(Size);
+	for (auto i : vDistanceSetFromCenter)
 	{
-		if (vPointHardnessSet[i] > 0)
-		{
-			auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-			Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegion[i]);
-
-			Position = vPvMatrix.cast<float>() * Position;
-			Position /= Position.eval().w();
-			Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
-			Position /= 2.0;
-			Eigen::Vector2f Coord{ Position.x() * vWindowSize.first, Position.y() * vWindowSize.second };
-			if ((Coord - vCenter).norm() < MinDistance)
-			{
-				MinDistance = (Coord - vCenter).norm();
-				CenterIndex = vUserMarkedRegion[i];
-			}
-		}
-	}
-	return CenterIndex;
-}
-
-//*****************************************************************
-//FUNCTION: 
-void CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, float vHardness, float vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, std::vector<float>& voPointHardnessSet, const hiveConfig::CHiveConfig* vClusterConfig)
-{
-	_ASSERTE(vRadius);
-	
-	int Resolution = vClusterConfig->getAttribute<int>("INIT_RESOLUTION").value();
-	float MinDepth = FLT_MAX;
-	std::vector<Eigen::Vector4f> MarkedRegionScreenCoord;
-	std::vector<std::vector<std::pair<float,int>>> Raster(Resolution, std::vector(Resolution, std::pair(FLT_MAX,-1)));
-	
-	for(size_t i = 0;i < vUserMarkedRegion.size();i++)
-	{
-	    auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-		Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegion[i]);
-		
-		Position = vPvMatrix.cast<float>() * Position;
-		Position /= Position.eval().w();
-		Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
-		Position /= 2.0;
-		MarkedRegionScreenCoord.push_back(Position);
-		Position.x() *= Resolution;
-		Position.y() *= Resolution;
-		Eigen::Vector3f Coord{ Position.x(), Position.y(), Position.z() };
-		
-		if (Coord[0] > 0 && Coord[0] < Resolution && Coord[1] > 0 && Coord[1] < Resolution && Coord[2] < Raster[Coord[0]][Coord[1]].first)
-		{
-			Raster[Coord[0]][Coord[1]].first = Coord[2];
-			Raster[Coord[0]][Coord[1]].second = i;
-			if (Coord[2] < MinDepth)
-				MinDepth = Coord[2];
-		}
+		if (i <= vHardness * MaxDistance)
+			HardnessSet.push_back(1.0f);
+		else
+			HardnessSet.push_back(0.0f);
 	}
 
-	for(auto& Lines: Raster)
-		for(auto& Pair: Lines)
-		{
-			if(Pair.second > -1 && (Pair.first - MinDepth) / MinDepth < vClusterConfig->getAttribute<float>("DEPTH_OFFSET").value())
-			{
-				Eigen::Vector2f CoordXY = { MarkedRegionScreenCoord[Pair.second][0] * vWindowSize.first, MarkedRegionScreenCoord[Pair.second][1] * vWindowSize.second };
-				float Rate = (CoordXY - vCenter).norm() / vRadius;
-				if (Rate <= vHardness)
-					voPointHardnessSet[Pair.second] = 1;
-				else if(Rate > vHardness && Rate < 1)
-					voPointHardnessSet[Pair.second] = NormalDistribution<float>(2 * (Rate - vHardness) /(1 - vHardness));
-			}
-		}
+	return HardnessSet;
 }

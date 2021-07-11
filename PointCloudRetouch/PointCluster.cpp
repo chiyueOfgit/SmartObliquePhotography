@@ -38,7 +38,6 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 	m_pConfig = vConfig;
 
 	m_CreationTimestamp = vCreationTimestamp;
-	m_ClusterCenter = vClusterCenter;
 	m_Label = vLabel;
 	m_ClusterCoreRegion = vFeatureGenerationSet;  //·¢Éústd::vector¿½±´
 

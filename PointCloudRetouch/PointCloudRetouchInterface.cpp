@@ -41,16 +41,23 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveSave(PointCloud_t::Ptr voPoi
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveMarkLitter(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, const std::function<float(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix)
+bool hiveObliquePhotography::PointCloudRetouch::hivePreprocessSelected(std::vector<pcl::index_t>& vioSelected, const Eigen::Matrix4d& vPvMatrix, const std::function<float(Eigen::Vector2f)>& vSignedDistanceFunc, const Eigen::Vector3f& vViewPos)
 {
-	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness, vDistanceFunc, vPvMatrix, EPointLabel::UNWANTED);
+	
 }
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveMarkBackground(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, const std::function<float(Eigen::Vector2f)>& vDistanceFunc, const Eigen::Matrix4d& vPvMatrix)
+bool hiveObliquePhotography::PointCloudRetouch::hiveMarkBackground(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness)
 {
-	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness, vDistanceFunc, vPvMatrix, EPointLabel::KEPT);
+	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vPvMatrix, vHardness, EPointLabel::KEPT);
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::PointCloudRetouch::hiveMarkLitter(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness)
+{
+	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vPvMatrix, vHardness, EPointLabel::UNWANTED);
 }
 
 //*****************************************************************

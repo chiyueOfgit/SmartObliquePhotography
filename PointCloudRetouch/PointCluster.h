@@ -33,6 +33,7 @@ namespace hiveObliquePhotography
 			std::uint32_t m_CreationTimestamp;
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 			EPointLabel  m_Label;
+			//TODO: m_ClusterCenterËÆºõ²»ÐèÒª
 			pcl::index_t m_ClusterCenter;
 			std::vector<pcl::index_t> m_ClusterCoreRegion;
 			float m_ExpectProbability;
