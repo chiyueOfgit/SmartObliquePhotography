@@ -176,6 +176,7 @@
     <ClInclude Include="..\PointCloudRetouch\PointClusterExpander.h" />
     <ClInclude Include="..\PointCloudRetouch\PointClusterSet.h" />
     <ClInclude Include="..\PointCloudRetouch\PointLabelSet.h" />
+    <ClInclude Include="..\PointCloudRetouch\PointSetPreprocessor.h" />
     <ClInclude Include="..\PointCloudRetouch\RetouchTask.h" />
     <ClInclude Include="..\PointCloudRetouch\VfhFeature.h" />
   </ItemGroup>
@@ -194,6 +195,7 @@
     <ClCompile Include="..\PointCloudRetouch\PointClusterExpander.cpp" />
     <ClCompile Include="..\PointCloudRetouch\PointClusterSet.cpp" />
     <ClCompile Include="..\PointCloudRetouch\PointLabelSet.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\PointSetPreprocessor.cpp" />
     <ClCompile Include="..\PointCloudRetouch\RetouchTask.cpp" />
     <ClCompile Include="..\PointCloudRetouch\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

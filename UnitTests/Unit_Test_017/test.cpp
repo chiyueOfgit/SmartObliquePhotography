@@ -8,8 +8,8 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
 #include <pcl/io/pcd_io.h>
+#include "PointSetPreprocessor.h"
 
-#include "ScreenSpaceOperation.h"
 #include "pcl/visualization/pcl_visualizer.h"
 #include "pcl/visualization/common/common.h"
 
@@ -162,8 +162,10 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteTree)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
-	CullingOperation.cull(InputIndices, PointDistance,pConfig);
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 	
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -189,8 +191,10 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteGround)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
-	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -216,8 +220,10 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
-	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -243,8 +249,10 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
-	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -285,8 +293,10 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepATree)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
-	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -312,8 +322,10 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepGround)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
-	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -339,8 +351,10 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepABuilding)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
-	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -366,8 +380,10 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepMoreTrees)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
-	CScreenSpaceOperation CullingOperation(PvMatrix, distanceFunc);
-	CullingOperation.cull(InputIndices, PointDistance, pConfig);
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),

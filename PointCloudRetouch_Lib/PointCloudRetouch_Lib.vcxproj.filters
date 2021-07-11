@@ -78,6 +78,9 @@
     <ClInclude Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\PointCloudRetouch\PointSetPreprocessor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp">
@@ -129,6 +132,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\PointSetPreprocessor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
