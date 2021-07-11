@@ -4,6 +4,7 @@
 #include "PointLabelSet.h"
 #include "RetouchTask.h"
 #include "InitialClusterCreator.h"
+#include "PointSetPreprocessor.h"
 
 namespace hiveObliquePhotography
 {
@@ -28,6 +29,7 @@ namespace hiveObliquePhotography
 
 			bool init(PointCloud_t::Ptr vPointCloud, const hiveConfig::CHiveConfig* vConfig);
 			void clearMarkerResult();
+			bool executePreprocessor(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<float(Eigen::Vector2f)>& vSignedDistanceFunc, const Eigen::Vector3f& vViewPos);
 			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness, EPointLabel vTargetLabel);
 			bool executeRemoveOutlier();
 			
@@ -66,6 +68,7 @@ namespace hiveObliquePhotography
 			CRetouchTask             m_LitterMarker;
 			CRetouchTask             m_BackgroundMarker;
 			CInitialClusterCreator   m_InitialClusterCreator;
+			CPointSetPreprocessor    m_Preprocessor;
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 			

@@ -103,6 +103,28 @@ bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::dumpP
 
 //*****************************************************************
 //FUNCTION: 
+bool CPointCloudRetouchManager::executePreprocessor(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<float(Eigen::Vector2f)>& vSignedDistanceFunc, const Eigen::Vector3f& vViewPos)
+{
+	//TODO: ÕÍ…∆
+	try
+	{
+		m_Preprocessor.cullBySdf(vioPointSet, vPvMatrix, vSignedDistanceFunc);
+		m_Preprocessor.cullByDepth(vioPointSet, vPvMatrix, vViewPos);
+		return true;
+	}
+	catch (std::runtime_error&)
+	{
+
+	}
+	catch (...)
+	{
+
+	}
+	return false;
+}
+
+//*****************************************************************
+//FUNCTION: 
 bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness, EPointLabel vTargetLabel)
 {
 	_ASSERTE((vTargetLabel == EPointLabel::UNWANTED) || (vTargetLabel == EPointLabel::KEPT));

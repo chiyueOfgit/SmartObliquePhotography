@@ -9,8 +9,10 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //FUNCTION:
 void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const Eigen::Vector3f& vViewPos)
 {
-//	auto& Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-//
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+
+	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdf(vioPointSet, vPvMatrix);
+
 //	static int AreaWidth = m_RightDown.x() - m_LeftUp.x() + 1;
 //	static int AreaHeight = m_RightDown.y() - m_LeftUp.y() + 1;
 //
@@ -111,7 +113,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 //FUNCTION:
 void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<float(Eigen::Vector2f)>& vSignedDistanceFunc)
 {	
-	auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	
 	vioPointSet.erase(std::remove_if(vioPointSet.begin(), vioPointSet.end(), 
 		[&](auto vIndex)
@@ -124,4 +126,36 @@ void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, co
 			
 			return vSignedDistanceFunc({ Position.x(), Position.y() }) > 0.0f;
 		}), vioPointSet.end());
+}
+
+//*****************************************************************
+//FUNCTION:
+std::pair<Eigen::Vector2f, Eigen::Vector2f> CPointSetPreprocessor::__computeBoundingBoxOnNdf(const std::vector<pcl::index_t>& vPointSet, const Eigen::Matrix4d& vPvMatrix)
+{
+	//TODO: 用PvMatrix从物体空间转Ndf这个过程可以提出来
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	
+	Eigen::Vector2f MinPos(FLT_MAX, FLT_MAX);
+	Eigen::Vector2f MaxPos(-FLT_MAX, -FLT_MAX);
+	for (auto& i : vPointSet)
+	{
+		Eigen::Vector4f Position = CloudScene.getPositionAt(i);
+		Position = vPvMatrix.cast<float>() * Position;
+		Position /= Position.eval().w();
+		Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
+		Position /= 2.0;
+
+		Eigen::Vector2f NdfCoord(Position.x(), Position.y());
+
+		if (MinPos.x() > NdfCoord.x())
+			MinPos.x() = NdfCoord.x();
+		if (MinPos.y() > NdfCoord.y())
+			MinPos.y() = NdfCoord.y();
+		if (MaxPos.x() > NdfCoord.x())
+			MaxPos.x() = NdfCoord.x();
+		if (MaxPos.y() > NdfCoord.y())
+			MaxPos.y() = NdfCoord.y();
+	}
+
+	return { MinPos, MaxPos };
 }
