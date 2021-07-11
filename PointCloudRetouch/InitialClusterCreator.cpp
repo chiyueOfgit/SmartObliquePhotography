@@ -3,7 +3,6 @@
 #include "PointCluster.h"
 #include "PointCloudRetouchManager.h"
 #include "PointCloudRetouchCommon.h"
-#include "ScreenSpaceOperation.h"
 
 #define initResolution 512
 #define DepthOffset 2
