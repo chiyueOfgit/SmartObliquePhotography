@@ -71,6 +71,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(ui.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
     QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
     QObject::connect(ui.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
+    QObject::connect(ui.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
 }
 
 void CQTInterface::__initialVTKWidget()
@@ -201,14 +202,12 @@ void CQTInterface::onActionPointPicking()
 {
     if (m_pCloud)
     {
-
         if (ui.actionPointPicking->isChecked())
         {
             m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget, m_pVisualizationConfig);
             m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
             m_pPointPickingDockWidget->show();
             CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to select mode."));
-
         }
         else
         {
@@ -253,6 +252,10 @@ void CQTInterface::onActionOpen()
     if (FileOpenSuccessFlag)
     {
         m_DirectoryOpenPath = CQTInterface::__getDirectory(FilePathSet.back());
+
+        auto config = m_pPointCloudRetouchConfig->getSubconfigAt(0);
+        auto num = config->getNumSubconfig();
+
         PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_pCloud, true);
         //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
@@ -297,6 +300,17 @@ void CQTInterface::onActionRubber()
 void CQTInterface::onActionBrush()
 {
     
+}
+
+void CQTInterface::onActionOutlierDetection()
+{
+    if (m_pCloud)
+    {
+        PointCloudRetouch::hiveRemoveOutlier();
+        std::vector<std::size_t> PointLabel;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+        Visualization::hiveRefreshVisualizer(PointLabel);
+    }
 }
 
 void CQTInterface::onActionDiscardAndRecover()

@@ -12,8 +12,8 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("CLUSTER",		     hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
 	_defineAttribute("FEATURE",			 hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
 	_defineAttribute("CLASSIFIER",       hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("OUTLIER",			 hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
 	_defineAttribute("POINT_CLOUD_RETOUCN_CONFIG", hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
-
 	_defineAttribute("UP", hiveConfig::EConfigDataType::ATTRIBUTE_VEC3F);
 	_defineAttribute("SIG", hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 	_defineAttribute("SEARCH_MODE", hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
@@ -29,5 +29,7 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("COLOR_THRESHOLD", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("NUM_MAIN_COLORS", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	_defineAttribute("MIN_REDUCE_RATIO", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
-
+	_defineAttribute("SEARCH_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+	_defineAttribute("MIN_NEIGHBORS_IN_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
+	_defineAttribute("POINT_FILTER_CONDITION", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 }

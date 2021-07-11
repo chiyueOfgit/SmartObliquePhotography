@@ -1,0 +1,151 @@
+<Playlist Version="2.0">
+  <Rule Name="Includes" Match="Any">
+    <Rule Match="All">
+      <Property Name="Solution" />
+      <Rule Match="Any">
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_011 (create_initial_cluster)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="Test_CreateInitialCluster" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_CreateInitialCluster.ComputeClusterCenter" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_CreateInitialCluster.ComputeClusterCenter" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_CreateInitialCluster.CreateInitialCluster" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_CreateInitialCluster.CreateInitialCluster" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_CreateInitialCluster.DivideUserSpecifiedRegion" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_CreateInitialCluster.DivideUserSpecifiedRegion" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_CreateInitialCluster.GenerateHardness4EveryPoint" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_CreateInitialCluster.GenerateHardness4EveryPoint" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_013 (point_label_set)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="TestPointLabelSet" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestPointLabelSet.Illegal_Input_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestPointLabelSet.Illegal_Input_Test" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestPointLabelSet.Uninitialized_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestPointLabelSet.Uninitialized_Test" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_015 (feature)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_1" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_1.Test_1" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_1.Test_1" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_2" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_2.Test_2" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_2.Test_2" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_3" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_3.Test_3" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_3.Test_3" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_4" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_4.Test_4" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_4.Test_4" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Plane_Feature_BaseTest_1" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Plane_Feature_BaseTest_1.Test_5" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Plane_Feature_BaseTest_1.Test_5" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Plane_Feature_BaseTest_2" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Plane_Feature_BaseTest_2.Test_6" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Plane_Feature_BaseTest_2.Test_6" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+      </Rule>
+    </Rule>
+  </Rule>
+</Playlist>

@@ -13,5 +13,6 @@
         <file>Icon/circleAreaPicking.png</file>
         <file>Icon/pointPicking.png</file>
         <file>Icon/instructions.png</file>
+        <file>Icon/Outlier.png</file>
     </qresource>
 </RCC>

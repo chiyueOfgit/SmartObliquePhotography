@@ -49,31 +49,31 @@ std::string FilePaths[][3] =
 		TESTMODEL_DIR + std::string("Test017_Model/CompleteMoreTrees/MoreTreesCameraInfo.txt"),
 		TESTMODEL_DIR + std::string("Test017_Model/CompleteMoreTrees/MoreTreesGt.txt"),
 	},
-	
+
 	{
 		TESTMODEL_DIR + std::string("Test017_Model/KeepTree/KeepTreeInput.txt"),
 		TESTMODEL_DIR + std::string("Test017_Model/KeepTree/KeepTreeCameraInfo.txt"),
 		TESTMODEL_DIR + std::string("Test017_Model/KeepTree/CompleteTreeGT.txt"),
 	},
-	
+
 	{
 		TESTMODEL_DIR + std::string("Test017_Model/KeepGround/KeepGroundInput.txt"),
 		TESTMODEL_DIR + std::string("Test017_Model/KeepGround/KeepGroundCameraInfo.txt"),
 		TESTMODEL_DIR + std::string("Test017_Model/KeepGround/CompleteGroundGT.txt"),
 	},
-	
+
 	{
 		TESTMODEL_DIR + std::string("Test017_Model/KeepBuilding/KeepBuildingInput.txt"),
 		TESTMODEL_DIR + std::string("Test017_Model/KeepBuilding/KeepBuildingCameraInfo.txt"),
 		TESTMODEL_DIR + std::string("Test017_Model/KeepBuilding/CompleteBuildingGt.txt"),
 	},
-	
+
 	{
 		TESTMODEL_DIR + std::string("Test017_Model/KeepMoreTrees/KeepMoreTreesInput.txt"),
 		TESTMODEL_DIR + std::string("Test017_Model/KeepMoreTrees/KeepMoreTreesCameraInfo.txt"),
 		TESTMODEL_DIR + std::string("Test017_Model/KeepMoreTrees/MoreTreesGt.txt"),
 	}
-	
+
 };
 
 
@@ -87,14 +87,14 @@ protected:
 		std::string ModelPath(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
 		pcl::io::loadPCDFile(ModelPath, *pCloud);
-		
+
 	}
 
 	void TearDown() override
 	{
 	}
 
-    void initTest(pcl::Indices& voInputIndices, pcl::visualization::Camera& voCamera, pcl::Indices& voGroundTruth, const std::string(vPath)[3])
+	void initTest(pcl::Indices& voInputIndices, pcl::visualization::Camera& voCamera, pcl::Indices& voGroundTruth, const std::string(vPath)[3])
 	{
 		_loadIndices(vPath[0], voInputIndices);
 		_loadCamera(vPath[1], voCamera);
@@ -107,8 +107,8 @@ protected:
 	}
 
 private:
-	 void _loadIndices(const std::string& vPath, pcl::Indices& voIndices);
-	 void _loadCamera(const std::string& vPath, pcl::visualization::Camera& voCamera);
+	void _loadIndices(const std::string& vPath, pcl::Indices& voIndices);
+	void _loadCamera(const std::string& vPath, pcl::visualization::Camera& voCamera);
 };
 
 //*****************************************************************
@@ -141,7 +141,7 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteTree)
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
 	//TODO:根据接口执行选择剔除
-	
+
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
 		GroundTruth.begin(), GroundTruth.end(),
@@ -207,7 +207,7 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 		GroundTruth.begin(), GroundTruth.end(),
 		std::inserter(Difference, Difference.begin()));
 	GTEST_ASSERT_LE(Difference.size(), 0);
-	
+
 	pcl::Indices AdditionIndices;
 	loadAddtionFile(TESTMODEL_DIR + std::string("Test017_Model/CompleteMoreTrees/MoreTreesGt2.txt"), AdditionIndices);
 	pcl::Indices Interaction;

@@ -44,6 +44,7 @@ namespace hiveObliquePhotography
 			const auto& getRetouchScene() const { return m_Scene; }
 			
 #ifdef _UNIT_TEST
+			const auto& getOutlierConfig() const { return m_pOutlierConfig; }
 			const auto& getClusterSet() const { return m_PointClusterSet; }
 			const auto& getLabelSet() const { return m_PointLabelSet; }
 			const auto& getLitterMarker() const { return m_LitterMarker; }
@@ -68,6 +69,7 @@ namespace hiveObliquePhotography
 			CInitialClusterCreator   m_InitialClusterCreator;
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
+			const hiveConfig::CHiveConfig* m_pOutlierConfig = nullptr;
 			
 			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel);
 
