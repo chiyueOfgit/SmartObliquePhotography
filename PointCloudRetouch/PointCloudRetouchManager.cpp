@@ -23,6 +23,8 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 			vConfig = vConfig->getSubconfigAt(0);
 	}
 
+	auto num = vConfig->getNumSubconfig();
+
 	for (auto i = 0; i < vConfig->getNumSubconfig(); i++)
 	{
 		const hiveConfig::CHiveConfig* pConfig = vConfig->getSubconfigAt(i);
@@ -51,6 +53,14 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 			_ASSERTE(NeighborhoodBuilderSig.has_value());
 			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), pConfig, vPointCloud, &m_PointLabelSet);
 			_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating  neighborhood builder [%1%].", NeighborhoodBuilderSig.value()), false);
+			continue;
+		}
+		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("OUTLIER")))
+		{
+			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("Outlier")))
+			{
+				m_pOutlierConfig = pConfig;
+			}
 			continue;
 		}
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Unknown subconfiguration type [%1%].", pConfig->getSubconfigType()));
@@ -181,5 +191,5 @@ bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::execu
 	getIndicesByLabel(Indices, EPointLabel::UNDETERMINED);
 	getIndicesByLabel(Indices, EPointLabel::KEPT);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
-	return pOutlierDetector->execute<COutlierDetector>(Indices, EPointLabel::UNWANTED);
+	return pOutlierDetector->execute<COutlierDetector>(Indices, EPointLabel::UNWANTED, m_pOutlierConfig);
 }

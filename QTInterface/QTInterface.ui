@@ -83,13 +83,13 @@
    <addaction name="actionPointPicking"/>
    <addaction name="actionBrush"/>
    <addaction name="actionRubber"/>
+   <addaction name="actionOutlierDetection"/>
    <addaction name="actionUpdate"/>
    <addaction name="separator"/>
    <addaction name="actionDelete"/>
    <addaction name="separator"/>
    <addaction name="actionSetting"/>
    <addaction name="actionInstructions"/>
-   <addaction name="actionOutlierDetection"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="resourceSpaceDockWidget">

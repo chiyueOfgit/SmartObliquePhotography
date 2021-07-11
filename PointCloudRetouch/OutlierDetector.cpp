@@ -13,7 +13,7 @@ _REGISTER_NORMAL_PRODUCT(COutlierDetector, KEYWORD::OUTLIER_DETECTOR)
 
 //*****************************************************************
 //FUNCTION: 
-void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vExpectLabel)
+void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vExpectLabel, const hiveConfig::CHiveConfig* vConfig)
 {
 	if (vInputIndices.empty())
 		return;
@@ -45,9 +45,9 @@ void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vExpectLabe
 	PointCloud_t::Ptr pResultCloud(new pcl::PointCloud<pcl::PointSurfel>);
 	pcl::RadiusOutlierRemoval<pcl::PointSurfel> RadiusOutlier;
 	RadiusOutlier.setInputCloud(pCloud);
-	RadiusOutlier.setRadiusSearch(0.8);
-	RadiusOutlier.setMinNeighborsInRadius(20);
-	RadiusOutlier.setNegative(true);
+	RadiusOutlier.setRadiusSearch(vConfig->getAttribute<float>("SEARCH_RADIUS").value());
+	RadiusOutlier.setMinNeighborsInRadius(vConfig->getAttribute<int>("MIN_NEIGHBORS_IN_RADIUS").value());
+	RadiusOutlier.setNegative(vConfig->getAttribute<bool>("POINT_FILTER_CONDITION").value());
 	RadiusOutlier.filter(*pResultCloud);
 
 	for (auto& Point : pResultCloud->points)

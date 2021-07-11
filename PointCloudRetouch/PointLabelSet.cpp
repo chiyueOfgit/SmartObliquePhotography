@@ -21,7 +21,7 @@ void CPointLabelSet::tagCoreRegion4Cluster(const std::vector<pcl::index_t>& vTar
 //FUNCTION: 
 void CPointLabelSet::init(std::size_t vSize)
 {
-	_ASSERTE(m_LabelSet.empty() && (vSize > 0));
+	_ASSERTE(vSize > 0);
 	m_LabelSet = std::vector<SPointLabel>(vSize);
 }
 

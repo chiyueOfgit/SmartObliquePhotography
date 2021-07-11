@@ -11,9 +11,10 @@ namespace hiveObliquePhotography
 			COutlierDetector() = default;
 			~COutlierDetector() = default;
 
-			virtual void runV(pcl::Indices& vInputSet, EPointLabel vExpectLabel);
+			virtual void runV(pcl::Indices& vInputSet, EPointLabel vExpectLabel, const hiveConfig::CHiveConfig* vConfig);
 
 		private:
+
 		};
 	}
 }
