@@ -101,11 +101,11 @@ TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
 	hiveUndo();
 	hiveDumpPointLabel(LabelSetAfterUndo);
 
-	std::vector<std::size_t> Interaction;
-	std::set_intersection(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
+	std::vector<std::size_t> SymmetricDifference;
+	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
 		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
-		std::inserter(Interaction, Interaction.begin()));
-	ASSERT_EQ(Interaction.size(), 0);
+		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
+	ASSERT_EQ(SymmetricDifference.size(), 0);
 }
 
 TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
@@ -131,11 +131,11 @@ TEST_F(CTestUndo, LabelSet_Undo_Cleanup_Test)
 	expandOnce(IndicesPath, CameraPath);
 	hiveDumpPointLabel(LabelSetAfterUndo);
 	
-	std::vector<std::size_t> Interaction;
-	std::set_intersection(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
+	std::vector<std::size_t> SymmetricDifference;
+	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
 		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
-		std::inserter(Interaction, Interaction.begin()));
-	ASSERT_EQ(Interaction.size(), 0);
+		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
+	ASSERT_EQ(SymmetricDifference.size(), 0);
 }
 
 TEST_F(CTestUndo, Timestamp_Undo_Cleanup_Test)
