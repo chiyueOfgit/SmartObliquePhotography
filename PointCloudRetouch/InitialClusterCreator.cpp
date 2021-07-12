@@ -84,7 +84,7 @@ void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::
 
 	for(size_t i = 0;i <vUserMarkedRegion.size();i++)
 	{
-		if (vPointHardnessSet[i] < vDivideThreshold && vPointHardnessSet[i] != 0.0)
+		if (vPointHardnessSet[i] < vDivideThreshold && vPointHardnessSet[i] != 0.0f)
 		{
 			voValidationSet.push_back(vUserMarkedRegion[i]);
 			OutputMessage(vUserMarkedRegion[i], OutputValidationSet);
@@ -112,10 +112,17 @@ std::vector<float> CInitialClusterCreator::__generateHardness4EveryPoint(const s
 	HardnessSet.reserve(Size);
 	for (auto i : vDistanceSetFromCenter)
 	{
-		if (i <= vHardness * MaxDistance)
+		i -= vHardness * MaxDistance;
+		if (i <= 0)
 			HardnessSet.push_back(1.0f);
 		else
-			HardnessSet.push_back(0.0f);
+		{
+			i /= (1 - vHardness) * MaxDistance;
+			//i ¡Ê (0, 1]
+			i *= i;//x^2
+			i = i * (i - 2) + 1;//x^4 - 2 * x^2 + 1
+			HardnessSet.push_back(i);
+		}
 	}
 
 	return HardnessSet;
