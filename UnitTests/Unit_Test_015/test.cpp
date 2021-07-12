@@ -3,8 +3,18 @@
 #include <common/MathInterface.h>
 #include "ColorFeature.h"
 #include "PlanarityFeature.h"
+
 #include "PointCloudRetouchInterface.h"
 #include "PointCloudRetouchConfig.h"
+#include "NormalComplexity.h"
+
+#include <fstream>
+#include <boost/archive/text_oarchive.hpp> 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#include <pcl/io/pcd_io.h>
+
+#include <pcl/features/normal_3d.h>
 
 constexpr float EPSILON = 1e-4f;
 constexpr float SPACE_SIZE = 100.0f;
@@ -99,6 +109,49 @@ void generateNoiseColorSet(std::vector<Eigen::Vector3i>& vioColorCluster, int vN
 	}
 }
 
+Eigen::Vector3f generatePosition(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo)
+{
+	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(vFrom, vTo, 3);
+	auto OtherRandomSet = hiveMath::hiveGenerateRandomRealSet(6.0f, 8.0f, 3);
+	if (vTo <= 10)
+		return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] };
+	else
+		return Eigen::Vector3f{ vCenterPosition[0] + 2 * OtherRandomSet[0],vCenterPosition[1] + OtherRandomSet[1],vCenterPosition[2] + OtherRandomSet[2] };
+}
+
+Eigen::Vector3f generateNormal(Eigen::Vector3f& vStandardNormal, float vDisturb)
+{
+	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(-vDisturb, vDisturb, 3);
+	Eigen::Vector3f Normal{ vStandardNormal[0] + RandomSet[0],vStandardNormal[1] + RandomSet[1],vStandardNormal[2] + RandomSet[2] };
+	return Normal / Normal.norm();
+}
+
+
+void generateInOutRadiusPoint(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo, float vDisturb, PointCloud_t& vioPointSet, int vNum)
+{
+	Eigen::Vector3f StandardNormal{ 1.0f,1.0f,1.0f };
+	while (vNum--)
+	{
+		Eigen::Vector3f Position = generatePosition(vCenterPosition, vFrom, vTo);
+		Eigen::Vector3f Normal = generateNormal(StandardNormal, vDisturb);
+		pcl::PointSurfel Temp;
+		Temp.x = Position[0];
+		Temp.y = Position[1];
+		Temp.z = Position[2];
+		Temp.normal_x = Normal[0];
+		Temp.normal_y = Normal[1];
+		Temp.normal_z = Normal[2];
+		vioPointSet.push_back(Temp);
+	}
+}
+
+void loadIndices(const std::string& vPath, pcl::Indices& voIndices)
+{
+	std::ifstream File(vPath);
+	boost::archive::text_iarchive ia(File);
+	ia >> BOOST_SERIALIZATION_NVP(voIndices);
+	File.close();
+}
 TEST(Color_Feature_BaseTest_1, Test_1)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
@@ -281,7 +334,23 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	}
 
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
-	
+	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
+	Eigen::Vector3f GTNormal{ 1.0f,1.0f,1.0f };
+	GTNormal = GTNormal / GTNormal.norm();
+	pcl::PointSurfel Temp;
+	Temp.x = GTPosition[0];
+	Temp.y = GTPosition[1];
+	Temp.z = GTPosition[2];
+	Temp.normal_x = GTNormal[0];
+	Temp.normal_y = GTNormal[1];
+	Temp.normal_z = GTNormal[2];
+	pCloud->push_back(Temp);
+	generateInOutRadiusPoint(GTPosition, 0,5, 0.0f, *pCloud, 20);
+	generateInOutRadiusPoint(GTPosition, 6,8, 1.0f, *pCloud, 5);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
+	auto Res = pTileLoader->calcSinglePointNormalComplexity(0, pCloud);
+
+	GTEST_ASSERT_EQ(Res, 0.0);
 }
 
 TEST(Normal_Feature_BaseTest_2, Test_8)
@@ -294,6 +363,50 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	}
 
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
+	Eigen::Vector3f GTNormal{ 1.0f,1.0f,1.0f };
+	GTNormal = GTNormal / GTNormal.norm();
+	pcl::PointSurfel Temp;
+	Temp.x = GTPosition[0];
+	Temp.y = GTPosition[1];
+	Temp.z = GTPosition[2];
+	Temp.normal_x = GTNormal[0];
+	Temp.normal_y = GTNormal[1];
+	Temp.normal_z = GTNormal[2];
+	pCloud->push_back(Temp);
+	generateInOutRadiusPoint(GTPosition, 0,0.4, 1.0f, *pCloud, 20);
+
+	pcl::PointCloud<pcl::Normal>::Ptr Normals(new pcl::PointCloud<pcl::Normal>);
+	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> NormalEstimation;
+	NormalEstimation.setInputCloud(pCloud);
+	NormalEstimation.setRadiusSearch(0.8);
+	pcl::search::KdTree<pcl::PointSurfel>::Ptr Kdtree(new pcl::search::KdTree<pcl::PointSurfel>);
+	NormalEstimation.setSearchMethod(Kdtree);
+	NormalEstimation.compute(*Normals);
+
+	Eigen::Vector3f InNormal{ Normals->points[0].normal_x,Normals->points[0].normal_y ,Normals->points[0].normal_z };
+	InNormal /= InNormal.norm();
+	
+	generateInOutRadiusPoint(GTPosition, 0.5, 5, 1.0f, *pCloud, 20);
+	
+	pcl::PointCloud<pcl::Normal>::Ptr OtherNormals(new pcl::PointCloud<pcl::Normal>);
+	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> OtherNormalEstimation;
+	OtherNormalEstimation.setInputCloud(pCloud);
+	OtherNormalEstimation.setRadiusSearch(10);
+	pcl::search::KdTree<pcl::PointSurfel>::Ptr OtherKdtree(new pcl::search::KdTree<pcl::PointSurfel>);
+	OtherNormalEstimation.setSearchMethod(OtherKdtree);
+	OtherNormalEstimation.compute(*OtherNormals);
+
+	Eigen::Vector3f OutNormal{ OtherNormals->points[0].normal_x,OtherNormals->points[0].normal_y ,OtherNormals->points[0].normal_z };
+	OutNormal /= OutNormal.norm();
+	
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
+	auto Res = pTileLoader->calcSinglePointNormalComplexity(0, pCloud);
+
+	auto Diff = (InNormal - OutNormal)/ 2.0f;
+
+	auto GT = Diff.norm();
+	GTEST_ASSERT_LT(abs(Res - GT),0.1);
 	
 }
 
@@ -306,6 +419,30 @@ TEST(Normal_Feature_BaseTest_3, Test_9)
 		return;
 	}
 
-	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	pcl::Indices Tree;
+	loadIndices(TESTMODEL_DIR + std::string("Test017_Model/CompleteTree/CompleteTreeGT.txt"), Tree);
 
+	pcl::Indices Ground;
+	loadIndices(TESTMODEL_DIR + std::string("Test017_Model/KeepGround/CompleteGroundGT.txt"), Ground);
+
+	std::string ModelPath(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
+	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	pcl::io::loadPCDFile(ModelPath, *pCloud);
+
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
+	double ResTree = 0.0;
+	for(auto Index: Tree)
+	{
+		ResTree += pTileLoader->calcSinglePointNormalComplexity(Index, pCloud);
+	}
+	ResTree /= Tree.size();
+
+	double ResGround = 0.0;
+	for (auto Index : Ground)
+	{
+		ResGround += pTileLoader->calcSinglePointNormalComplexity(Index, pCloud);
+	}
+	ResGround /= Ground.size();
+
+	GTEST_ASSERT_LT(ResGround, ResTree);
 }
