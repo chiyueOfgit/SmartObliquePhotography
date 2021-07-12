@@ -19,3 +19,10 @@ double CNormalComplexity::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
 	
 }
+
+//*****************************************************************
+//FUNCTION: 
+double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vIndex)
+{
+
+}

@@ -15,7 +15,7 @@ namespace hiveObliquePhotography
 			double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
 		
 		private:
-			
+			double __calcSinglePointNormalComplexity(pcl::index_t vIndex);
 		};
 	}
 }

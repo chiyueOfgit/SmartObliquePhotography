@@ -24,6 +24,13 @@ constexpr float SPACE_SIZE = 100.0f;
 //PlaneFeatureSpecialTest特定情况下的特殊结果正确
 //  * Plane_Feature_SpecialTest_1: ；
 
+//NormalFeatureBaseTest给定限定生成的场景，要求计算的点的法线差异在规定范围内
+//  * Normal_Feature_BaseTest_1: 在点支持半径内随机给定法线一致点，在支持半径外生成法线扰乱点，要求该点法线差异为0；
+//  * Normal_Feature_BaseTest_2: 在点周围生成法线在一定范围扰动的点，使用pcl法线估计器进行大小支持半径法线估计，得到GT，要求点法线差异与GT差别小于0.1；
+//  * Normal_Feature_BaseTest_3: 选定树木区域与地面区域，要求算得树木区域法线差异大于地面区域；
+//NormalComplexitySpecialTest特定情况下的特殊结果正确
+//  * Plane_Feature_SpecialTest_1: ；
+
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig.xml");
@@ -262,4 +269,43 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 	Eigen::Vector3f FittingPlaneNormal{ FittingPlane[0],FittingPlane[1],FittingPlane[2] };
 	
 	GTEST_ASSERT_GE(abs(PlaneNormal.dot(FittingPlaneNormal)), 0.8);
+}
+
+TEST(Normal_Feature_BaseTest_1, Test_7)
+{
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+		return;
+	}
+
+	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	
+}
+
+TEST(Normal_Feature_BaseTest_2, Test_8)
+{
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+		return;
+	}
+
+	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	
+}
+
+TEST(Normal_Feature_BaseTest_3, Test_9)
+{
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+		return;
+	}
+
+	PointCloud_t::Ptr pCloud(new PointCloud_t);
+
 }
