@@ -83,21 +83,21 @@ TEST_F(TestExpander, NoRepeatIndex)
 	ASSERT_EQ(Sum, 0);
 }
 
-//TEST_F(TestExpander, EmptyInput)
-//{
-//	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
-//
-//	std::vector<pcl::index_t> UserMarkedRegion{};
-//	Eigen::Matrix4d Pv;
-//	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, PV, { 1000,800 }, EPointLabel::KEPT);
-//	
-//	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
-//}
-//
-//TEST_F(TestExpander, NullptrInput)
-//{
-//	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
-//	CPointCluster* UserSpecifiedCluster = nullptr;
-//
-//	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
-//}
+TEST_F(TestExpander, EmptyInput)
+{
+	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
+
+	std::vector<pcl::index_t> UserMarkedRegion{};
+	Eigen::Matrix4d Pv;
+	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, PV, { 1000,800 }, EPointLabel::KEPT);
+	
+	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
+}
+
+TEST_F(TestExpander, NullptrInput)
+{
+	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
+	CPointCluster* UserSpecifiedCluster = nullptr;
+
+	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
+}
