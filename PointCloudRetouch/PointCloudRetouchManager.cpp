@@ -69,7 +69,8 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 	return true;
 }
 
-
+//*****************************************************************
+//FUNCTION: 
 void CPointCloudRetouchManager::clearMarkerResult()
 {
 	m_PointLabelSet.reset();
@@ -92,7 +93,7 @@ CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::ve
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::dumpPointLabel(std::vector<std::size_t>& voPointLabel) const
+bool CPointCloudRetouchManager::dumpPointLabel(std::vector<std::size_t>& voPointLabel) const
 {
 	auto NumPoints = m_Scene.getNumPoint();
 	if (NumPoints > 0)
@@ -135,16 +136,19 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 	}
 	catch (std::runtime_error& e)
 	{
-
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to execute marker because of the following error: [%1%].", e.what()));
 	}
 	catch (...)
 	{
-
+		_HIVE_OUTPUT_WARNING("Fail to execute marker due to unexpected error");
 	}
+//TODO: 当执行过程中出现异常时，需要将状态重置为函数执行之前（需要测试用例加以验证）
 	return false;
 }
 
-void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::switchLabel(EPointLabel vTo, EPointLabel vFrom)
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::switchLabel(EPointLabel vTo, EPointLabel vFrom)
 {
 	auto NumPoints = m_Scene.getNumPoint();
 	_ASSERTE(NumPoints > 0);
@@ -156,7 +160,9 @@ void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::switc
 	}
 }
 
-void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::setLabel(const std::vector<pcl::index_t>& vPoints, EPointLabel vTarget)
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::setLabel(const std::vector<pcl::index_t>& vPoints, EPointLabel vTarget)
 {
 	auto NumPoints = m_Scene.getNumPoint();
 	_ASSERTE(NumPoints > 0);
@@ -167,7 +173,6 @@ void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::setLa
 		if (Label == EPointLabel::KEPT || Label == EPointLabel::UNWANTED)
 			m_PointLabelSet.tagPointLabel(Index, vTarget, 0, 0);
 	}
-
 }
 
 //*****************************************************************
@@ -178,23 +183,29 @@ std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::inde
 	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vSeedClusterIndex);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::getIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel)
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::dumpIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel)
 {
 	for (size_t i = 0; i < m_PointLabelSet.getSize(); i++)
 		if (m_PointLabelSet.getLabelAt(i) == vLabel)
 				vioIndices.push_back(i);
 }
 
-bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::executeRemoveOutlier()
+//*****************************************************************
+//FUNCTION: 
+bool CPointCloudRetouchManager::executeRemoveOutlier()
 {
 	std::vector<pcl::index_t> Indices;
-	getIndicesByLabel(Indices, EPointLabel::UNDETERMINED);
-	getIndicesByLabel(Indices, EPointLabel::KEPT);
+	dumpIndicesByLabel(Indices, EPointLabel::UNDETERMINED);
+	dumpIndicesByLabel(Indices, EPointLabel::KEPT);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
 	return pOutlierDetector->execute<COutlierDetector>(Indices, EPointLabel::UNWANTED, m_pOutlierConfig);
 }
 
-bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::executeUndo()
+//*****************************************************************
+//FUNCTION: 
+bool CPointCloudRetouchManager::undo()
 {
 	if (m_StatusQueue.size() > 1)
 		m_StatusQueue.pop_back();
@@ -206,7 +217,9 @@ bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::execu
 	return true;
 }
 
-void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::recordCurrentStatus()
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::recordCurrentStatus()
 {
 	m_StatusQueue.push_back(std::make_pair(m_PointLabelSet, m_Timestamp));
 	if (m_StatusQueue.size() > 10)

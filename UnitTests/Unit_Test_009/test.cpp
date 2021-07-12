@@ -82,7 +82,7 @@ TEST_F(TestOutlierDetector, FunctionTest_Test1)
     pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
 	
 	pcl::Indices OutlierIndices;
-	pManager->getIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
+	pManager->dumpIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
 
 	pcl::Indices GroundTruth;
 	loadIndices(TESTMODEL_DIR + std::string("Test009_Model/test1_indices.txt"), GroundTruth);
@@ -105,7 +105,7 @@ TEST_F(TestOutlierDetector, FunctionTest_Test2)
 	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
 
 	pcl::Indices OutlierIndices;
-	pManager->getIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
+	pManager->dumpIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
 
 	pcl::Indices GroundTruth;
 	loadIndices(TESTMODEL_DIR + std::string("Test009_Model/test2_indices.txt"), GroundTruth);
@@ -128,7 +128,7 @@ TEST_F(TestOutlierDetector, FunctionTest_Test3)
 	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
 
 	pcl::Indices OutlierIndices;
-	pManager->getIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
+	pManager->dumpIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
 
 	pcl::Indices GroundTruth;
 	loadIndices(TESTMODEL_DIR + std::string("Test009_Model/test4_indices.txt"), GroundTruth);

@@ -17,8 +17,8 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveInit(PointCloud_t::Ptr vPoin
 bool hiveObliquePhotography::PointCloudRetouch::hiveSave(PointCloud_t::Ptr voPointCloud)
 {
 	pcl::Indices PointIndices;
-	CPointCloudRetouchManager::getInstance()->getIndicesByLabel(PointIndices, EPointLabel::KEPT);
-	CPointCloudRetouchManager::getInstance()->getIndicesByLabel(PointIndices, EPointLabel::UNDETERMINED);
+	CPointCloudRetouchManager::getInstance()->dumpIndicesByLabel(PointIndices, EPointLabel::KEPT);
+	CPointCloudRetouchManager::getInstance()->dumpIndicesByLabel(PointIndices, EPointLabel::UNDETERMINED);
 	for (auto Index : PointIndices)
 	{
 		pcl::PointSurfel TempPoint;
@@ -94,5 +94,5 @@ void hiveObliquePhotography::PointCloudRetouch::hiveExecuteRubber(const std::vec
 
 bool hiveObliquePhotography::PointCloudRetouch::hiveUndo()
 {
-	return CPointCloudRetouchManager::getInstance()->executeUndo();
+	return CPointCloudRetouchManager::getInstance()->undo();
 }
