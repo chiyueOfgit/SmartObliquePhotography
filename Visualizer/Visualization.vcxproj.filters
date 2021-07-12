@@ -58,6 +58,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\Configs\VisualizationConfig.xml" />
+    <Xml Include="..\QTInterface\VisualizationConfig.xml" />
   </ItemGroup>
 </Project>
