@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "SingleStepWindow.h"
+#include "SliderSizeDockWidget.h"
+#include "SingleStepConfig.h"
 #include <QtWidgets/qmdisubwindow.h>
 #include <QSlider>
 #include <QtWidgets/QFileDialog>
@@ -62,13 +64,12 @@ void CSingleStepWindow::__initialSlider()
     m_pPointSizeSlider->setSingleStep(1);
     m_pPointSizeSlider->setTickInterval(1);
     m_pPointSizeSlider->setTickPosition(QSlider::TicksAbove);
-    m_pPointSizeSlider->setValue(*m_pVisualizationConfig->getAttribute<int>("POINT_SHOW_SIZE"));
+    m_pPointSizeSlider->setValue(*m_pVisualizationConfig->getAttribute<double>(Visualization::POINT_SHOW_SIZE));
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
         {
             m_PointSize = m_pPointSizeSlider->value();
-            auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute("POINT_SHOW_SIZE", m_PointSize);
-            auto q = *m_pVisualizationConfig->getAttribute<int>("POINT_SHOW_SIZE");
+            auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute(Visualization::POINT_SHOW_SIZE, static_cast<double>(m_PointSize));
             if (OverwriteSuccess)
             {
                 Visualization::hiveRefreshVisualizer(m_PointLabel);
@@ -84,11 +85,18 @@ void CSingleStepWindow::__initialSlider()
 
 void CSingleStepWindow::__parseConfigFile()
 {
-    const std::string ConfigPath = "PointCloudRetouchConfig.xml";
+    const std::string RetouchConfigPath = "PointCloudRetouchConfig.xml";
     m_pPointCloudRetouchConfig = new hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchConfig;
-    if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, m_pPointCloudRetouchConfig) != hiveConfig::EParseResult::SUCCEED)
+    if (hiveConfig::hiveParseConfig(RetouchConfigPath, hiveConfig::EConfigType::XML, m_pPointCloudRetouchConfig) != hiveConfig::EParseResult::SUCCEED)
     {
-        _HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+        _HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", RetouchConfigPath));
+        return;
+    }
+
+    const std::string StepConfigPath = "SingleStepConfig.xml";
+    if (hiveConfig::hiveParseConfig(StepConfigPath, hiveConfig::EConfigType::XML, CSingleStepConfig::getInstance()) != hiveConfig::EParseResult::SUCCEED)
+    {
+        _HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", StepConfigPath));
         return;
     }
 }
@@ -127,26 +135,22 @@ void CSingleStepWindow::__onActionMark()
 {
     if (m_pCloud)
     {
-
         if (m_WindowUI.actionMark->isChecked())
         {
-            //m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget, m_pVisualizationConfig);
-            //m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
-            //m_pPointPickingDockWidget->show();
-            //CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to select mode."));
-
+            m_pPointPickingDockWidget = new CSliderSizeDockWidget(m_WindowUI.VTKWidget, m_pVisualizationConfig, CSingleStepConfig::getInstance());
+            m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
+            m_pPointPickingDockWidget->show();
         }
         else
         {
-            //m_pPointPickingDockWidget->close();
-            //delete m_pPointPickingDockWidget;
-
             Visualization::hiveRefreshVisualizer(m_PointLabel);
-            //CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
+            m_pPointPickingDockWidget->close();
+            delete m_pPointPickingDockWidget;
+            m_pPointPickingDockWidget = nullptr;
         }
 
         if (m_pVisualizationConfig)
-            m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", m_WindowUI.actionMark->isChecked());
+            m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, m_WindowUI.actionMark->isChecked());
     }
 }
 
@@ -154,22 +158,29 @@ void CSingleStepWindow::__onActionShow()
 {
     if (m_pCloud)
     {
+        if (m_pPointPickingDockWidget)
+        {
+            delete m_pPointPickingDockWidget;
+            m_pPointPickingDockWidget = nullptr;
+        }
+
+
         static std::size_t CurrentPoint = 0;
-        static Eigen::Vector3i DeltaColor = m_EndColor - m_BeginColor;
+        Eigen::Vector3i DeltaColor = (m_pVisualizationConfig->getAttribute<bool>(Visualization::UNWANTED_MODE).value() ? m_LitterEndColor : m_BackgroundEndColor) - m_BeginColor;
 
         if (m_WindowUI.actionMark->isChecked())
         {
-            PointCloudRetouch::hiveDumpExpandResult(m_ExpandPoints);
+            PointCloudRetouch::hiveDumpExpandResult(m_ExpandPoints, m_pVisualizationConfig->getAttribute<bool>(Visualization::UNWANTED_MODE).value());
             _ASSERTE(!m_ExpandPoints.empty());
             CurrentPoint = 0;
             {
                 m_WindowUI.actionMark->setChecked(false);
-                m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", m_WindowUI.actionMark->isChecked());
+                m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, m_WindowUI.actionMark->isChecked());
             }
         }
 
         std::vector<int> SingleStepPoints;
-        int End = CurrentPoint + m_StepLength;
+        int End = CurrentPoint + CSingleStepConfig::getInstance()->getAttribute<float>(STEP_RATIO).value() * 0.01f * m_ExpandPoints.size();
         if (End > m_ExpandPoints.size())
             End = m_ExpandPoints.size();
         while (CurrentPoint < End)

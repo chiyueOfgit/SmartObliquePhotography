@@ -130,13 +130,12 @@ void CQTInterface::__initialSlider(const QStringList& vFilePathList)
     m_pPointSizeSlider->setSingleStep(1);
     m_pPointSizeSlider->setTickInterval(1);
     m_pPointSizeSlider->setTickPosition(QSlider::TicksAbove);
-    m_pPointSizeSlider->setValue(*m_pVisualizationConfig->getAttribute<int>("POINT_SHOW_SIZE"));
+    m_pPointSizeSlider->setValue(*m_pVisualizationConfig->getAttribute<double>(Visualization::POINT_SHOW_SIZE));
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
         {
             m_PointSize = m_pPointSizeSlider->value();
-            auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute("POINT_SHOW_SIZE", m_PointSize);
-            auto q = *m_pVisualizationConfig->getAttribute<int>("POINT_SHOW_SIZE");
+            auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute(Visualization::POINT_SHOW_SIZE, static_cast<double>(m_PointSize));
             if (OverwriteSuccess)
             {
                 std::vector<std::size_t> PointLabel;
@@ -221,7 +220,7 @@ void CQTInterface::onActionPointPicking()
         }
 
         if (m_pVisualizationConfig)
-            m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", ui.actionPointPicking->isChecked());
+            m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, ui.actionPointPicking->isChecked());
     }
 
 }

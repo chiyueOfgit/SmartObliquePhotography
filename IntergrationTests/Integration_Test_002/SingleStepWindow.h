@@ -26,9 +26,11 @@ private:
     std::vector<std::size_t> m_PointLabel;
     std::vector<pcl::index_t> m_ExpandPoints;
 
-    std::size_t m_StepLength = 500;  //每次步长点数
-    Eigen::Vector3i m_BeginColor = { 0, 0, 255 };
-    Eigen::Vector3i m_EndColor = { 255, 0, 0 };
+    QDockWidget* m_pPointPickingDockWidget = nullptr;
+
+    Eigen::Vector3i m_BeginColor = { 255, 255, 255 };
+    Eigen::Vector3i m_LitterEndColor = { 255, 0, 0 };
+    Eigen::Vector3i m_BackgroundEndColor = { 0, 0, 255 };
 
     void __loadCloud(const std::vector<std::string>& vFilePathSet);
     void __initialVTKWidget();

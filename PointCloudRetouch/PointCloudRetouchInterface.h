@@ -16,7 +16,7 @@ namespace hiveObliquePhotography
 		RETOUCH_DECLSPEC void hiveRecoverDiscardPoints2Unwanted();
 		RETOUCH_DECLSPEC void hiveClearMarkerResult();
 
-		RETOUCH_DECLSPEC void hiveDumpExpandResult(std::vector<pcl::index_t>& voExpandPoints);
+		RETOUCH_DECLSPEC void hiveDumpExpandResult(std::vector<pcl::index_t>& voExpandPoints, bool vIsLitterMarker = true);
 
 		//DEBUG
 		RETOUCH_DECLSPEC void hiveExecuteRubber(const std::vector<pcl::index_t>& vPoints);
