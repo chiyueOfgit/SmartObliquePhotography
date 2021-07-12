@@ -20,6 +20,12 @@
     <ClCompile Include="SingleStepWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SliderSizeDockWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatSlider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -28,9 +34,18 @@
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SingleStepConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="SingleStepWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SliderSizeDockWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="FloatSlider.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -39,8 +54,13 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="SingleStepWindow.ui" />
+    <QtUic Include="SliderSizeDockWidget.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="SingleStepWindow.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="VisualizationConfig.xml" />
+    <Xml Include="SingleStepConfig.xml" />
   </ItemGroup>
 </Project>

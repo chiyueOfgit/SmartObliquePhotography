@@ -67,9 +67,9 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointLabel(std::vector<s
 	return CPointCloudRetouchManager::getInstance()->dumpPointLabel(voPointLabel);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveDumpExpandResult(std::vector<pcl::index_t>& voExpandPoints)
+void hiveObliquePhotography::PointCloudRetouch::hiveDumpExpandResult(std::vector<pcl::index_t>& voExpandPoints, bool vIsLitterMarker)
 {
-	CPointCloudRetouchManager::getInstance()->dumpExpandPoints(voExpandPoints);
+	CPointCloudRetouchManager::getInstance()->dumpExpandPoints(voExpandPoints, vIsLitterMarker);
 }
 
 void hiveObliquePhotography::PointCloudRetouch::hiveDiscardUnwantedPoints()

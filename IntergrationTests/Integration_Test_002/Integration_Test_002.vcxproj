@@ -105,16 +105,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FloatSlider.cpp" />
     <ClCompile Include="SingleStepWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SliderSizeDockWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SingleStepConfig.h" />
+    <QtMoc Include="FloatSlider.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
+    <QtMoc Include="SliderSizeDockWidget.h" />
     <QtMoc Include="SingleStepWindow.h" />
   </ItemGroup>
   <ItemGroup>
@@ -136,9 +141,14 @@
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="SingleStepWindow.ui" />
+    <QtUic Include="SliderSizeDockWidget.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="SingleStepWindow.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="SingleStepConfig.xml" />
+    <Xml Include="VisualizationConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
