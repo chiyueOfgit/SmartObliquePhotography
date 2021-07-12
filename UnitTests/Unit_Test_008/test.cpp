@@ -155,9 +155,9 @@ TEST_F(CTestUndo, Empty_ResultQueue_Expect_Test)
 {
 	initTest(ModelPath);
 
-	EXPECT_FALSE(pManager->executeUndo());
-	ASSERT_NO_FATAL_FAILURE(pManager->executeUndo());
-	ASSERT_NO_THROW(pManager->executeUndo());
+	EXPECT_FALSE(pManager->undo());
+	ASSERT_NO_FATAL_FAILURE(pManager->undo());
+	ASSERT_NO_THROW(pManager->undo());
 }
 
 TEST_F(CTestUndo, Empty_Input_Expect_Test)
@@ -166,7 +166,7 @@ TEST_F(CTestUndo, Empty_Input_Expect_Test)
 
 	expandOnce({}, CameraPath);
 
-	EXPECT_FALSE(pManager->executeUndo());
-	ASSERT_NO_FATAL_FAILURE(pManager->executeUndo());
-	ASSERT_NO_THROW(pManager->executeUndo());
+	EXPECT_FALSE(pManager->undo());
+	ASSERT_NO_FATAL_FAILURE(pManager->undo());
+	ASSERT_NO_THROW(pManager->undo());
 }

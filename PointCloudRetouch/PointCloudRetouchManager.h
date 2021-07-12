@@ -31,7 +31,7 @@ namespace hiveObliquePhotography
 			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel);
 			bool executeRemoveOutlier();
 			void recordCurrentStatus();
-			bool executeUndo();
+			bool undo();
 			
 			std::size_t   getNumCluster() const { return m_PointClusterSet.getNumCluster(); }
 			std::uint32_t addAndGetTimestamp() { m_Timestamp++; return m_Timestamp; }
@@ -41,7 +41,7 @@ namespace hiveObliquePhotography
 
 			void switchLabel(EPointLabel vTo, EPointLabel vFrom);
 			void setLabel(const std::vector<pcl::index_t>& vPoints, EPointLabel vTarget);	//for perform
-			void getIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel);
+			void dumpIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel);
 			
 			const auto& getRetouchScene() const { return m_Scene; }
 			
