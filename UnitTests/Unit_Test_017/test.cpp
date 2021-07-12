@@ -8,6 +8,8 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
 #include <pcl/io/pcd_io.h>
+
+#include "PointCloudRetouchManager.h"
 #include "PointSetPreprocessor.h"
 
 #include "pcl/visualization/pcl_visualizer.h"
@@ -86,6 +88,7 @@ class TestSelecting : public testing::Test
 {
 protected:
 	hiveConfig::CHiveConfig* pConfig = nullptr;
+	CPointCloudRetouchManager* pManager = nullptr;
 	
 	void SetUp() override
 	{
@@ -98,6 +101,8 @@ protected:
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 			return;
 		}
+		pManager = CPointCloudRetouchManager::getInstance();
+		pManager->init(pCloud, pConfig);
 	}
 
 	void TearDown() override
@@ -206,6 +211,11 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteGround)
 
 TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 {
+	std::string ModelPath("../TestModel/General/slice 15.pcd");
+	PointCloud_t::Ptr pTempCloud(new PointCloud_t);
+	pcl::io::loadPCDFile(ModelPath, *pTempCloud);
+	pManager->init(pTempCloud, pConfig);
+
 	const auto& Path = FilePaths[2];
 
 	pcl::Indices InputIndices;
@@ -337,6 +347,11 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepGround)
 
 TEST_F(TestSelecting, Selecting_CullingTest_KeepABuilding)
 {
+	std::string ModelPath("../TestModel/General/slice 15.pcd");
+	PointCloud_t::Ptr pTempCloud(new PointCloud_t);
+	pcl::io::loadPCDFile(ModelPath, *pTempCloud);
+	pManager->init(pTempCloud, pConfig);
+
 	const auto& Path = FilePaths[6];
 
 	pcl::Indices InputIndices;
