@@ -14,9 +14,9 @@ namespace hiveObliquePhotography
 			~CRetouchTask() = default;
 
 			bool init(const hiveConfig::CHiveConfig* vConfig);
-			bool execute(const CPointCluster *vUserSpecifiedCluster);
+			bool execute(const CPointCluster *vUserSpecifiedCluster) const;
 
-			void dumpTaskMarkedPoints(std::vector<pcl::index_t>& voMarkedPoints);
+			void dumpTaskMarkedPoints(std::vector<pcl::index_t>& voMarkedPoints) const;
 
 			const hiveConfig::CHiveConfig* getClusterConfig() const { _ASSERTE(m_pClusterConfig); return m_pClusterConfig; }
 

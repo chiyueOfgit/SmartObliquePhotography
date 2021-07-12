@@ -55,7 +55,7 @@ bool CRetouchTask::init(const hiveConfig::CHiveConfig* vConfig)
 
 //*****************************************************************
 //FUNCTION: 
-bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster)
+bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster) const
 {
 	_ASSERTE(vUserSpecifiedCluster && m_pPointClusterExpander);
 
@@ -64,7 +64,7 @@ bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster)
 
 //*****************************************************************
 //FUNCTION: 
-void CRetouchTask::dumpTaskMarkedPoints(std::vector<pcl::index_t>& voMarkedPoints)
+void CRetouchTask::dumpTaskMarkedPoints(std::vector<pcl::index_t>& voMarkedPoints) const
 {
 	voMarkedPoints = m_pPointClusterExpander->getExpandPoints();
 }
