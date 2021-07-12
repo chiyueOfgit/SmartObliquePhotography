@@ -65,7 +65,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 		}
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Unknown subconfiguration type [%1%].", pConfig->getSubconfigType()));
 	}
-	
+	recordCurrentStatus();
 	return true;
 }
 
@@ -192,4 +192,23 @@ bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::execu
 	getIndicesByLabel(Indices, EPointLabel::KEPT);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
 	return pOutlierDetector->execute<COutlierDetector>(Indices, EPointLabel::UNWANTED, m_pOutlierConfig);
+}
+
+bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::executeUndo()
+{
+	if (m_StatusQueue.size() > 1)
+		m_StatusQueue.pop_back();
+	else
+		return false;
+	auto LastStatus = m_StatusQueue.back();
+	m_PointLabelSet = LastStatus.first;
+	m_Timestamp = LastStatus.second;
+	return true;
+}
+
+void hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::recordCurrentStatus()
+{
+	m_StatusQueue.push_back(std::make_pair(m_PointLabelSet, m_Timestamp));
+	if (m_StatusQueue.size() > 10)
+		m_StatusQueue.pop_front();
 }
