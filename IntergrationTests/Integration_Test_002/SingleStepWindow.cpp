@@ -205,7 +205,7 @@ void CSingleStepWindow::__onActionClear()
 {
     if (m_pCloud)
     {
-        PointCloudRetouch::hiveClearMarkerResult();
+        PointCloudRetouch::hiveClearMark();
         Visualization::hiveCancelAllHighlighting();
         PointCloudRetouch::hiveDumpPointLabel(m_PointLabel);
         Visualization::hiveRefreshVisualizer(m_PointLabel);
