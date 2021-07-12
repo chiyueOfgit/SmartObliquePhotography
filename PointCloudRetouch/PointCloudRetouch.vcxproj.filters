@@ -70,6 +70,9 @@
     <ClInclude Include="OutlierDetector.h">
       <Filter>Operation</Filter>
     </ClInclude>
+    <ClInclude Include="NormalComplexity.h">
+      <Filter>PointCluster\Feature</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -115,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="OutlierDetector.cpp">
       <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalComplexity.cpp">
+      <Filter>PointCluster\Feature</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
