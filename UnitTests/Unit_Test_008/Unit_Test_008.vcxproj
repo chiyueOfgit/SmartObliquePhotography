@@ -52,6 +52,9 @@
     <ProjectReference Include="..\..\PointCloudRetouch_Lib\PointCloudRetouch_Lib.vcxproj">
       <Project>{87879ac2-2e99-42c7-8ff9-a456d9350873}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\visualization\pcl_visualization.vcxproj">
+      <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="PointCloudRetouchConfig.xml" />
@@ -96,11 +99,11 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_UNIT_TEST;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_UNIT_TEST;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestModel\)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>../../PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\PointCloudRetouch;..\..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -129,12 +132,12 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_UNIT_TEST;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestModel\)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_UNIT_TEST;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestModel\)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>../../PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\PointCloudRetouch;..\..\visualization\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
