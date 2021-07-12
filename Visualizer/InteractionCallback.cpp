@@ -358,7 +358,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 //*****************************************************************
 //FUNCTION: 
-void hiveObliquePhotography::Visualization::CInteractionCallback::pointPicking(const pcl::visualization::PointPickingEvent& vEvent)
+void CInteractionCallback::pointPicking(const pcl::visualization::PointPickingEvent& vEvent)
 {
 
 }
