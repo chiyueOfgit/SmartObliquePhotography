@@ -13,100 +13,73 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdf(vioPointSet, vPvMatrix);
 
-//	static int AreaWidth = m_RightDown.x() - m_LeftUp.x() + 1;
-//	static int AreaHeight = m_RightDown.y() - m_LeftUp.y() + 1;
-//
-//	std::vector<float> PointsDepth(AreaWidth * AreaHeight, FLT_MAX);
-//	std::set<pcl::index_t> ResultPoints;
-//
-//	Eigen::Matrix4d PVInverse = m_PvMatrix.inverse();
-//
-//	//tile projection
-//	const std::size_t NumPartitionX = 0.5 * AreaWidth, NumPartitionY = 0.5 * AreaHeight;
-//	float TileDeltaX = (float)AreaWidth / NumPartitionX;
-//	float TileDeltaY = (float)AreaHeight / NumPartitionY;
-//
-//	std::vector<std::vector<pcl::index_t>> PointTile(NumPartitionX * NumPartitionY);
-//
-//	std::mutex Mutex;
-//
-//#pragma omp parallel for
-//	for (int i = 0; i < vioPointIndices.size(); i++)
-//	{
-//		auto Index = vioPointIndices[i];
-//		Eigen::Vector4f Position = Scene.getPositionAt(Index);
-//
-//		Position = m_PvMatrix * Position;
-//		Position /= Position.eval().w();
-//		Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
-//		Position /= 2.0;
-//		Position.x() *= m_WindowSize.x();
-//		Position.y() *= m_WindowSize.y();
-//
-//		int TileIndexX = (Position.x() - m_LeftUp.x()) / TileDeltaX;
-//		int TileIndexY = (Position.y() - m_LeftUp.y()) / TileDeltaY;
-//
-//		_ASSERTE(TileIndexX >= 0 && TileIndexY >= 0);
-//
-//		Mutex.lock();
-//		PointTile[TileIndexX + TileIndexY * NumPartitionX].push_back(Index);
-//		Mutex.unlock();
-//	}
-//	std::mutex Mutex;
-//
-//#pragma omp parallel for
-//	for (int Y = m_LeftUp.y(); Y <= m_RightDown.y(); Y++)
-//	{
-//		for (int X = m_LeftUp.x(); X <= m_RightDown.x(); X++)
-//		{
-//			std::map<float, int> DepthAndIndices;
-//
-//			Eigen::Vector4d PixelPosition = { X / m_WindowSize.x() * 2 - 1, Y / m_WindowSize.y() * 2 - 1, 0.0f, 1.0f };
-//
-//			PixelPosition = PVInverse * PixelPosition;
-//			PixelPosition /= PixelPosition.w();
-//
-//			Eigen::Vector3f RayOrigin = m_ViewPos;
-//			Eigen::Vector3f RayDirection = Eigen::Vector3f(PixelPosition) - RayOrigin;
-//			RayDirection /= RayDirection.norm();
-//
-//			for (int i = 0; i < vioPointIndices.size(); i++)
-//			{
-//				Eigen::Vector3f Pos{ Scene.getPositionAt(i) };
-//				Eigen::Vector3f Normal{ Scene.getNormalAt(i) };
-//
-//				float K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
-//
-//				Eigen::Vector3f IntersectPosition = RayOrigin + K * RayDirection;
-//
-//				const float SurfelRadius = 1.0f;	//surfel world radius
-//
-//				if ((IntersectPosition - Pos).norm() < SurfelRadius)
-//					DepthAndIndices[K] = vioPointIndices[i];
-//			}
-//
-//			int Offset = X - m_LeftUp.x() + (Y - m_LeftUp.y()) * AreaWidth;
-//			_ASSERTE(Offset >= 0);
-//
-//			const float WorldLengthLimit = 0.5f;	//magic
-//			if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
-//			{
-//				auto MinDepth = DepthAndIndices.begin()->first;
-//				for (auto& Pair : DepthAndIndices)
-//				{
-//					if (Pair.first - MinDepth < WorldLengthLimit)
-//					{
-//						Mutex.lock();
-//						ResultPoints.insert(Pair.second);
-//						Mutex.unlock();
-//					}
-//
-//				}
-//			}
-//		}
-//	}
-//
-//	vioPointIndices = { ResultPoints.begin(), ResultPoints.end() };
+	const Eigen::Vector2i Resolution = { 128, 128 };
+	const Eigen::Vector2f SampleDeltaNDC = { static_cast<float>(MaxPos.x() - MinPos.x()) / Resolution.x(), static_cast<float>(MaxPos.y() - MinPos.y()) / Resolution.y() };
+
+	std::vector<float> PointsDepth(Resolution.x() * Resolution.y(), FLT_MAX);
+	std::set<pcl::index_t> ResultPoints;
+
+	Eigen::Matrix4d PVInverse = vPvMatrix.inverse();
+
+	std::mutex Mutex;
+
+#pragma omp parallel for
+	for (int i = 0; i < Resolution.y(); i++)
+	{
+		float Y = MinPos.y() + (i + 0.5f) * SampleDeltaNDC.y();
+
+		for (int k = 0; k < Resolution.x(); k++)
+		{
+			float X = MinPos.x() + (k + 0.5f) * SampleDeltaNDC.x();
+
+			std::map<float, int> DepthAndIndices;
+
+			Eigen::Vector4d PixelPosition = { X, Y, 0.0f, 1.0f };
+
+			PixelPosition = PVInverse * PixelPosition;
+			PixelPosition /= PixelPosition.w();
+
+			Eigen::Vector3f RayOrigin = vViewPos;
+			Eigen::Vector3f RayDirection = Eigen::Vector3f(PixelPosition) - RayOrigin;
+			RayDirection /= RayDirection.norm();
+
+			for (int i = 0; i < vioPointSet.size(); i++)
+			{
+				Eigen::Vector3f Pos{ CloudScene.getPositionAt(i) };
+				Eigen::Vector3f Normal{ CloudScene.getNormalAt(i) };
+
+				float K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
+
+				Eigen::Vector3f IntersectPosition = RayOrigin + K * RayDirection;
+
+				const float SurfelRadius = 1.0f;	//surfel world radius
+
+				if ((IntersectPosition - Pos).norm() < SurfelRadius)
+					DepthAndIndices[K] = vioPointSet[i];
+			}
+
+			int Offset = k + i * Resolution.x();
+			_ASSERTE(Offset >= 0);
+
+			const float WorldLengthLimit = 0.5f;	//magic
+			if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
+			{
+				auto MinDepth = DepthAndIndices.begin()->first;
+				for (auto& Pair : DepthAndIndices)
+				{
+					if (Pair.first - MinDepth < WorldLengthLimit)
+					{
+						Mutex.lock();
+						ResultPoints.insert(Pair.second);
+						Mutex.unlock();
+					}
+
+				}
+			}
+		}
+	}
+
+	vioPointSet = { ResultPoints.begin(), ResultPoints.end() };
 }
 
 //*****************************************************************

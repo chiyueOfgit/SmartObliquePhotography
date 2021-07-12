@@ -203,9 +203,18 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+		Eigen::Matrix4d Proj, View;
+		Camera.computeProjectionMatrix(Proj);
+		Camera.computeViewMatrix(View);
 
+		auto pFunc = [](Eigen::Vector2f vPos) -> float
+		{
+			return -1;
+		};
 
-//		m_pVisualizer->addUserColoredPoints({Points.begin(), Points.end()}, { 255, 255, 255 });
+		PointCloudRetouch::hivePreprocessSelected(PickedIndices, Proj * View, pFunc, { Camera.pos[0], Camera.pos[1], Camera.pos[2] });
+
+		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 //
 //		if (m_UnwantedMode)                                                                                   
 //			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
