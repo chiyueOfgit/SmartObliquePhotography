@@ -81,7 +81,6 @@ protected:
 		Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 		Camera.computeViewMatrix(ViewMatrix);
 		Camera.computeProjectionMatrix(ProjectionMatrix);
-		
 		hiveMarkLitter(Indices, 0.8, 10, { 200, 300 }, ProjectionMatrix * ViewMatrix, { 1000, 1000 });
 	}
 	
