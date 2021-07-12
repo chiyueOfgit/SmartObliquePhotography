@@ -11,6 +11,7 @@ namespace hiveObliquePhotography
 			const std::string PLANARITY_FEATURE = "PLANARITY_FEATURE";
 			const std::string VFH_FEATURE = "VFH_FEATURE";
 			const std::string COLOR_FEATURE = "COLOR_FEATURE";
+			const std::string NORMAL_COMPLEXITY = "NORMAL_COMPLEXITY";
 
 			const std::string EUCLIDEAN_NEIGHBOR_BUILDER = "EUCLIDEAN_NEIGHBOR_BUILDER";
 
