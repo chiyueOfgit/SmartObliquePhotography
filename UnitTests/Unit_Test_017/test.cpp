@@ -161,7 +161,6 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteTree)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
 	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
@@ -190,7 +189,6 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteGround)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
 	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
@@ -224,7 +222,6 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
 	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
@@ -253,7 +250,6 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
 	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
@@ -297,7 +293,6 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepATree)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
 	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
@@ -326,7 +321,6 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepGround)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
 	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
@@ -360,7 +354,6 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepABuilding)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
 	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
@@ -389,7 +382,6 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepMoreTrees)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
 	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
