@@ -150,7 +150,7 @@ void CSingleStepWindow::__onActionMark()
         }
 
         if (m_pVisualizationConfig)
-            m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", m_WindowUI.actionMark->isChecked());
+            m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, m_WindowUI.actionMark->isChecked());
     }
 }
 
@@ -175,7 +175,7 @@ void CSingleStepWindow::__onActionShow()
             CurrentPoint = 0;
             {
                 m_WindowUI.actionMark->setChecked(false);
-                m_pVisualizationConfig->overwriteAttribute("CIRCLE_MODE", m_WindowUI.actionMark->isChecked());
+                m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, m_WindowUI.actionMark->isChecked());
             }
         }
 

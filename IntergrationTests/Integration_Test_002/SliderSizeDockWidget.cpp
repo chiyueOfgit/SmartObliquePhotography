@@ -48,5 +48,5 @@ void CSliderSizeDockWidget::onActionSliderHardnessChange()
 
 void CSliderSizeDockWidget::onActionBoxStepRatioChange()
 {
-	m_pSingleStepConfig->overwriteAttribute(STEP_RATIO, m_pUi->StepLengthBox->value());
+	m_pSingleStepConfig->overwriteAttribute(STEP_RATIO, static_cast<float>(m_pUi->StepLengthBox->value()));
 }
