@@ -8,7 +8,8 @@
 #include "PointCloudRetouchConfig.h"
 #include <pcl/point_types.h>
 #include "pcl/io/pcd_io.h"
-#include "PointCluster.h"
+#include "pcl/visualization/pcl_visualizer.h"
+#include "pcl/visualization/common/common.h"
 
 #include <fstream>
 #include <boost/archive/text_oarchive.hpp> 
@@ -30,6 +31,9 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 using namespace  hiveObliquePhotography::PointCloudRetouch;
 
 const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test008_PointCloudRetouchConfig.xml");
+const std::string ModelPath = TESTMODEL_DIR + std::string("General/slice 16.pcd");
+const std::string IndicesPath = TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingInput.txt");
+const std::string CameraPath = TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingCameraInfo.txt");
 
 class CTestUndo : public testing::Test
 {
@@ -70,8 +74,15 @@ protected:
 		if (!vIndicesPath.empty())
 			loadIndices(vIndicesPath, Indices);
 
+		pcl::visualization::Camera Camera;
+		auto pVisualizer = new pcl::visualization::PCLVisualizer("Viewer", true);
+		pVisualizer->loadCameraParameters(vCameraPath);
+		pVisualizer->getCameraParameters(Camera);
+		Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+		Camera.computeViewMatrix(ViewMatrix);
+		Camera.computeProjectionMatrix(ProjectionMatrix);
 		
-		hiveMarkLitter(Indices, 0.8, 10, { 200, 300 }, {}, { 1000, 1000 });
+		hiveMarkLitter(Indices, 0.8, 10, { 200, 300 }, ProjectionMatrix * ViewMatrix, { 1000, 1000 });
 	}
 	
 	void TearDown() override
@@ -82,23 +93,27 @@ protected:
 
 TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
 {
-	initTest(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
+	initTest(ModelPath);
 	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
 	
 	hiveDumpPointLabel(LabelSetBeforeUndo);
-	expandOnce(TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingInput.txt"), ("Test008_Model/CompleteBuildingCameraInfo.txt"));
+	expandOnce(IndicesPath, CameraPath);
 	hiveUndo();
 	hiveDumpPointLabel(LabelSetAfterUndo);
 
-	ASSERT_EQ(LabelSetBeforeUndo.size(), LabelSetAfterUndo.size());
+	std::vector<std::size_t> Interaction;
+	std::set_intersection(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
+		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
+		std::inserter(Interaction, Interaction.begin()));
+	ASSERT_EQ(Interaction.size(), 0);
 }
 
 TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
 {
-	initTest(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
+	initTest(ModelPath);
 	
 	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
-	expandOnce(TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingInput.txt"), ("Test008_Model/CompleteBuildingCameraInfo.txt"));
+	expandOnce(IndicesPath, CameraPath);
 	hiveUndo();
 	const auto TimestampAfterUndo = pManager->addAndGetTimestamp();
 
@@ -107,26 +122,30 @@ TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
 
 TEST_F(CTestUndo, LabelSet_Undo_Cleanup_Test)
 {
-	initTest(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
+	initTest(ModelPath);
 	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
 
-	expandOnce(TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingInput.txt"), ("Test008_Model/CompleteBuildingCameraInfo.txt"));
+	expandOnce(IndicesPath, CameraPath);
 	hiveDumpPointLabel(LabelSetBeforeUndo);
 	hiveUndo();
-	expandOnce(TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingInput.txt"), ("Test008_Model/CompleteBuildingCameraInfo.txt"));
+	expandOnce(IndicesPath, CameraPath);
 	hiveDumpPointLabel(LabelSetAfterUndo);
-
-	ASSERT_EQ(LabelSetBeforeUndo.size(), LabelSetAfterUndo.size());
+	
+	std::vector<std::size_t> Interaction;
+	std::set_intersection(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
+		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
+		std::inserter(Interaction, Interaction.begin()));
+	ASSERT_EQ(Interaction.size(), 0);
 }
 
 TEST_F(CTestUndo, Timestamp_Undo_Cleanup_Test)
 {
-	initTest(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
+	initTest(ModelPath);
 
-	expandOnce(TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingInput.txt"), ("Test008_Model/CompleteBuildingCameraInfo.txt"));
+	expandOnce(IndicesPath, CameraPath);
 	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
 	hiveUndo();
-	expandOnce(TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingInput.txt"), ("Test008_Model/CompleteBuildingCameraInfo.txt"));
+	expandOnce(IndicesPath, CameraPath);
 	const auto TimestampAfterUndo = pManager->addAndGetTimestamp();
 
 	ASSERT_EQ(TimestampBeforeUndo, TimestampAfterUndo);
@@ -134,7 +153,7 @@ TEST_F(CTestUndo, Timestamp_Undo_Cleanup_Test)
 
 TEST_F(CTestUndo, Empty_ResultQueue_Expect_Test)
 {
-	initTest(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
+	initTest(ModelPath);
 
 	EXPECT_FALSE(pManager->executeUndo());
 	ASSERT_NO_FATAL_FAILURE(pManager->executeUndo());
@@ -143,9 +162,9 @@ TEST_F(CTestUndo, Empty_ResultQueue_Expect_Test)
 
 TEST_F(CTestUndo, Empty_Input_Expect_Test)
 {
-	initTest(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
+	initTest(ModelPath);
 
-	expandOnce({}, ("Test008_Model/CompleteBuildingCameraInfo.txt"));
+	expandOnce({}, CameraPath);
 
 	EXPECT_FALSE(pManager->executeUndo());
 	ASSERT_NO_FATAL_FAILURE(pManager->executeUndo());
