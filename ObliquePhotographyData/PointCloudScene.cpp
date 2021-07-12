@@ -30,10 +30,17 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("[%1%] has already been loaded.", FileName));
 			continue;
 		}
+		
 		auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudLoader>(hiveUtility::hiveGetFileSuffix(FileName));
 		if (pTileLoader)
 		{
-			auto pTile = pTileLoader->loadDataFromFile(FileName);
+			std::shared_ptr<PointCloud_t> pTile = nullptr;
+			try
+			{
+				pTile = pTileLoader->loadDataFromFile(FileName);
+			}
+			catch (...) { }
+
 			if(!pTile) continue;
 			m_PointCloudTileMap.emplace(FileName, pTile);
 			*m_pPointCloudScene += *pTile;
