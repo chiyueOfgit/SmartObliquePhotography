@@ -281,7 +281,7 @@ void CQTInterface::onActionSave()
     const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
 
     PointCloud_t::Ptr pCloud(new PointCloud_t);
-    PointCloudRetouch::hiveSave(pCloud);
+    PointCloudRetouch::hiveDumpPointCloudtoSave(pCloud);
     if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
         CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
     else

@@ -14,7 +14,7 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveInit(PointCloud_t::Ptr vPoin
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveSave(PointCloud_t::Ptr voPointCloud)
+bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointCloudtoSave(PointCloud_t::Ptr voPointCloud)
 {
 	pcl::Indices PointIndices;
 	CPointCloudRetouchManager::getInstance()->dumpIndicesByLabel(PointIndices, EPointLabel::KEPT);
@@ -55,9 +55,9 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveMarkBackground(const std::ve
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveRemoveOutlier()
+bool hiveObliquePhotography::PointCloudRetouch::hiveMarkIsolatedAreaAsLitter()
 {
-	return CPointCloudRetouchManager::getInstance()->executeRemoveOutlier();
+	return CPointCloudRetouchManager::getInstance()->executeOutlierDetector(EPointLabel::UNWANTED);
 }
 
 //*****************************************************************
@@ -72,22 +72,22 @@ void hiveObliquePhotography::PointCloudRetouch::hiveDumpExpandResult(std::vector
 	CPointCloudRetouchManager::getInstance()->dumpExpandPoints(voExpandPoints, vIsLitterMarker);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveDiscardUnwantedPoints()
+void hiveObliquePhotography::PointCloudRetouch::hiveDiscardLitter()
 {
 	CPointCloudRetouchManager::getInstance()->switchLabel(EPointLabel::DISCARDED, EPointLabel::UNWANTED);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveRecoverDiscardPoints2Unwanted()
+void hiveObliquePhotography::PointCloudRetouch::hiveRestoreLitter()
 {
 	CPointCloudRetouchManager::getInstance()->switchLabel(EPointLabel::UNWANTED, EPointLabel::DISCARDED);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveClearMarkerResult()
+void hiveObliquePhotography::PointCloudRetouch::hiveClearMark()
 {
-	CPointCloudRetouchManager::getInstance()->clearMarkerResult();
+	CPointCloudRetouchManager::getInstance()->clearMark();
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveExecuteRubber(const std::vector<pcl::index_t>& vPoints)
+void hiveObliquePhotography::PointCloudRetouch::hiveEraseMark(const std::vector<pcl::index_t>& vPoints)
 {
 	CPointCloudRetouchManager::getInstance()->setLabel(vPoints, EPointLabel::UNDETERMINED);
 }

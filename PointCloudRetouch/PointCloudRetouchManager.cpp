@@ -71,7 +71,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudRetouchManager::clearMarkerResult()
+void CPointCloudRetouchManager::clearMark()
 {
 	m_PointLabelSet.reset();
 	m_pNeighborhoodBuilder->reset();
@@ -194,13 +194,13 @@ void CPointCloudRetouchManager::dumpIndicesByLabel(std::vector<pcl::index_t>& vi
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::executeRemoveOutlier()
+bool CPointCloudRetouchManager::executeOutlierDetector(EPointLabel vTo)
 {
 	std::vector<pcl::index_t> Indices;
 	dumpIndicesByLabel(Indices, EPointLabel::UNDETERMINED);
 	dumpIndicesByLabel(Indices, EPointLabel::KEPT);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
-	return pOutlierDetector->execute<COutlierDetector>(Indices, EPointLabel::UNWANTED, m_pOutlierConfig);
+	return pOutlierDetector->execute<COutlierDetector>(Indices, vTo, m_pOutlierConfig);
 }
 
 //*****************************************************************
