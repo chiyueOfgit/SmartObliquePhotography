@@ -47,9 +47,9 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			static int i = 0;
 			i++;
 			if (i % 2)
-				PointCloudRetouch::hiveDiscardUnwantedPoints();
+				PointCloudRetouch::hiveDiscardLitter();
 			else
-				PointCloudRetouch::hiveRecoverDiscardPoints2Unwanted();
+				PointCloudRetouch::hiveRestoreLitter();
 
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
@@ -58,7 +58,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 
 		if (KeyString == REMOVE_OUTLIER)
 		{
-			PointCloudRetouch::hiveRemoveOutlier();
+			PointCloudRetouch::hiveMarkIsolatedAreaAsLitter();
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
@@ -124,7 +124,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 
-		PointCloudRetouch::hiveExecuteRubber(PickedIndices);
+		PointCloudRetouch::hiveEraseMark(PickedIndices);
 
 		{
 			std::vector<std::size_t> PointLabel;
