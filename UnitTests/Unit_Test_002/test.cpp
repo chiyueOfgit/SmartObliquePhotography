@@ -56,11 +56,11 @@ TEST(Test_LoadPointCloudScene, DeathTest_LoadDuplicatedFile2)
 TEST(Test_LoadPointCloudScene, DeathTest_LoadPartiallyIncorrectFileSet)
 {
 	std::vector<std::string> FilePaths{
-		"../TestModel/General/slice 1.pcd",
-		"../TestModel/General/slice 2.pcd",
-		"../TestModel/General/slice 3.pcd",
-		"../TestModel/General/slice 5.pcd",
-		"../TestModel/General/slice 1.txt",
+		TESTMODEL_DIR + std::string("General/slice 1.pcd"),
+		TESTMODEL_DIR + std::string("General/slice 2.pcd"),
+		TESTMODEL_DIR + std::string("General/slice 3.pcd"),
+		TESTMODEL_DIR + std::string("General/slice -1.pcd"),
+		TESTMODEL_DIR + std::string("General/slice 1.txt"),
 	};
 	auto PointCloud = CPointCloudScene::getInstance()->loadScene(FilePaths);
 	
@@ -74,6 +74,6 @@ TEST(Test_LoadPointCloudScene, DeathTest_LoadIncorrectFileSet)
 
 	auto PointCloud = CPointCloudScene::getInstance()->loadScene(FilePaths);
 
-	GTEST_ASSERT_EQ(CPointCloudScene::getInstance()->getNumTiles(), 1);
-	GTEST_ASSERT_EQ(PointCloud->size(), 1);
+	GTEST_ASSERT_EQ(CPointCloudScene::getInstance()->getNumTiles(), 0);
+	GTEST_ASSERT_EQ(PointCloud->size(), 0);
 }

@@ -91,3 +91,8 @@ void hiveObliquePhotography::PointCloudRetouch::hiveExecuteRubber(const std::vec
 {
 	CPointCloudRetouchManager::getInstance()->setLabel(vPoints, EPointLabel::UNDETERMINED);
 }
+
+bool hiveObliquePhotography::PointCloudRetouch::hiveUndo()
+{
+	return CPointCloudRetouchManager::getInstance()->executeUndo();
+}

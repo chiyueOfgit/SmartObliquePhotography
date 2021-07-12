@@ -52,6 +52,7 @@ void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vExpectLabe
 
 	for (auto& Point : pResultCloud->points)
 	   pManager->tagPointLabel(Point.curvature, vExpectLabel, 0, 0);
-
+	
+	pManager->recordCurrentStatus();
 }
 

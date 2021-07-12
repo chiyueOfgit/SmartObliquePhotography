@@ -51,6 +51,7 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 			vCluster->outputDebugInfos(Candidate);
 		}
 	}
+	pManager->recordCurrentStatus();
 }
 
 //*****************************************************************
