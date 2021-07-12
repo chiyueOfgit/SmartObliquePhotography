@@ -30,6 +30,8 @@ namespace hiveObliquePhotography
 			void clearMarkerResult();
 			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel);
 			bool executeRemoveOutlier();
+			void recordCurrentStatus();
+			bool executeUndo();
 			
 			std::size_t   getNumCluster() const { return m_PointClusterSet.getNumCluster(); }
 			std::uint32_t addAndGetTimestamp() { m_Timestamp++; return m_Timestamp; }
@@ -71,6 +73,7 @@ namespace hiveObliquePhotography
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 			const hiveConfig::CHiveConfig* m_pOutlierConfig = nullptr;
 			
+			std::deque<std::pair<CPointLabelSet, std::uint32_t>> m_StatusQueue;
 			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize, EPointLabel vTargetLabel);
 
 		friend class hiveDesignPattern::CSingleton<CPointCloudRetouchManager>;

@@ -1,6 +1,7 @@
 Report 
 =================
 ###### 2021.07.07
+###### Commit id: [44b4bfe6](http://192.168.62.249:9090/tfs/STUDENT_PROJECTS/_git/SmartObliquePhotography/pushes/5906?refName=refs%2Fheads%2Fdevelop)
 
 #### Overview
 所有测试用例都可以运行

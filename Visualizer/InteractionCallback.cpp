@@ -72,26 +72,6 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		//	m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_LineMode);
 		//}
 
-		//else if (KeyString == "m")
-		//{
-		//	pcl::Indices InputIndice;
-		//	AutoRetouch::hiveGetIndicesByLabel(InputIndice, AutoRetouch::EPointLabel::UNDETERMINED);
-		//	AutoRetouch::hiveExecuteOutlierDetecting(InputIndice, AutoRetouch::EPointLabel::UNWANTED);
-		//	m_pVisualizer->refresh();
-		//}
-
-		//else if (vEvent.isCtrlPressed() && KeyString == m_pVisualizationConfig->getAttribute<std::string>(UNDO).value())
-		//{
-		//	AutoRetouch::hiveUndoLastOp();
-		//	m_pVisualizer->refresh();
-		//}
-
-		//else if (KeyString == "s")
-		//{
-		//	AutoRetouch::hiveExecuteCompositeBinaryClassifier();
-		//	m_pVisualizer->refresh();
-		//}
-		//
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
 		{
 			static int i = 0;
@@ -106,10 +86,18 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->refresh(PointLabel);
 		}
 
-		if (KeyString == "t")
+		if (KeyString == "m")
 		{
 			//m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera");
 			PointCloudRetouch::hiveRemoveOutlier();
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+
+		if (vEvent.isCtrlPressed() && KeyString == "z")
+		{
+			PointCloudRetouch::hiveUndo();
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
@@ -223,99 +211,99 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		int BeginY = PosY - m_Radius;
 
 		//tile projection
-		const std::size_t NumPartitionX = 0.5 * m_Radius, NumPartitionY = 0.5 * m_Radius;
-		float TileDeltaX = (float)RectangleLength / NumPartitionX;
-		float TileDeltaY = (float)RectangleLength / NumPartitionY;
-
-		std::vector<std::vector<pcl::index_t>> PointTile(NumPartitionX * NumPartitionY);
-
-		std::mutex Mutex;
-
-#pragma omp parallel for
-		for (int i = 0; i < PickedIndices.size(); i++ )
-		{
-			auto Index = PickedIndices[i];
-			auto& Point = Cloud[Index];
-			Eigen::Vector4f Position{ Point.x, Point.y, Point.z, 1.0f };
-
-			Position = PV * Position;
-			Position /= Position.eval().w();
-			Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
-			Position /= 2.0;
-			Position.x() *= Camera.window_size[0];
-			Position.y() *= Camera.window_size[1];
-			Eigen::Vector3f Coord{ Position.x(), Position.y(), Position.z() };
-
-			int TileIndexX = (Position.x() - BeginX) / TileDeltaX;
-			int TileIndexY = (Position.y() - BeginY) / TileDeltaY;
-
-			_ASSERTE(TileIndexX >= 0 && TileIndexY >= 0);
-
-			Mutex.lock();
-			PointTile[TileIndexX + TileIndexY * NumPartitionX].push_back(Index);
-			Mutex.unlock();
-		}
-
-#pragma omp parallel for
-		for (int Y = BeginY; Y <= int(PosY + m_Radius); Y++)
-		{
-#pragma omp parallel for
-			for (int X = BeginX; X <= int(PosX + m_Radius); X++)
-			{
-				std::map<float, int> DepthAndIndices;
-
-				Eigen::Vector4f PixelPosition = { float(X / Camera.window_size[0] * 2 - 1), float(Y / Camera.window_size[1] * 2 - 1), 0.0f, 1.0f };
-
-				PixelPosition = PVInverse * PixelPosition;
-				PixelPosition /= PixelPosition.w();
-
-				Eigen::Vector3f RayOrigin{ (float)Camera.pos[0], (float)Camera.pos[1], (float)Camera.pos[2] };
-				Eigen::Vector3f RayDirection = {PixelPosition.x() - RayOrigin.x(), PixelPosition.y() - RayOrigin.y(), PixelPosition.z() - RayOrigin.z() };
-				RayDirection /= RayDirection.norm();
-
-				int TileIndexX = (X - BeginX) / TileDeltaX;
-				int TileIndexY = (Y - BeginY) / TileDeltaY;
-
-				auto& Tile = PointTile[TileIndexX + TileIndexY * NumPartitionX];
-
-				for (auto Index : Tile)
-				{
-					auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
-					Eigen::Vector3f Pos{ Point.x, Point.y, Point.z };
-					Eigen::Vector3f Normal{ Point.normal_x, Point.normal_y, Point.normal_z };
-
-					float K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
-
-					Eigen::Vector3f IntersectPosition = RayOrigin + K * RayDirection;
-
-					const float SurfelRadius = 1.0f;	//surfel world radius
-
-					if ((IntersectPosition - Pos).norm() < SurfelRadius)
-							DepthAndIndices[K] = Index;
-				}
-
-				int Offset = X - BeginX + (Y - BeginY) * RectangleLength;
-				_ASSERTE(Offset >= 0);
-
-				const float WorldLengthLimit = 0.5f;	//magic
-				if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
-				{
-					auto MinDepth = DepthAndIndices.begin()->first;
-					for (auto& Pair : DepthAndIndices)
-					{
-						if (Pair.first - MinDepth < WorldLengthLimit)
-						{
-							Mutex.lock();
-							Points.insert(Pair.second);
-							Mutex.unlock();
-						}
-
-					}
-				}
-			}
-		}
-
-		m_pVisualizer->addUserColoredPoints({Points.begin(), Points.end()}, { 255, 255, 255 });
+//		const std::size_t NumPartitionX = 0.5 * m_Radius, NumPartitionY = 0.5 * m_Radius;
+//		float TileDeltaX = (float)RectangleLength / NumPartitionX;
+//		float TileDeltaY = (float)RectangleLength / NumPartitionY;
+//
+//		std::vector<std::vector<pcl::index_t>> PointTile(NumPartitionX * NumPartitionY);
+//
+//		std::mutex Mutex;
+//
+//#pragma omp parallel for
+//		for (int i = 0; i < PickedIndices.size(); i++ )
+//		{
+//			auto Index = PickedIndices[i];
+//			auto& Point = Cloud[Index];
+//			Eigen::Vector4f Position{ Point.x, Point.y, Point.z, 1.0f };
+//
+//			Position = PV * Position;
+//			Position /= Position.eval().w();
+//			Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
+//			Position /= 2.0;
+//			Position.x() *= Camera.window_size[0];
+//			Position.y() *= Camera.window_size[1];
+//			Eigen::Vector3f Coord{ Position.x(), Position.y(), Position.z() };
+//
+//			int TileIndexX = (Position.x() - BeginX) / TileDeltaX;
+//			int TileIndexY = (Position.y() - BeginY) / TileDeltaY;
+//
+//			_ASSERTE(TileIndexX >= 0 && TileIndexY >= 0);
+//
+//			Mutex.lock();
+//			PointTile[TileIndexX + TileIndexY * NumPartitionX].push_back(Index);
+//			Mutex.unlock();
+//		}
+//
+//#pragma omp parallel for
+//		for (int Y = BeginY; Y <= int(PosY + m_Radius); Y++)
+//		{
+//#pragma omp parallel for
+//			for (int X = BeginX; X <= int(PosX + m_Radius); X++)
+//			{
+//				std::map<float, int> DepthAndIndices;
+//
+//				Eigen::Vector4f PixelPosition = { float(X / Camera.window_size[0] * 2 - 1), float(Y / Camera.window_size[1] * 2 - 1), 0.0f, 1.0f };
+//
+//				PixelPosition = PVInverse * PixelPosition;
+//				PixelPosition /= PixelPosition.w();
+//
+//				Eigen::Vector3f RayOrigin{ (float)Camera.pos[0], (float)Camera.pos[1], (float)Camera.pos[2] };
+//				Eigen::Vector3f RayDirection = {PixelPosition.x() - RayOrigin.x(), PixelPosition.y() - RayOrigin.y(), PixelPosition.z() - RayOrigin.z() };
+//				RayDirection /= RayDirection.norm();
+//
+//				int TileIndexX = (X - BeginX) / TileDeltaX;
+//				int TileIndexY = (Y - BeginY) / TileDeltaY;
+//
+//				auto& Tile = PointTile[TileIndexX + TileIndexY * NumPartitionX];
+//
+//				for (auto Index : Tile)
+//				{
+//					auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
+//					Eigen::Vector3f Pos{ Point.x, Point.y, Point.z };
+//					Eigen::Vector3f Normal{ Point.normal_x, Point.normal_y, Point.normal_z };
+//
+//					float K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
+//
+//					Eigen::Vector3f IntersectPosition = RayOrigin + K * RayDirection;
+//
+//					const float SurfelRadius = 1.0f;	//surfel world radius
+//
+//					if ((IntersectPosition - Pos).norm() < SurfelRadius)
+//							DepthAndIndices[K] = Index;
+//				}
+//
+//				int Offset = X - BeginX + (Y - BeginY) * RectangleLength;
+//				_ASSERTE(Offset >= 0);
+//
+//				const float WorldLengthLimit = 0.5f;	//magic
+//				if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
+//				{
+//					auto MinDepth = DepthAndIndices.begin()->first;
+//					for (auto& Pair : DepthAndIndices)
+//					{
+//						if (Pair.first - MinDepth < WorldLengthLimit)
+//						{
+//							Mutex.lock();
+//							Points.insert(Pair.second);
+//							Mutex.unlock();
+//						}
+//
+//					}
+//				}
+//			}
+//		}
+//
+//		m_pVisualizer->addUserColoredPoints({Points.begin(), Points.end()}, { 255, 255, 255 });
 
 		if (m_UnwantedMode)                                                                                   
 			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
