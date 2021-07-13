@@ -129,5 +129,5 @@ std::pair<Eigen::Vector2d, Eigen::Vector2d> CPointSetPreprocessor::__computeBoun
 			MaxPos.y() = NdCoord.y();
 	}
 
-	return { Eigen::Vector2d{}, Eigen::Vector2d{} };
+	return { MinPos, MaxPos };
 }
