@@ -82,7 +82,7 @@ std::string FilePaths[][3] =
 
 };
 
- const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig.xml");
+ const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test017_PointCloudRetouchConfig.xml");
 
 class TestSelecting : public testing::Test
 {
@@ -92,7 +92,7 @@ protected:
 	
 	void SetUp() override
 	{
-		hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+		pConfig = new CPointCloudRetouchConfig;
 		if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
 		{
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
@@ -208,9 +208,10 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteGround)
 
 TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 {
-	std::string ModelPath("../TestModel/General/slice 15.pcd");
+	std::string ModelPath(TESTMODEL_DIR + std::string("General/slice 15.pcd"));
 	PointCloud_t::Ptr pTempCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(ModelPath, *pTempCloud);
+	pManager = CPointCloudRetouchManager::getInstance();
 	pManager->init(pTempCloud, pConfig);
 
 	const auto& Path = FilePaths[2];
@@ -235,7 +236,7 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 		GroundTruth.begin(), GroundTruth.end(),
 		std::inserter(Difference, Difference.begin()));
 
-	GTEST_ASSERT_LE(Difference.size(), 0);
+	GTEST_ASSERT_LE(Difference.size(), 1);
 }
 
 TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
@@ -336,9 +337,10 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepGround)
 
 TEST_F(TestSelecting, Selecting_CullingTest_KeepABuilding)
 {
-	std::string ModelPath("../TestModel/General/slice 15.pcd");
+	std::string ModelPath(TESTMODEL_DIR + std::string("General/slice 15.pcd"));
 	PointCloud_t::Ptr pTempCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(ModelPath, *pTempCloud);
+	pManager = CPointCloudRetouchManager::getInstance();
 	pManager->init(pTempCloud, pConfig);
 
 	const auto& Path = FilePaths[6];
