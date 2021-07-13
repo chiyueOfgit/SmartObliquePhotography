@@ -6,6 +6,7 @@
 #include "PointCluster.h"
 #include "PointClusterExpander.h"
 #include "VisualizationInterface.h"
+#include "PointCloudVisualizer.h"
 
 #include "pcl/io/pcd_io.h"
 
@@ -18,13 +19,17 @@
 using namespace  hiveObliquePhotography::PointCloudRetouch;
 
 const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test014_PointCloudRetouchConfig.xml");
-const std::string ModelPath = TESTMODEL_DIR + std::string("General/slice 3.pcd");
+const std::string ModelPath = TESTMODEL_DIR + std::string("General/slice 16.pcd");
+const std::string CameraPath = TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingCameraInfo.txt");
 
 class TestExpander : public testing::Test
 {
 public:
 	hiveConfig::CHiveConfig* pConfig = nullptr;
 	CPointCloudRetouchManager* pManager = nullptr;
+	pcl::visualization::PCLVisualizer* pVisualizer = nullptr;
+	Eigen::Matrix4d PV;
+
 protected:
 
 	void SetUp() override
@@ -42,6 +47,15 @@ protected:
 		
 		pManager = CPointCloudRetouchManager::getInstance();
 		pManager->init(pCloud, pConfig);
+
+		pVisualizer = new pcl::visualization::PCLVisualizer("Viewer", true);
+		pcl::visualization::Camera Camera;
+		pVisualizer->loadCameraParameters(CameraPath);
+		pVisualizer->getCameraParameters(Camera);
+		Eigen::Matrix4d Proj, View;
+		Camera.computeProjectionMatrix(Proj);
+		Camera.computeViewMatrix(View);
+		PV = Proj * View;
 	}
 
 	void TearDown() override
@@ -55,8 +69,7 @@ TEST_F(TestExpander, NoRepeatIndex)
 	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
 
 	std::vector<pcl::index_t> UserMarkedRegion{ 1,2,3,4 };
-	Eigen::Matrix4d Pv;
-	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, EPointLabel::KEPT);
+	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, PV, { 1000,800 }, EPointLabel::KEPT);
 
 	std::queue<pcl::index_t> CandidateQueue = pPointClusterExpander->initExpandingCandidateQueue(UserSpecifiedCluster);
 	int Sum = 0;
@@ -70,21 +83,21 @@ TEST_F(TestExpander, NoRepeatIndex)
 	ASSERT_EQ(Sum, 0);
 }
 
-//TEST_F(TestExpander, EmptyInput)
-//{
-//	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
-//
-//	std::vector<pcl::index_t> UserMarkedRegion{};
-//	Eigen::Matrix4d Pv;
-//	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, EPointLabel::KEPT);
-//	
-//	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
-//}
-//
-//TEST_F(TestExpander, NullptrInput)
-//{
-//	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
-//	CPointCluster* UserSpecifiedCluster = nullptr;
-//
-//	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
-//}
+TEST_F(TestExpander, EmptyInput)
+{
+	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
+
+	std::vector<pcl::index_t> UserMarkedRegion{};
+	Eigen::Matrix4d Pv;
+	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, PV, { 1000,800 }, EPointLabel::KEPT);
+	
+	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
+}
+
+TEST_F(TestExpander, NullptrInput)
+{
+	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
+	CPointCluster* UserSpecifiedCluster = nullptr;
+
+	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
+}
