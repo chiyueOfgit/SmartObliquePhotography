@@ -17,21 +17,8 @@ double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	if (vDeterminantPointSet.empty() || vValidationSet.empty())
 		return 0.0;
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pDeterminantPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for (auto i : vDeterminantPointSet)
-	{
-		const auto& Position = CloudScene.getPositionAt(i);
-		pDeterminantPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
-	}
-	m_AverageDon = __calcPointCloudNormalComplexity(pDeterminantPointCloud);
-
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pValidationPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for (auto i : vValidationSet)
-	{
-		const auto& Position = CloudScene.getPositionAt(i);
-		pValidationPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
-	}
-	auto ValidationFeature = __calcPointCloudNormalComplexity(pValidationPointCloud);
+	m_AverageDon = __calcPointCloudNormalComplexity(vDeterminantPointSet);
+	auto ValidationFeature = __calcPointCloudNormalComplexity(vValidationSet);
 	
 	return 1.0 - static_cast<double>(abs(ValidationFeature - m_AverageDon));
 }
@@ -40,61 +27,36 @@ double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDet
 //FUNCTION: 
 double CNormalComplexity::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-	auto SinglePointFeature =__calcSinglePointNormalComplexity(vInputPoint);
+	std::vector<pcl::index_t> Indices;
+	Indices.push_back(vInputPoint);
+	//add neighbor
+	
+	auto SinglePointFeature = __calcPointCloudNormalComplexity(Indices);
 
 	return 1.0 - static_cast<double>(abs(SinglePointFeature - m_AverageDon));
 }
 
 //*****************************************************************
 //FUNCTION: 
-float CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vIndex)
+float CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices)
 {
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-
+	
 	const double SmallScaleRadius = *m_pConfig->getAttribute<double>("SMALL_SCALE_RADIUS");
 	const double LargeScaleRadius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
-	
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pWholePointCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for (size_t i = 0; i < CloudScene.getNumPoint(); i++)
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	for (auto i : vPointIndices)
 	{
 		const auto& Position = CloudScene.getPositionAt(i);
-		pWholePointCloud->emplace_back(Position.x(), Position.y(), Position.z());
+		pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
 	}
-	
-	pcl::PointCloud<pcl::PointNormal> SmallScalePointCloud, LargeScalePointCloud;
-	Eigen::Vector3f SmallScaleNormal, LargeScaleNormal;
-
-	pcl::IndicesPtr pSingleIndex(new pcl::Indices);
-	pSingleIndex->push_back(vIndex);
-	
-	pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::PointNormal> NormalEstimation;
-	NormalEstimation.setInputCloud(pWholePointCloud);
-	NormalEstimation.setIndices(pSingleIndex);
-	
-	NormalEstimation.setRadiusSearch(SmallScaleRadius);
-	NormalEstimation.compute(SmallScalePointCloud);
-	
-	NormalEstimation.setRadiusSearch(LargeScaleRadius);
-	NormalEstimation.compute(LargeScalePointCloud);
-	
-	SmallScaleNormal = SmallScalePointCloud.back().getNormalVector3fMap();
-	LargeScaleNormal = LargeScalePointCloud.back().getNormalVector3fMap();
-
-	return ((SmallScaleNormal - LargeScaleNormal) / 2).norm();
-}
-
-//*****************************************************************
-//FUNCTION: 
-float CNormalComplexity::__calcPointCloudNormalComplexity(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud)
-{
-	const double SmallScaleRadius = *m_pConfig->getAttribute<double>("SMALL_SCALE_RADIUS");
-	const double LargeScaleRadius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
 	
 	pcl::PointCloud<pcl::PointNormal>::Ptr pSmallScalePointCloud(new pcl::PointCloud<pcl::PointNormal>);
 	pcl::PointCloud<pcl::PointNormal>::Ptr pLargeScalePointCloud(new pcl::PointCloud<pcl::PointNormal>);
 
 	pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::PointNormal> NormalEstimation;
-	NormalEstimation.setInputCloud(vCloud);
+	NormalEstimation.setInputCloud(pPointCloud);
 
 	NormalEstimation.setRadiusSearch(SmallScaleRadius);
 	NormalEstimation.compute(*pSmallScalePointCloud);
@@ -103,10 +65,10 @@ float CNormalComplexity::__calcPointCloudNormalComplexity(pcl::PointCloud<pcl::P
 	NormalEstimation.compute(*pLargeScalePointCloud);
 
 	pcl::PointCloud<pcl::PointNormal> DonCloud;
-	pcl::copyPointCloud(*vCloud, DonCloud);
+	pcl::copyPointCloud(*pPointCloud, DonCloud);
 	
 	pcl::DifferenceOfNormalsEstimation<pcl::PointXYZ, pcl::PointNormal, pcl::PointNormal> DonEstimation;
-	DonEstimation.setInputCloud(vCloud);
+	DonEstimation.setInputCloud(pPointCloud);
 	DonEstimation.setNormalScaleSmall(pSmallScalePointCloud);
 	DonEstimation.setNormalScaleLarge(pLargeScalePointCloud);
 	if (!DonEstimation.initCompute())
