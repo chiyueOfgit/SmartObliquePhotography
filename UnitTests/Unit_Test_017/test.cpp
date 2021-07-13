@@ -82,7 +82,7 @@ std::string FilePaths[][3] =
 
 };
 
-constexpr char ConfigPath[] = "PointCloudRetouchConfig.xml";
+ const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig.xml");
 
 class TestSelecting : public testing::Test
 {
@@ -92,10 +92,17 @@ protected:
 	
 	void SetUp() override
 	{
+		hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+		if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+		{
+			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+			return;
+		}
+		
 		std::string ModelPath(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
 		pcl::io::loadPCDFile(ModelPath, *pCloud);
-
+		pManager->init(pCloud, pConfig);
 	}
 
 	void TearDown() override
