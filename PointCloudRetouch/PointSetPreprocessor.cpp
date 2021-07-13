@@ -13,7 +13,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdc(vioPointSet, vPvMatrix);
 
-	const Eigen::Vector2i Resolution = { 30, 30 };
+	const Eigen::Vector2i Resolution = { 50, 50 };
 	const Eigen::Vector2d SampleDeltaNDC = { (MaxPos.x() - MinPos.x()) / Resolution.x(), (MaxPos.y() - MinPos.y()) / Resolution.y() };
 
 	std::vector<float> PointsDepth(Resolution.x() * Resolution.y(), FLT_MAX);
@@ -49,13 +49,12 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 				Eigen::Vector3d Pos = { (double)Pos4f.x(), (double)Pos4f.y() ,(double)Pos4f.z() };
 				Eigen::Vector4f Normal4f = CloudScene.getNormalAt(i);
 				Eigen::Vector3d Normal = { Normal4f.x(), Normal4f.y(), Normal4f.z() };
-				//Eigen::Vector3d Normal = -RayDirection;
 
 				double K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
 
 				Eigen::Vector3d IntersectPosition = RayOrigin + K * RayDirection;
 
-				const double SurfelRadius = 1.0;	//surfel world radius
+				const double SurfelRadius = 3.0;	//surfel world radius
 
 				if ((IntersectPosition - Pos).norm() < SurfelRadius)
 					DepthAndIndices[K] = vioPointSet[m];
@@ -87,7 +86,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 //*****************************************************************
 //FUNCTION:
-void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<float(Eigen::Vector2f)>& vSignedDistanceFunc)
+void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc)
 {	
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	
@@ -98,7 +97,7 @@ void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, co
 			Position = vPvMatrix.cast<float>() * Position;
 			Position /= Position.eval().w();
 			
-			return vSignedDistanceFunc({ Position.x(), Position.y() }) > 0.0f;
+			return vSignedDistanceFunc({ Position.x(), Position.y() }) > 0.0;
 		}), vioPointSet.end());
 }
 

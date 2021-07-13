@@ -103,7 +103,7 @@ bool hiveObliquePhotography::PointCloudRetouch::CPointCloudRetouchManager::dumpP
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::executePreprocessor(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<float(Eigen::Vector2f)>& vSignedDistanceFunc, const Eigen::Vector3d& vViewPos)
+bool CPointCloudRetouchManager::executePreprocessor(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc, const Eigen::Vector3d& vViewPos)
 {
 	//TODO: ÕÍ…∆
 	try
