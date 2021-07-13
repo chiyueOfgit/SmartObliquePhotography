@@ -109,12 +109,15 @@ void generateNoiseColorSet(std::vector<Eigen::Vector3i>& vioColorCluster, int vN
 	}
 }
 
-Eigen::Vector3f generatePosition(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo)
+Eigen::Vector3f generatePosition(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo, bool vOnThePlane)
 {
 	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(vFrom, vTo, 3);
 	auto OtherRandomSet = hiveMath::hiveGenerateRandomRealSet(6.0f, 8.0f, 3);
-	if (vTo <= 10)
-		return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] };
+	if (vTo <= 6)
+		if(vOnThePlane)
+		    return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2]};
+		else
+			return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] };
 	else
 		return Eigen::Vector3f{ vCenterPosition[0] + 2 * OtherRandomSet[0],vCenterPosition[1] + OtherRandomSet[1],vCenterPosition[2] + OtherRandomSet[2] };
 }
@@ -127,12 +130,12 @@ Eigen::Vector3f generateNormal(Eigen::Vector3f& vStandardNormal, float vDisturb)
 }
 
 
-void generateInOutRadiusPoint(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo, float vDisturb, PointCloud_t& vioPointSet, int vNum)
+void generateInOutRadiusPoint(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo, bool vOnThePlane, float vDisturb, PointCloud_t& vioPointSet, int vNum)
 {
 	Eigen::Vector3f StandardNormal{ 1.0f,1.0f,1.0f };
 	while (vNum--)
 	{
-		Eigen::Vector3f Position = generatePosition(vCenterPosition, vFrom, vTo);
+		Eigen::Vector3f Position = generatePosition(vCenterPosition, vFrom, vTo, vOnThePlane);
 		Eigen::Vector3f Normal = generateNormal(StandardNormal, vDisturb);
 		pcl::PointSurfel Temp;
 		Temp.x = Position[0];
@@ -161,7 +164,7 @@ TEST(Color_Feature_BaseTest_1, Test_1)
 		return;
 	}
 	std::vector<Eigen::Vector3i> Data;
-	Eigen::Vector3i MainColor{ 255,3,3 };
+	Eigen::Vector3i MainColor{ 125,125,125 };
 
 	generateRandomColorSet(Data, MainColor, 3, 50);
 	generateNoiseColorSet(Data, 5);
@@ -172,7 +175,7 @@ TEST(Color_Feature_BaseTest_1, Test_1)
 	
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
-		if ((Color - MainColor).norm() > 8)
+		if ((Color - MainColor).norm() > 10)
 			Sum++;
 	GTEST_ASSERT_EQ(Sum, 0);
 }
@@ -186,8 +189,8 @@ TEST(Color_Feature_BaseTest_2, Test_2)
 		return;
 	}
 	std::vector<Eigen::Vector3i> Data;
-	Eigen::Vector3i MainColor{ 255,3,3 };
-	Eigen::Vector3i OtherColor{ 3,3,255 };
+	Eigen::Vector3i MainColor{ 100,150,100 };
+	Eigen::Vector3i OtherColor{ 200,150,200 };
 	
 	generateRandomColorSet(Data, MainColor, 3, 50);
 	generateRandomColorSet(Data, OtherColor, 3, 50);
@@ -199,7 +202,7 @@ TEST(Color_Feature_BaseTest_2, Test_2)
 	
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
-		if ((Color - MainColor).norm() < 8 || (Color - OtherColor).norm() < 8)
+		if ((Color - MainColor).norm() < 10 || (Color - OtherColor).norm() < 10)
 			Sum++;
 	GTEST_ASSERT_GE(Sum, 2);
 }
@@ -213,9 +216,9 @@ TEST(Color_Feature_BaseTest_3, Test_3)
 		return;
 	}
 	std::vector<Eigen::Vector3i> Data;
-	Eigen::Vector3i MainColor{ 255,3,3 };
-	Eigen::Vector3i OtherColor{ 3,3,255 };
-	Eigen::Vector3i AnotherColor{ 3,255,3 };
+	Eigen::Vector3i MainColor{ 70,140,70 };
+	Eigen::Vector3i OtherColor{ 140,70,140 };
+	Eigen::Vector3i AnotherColor{ 70,140,210 };
 	
 	generateRandomColorSet(Data, MainColor, 3, 50);
 	generateRandomColorSet(Data, OtherColor, 3, 50);
@@ -242,9 +245,9 @@ TEST(Color_Feature_BaseTest_4, Test_4)
 		return;
 	}
 	std::vector<Eigen::Vector3i> Data;
-	Eigen::Vector3i MainColor{ 255,3,3 };
-	Eigen::Vector3i OtherColor{ 3,3,255 };
-	Eigen::Vector3i AnotherColor{ 3,255,3 };
+	Eigen::Vector3i MainColor{ 70,140,70 };
+	Eigen::Vector3i OtherColor{ 140,70,140 };
+	Eigen::Vector3i AnotherColor{ 70,140,210 };
 	Eigen::Vector3i ForthColor{ 125,125,125 };
 
 	generateRandomColorSet(Data, MainColor, 3, 50);
@@ -281,8 +284,8 @@ TEST(Plane_Feature_BaseTest_1, Test_5)
 
 	constexpr float OutlierFactor = 0.2f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
-		//pCloud->push_back(generateRandomPointByPlane(Plane, false));
-		pCloud->push_back(generateNoisePoint());
+		pCloud->push_back(generateRandomPointByPlane(Plane, false));
+		//pCloud->push_back(generateNoisePoint());
 
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE, pConfig);
 	auto FittingPlane = pTileLoader->fitPlane(pCloud);
@@ -311,8 +314,8 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 
 	constexpr float OutlierFactor = 0.4f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
-		//pCloud->push_back(generateRandomPointByPlane(Plane, false));
-		pCloud->push_back(generateNoisePoint());
+		pCloud->push_back(generateRandomPointByPlane(Plane, false));
+		//pCloud->push_back(generateNoisePoint());
 
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE, pConfig);
 	auto FittingPlane = pTileLoader->fitPlane(pCloud);
@@ -345,8 +348,8 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	Temp.normal_y = GTNormal[1];
 	Temp.normal_z = GTNormal[2];
 	pCloud->push_back(Temp);
-	generateInOutRadiusPoint(GTPosition, 0,5, 0.0f, *pCloud, 20);
-	generateInOutRadiusPoint(GTPosition, 6,8, 1.0f, *pCloud, 5);
+	generateInOutRadiusPoint(GTPosition, 0,5, true,0.0f, *pCloud, 20);
+	generateInOutRadiusPoint(GTPosition, 6,8,true, 1.0f, *pCloud, 5);
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0, pCloud);
 
@@ -374,7 +377,7 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	Temp.normal_y = GTNormal[1];
 	Temp.normal_z = GTNormal[2];
 	pCloud->push_back(Temp);
-	generateInOutRadiusPoint(GTPosition, 0,0.4, 1.0f, *pCloud, 20);
+	generateInOutRadiusPoint(GTPosition, 0,0.4, false,1.0f, *pCloud, 20);
 
 	pcl::PointCloud<pcl::Normal>::Ptr Normals(new pcl::PointCloud<pcl::Normal>);
 	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> NormalEstimation;
@@ -387,7 +390,7 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	Eigen::Vector3f InNormal{ Normals->points[0].normal_x,Normals->points[0].normal_y ,Normals->points[0].normal_z };
 	InNormal /= InNormal.norm();
 	
-	generateInOutRadiusPoint(GTPosition, 0.5, 5, 1.0f, *pCloud, 20);
+	generateInOutRadiusPoint(GTPosition, 0.5, 5, false,1.0f, *pCloud, 20);
 	
 	pcl::PointCloud<pcl::Normal>::Ptr OtherNormals(new pcl::PointCloud<pcl::Normal>);
 	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> OtherNormalEstimation;
