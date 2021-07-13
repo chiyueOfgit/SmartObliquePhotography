@@ -40,4 +40,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="VisualizationConfig.xml" />
+  </ItemGroup>
 </Project>

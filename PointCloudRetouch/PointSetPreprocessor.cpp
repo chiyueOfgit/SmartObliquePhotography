@@ -88,13 +88,6 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 				if ((IntersectPosition - Pos).norm() < SurfelRadius)
 				{
-					if (ResultRecords.find(Index) == ResultRecords.end())
-					{
-						Mutex.lock();
-						ResultRecords.insert({ Index, Depth });
-						Mutex.unlock();
-					}
-
 					DepthAndIndices[Depth] = Index;
 				}
 			}
@@ -108,6 +101,10 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 					if (Pair.first - MinDepth < WorldLengthLimit)
 					{
 						Mutex.lock();
+						if (ResultRecords.find(Pair.second) == ResultRecords.end())
+						{
+							ResultRecords.insert({ Pair.second, Pair.first });
+						}
 						ResultPoints.insert(Pair.second);
 						Mutex.unlock();
 					}
@@ -133,9 +130,10 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 	}
 	AverageK /= ResultRecords.size();
 	_ASSERTE(MinK <= MaxK);
+	double MidK = (MinK + MaxK) * 0.5;
 
-	const double MinRate = 0.5;
-	const double MaxRate = 0.5;
+	const double MinRate = 0.3;
+	const double MaxRate = 0.3;
 	double ThresholdMinK = MinK * MinRate + AverageK * (1 - MinRate);
 	double ThresholdMaxK = MaxK * MaxRate + AverageK * (1 - MaxRate);
 
@@ -155,7 +153,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 	}
 	std::vector<pcl::index_t>* pOut2Reserve = nullptr;
 
-	pOut2Reserve = OutMin.size() > OutMax.size() ? &OutMin : &OutMax;
+	pOut2Reserve = MidK > AverageK ? &OutMin : &OutMax;
 	
 	for (auto Index : *pOut2Reserve)
 		Result.push_back(Index);

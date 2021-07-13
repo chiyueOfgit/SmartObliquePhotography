@@ -18,8 +18,8 @@ private:
     QSlider* m_pPointSizeSlider = nullptr;
     int m_PointSize = 3;             // magic
     std::vector<std::string> m_FilePathList;
-    std::string m_CloudPath = "../TestModel/General";
-    std::string m_IndicesPath = "../TestModel/Indices";
+    std::string m_CloudPath = "../../UnitTests/TestData/General";
+    std::string m_IndicesPath = "../../UnitTests/TestData";
     PointCloud_t::Ptr m_pCloud = nullptr;
 
     hiveObliquePhotography::Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
