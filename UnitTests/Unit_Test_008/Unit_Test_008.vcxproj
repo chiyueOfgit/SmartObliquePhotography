@@ -129,7 +129,7 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_UNIT_TEST;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestData\)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_UNIT_TEST;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestData\)";_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>

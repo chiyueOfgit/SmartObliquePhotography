@@ -21,6 +21,7 @@ bool CRetouchTask::init(const hiveConfig::CHiveConfig* vConfig)
 	}
 
 	m_pConfig = vConfig;
+	m_pClusterConfig = nullptr;
 
 	for (auto i = 0; i < vConfig->getNumSubconfig(); i++)
 	{
