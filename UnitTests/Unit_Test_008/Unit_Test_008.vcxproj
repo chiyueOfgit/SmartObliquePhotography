@@ -56,9 +56,6 @@
       <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Xml Include="PointCloudRetouchConfig.xml" />
-  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

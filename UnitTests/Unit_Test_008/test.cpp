@@ -91,6 +91,15 @@ protected:
 	}
 };
 
+TEST_F(CTestUndo, Empty_ResultQueue_Expect_Test)
+{
+	initTest(ModelPath);
+
+	EXPECT_FALSE(pManager->undo());
+	ASSERT_NO_FATAL_FAILURE(pManager->undo());
+	ASSERT_NO_THROW(pManager->undo());
+}
+
 TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
 {
 	initTest(ModelPath);
@@ -149,15 +158,6 @@ TEST_F(CTestUndo, Timestamp_Undo_Cleanup_Test)
 	const auto TimestampAfterUndo = pManager->addAndGetTimestamp();
 
 	ASSERT_EQ(TimestampBeforeUndo, TimestampAfterUndo);
-}
-
-TEST_F(CTestUndo, Empty_ResultQueue_Expect_Test)
-{
-	initTest(ModelPath);
-
-	EXPECT_FALSE(pManager->undo());
-	ASSERT_NO_FATAL_FAILURE(pManager->undo());
-	ASSERT_NO_THROW(pManager->undo());
 }
 
 TEST_F(CTestUndo, Empty_Input_Expect_Test)
