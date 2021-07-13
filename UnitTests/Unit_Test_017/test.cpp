@@ -102,6 +102,7 @@ protected:
 		std::string ModelPath(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
 		pcl::io::loadPCDFile(ModelPath, *pCloud);
+		pManager = CPointCloudRetouchManager::getInstance();
 		pManager->init(pCloud, pConfig);
 	}
 

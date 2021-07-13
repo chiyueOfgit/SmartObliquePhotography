@@ -96,8 +96,8 @@ void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::
 		}
 	}
 
-	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Remain [%1%] Validation points.\n %2%", voValidationSet.size(), OutputValidationSet));
-	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Remain [%1%] FeatureGeneration points.\n %2%", voFeatureGenerationSet.size(), OutputFeatureGenerationSet));
+	//hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Remain [%1%] Validation points.\n %2%", voValidationSet.size(), OutputValidationSet));
+	//hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Remain [%1%] FeatureGeneration points.\n %2%", voFeatureGenerationSet.size(), OutputFeatureGenerationSet));
 }
 
 //*****************************************************************

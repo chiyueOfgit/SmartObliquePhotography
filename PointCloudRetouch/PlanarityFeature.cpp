@@ -29,7 +29,7 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	}
 
 	//DEBUG
-	hiveEventLogger::hiveOutputEvent((_FORMAT_STR1("Planarity Feature's Weight is: %1%\n", SumMatch / vValidationSet.size())));
+	//hiveEventLogger::hiveOutputEvent((_FORMAT_STR1("Planarity Feature's Weight is: %1%\n", SumMatch / vValidationSet.size())));
 	//DEBUG
 
 	return SumMatch / vValidationSet.size();

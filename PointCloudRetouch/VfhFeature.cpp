@@ -62,7 +62,7 @@ double CVfhFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermina
 		ValidationRate /= vValidationSet.size();
 
 	//DEBUG
-	hiveEventLogger::hiveOutputEvent((_FORMAT_STR1("VFH Feature's Weight is: %1%\n", ValidationRate)));
+	//hiveEventLogger::hiveOutputEvent((_FORMAT_STR1("VFH Feature's Weight is: %1%\n", ValidationRate)));
 	//DEBUG
 
 	return ValidationRate > 1.0 ? 1.0 : ValidationRate;

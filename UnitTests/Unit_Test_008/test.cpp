@@ -81,7 +81,7 @@ protected:
 		Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 		Camera.computeViewMatrix(ViewMatrix);
 		Camera.computeProjectionMatrix(ProjectionMatrix);
-		hiveMarkLitter(Indices, 0.8, 10, { 200, 300 }, ProjectionMatrix * ViewMatrix, { 1000, 1000 });
+		hiveMarkLitter(Indices, ProjectionMatrix * ViewMatrix, 0.8);
 	}
 	
 	void TearDown() override
@@ -116,56 +116,56 @@ TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
 	ASSERT_EQ(SymmetricDifference.size(), 0);
 }
 
-TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
-{
-	initTest(ModelPath);
-	
-	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
-	expandOnce(IndicesPath, CameraPath);
-	hiveUndo();
-	const auto TimestampAfterUndo = pManager->addAndGetTimestamp();
-
-	ASSERT_EQ(TimestampBeforeUndo, TimestampAfterUndo);
-}
-
-TEST_F(CTestUndo, LabelSet_Undo_Cleanup_Test)
-{
-	initTest(ModelPath);
-	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
-
-	expandOnce(IndicesPath, CameraPath);
-	hiveDumpPointLabel(LabelSetBeforeUndo);
-	hiveUndo();
-	expandOnce(IndicesPath, CameraPath);
-	hiveDumpPointLabel(LabelSetAfterUndo);
-	
-	std::vector<std::size_t> SymmetricDifference;
-	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
-		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
-		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
-	ASSERT_EQ(SymmetricDifference.size(), 0);
-}
-
-TEST_F(CTestUndo, Timestamp_Undo_Cleanup_Test)
-{
-	initTest(ModelPath);
-
-	expandOnce(IndicesPath, CameraPath);
-	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
-	hiveUndo();
-	expandOnce(IndicesPath, CameraPath);
-	const auto TimestampAfterUndo = pManager->addAndGetTimestamp();
-
-	ASSERT_EQ(TimestampBeforeUndo, TimestampAfterUndo);
-}
-
-TEST_F(CTestUndo, Empty_Input_Expect_Test)
-{
-	initTest(ModelPath);
-
-	expandOnce({}, CameraPath);
-
-	EXPECT_FALSE(pManager->undo());
-	ASSERT_NO_FATAL_FAILURE(pManager->undo());
-	ASSERT_NO_THROW(pManager->undo());
-}
+//TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
+//{
+//	initTest(ModelPath);
+//	
+//	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
+//	expandOnce(IndicesPath, CameraPath);
+//	hiveUndo();
+//	const auto TimestampAfterUndo = pManager->addAndGetTimestamp();
+//
+//	ASSERT_EQ(TimestampBeforeUndo, TimestampAfterUndo);
+//}
+//
+//TEST_F(CTestUndo, LabelSet_Undo_Cleanup_Test)
+//{
+//	initTest(ModelPath);
+//	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
+//
+//	expandOnce(IndicesPath, CameraPath);
+//	hiveDumpPointLabel(LabelSetBeforeUndo);
+//	hiveUndo();
+//	expandOnce(IndicesPath, CameraPath);
+//	hiveDumpPointLabel(LabelSetAfterUndo);
+//	
+//	std::vector<std::size_t> SymmetricDifference;
+//	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
+//		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
+//		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
+//	ASSERT_EQ(SymmetricDifference.size(), 0);
+//}
+//
+//TEST_F(CTestUndo, Timestamp_Undo_Cleanup_Test)
+//{
+//	initTest(ModelPath);
+//
+//	expandOnce(IndicesPath, CameraPath);
+//	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
+//	hiveUndo();
+//	expandOnce(IndicesPath, CameraPath);
+//	const auto TimestampAfterUndo = pManager->addAndGetTimestamp();
+//
+//	ASSERT_EQ(TimestampBeforeUndo, TimestampAfterUndo);
+//}
+//
+//TEST_F(CTestUndo, Empty_Input_Expect_Test)
+//{
+//	initTest(ModelPath);
+//
+//	expandOnce({}, CameraPath);
+//
+//	EXPECT_FALSE(pManager->undo());
+//	ASSERT_NO_FATAL_FAILURE(pManager->undo());
+//	ASSERT_NO_THROW(pManager->undo());
+//}

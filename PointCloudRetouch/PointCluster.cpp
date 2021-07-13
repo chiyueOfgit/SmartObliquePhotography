@@ -72,7 +72,7 @@ void CPointCluster::outputDebugInfos(pcl::index_t vIndex) const
 	for (auto pFeature : m_FeatureSet)
 		Infos += pFeature->outputDebugInfosV(vIndex);
 
-	hiveEventLogger::hiveOutputEvent(Infos);
+	//hiveEventLogger::hiveOutputEvent(Infos);
 }
 
 //*****************************************************************

@@ -43,7 +43,7 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 	}
 
     //DEBUG
-    hiveEventLogger::hiveOutputEvent((_FORMAT_STR1("Color Feature's Weight is: %1%\n", Score / vValidationSet.size())));
+    //hiveEventLogger::hiveOutputEvent((_FORMAT_STR1("Color Feature's Weight is: %1%\n", Score / vValidationSet.size())));
     //DEBUG
 
 	return Score / vValidationSet.size();
