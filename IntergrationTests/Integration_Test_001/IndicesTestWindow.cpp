@@ -61,13 +61,12 @@ void CSingleStepWindow::__initialSlider()
     m_pPointSizeSlider->setSingleStep(1);
     m_pPointSizeSlider->setTickInterval(1);
     m_pPointSizeSlider->setTickPosition(QSlider::TicksAbove);
-    m_pPointSizeSlider->setValue(*m_pVisualizationConfig->getAttribute<int>("POINT_SHOW_SIZE"));
+    m_pPointSizeSlider->setValue(*m_pVisualizationConfig->getAttribute<double>(Visualization::POINT_SHOW_SIZE));
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
         {
             m_PointSize = m_pPointSizeSlider->value();
-            auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute("POINT_SHOW_SIZE", m_PointSize);
-            auto q = *m_pVisualizationConfig->getAttribute<int>("POINT_SHOW_SIZE");
+            auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute(Visualization::POINT_SHOW_SIZE, static_cast<double>(m_PointSize));
             if (OverwriteSuccess)
             {
                 std::vector<std::size_t> PointLabel;
@@ -118,8 +117,7 @@ void CSingleStepWindow::__onActionOpen()
         FilePathSet.push_back(FilePathString);
     }
 
-    if (FilePathSet.empty())
-        return;
+    m_CloudPath = FilePathSet.front().substr(0, FilePathSet.front().find_last_of("/"));
 
     __loadCloud(FilePathSet);
 }
@@ -138,14 +136,13 @@ void CSingleStepWindow::__onActionLoad()
         IndicesPathSet.push_back(FilePathString);
     }
 
-    if (IndicesPathSet.empty())
-        return;
-
     for (auto& IndicesPath : IndicesPathSet)
     {
         auto RandomColor = hiveMath::hiveGenerateRandomIntegerSet(100, 255, 3);
         Visualization::hiveHighlightPointSet(__loadIndices(IndicesPath), { RandomColor[0], RandomColor[1], RandomColor[2] });
     }
+
+    m_IndicesPath = IndicesPathSet.front().substr(0, IndicesPathSet.front().find_last_of("/"));
 
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);

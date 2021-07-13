@@ -5,6 +5,8 @@
 #include "InitialClusterCreator.h"
 #include "PointCloudRetouchConfig.h"
 #include "PointCloudRetouchManager.h"
+#include "pcl/visualization/pcl_visualizer.h"
+#include "pcl/visualization/common/common.h"
 
 
 //²âÊÔÓÃÀýÁÐ±í£º
@@ -59,7 +61,7 @@ TEST_F(TestPointCluster, DeathTest_InvalidIndex)
 	
 	pcl::index_t TestIndex = -1;
 	Eigen::Matrix4d Pv;
-	const auto* pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, PointCloudRetouch::EPointLabel::KEPT);
+	const auto* pPointCluster = pManager->generateInitialCluster(UserMarkedRegion,  Pv, 0.8, PointCloudRetouch::EPointLabel::KEPT);
 	ASSERT_ANY_THROW(pPointCluster->evaluateProbability(TestIndex));
 	//double Res = pPointCluster->evaluteProbability(TestIndex);
 }
@@ -67,10 +69,22 @@ TEST_F(TestPointCluster, DeathTest_InvalidIndex)
 TEST_F(TestPointCluster, FalseProbability_Test)
 {
 	std::vector<pcl::index_t> UserMarkedRegion{ 1,2,3,4,5,6,7};
+	Eigen::Matrix4d Pv;
+	
+	const std::string CameraPath = TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingCameraInfo.txt");
+	pcl::visualization::PCLVisualizer* pVisualizer = nullptr;
+	pVisualizer = new pcl::visualization::PCLVisualizer("Viewer", true);
+	pcl::visualization::Camera Camera;
+	pVisualizer->loadCameraParameters(CameraPath);
+	pVisualizer->getCameraParameters(Camera);
+	Eigen::Matrix4d Proj, View;
+	Camera.computeProjectionMatrix(Proj);
+	Camera.computeViewMatrix(View);
+	Pv = Proj * View;
 	
 	pcl::index_t TestIndex = 1;
-	Eigen::Matrix4d Pv;
-	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, Pv, { 1000,800 }, PointCloudRetouch::EPointLabel::KEPT);
+
+	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, Pv, 0.8, PointCloudRetouch::EPointLabel::KEPT);
 	double Res = pPointCluster->evaluateProbability(TestIndex);
 	EXPECT_LE(Res, 1.0);
 	EXPECT_GE(Res, 0.0);

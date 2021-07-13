@@ -9,19 +9,47 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //FUNCTION:
 void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const Eigen::Vector3d& vViewPos)
 {
+	if (vioPointSet.empty())
+		return;
+
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
 	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdc(vioPointSet, vPvMatrix);
 
-	const Eigen::Vector2i Resolution = { 50, 50 };
+	int NumSqrtPoints = static_cast<int>(sqrt(vioPointSet.size()));
+
+	const Eigen::Vector2i TileResolution = { int(0.1 * NumSqrtPoints), int(0.1 * NumSqrtPoints) };
+	const Eigen::Vector2d TileDeltaNDC = { (MaxPos.x() - MinPos.x()) / TileResolution.x(), (MaxPos.y() - MinPos.y()) / TileResolution.y() };
+	std::vector<std::vector<pcl::index_t>> TileData(TileResolution.x() * TileResolution.y());
+
+	std::mutex Mutex;
+
+#pragma omp parallel for
+	for (int i = 0; i < vioPointSet.size(); i++)
+	{
+		auto Position = CloudScene.getPositionAt(vioPointSet[i]);
+		Position = vPvMatrix.cast<float>() * Position;
+		Position /= Position.w();
+
+		Eigen::Vector2i TileCoord;
+		TileCoord.x() = static_cast<int>((Position.x() - MinPos.x()) / TileDeltaNDC.x());
+		TileCoord.y() = static_cast<int>((Position.y() - MinPos.y()) / TileDeltaNDC.y());
+
+		if (TileCoord.x() >= 0 && TileCoord.x() < TileResolution.x() && TileCoord.y() >= 0 && TileCoord.y() < TileResolution.y())
+		{
+			Mutex.lock();
+			TileData[TileCoord.x() + TileCoord.y() * TileResolution.x()].push_back(vioPointSet[i]);
+			Mutex.unlock();
+		}
+	}
+
+	const Eigen::Vector2i Resolution = { NumSqrtPoints, NumSqrtPoints };
 	const Eigen::Vector2d SampleDeltaNDC = { (MaxPos.x() - MinPos.x()) / Resolution.x(), (MaxPos.y() - MinPos.y()) / Resolution.y() };
 
-	std::vector<float> PointsDepth(Resolution.x() * Resolution.y(), FLT_MAX);
+	std::map<pcl::index_t, double> ResultRecords;
 	std::set<pcl::index_t> ResultPoints;
 
 	Eigen::Matrix4d PVInverse = vPvMatrix.inverse();
-
-	std::mutex Mutex;
 
 #pragma omp parallel for
 	for (int i = 0; i < Resolution.y(); i++)
@@ -32,39 +60,43 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 		{
 			double X = MinPos.x() + (k + 0.5) * SampleDeltaNDC.x();
 
-			std::map<double, int> DepthAndIndices;
+			std::map<double, pcl::index_t> DepthAndIndices;
 
 			Eigen::Vector4d PixelPosition = { X, Y, 0.0, 1.0 };
 
 			PixelPosition = PVInverse * PixelPosition;
-			PixelPosition /= PixelPosition.eval().w();
+			PixelPosition /= PixelPosition.w();
 
 			Eigen::Vector3d RayOrigin = vViewPos;
 			Eigen::Vector3d RayDirection = { PixelPosition.x() - RayOrigin.x(), PixelPosition.y() - RayOrigin.y(), PixelPosition.z() - RayOrigin.z() };
 			RayDirection /= RayDirection.norm();
 
-			for (int m = 0; m < vioPointSet.size(); m++)
+			Eigen::Vector2i TileCoord;
+			TileCoord.x() = static_cast<int>((X - MinPos.x()) / TileDeltaNDC.x());
+			TileCoord.y() = static_cast<int>((Y - MinPos.y()) / TileDeltaNDC.y());
+			auto& Tile = TileData[TileCoord.x() + TileCoord.y() * TileResolution.x()];
+
+			for (auto Index : Tile)
 			{
-				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(vioPointSet[m]);
+				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(Index);
 				Eigen::Vector3d Pos = { (double)Pos4f.x(), (double)Pos4f.y() ,(double)Pos4f.z() };
 				Eigen::Vector4f Normal4f = CloudScene.getNormalAt(i);
 				Eigen::Vector3d Normal = { Normal4f.x(), Normal4f.y(), Normal4f.z() };
 
-				double K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
+				double Depth = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
 
-				Eigen::Vector3d IntersectPosition = RayOrigin + K * RayDirection;
-
+				Eigen::Vector3d IntersectPosition = RayOrigin + Depth * RayDirection;
+				
 				const double SurfelRadius = 3.0;	//surfel world radius
 
 				if ((IntersectPosition - Pos).norm() < SurfelRadius)
-					DepthAndIndices[K] = vioPointSet[m];
+				{
+					DepthAndIndices[Depth] = Index;
+				}
 			}
 
-			int Offset = k + i * Resolution.x();
-			_ASSERTE(Offset >= 0);
-
 			const double WorldLengthLimit = 1.0;	//magic
-			if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
+			if (!DepthAndIndices.empty())
 			{
 				auto MinDepth = DepthAndIndices.begin()->first;
 				for (auto& Pair : DepthAndIndices)
@@ -72,16 +104,66 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 					if (Pair.first - MinDepth < WorldLengthLimit)
 					{
 						Mutex.lock();
+						if (ResultRecords.find(Pair.second) == ResultRecords.end())
+						{
+							ResultRecords.insert({ Pair.second, Pair.first });
+						}
 						ResultPoints.insert(Pair.second);
 						Mutex.unlock();
 					}
+					else
+						break;
 
 				}
 			}
 		}
 	}
 
-	vioPointSet = { ResultPoints.begin(), ResultPoints.end() };
+	//global culling
+	double AverageK = 0.0;
+	double MinK = DBL_MAX;
+	double MaxK = -DBL_MAX;
+	for (auto& Pair : ResultRecords)
+	{
+		AverageK += Pair.second;
+		if (Pair.second < MinK)
+			MinK = Pair.second;
+		else if (Pair.second > MaxK)
+			MaxK = Pair.second;
+	}
+	AverageK /= ResultRecords.size();
+	_ASSERTE(MinK <= MaxK);
+	double MidK = (MinK + MaxK) * 0.5;
+
+	double MinRate = 0.3;
+	double MaxRate = 0.3;
+	if (MaxK - MinK <= 10.0)	//magic depth
+		MinRate = MaxRate = 1.0;
+	double ThresholdMinK = MinK * MinRate + AverageK * (1 - MinRate);
+	double ThresholdMaxK = MaxK * MaxRate + AverageK * (1 - MaxRate);
+
+	std::vector<pcl::index_t> Result;
+	std::vector<pcl::index_t> OutMin;
+	std::vector<pcl::index_t> OutMax;
+
+	for (auto Index : ResultPoints)
+	{
+		double Depth = ResultRecords.find(Index)->second;
+		if (Depth < ThresholdMinK)
+			OutMin.push_back(Index);
+		else if (Depth > ThresholdMaxK)
+			OutMax.push_back(Index);
+		else
+			Result.push_back(Index);
+	}
+	std::vector<pcl::index_t>* pOut2Reserve = nullptr;
+
+	pOut2Reserve = MidK > AverageK ? &OutMin : &OutMax;
+	
+	for (auto Index : *pOut2Reserve)
+		Result.push_back(Index);
+
+	vioPointSet = Result;
 }
 
 //*****************************************************************
