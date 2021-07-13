@@ -105,6 +105,7 @@ void CPointCluster::__createFeatureObjectSet()
 			if (createFeatureIfDefined("PlanarFeature", m_pConfig->getName())) continue;
 			if (createFeatureIfDefined("VFHFeature", m_pConfig->getName())) continue;
 			if (createFeatureIfDefined("ColorFeature", m_pConfig->getName())) continue;
+			if (createFeatureIfDefined("NormalComplexityFeature", m_pConfig->getName())) continue;
 
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Unknown feature [%1%].", pConfig->getName()));
 		}
