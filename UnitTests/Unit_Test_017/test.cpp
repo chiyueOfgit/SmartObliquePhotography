@@ -139,7 +139,7 @@ void TestSelecting::_loadCamera(const std::string& vPath, pcl::visualization::Ca
 	pVisualizer->getCameraParameters(voCamera);
 }
 
-float distanceFunc(Eigen::Vector2f vInput)
+double distanceFunc(Eigen::Vector2d vInput)
 {
 	return -1;
 }
@@ -154,8 +154,15 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteTree)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
-
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
+	
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
 		GroundTruth.begin(), GroundTruth.end(),
@@ -174,14 +181,13 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteGround)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -207,14 +213,13 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -235,14 +240,13 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -278,14 +282,13 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepATree)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -306,14 +309,13 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepGround)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -339,14 +341,13 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepABuilding)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -367,14 +368,13 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepMoreTrees)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
