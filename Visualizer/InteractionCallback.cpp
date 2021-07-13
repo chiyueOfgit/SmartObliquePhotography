@@ -208,9 +208,17 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Camera.computeViewMatrix(View);
 		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
 
-		auto pFunc = [](Eigen::Vector2f vPos) -> float
+		Eigen::Vector2d CircleCenter = { 2 * (PosX / Camera.window_size[0]) - 1, 2 * (PosY / Camera.window_size[1]) - 1 };
+		double RadiusInNDC = 2 * m_Radius / Camera.window_size[0];
+
+		auto pFunc = [&](Eigen::Vector2d vPos) -> double
 		{
-			return -1;
+			Eigen::Vector2d DeltaPos4Radius = { vPos.x() - CircleCenter.x(), (Camera.window_size[1] / Camera.window_size[0]) * (vPos.y() - CircleCenter.y()) };
+
+			if (DeltaPos4Radius.norm() <= RadiusInNDC)
+				return -1;
+			else
+				return 1;
 		};
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, Proj * View, pFunc, ViewPos);

@@ -13,7 +13,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdc(vioPointSet, vPvMatrix);
 
-	const Eigen::Vector2i Resolution = { 100, 100 };
+	const Eigen::Vector2i Resolution = { 50, 50 };
 	const Eigen::Vector2d SampleDeltaNDC = { (MaxPos.x() - MinPos.x()) / Resolution.x(), (MaxPos.y() - MinPos.y()) / Resolution.y() };
 
 	std::vector<float> PointsDepth(Resolution.x() * Resolution.y(), FLT_MAX);
@@ -37,34 +37,33 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 			Eigen::Vector4d PixelPosition = { X, Y, 0.0, 1.0 };
 
 			PixelPosition = PVInverse * PixelPosition;
-			PixelPosition /= PixelPosition.w();
+			PixelPosition /= PixelPosition.eval().w();
 
 			Eigen::Vector3d RayOrigin = vViewPos;
 			Eigen::Vector3d RayDirection = { PixelPosition.x() - RayOrigin.x(), PixelPosition.y() - RayOrigin.y(), PixelPosition.z() - RayOrigin.z() };
 			RayDirection /= RayDirection.norm();
 
-			for (int i = 0; i < vioPointSet.size(); i++)
+			for (int m = 0; m < vioPointSet.size(); m++)
 			{
-				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(vioPointSet[i]);
+				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(vioPointSet[m]);
 				Eigen::Vector3d Pos = { (double)Pos4f.x(), (double)Pos4f.y() ,(double)Pos4f.z() };
-				//Eigen::Vector4f Normal4f = CloudScene.getNormalAt(i);
-				//Eigen::Vector3f Normal = { Normal4f.x(), Normal4f.y(), Normal4f.z() };
-				Eigen::Vector3d Normal = -RayDirection;
+				Eigen::Vector4f Normal4f = CloudScene.getNormalAt(i);
+				Eigen::Vector3d Normal = { Normal4f.x(), Normal4f.y(), Normal4f.z() };
 
 				double K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
 
 				Eigen::Vector3d IntersectPosition = RayOrigin + K * RayDirection;
 
-				const double SurfelRadius = 100.0;	//surfel world radius
+				const double SurfelRadius = 3.0;	//surfel world radius
 
 				if ((IntersectPosition - Pos).norm() < SurfelRadius)
-					DepthAndIndices[K] = vioPointSet[i];
+					DepthAndIndices[K] = vioPointSet[m];
 			}
 
 			int Offset = k + i * Resolution.x();
 			_ASSERTE(Offset >= 0);
 
-			const double WorldLengthLimit = 100.0;	//magic
+			const double WorldLengthLimit = 1.0;	//magic
 			if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
 			{
 				auto MinDepth = DepthAndIndices.begin()->first;
@@ -87,7 +86,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 //*****************************************************************
 //FUNCTION:
-void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<float(Eigen::Vector2f)>& vSignedDistanceFunc)
+void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc)
 {	
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	
@@ -98,7 +97,7 @@ void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, co
 			Position = vPvMatrix.cast<float>() * Position;
 			Position /= Position.eval().w();
 			
-			return vSignedDistanceFunc({ Position.x(), Position.y() }) > 0.0f;
+			return vSignedDistanceFunc({ Position.x(), Position.y() }) > 0.0;
 		}), vioPointSet.end());
 }
 
@@ -129,5 +128,5 @@ std::pair<Eigen::Vector2d, Eigen::Vector2d> CPointSetPreprocessor::__computeBoun
 			MaxPos.y() = NdCoord.y();
 	}
 
-	return { Eigen::Vector2d{}, Eigen::Vector2d{} };
+	return { MinPos, MaxPos };
 }
