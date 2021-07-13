@@ -16,6 +16,8 @@
 
 #include <pcl/features/normal_3d.h>
 
+#include "PointCloudRetouchManager.h"
+
 constexpr float EPSILON = 1e-4f;
 constexpr float SPACE_SIZE = 100.0f;
 
@@ -351,6 +353,11 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	generateInOutRadiusPoint(GTPosition, 0,5, true,0.0f, *pCloud, 20);
 	generateInOutRadiusPoint(GTPosition, 6,8,true, 1.0f, *pCloud, 5);
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
+
+	/*CPointCloudRetouchManager* pManager = nullptr;
+	pManager = CPointCloudRetouchManager::getInstance();
+	pManager->init(pCloud, pConfig);*/
+	
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0, pCloud);
 
 	GTEST_ASSERT_EQ(Res, 0.0);
@@ -404,6 +411,11 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	OutNormal /= OutNormal.norm();
 	
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
+
+	/*CPointCloudRetouchManager* pManager = nullptr;
+	pManager = CPointCloudRetouchManager::getInstance();
+	pManager->init(pCloud, pConfig);*/
+	
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0, pCloud);
 
 	auto Diff = (InNormal - OutNormal)/ 2.0f;
@@ -432,6 +444,10 @@ TEST(Normal_Feature_BaseTest_3, Test_9)
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(ModelPath, *pCloud);
 
+	/*CPointCloudRetouchManager* pManager = nullptr;
+	pManager = CPointCloudRetouchManager::getInstance();
+	pManager->init(pCloud, pConfig);*/
+	
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
 	double ResTree = 0.0;
 	for(auto Index: Tree)

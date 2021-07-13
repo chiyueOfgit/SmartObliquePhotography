@@ -82,7 +82,7 @@ std::string FilePaths[][3] =
 
 };
 
-constexpr char ConfigPath[] = "PointCloudRetouchConfig.xml";
+ const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test017_PointCloudRetouchConfig.xml");
 
 class TestSelecting : public testing::Test
 {
@@ -92,10 +92,18 @@ protected:
 	
 	void SetUp() override
 	{
+		pConfig = new CPointCloudRetouchConfig;
+		if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+		{
+			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+			return;
+		}
+		
 		std::string ModelPath(TESTMODEL_DIR + std::string("General/slice 16.pcd"));
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
 		pcl::io::loadPCDFile(ModelPath, *pCloud);
-
+		pManager = CPointCloudRetouchManager::getInstance();
+		pManager->init(pCloud, pConfig);
 	}
 
 	void TearDown() override
@@ -139,7 +147,7 @@ void TestSelecting::_loadCamera(const std::string& vPath, pcl::visualization::Ca
 	pVisualizer->getCameraParameters(voCamera);
 }
 
-float distanceFunc(Eigen::Vector2f vInput)
+double distanceFunc(Eigen::Vector2d vInput)
 {
 	return -1;
 }
@@ -154,8 +162,15 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteTree)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	//TODO:根据接口执行选择剔除
-
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
+	CPointSetPreprocessor CullingOperation;
+	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
+	
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
 		GroundTruth.begin(), GroundTruth.end(),
@@ -174,14 +189,13 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteGround)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -194,9 +208,10 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteGround)
 
 TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 {
-	std::string ModelPath("../TestModel/General/slice 15.pcd");
+	std::string ModelPath(TESTMODEL_DIR + std::string("General/slice 15.pcd"));
 	PointCloud_t::Ptr pTempCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(ModelPath, *pTempCloud);
+	pManager = CPointCloudRetouchManager::getInstance();
 	pManager->init(pTempCloud, pConfig);
 
 	const auto& Path = FilePaths[2];
@@ -207,14 +222,13 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -222,7 +236,7 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 		GroundTruth.begin(), GroundTruth.end(),
 		std::inserter(Difference, Difference.begin()));
 
-	GTEST_ASSERT_LE(Difference.size(), 0);
+	GTEST_ASSERT_LE(Difference.size(), 1);
 }
 
 TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
@@ -235,14 +249,13 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -278,14 +291,13 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepATree)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -306,14 +318,13 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepGround)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -326,9 +337,10 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepGround)
 
 TEST_F(TestSelecting, Selecting_CullingTest_KeepABuilding)
 {
-	std::string ModelPath("../TestModel/General/slice 15.pcd");
+	std::string ModelPath(TESTMODEL_DIR + std::string("General/slice 15.pcd"));
 	PointCloud_t::Ptr pTempCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(ModelPath, *pTempCloud);
+	pManager = CPointCloudRetouchManager::getInstance();
 	pManager->init(pTempCloud, pConfig);
 
 	const auto& Path = FilePaths[6];
@@ -339,14 +351,13 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepABuilding)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
@@ -367,14 +378,13 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepMoreTrees)
 
 	initTest(InputIndices, Camera, GroundTruth, Path);
 
-	std::vector<float> PointDistance;
 	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 	const Eigen::Matrix4d PvMatrix = ProjectionMatrix * ViewMatrix;
 	CPointSetPreprocessor CullingOperation;
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
-	Eigen::Vector3f ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
+	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
 
 	pcl::Indices Difference;
