@@ -38,6 +38,8 @@ namespace hiveObliquePhotography
 
 			PointCloud_t::Ptr m_pSceneCloud = nullptr;
 
+			Eigen::Vector2d m_WindowSize;
+
 			std::vector<SHighlightPoints> m_UserColoredPoints;
 
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
