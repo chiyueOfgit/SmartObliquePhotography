@@ -23,7 +23,6 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 	std::mutex Mutex;
 
-#pragma omp parallel for
 	for (int i = 0; i < Resolution.y(); i++)
 	{
 		double Y = MinPos.y() + (i + 0.5) * SampleDeltaNDC.y();
@@ -37,15 +36,15 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 			Eigen::Vector4d PixelPosition = { X, Y, 0.0, 1.0 };
 
 			PixelPosition = PVInverse * PixelPosition;
-			PixelPosition /= PixelPosition.w();
+			PixelPosition /= PixelPosition.eval().w();
 
 			Eigen::Vector3d RayOrigin = vViewPos;
 			Eigen::Vector3d RayDirection = { PixelPosition.x() - RayOrigin.x(), PixelPosition.y() - RayOrigin.y(), PixelPosition.z() - RayOrigin.z() };
 			RayDirection /= RayDirection.norm();
 
-			for (int i = 0; i < vioPointSet.size(); i++)
+			for (int m = 0; m < vioPointSet.size(); m++)
 			{
-				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(i);
+				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(vioPointSet[m]);
 				Eigen::Vector3d Pos = { (double)Pos4f.x(), (double)Pos4f.y() ,(double)Pos4f.z() };
 				//Eigen::Vector4f Normal4f = CloudScene.getNormalAt(i);
 				//Eigen::Vector3f Normal = { Normal4f.x(), Normal4f.y(), Normal4f.z() };
@@ -58,13 +57,13 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 				const double SurfelRadius = 100.0;	//surfel world radius
 
 				if ((IntersectPosition - Pos).norm() < SurfelRadius)
-					DepthAndIndices[K] = vioPointSet[i];
+					DepthAndIndices[K] = vioPointSet[m];
 			}
 
 			int Offset = k + i * Resolution.x();
 			_ASSERTE(Offset >= 0);
 
-			const double WorldLengthLimit = 100.0;	//magic
+			const double WorldLengthLimit = 1.0;	//magic
 			if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
 			{
 				auto MinDepth = DepthAndIndices.begin()->first;
@@ -72,9 +71,9 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 				{
 					if (Pair.first - MinDepth < WorldLengthLimit)
 					{
-						Mutex.lock();
+						//Mutex.lock();
 						ResultPoints.insert(Pair.second);
-						Mutex.unlock();
+						//Mutex.unlock();
 					}
 
 				}
