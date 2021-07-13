@@ -19,7 +19,6 @@ double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDet
 
 	m_AverageDon = __calcPointCloudNormalComplexity(vDeterminantPointSet);
 	auto ValidationFeature = __calcPointCloudNormalComplexity(vValidationSet);
-	
 	return 1.0 - static_cast<double>(abs(ValidationFeature - m_AverageDon));
 }
 
@@ -27,12 +26,13 @@ double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDet
 //FUNCTION: 
 double CNormalComplexity::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
+	const double LargeScaleRadius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
+	
 	std::vector<pcl::index_t> Indices;
-	Indices.push_back(vInputPoint);
-	//add neighbor
+	std::vector<float> DistanceSet;
+	m_pTree->radiusSearch(vInputPoint, LargeScaleRadius, Indices, DistanceSet);
 	
 	auto SinglePointFeature = __calcPointCloudNormalComplexity(Indices);
-
 	return 1.0 - static_cast<double>(abs(SinglePointFeature - m_AverageDon));
 }
 
