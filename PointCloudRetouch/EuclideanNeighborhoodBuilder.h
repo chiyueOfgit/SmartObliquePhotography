@@ -11,6 +11,8 @@ namespace hiveObliquePhotography
 			CEuclideanNeighborhoodBuilder() = default;
 			~CEuclideanNeighborhoodBuilder() = default;
 
+			std::vector<pcl::index_t> buildNeighborhoodByRadius(pcl::index_t vSeed, double vRadius) const;
+
 		private:
 			void __extraInitV(const hiveConfig::CHiveConfig* vConfig) override;
 			std::vector<pcl::index_t> __buildNeighborhoodV(pcl::index_t vSeed) override;

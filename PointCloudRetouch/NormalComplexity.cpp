@@ -27,12 +27,8 @@ double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDet
 double CNormalComplexity::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
 	const double LargeScaleRadius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
-	
-	std::vector<pcl::index_t> Indices;
-	std::vector<float> DistanceSet;
-	m_pTree->radiusSearch(vInputPoint, LargeScaleRadius, Indices, DistanceSet);
-	
-	auto SinglePointFeature = __calcPointCloudNormalComplexity(Indices);
+
+	auto SinglePointFeature = __calcPointCloudNormalComplexity(CPointCloudRetouchManager::getInstance()->buildNeighborhoodByRadius(vInputPoint, LargeScaleRadius));
 	return 1.0 - static_cast<double>(abs(SinglePointFeature - m_AverageDon));
 }
 

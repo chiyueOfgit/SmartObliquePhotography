@@ -8,6 +8,17 @@ _REGISTER_NORMAL_PRODUCT(CEuclideanNeighborhoodBuilder, KEYWORD::EUCLIDEAN_NEIGH
 
 //*****************************************************************
 //FUNCTION: 
+std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::buildNeighborhoodByRadius(pcl::index_t vSeed, double vRadius) const
+{
+	std::vector<pcl::index_t> Neighborhood;
+	std::vector<float> Distance;
+	m_pTree->radiusSearch(m_pPointCloudScene->points[vSeed], vRadius, Neighborhood, Distance);
+	
+	return Neighborhood;
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CEuclideanNeighborhoodBuilder::__extraInitV(const hiveConfig::CHiveConfig* vConfig)
 {
 	m_pTree.reset(new pcl::search::KdTree<pcl::PointSurfel>);
