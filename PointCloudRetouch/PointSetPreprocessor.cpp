@@ -9,6 +9,9 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //FUNCTION:
 void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const Eigen::Vector3d& vViewPos)
 {
+	if (vioPointSet.empty())
+		return;
+
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
 	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdc(vioPointSet, vPvMatrix);
@@ -132,8 +135,10 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 	_ASSERTE(MinK <= MaxK);
 	double MidK = (MinK + MaxK) * 0.5;
 
-	const double MinRate = 0.3;
-	const double MaxRate = 0.3;
+	double MinRate = 0.3;
+	double MaxRate = 0.3;
+	if (MaxK - MinK <= 10.0)	//magic depth
+		MinRate = MaxRate = 1.0;
 	double ThresholdMinK = MinK * MinRate + AverageK * (1 - MinRate);
 	double ThresholdMaxK = MaxK * MaxRate + AverageK * (1 - MaxRate);
 
