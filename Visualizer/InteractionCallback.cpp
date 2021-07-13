@@ -56,7 +56,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->refresh(PointLabel);
 		}
 
-		if (KeyString == REMOVE_OUTLIER)
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(REMOVE_OUTLIER).value())
 		{
 			PointCloudRetouch::hiveMarkIsolatedAreaAsLitter();
 			std::vector<std::size_t> PointLabel;
@@ -64,7 +64,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->refresh(PointLabel);
 		}
 
-		if (vEvent.isCtrlPressed() && KeyString == UNDO)
+		if (vEvent.isCtrlPressed() && KeyString == m_pVisualizationConfig->getAttribute<std::string>(UNDO).value())
 		{
 			PointCloudRetouch::hiveUndo();
 			std::vector<std::size_t> PointLabel;
@@ -188,12 +188,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		};
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, pFunc, ViewPos);
-		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
+		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
-		//if (m_UnwantedMode)                                                                                   
-		//	PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, m_Hardness);
-		//else
-		//	PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, m_Hardness);
+		if (m_UnwantedMode)                                                                                   
+			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, m_Hardness);
+		else
+			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, m_Hardness);
 
 		if (m_IsRefreshImmediately)
 		{
