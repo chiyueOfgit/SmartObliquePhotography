@@ -41,16 +41,23 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointCloudtoSave(PointCl
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveMarkLitter(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize)
+bool hiveObliquePhotography::PointCloudRetouch::hivePreprocessSelected(std::vector<pcl::index_t>& vioSelected, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc, const Eigen::Vector3d& vViewPos)
 {
-	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness,  vRadius, vCenter, vPvMatrix, vWindowSize, EPointLabel::UNWANTED);
+	return CPointCloudRetouchManager::getInstance()->executePreprocessor(vioSelected, vPvMatrix, vSignedDistanceFunc, vViewPos);
 }
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveMarkBackground(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize)
+bool hiveObliquePhotography::PointCloudRetouch::hiveMarkBackground(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness)
 {
-	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vHardness, vRadius, vCenter, vPvMatrix, vWindowSize, EPointLabel::KEPT);
+	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vPvMatrix, vHardness, EPointLabel::KEPT);
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::PointCloudRetouch::hiveMarkLitter(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness)
+{
+	return CPointCloudRetouchManager::getInstance()->executeMarker(vUserMarkedRegion, vPvMatrix, vHardness, EPointLabel::UNWANTED);
 }
 
 //*****************************************************************
