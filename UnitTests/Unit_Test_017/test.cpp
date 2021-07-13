@@ -170,7 +170,8 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteTree)
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
 	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
-	
+	std::sort(InputIndices.begin(), InputIndices.end());
+
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
 		GroundTruth.begin(), GroundTruth.end(),
@@ -197,6 +198,7 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteGround)
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
 	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
+	std::sort(InputIndices.begin(), InputIndices.end());
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -230,6 +232,7 @@ TEST_F(TestSelecting, Selecting_NoThroughTest_CompleteBuilding)
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
 	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
+	std::sort(InputIndices.begin(), InputIndices.end());
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -257,6 +260,7 @@ TEST_F(TestSelecting, Selecting_MultipleObjectsTest_CompleteMoreTrees)
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
 	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
+	std::sort(InputIndices.begin(), InputIndices.end());
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -299,6 +303,7 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepATree)
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
 	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
+	std::sort(InputIndices.begin(), InputIndices.end());
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -326,6 +331,7 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepGround)
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
 	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
+	std::sort(InputIndices.begin(), InputIndices.end());
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -359,6 +365,7 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepABuilding)
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
 	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
+	std::sort(InputIndices.begin(), InputIndices.end());
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
@@ -386,6 +393,7 @@ TEST_F(TestSelecting, Selecting_CullingTest_KeepMoreTrees)
 	CullingOperation.cullBySdf(InputIndices, PvMatrix, distanceFunc);
 	Eigen::Vector3d ViewPos(Camera.pos[0], Camera.pos[1], Camera.pos[2]);
 	CullingOperation.cullByDepth(InputIndices, PvMatrix, ViewPos);
+	std::sort(InputIndices.begin(), InputIndices.end());
 
 	pcl::Indices Difference;
 	std::set_difference(InputIndices.begin(), InputIndices.end(),
