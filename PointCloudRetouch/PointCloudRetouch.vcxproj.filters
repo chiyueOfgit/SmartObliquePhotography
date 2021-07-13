@@ -70,6 +70,9 @@
     <ClInclude Include="OutlierDetector.h">
       <Filter>Operation</Filter>
     </ClInclude>
+    <ClInclude Include="PointSetPreprocessor.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
     <ClInclude Include="NormalComplexity.h">
       <Filter>PointCluster\Feature</Filter>
     </ClInclude>
@@ -117,6 +120,9 @@
       <Filter>PointCluster\Feature</Filter>
     </ClCompile>
     <ClCompile Include="OutlierDetector.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="PointSetPreprocessor.cpp">
       <Filter>Operation</Filter>
     </ClCompile>
     <ClCompile Include="NormalComplexity.cpp">

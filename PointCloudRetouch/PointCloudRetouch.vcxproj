@@ -125,6 +125,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>4819;</DisableSpecificWarnings>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,10 +145,10 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>4819;</DisableSpecificWarnings>
-      <Optimization>MaxSpeed</Optimization>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -179,6 +180,7 @@
     <ClInclude Include="PointClusterExpander.h" />
     <ClInclude Include="PointClusterSet.h" />
     <ClInclude Include="PointLabelSet.h" />
+    <ClInclude Include="PointSetPreprocessor.h" />
     <ClInclude Include="RetouchTask.h" />
     <ClInclude Include="VfhFeature.h" />
   </ItemGroup>
@@ -205,6 +207,7 @@
     <ClCompile Include="PointClusterExpander.cpp" />
     <ClCompile Include="PointClusterSet.cpp" />
     <ClCompile Include="PointLabelSet.cpp" />
+    <ClCompile Include="PointSetPreprocessor.cpp" />
     <ClCompile Include="RetouchTask.cpp" />
     <ClCompile Include="VfhFeature.cpp" />
   </ItemGroup>

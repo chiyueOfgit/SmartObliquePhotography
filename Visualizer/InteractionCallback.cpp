@@ -166,6 +166,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+		Eigen::Matrix4d Proj, View;
+		Camera.computeProjectionMatrix(Proj);
+		Camera.computeViewMatrix(View);
+		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
 
 		Eigen::Matrix4d Proj, View;
 		Camera.computeProjectionMatrix(Proj);
@@ -185,6 +189,38 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			m_pVisualizer->refresh(PointLabel);
 		}
 
+	}
+		Eigen::Vector2d CircleCenter = { 2 * (PosX / Camera.window_size[0]) - 1, 2 * (PosY / Camera.window_size[1]) - 1 };
+		double RadiusInNDC = 2 * m_Radius / Camera.window_size[0];
+
+		auto pFunc = [&](Eigen::Vector2d vPos) -> double
+		{
+			Eigen::Vector2d DeltaPos4Radius = { vPos.x() - CircleCenter.x(), (Camera.window_size[1] / Camera.window_size[0]) * (vPos.y() - CircleCenter.y()) };
+
+			if (DeltaPos4Radius.norm() <= RadiusInNDC)
+				return -1;
+			else
+				return 1;
+		};
+
+		PointCloudRetouch::hivePreprocessSelected(PickedIndices, Proj * View, pFunc, ViewPos);
+
+		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
+//
+//		if (m_UnwantedMode)                                                                                   
+//			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
+//		else
+//			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
+//
+//		m_IsRefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY).value();
+//
+//		if (m_IsRefreshImmediately)
+//		{
+//			std::vector<std::size_t> PointLabel;
+//			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+//			m_pVisualizer->refresh(PointLabel);
+//		}
+//
 	}
 
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
