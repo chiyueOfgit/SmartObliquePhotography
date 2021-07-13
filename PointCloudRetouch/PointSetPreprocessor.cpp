@@ -23,6 +23,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 	std::mutex Mutex;
 
+#pragma omp parallel for
 	for (int i = 0; i < Resolution.y(); i++)
 	{
 		double Y = MinPos.y() + (i + 0.5) * SampleDeltaNDC.y();
@@ -63,7 +64,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 			int Offset = k + i * Resolution.x();
 			_ASSERTE(Offset >= 0);
 
-			const double WorldLengthLimit = 1.0;	//magic
+			const double WorldLengthLimit = 100.0;	//magic
 			if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
 			{
 				auto MinDepth = DepthAndIndices.begin()->first;
