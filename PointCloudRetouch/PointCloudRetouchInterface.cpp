@@ -72,12 +72,12 @@ void hiveObliquePhotography::PointCloudRetouch::hiveDumpExpandResult(std::vector
 	CPointCloudRetouchManager::getInstance()->dumpExpandPoints(voExpandPoints, vIsLitterMarker);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveDiscardLitter()
+void hiveObliquePhotography::PointCloudRetouch::hiveHideLitter()
 {
 	CPointCloudRetouchManager::getInstance()->switchLabel(EPointLabel::DISCARDED, EPointLabel::UNWANTED);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveRestoreLitter()
+void hiveObliquePhotography::PointCloudRetouch::hiveDisplayLitter()
 {
 	CPointCloudRetouchManager::getInstance()->switchLabel(EPointLabel::UNWANTED, EPointLabel::DISCARDED);
 }

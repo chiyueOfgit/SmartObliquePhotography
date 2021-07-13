@@ -47,9 +47,9 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			static int i = 0;
 			i++;
 			if (i % 2)
-				PointCloudRetouch::hiveDiscardLitter();
+				PointCloudRetouch::hiveHideLitter();
 			else
-				PointCloudRetouch::hiveRestoreLitter();
+				PointCloudRetouch::hiveDisplayLitter();
 
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);

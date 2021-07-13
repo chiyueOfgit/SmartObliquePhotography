@@ -316,9 +316,9 @@ void CQTInterface::onActionDiscardAndRecover()
 {
     static int i = 1;
     if (i++ % 2)
-        PointCloudRetouch::hiveDiscardLitter();
+        PointCloudRetouch::hiveHideLitter();
     else
-        PointCloudRetouch::hiveRestoreLitter();
+        PointCloudRetouch::hiveDisplayLitter();
 
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);

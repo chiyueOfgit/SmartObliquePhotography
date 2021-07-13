@@ -11,8 +11,8 @@ namespace hiveObliquePhotography
 		RETOUCH_DECLSPEC bool hiveMarkLitter(const std::vector<pcl::index_t>& vUserMarkedRegion, double vHardness, double vRadius, const Eigen::Vector2f& vCenter, const Eigen::Matrix4d& vPvMatrix, const std::pair<float, float>& vWindowSize);
 		RETOUCH_DECLSPEC bool hiveMarkIsolatedAreaAsLitter();
 		RETOUCH_DECLSPEC void hiveClearMark();
-		RETOUCH_DECLSPEC void hiveDiscardLitter();
-		RETOUCH_DECLSPEC void hiveRestoreLitter();
+		RETOUCH_DECLSPEC void hiveHideLitter();
+		RETOUCH_DECLSPEC void hiveDisplayLitter();
 
 		RETOUCH_DECLSPEC bool hiveDumpPointCloudtoSave(PointCloud_t::Ptr voPointCloud);
 		RETOUCH_DECLSPEC bool hiveDumpPointLabel(std::vector<std::size_t>& voPointLabel);
