@@ -17,8 +17,22 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 	const Eigen::Vector2d TileDeltaNDC = { (MaxPos.x() - MinPos.x()) / TileResolution.x(), (MaxPos.y() - MinPos.y()) / TileResolution.y() };
 	std::vector<std::vector<pcl::index_t>> TileData(TileResolution.x() * TileResolution.y());
 
+	auto NumPoints = CloudScene.getNumPoint();
+
 #pragma omp parallel for
-	for (int i = 0; i < )
+	for (int i = 0; i < NumPoints; i++)
+	{
+		auto Position = CloudScene.getPositionAt(i);
+		Position = vPvMatrix.cast<float>() * Position;
+		Position /= Position.w();
+
+		Eigen::Vector2i TileCoord;
+		TileCoord.x() = static_cast<int>((Position.x() - MinPos.x()) / TileDeltaNDC.x());
+		TileCoord.y() = static_cast<int>((Position.y() - MinPos.y()) / TileDeltaNDC.y());
+
+		if (TileCoord.x() >= 0 && TileCoord.x() < TileResolution.x() && TileCoord.y() >= 0 && TileCoord.y() < TileResolution.y())
+			TileData[TileCoord.x() + TileCoord.y() * TileResolution.x()].push_back(i);
+	}
 
 	const Eigen::Vector2i Resolution = { 50, 50 };
 	const Eigen::Vector2d SampleDeltaNDC = { (MaxPos.x() - MinPos.x()) / Resolution.x(), (MaxPos.y() - MinPos.y()) / Resolution.y() };
@@ -50,9 +64,14 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 			Eigen::Vector3d RayDirection = { PixelPosition.x() - RayOrigin.x(), PixelPosition.y() - RayOrigin.y(), PixelPosition.z() - RayOrigin.z() };
 			RayDirection /= RayDirection.norm();
 
-			for (int m = 0; m < vioPointSet.size(); m++)
+			Eigen::Vector2i TileCoord;
+			TileCoord.x() = static_cast<int>((X - MinPos.x()) / TileDeltaNDC.x());
+			TileCoord.y() = static_cast<int>((Y - MinPos.y()) / TileDeltaNDC.y());
+			auto& Tile = TileData[TileCoord.x() + TileCoord.y() * TileResolution.x()];
+
+			for (auto Index : Tile)
 			{
-				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(vioPointSet[m]);
+				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(Index);
 				Eigen::Vector3d Pos = { (double)Pos4f.x(), (double)Pos4f.y() ,(double)Pos4f.z() };
 				Eigen::Vector4f Normal4f = CloudScene.getNormalAt(i);
 				Eigen::Vector3d Normal = { Normal4f.x(), Normal4f.y(), Normal4f.z() };
@@ -60,11 +79,11 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 				double K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
 
 				Eigen::Vector3d IntersectPosition = RayOrigin + K * RayDirection;
-
+				
 				const double SurfelRadius = 3.0;	//surfel world radius
 
 				if ((IntersectPosition - Pos).norm() < SurfelRadius)
-					DepthAndIndices[K] = vioPointSet[m];
+					DepthAndIndices[K] = Index;
 			}
 
 			int Offset = k + i * Resolution.x();
