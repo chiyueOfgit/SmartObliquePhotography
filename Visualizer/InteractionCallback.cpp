@@ -188,6 +188,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		};
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, pFunc, ViewPos);
+		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
+
 		if (m_UnwantedMode)                                                                                   
 			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, m_Hardness);
 		else

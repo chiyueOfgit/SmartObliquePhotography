@@ -13,6 +13,13 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdc(vioPointSet, vPvMatrix);
 
+	const Eigen::Vector2i TileResolution = { 10, 10 };
+	const Eigen::Vector2d TileDeltaNDC = { (MaxPos.x() - MinPos.x()) / TileResolution.x(), (MaxPos.y() - MinPos.y()) / TileResolution.y() };
+	std::vector<std::vector<pcl::index_t>> TileData(TileResolution.x() * TileResolution.y());
+
+#pragma omp parallel for
+	for (int i = 0; i < )
+
 	const Eigen::Vector2i Resolution = { 50, 50 };
 	const Eigen::Vector2d SampleDeltaNDC = { (MaxPos.x() - MinPos.x()) / Resolution.x(), (MaxPos.y() - MinPos.y()) / Resolution.y() };
 
