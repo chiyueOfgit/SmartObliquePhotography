@@ -7,14 +7,14 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION:
-void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const Eigen::Vector3f& vViewPos)
+void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const Eigen::Vector3d& vViewPos)
 {
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
-	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdf(vioPointSet, vPvMatrix);
+	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdc(vioPointSet, vPvMatrix);
 
-	const Eigen::Vector2i Resolution = { 128, 128 };
-	const Eigen::Vector2f SampleDeltaNDC = { static_cast<float>(MaxPos.x() - MinPos.x()) / Resolution.x(), static_cast<float>(MaxPos.y() - MinPos.y()) / Resolution.y() };
+	const Eigen::Vector2i Resolution = { 100, 100 };
+	const Eigen::Vector2d SampleDeltaNDC = { (MaxPos.x() - MinPos.x()) / Resolution.x(), (MaxPos.y() - MinPos.y()) / Resolution.y() };
 
 	std::vector<float> PointsDepth(Resolution.x() * Resolution.y(), FLT_MAX);
 	std::set<pcl::index_t> ResultPoints;
@@ -26,33 +26,36 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 #pragma omp parallel for
 	for (int i = 0; i < Resolution.y(); i++)
 	{
-		float Y = MinPos.y() + (i + 0.5f) * SampleDeltaNDC.y();
+		double Y = MinPos.y() + (i + 0.5) * SampleDeltaNDC.y();
 
 		for (int k = 0; k < Resolution.x(); k++)
 		{
-			float X = MinPos.x() + (k + 0.5f) * SampleDeltaNDC.x();
+			double X = MinPos.x() + (k + 0.5) * SampleDeltaNDC.x();
 
-			std::map<float, int> DepthAndIndices;
+			std::map<double, int> DepthAndIndices;
 
-			Eigen::Vector4d PixelPosition = { X, Y, 0.0f, 1.0f };
+			Eigen::Vector4d PixelPosition = { X, Y, 0.0, 1.0 };
 
 			PixelPosition = PVInverse * PixelPosition;
 			PixelPosition /= PixelPosition.w();
 
-			Eigen::Vector3f RayOrigin = vViewPos;
-			Eigen::Vector3f RayDirection = Eigen::Vector3f(PixelPosition) - RayOrigin;
+			Eigen::Vector3d RayOrigin = vViewPos;
+			Eigen::Vector3d RayDirection = { PixelPosition.x() - RayOrigin.x(), PixelPosition.y() - RayOrigin.y(), PixelPosition.z() - RayOrigin.z() };
 			RayDirection /= RayDirection.norm();
 
 			for (int i = 0; i < vioPointSet.size(); i++)
 			{
-				Eigen::Vector3f Pos{ CloudScene.getPositionAt(i) };
-				Eigen::Vector3f Normal{ CloudScene.getNormalAt(i) };
+				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(i);
+				Eigen::Vector3d Pos = { (double)Pos4f.x(), (double)Pos4f.y() ,(double)Pos4f.z() };
+				//Eigen::Vector4f Normal4f = CloudScene.getNormalAt(i);
+				//Eigen::Vector3f Normal = { Normal4f.x(), Normal4f.y(), Normal4f.z() };
+				Eigen::Vector3d Normal = -RayDirection;
 
-				float K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
+				double K = (Pos - RayOrigin).dot(Normal) / RayDirection.dot(Normal);
 
-				Eigen::Vector3f IntersectPosition = RayOrigin + K * RayDirection;
+				Eigen::Vector3d IntersectPosition = RayOrigin + K * RayDirection;
 
-				const float SurfelRadius = 1.0f;	//surfel world radius
+				const double SurfelRadius = 100.0;	//surfel world radius
 
 				if ((IntersectPosition - Pos).norm() < SurfelRadius)
 					DepthAndIndices[K] = vioPointSet[i];
@@ -61,7 +64,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 			int Offset = k + i * Resolution.x();
 			_ASSERTE(Offset >= 0);
 
-			const float WorldLengthLimit = 0.5f;	//magic
+			const double WorldLengthLimit = 10.0;	//magic
 			if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
 			{
 				auto MinDepth = DepthAndIndices.begin()->first;
@@ -94,8 +97,6 @@ void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, co
 			Eigen::Vector4f Position = CloudScene.getPositionAt(vIndex);
 			Position = vPvMatrix.cast<float>() * Position;
 			Position /= Position.eval().w();
-			Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
-			Position /= 2.0;
 			
 			return vSignedDistanceFunc({ Position.x(), Position.y() }) > 0.0f;
 		}), vioPointSet.end());
@@ -103,32 +104,30 @@ void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, co
 
 //*****************************************************************
 //FUNCTION:
-std::pair<Eigen::Vector2f, Eigen::Vector2f> CPointSetPreprocessor::__computeBoundingBoxOnNdf(const std::vector<pcl::index_t>& vPointSet, const Eigen::Matrix4d& vPvMatrix)
+std::pair<Eigen::Vector2d, Eigen::Vector2d> CPointSetPreprocessor::__computeBoundingBoxOnNdc(const std::vector<pcl::index_t>& vPointSet, const Eigen::Matrix4d& vPvMatrix)
 {
-	//TODO: 用PvMatrix从物体空间转Ndf这个过程可以提出来
+	//TODO: 用PvMatrix从物体空间转Ndc这个过程可以提出来
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	
-	Eigen::Vector2f MinPos(FLT_MAX, FLT_MAX);
-	Eigen::Vector2f MaxPos(-FLT_MAX, -FLT_MAX);
+	Eigen::Vector2d MinPos(DBL_MAX, DBL_MAX);
+	Eigen::Vector2d MaxPos(-DBL_MAX, -DBL_MAX);
 	for (auto& i : vPointSet)
 	{
-		Eigen::Vector4f Position = CloudScene.getPositionAt(i);
-		Position = vPvMatrix.cast<float>() * Position;
+		Eigen::Vector4d Position;
+		Position = vPvMatrix * CloudScene.getPositionAt(i).cast<double>();
 		Position /= Position.eval().w();
-		Position += Eigen::Vector4f(1.0, 1.0, 1.0, 1.0);
-		Position /= 2.0;
 
-		Eigen::Vector2f NdfCoord(Position.x(), Position.y());
+		Eigen::Vector2d NdCoord(Position.x(), Position.y());
 
-		if (MinPos.x() > NdfCoord.x())
-			MinPos.x() = NdfCoord.x();
-		if (MinPos.y() > NdfCoord.y())
-			MinPos.y() = NdfCoord.y();
-		if (MaxPos.x() > NdfCoord.x())
-			MaxPos.x() = NdfCoord.x();
-		if (MaxPos.y() > NdfCoord.y())
-			MaxPos.y() = NdfCoord.y();
+		if (MinPos.x() > NdCoord.x())
+			MinPos.x() = NdCoord.x();
+		if (MinPos.y() > NdCoord.y())
+			MinPos.y() = NdCoord.y();
+		if (MaxPos.x() < NdCoord.x())
+			MaxPos.x() = NdCoord.x();
+		if (MaxPos.y() < NdCoord.y())
+			MaxPos.y() = NdCoord.y();
 	}
 
-	return { MinPos, MaxPos };
+	return { Eigen::Vector2d{}, Eigen::Vector2d{} };
 }

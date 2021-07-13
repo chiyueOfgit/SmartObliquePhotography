@@ -206,13 +206,14 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Eigen::Matrix4d Proj, View;
 		Camera.computeProjectionMatrix(Proj);
 		Camera.computeViewMatrix(View);
+		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
 
 		auto pFunc = [](Eigen::Vector2f vPos) -> float
 		{
 			return -1;
 		};
 
-		PointCloudRetouch::hivePreprocessSelected(PickedIndices, Proj * View, pFunc, { Camera.pos[0], Camera.pos[1], Camera.pos[2] });
+		PointCloudRetouch::hivePreprocessSelected(PickedIndices, Proj * View, pFunc, ViewPos);
 
 		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 //
