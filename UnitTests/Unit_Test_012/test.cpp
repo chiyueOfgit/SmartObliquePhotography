@@ -84,7 +84,7 @@ TEST_F(TestPointCluster, FalseProbability_Test)
 	
 	pcl::index_t TestIndex = 1;
 
-	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, Pv, 1, PointCloudRetouch::EPointLabel::KEPT);
+	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, Pv, 0.8, PointCloudRetouch::EPointLabel::KEPT);
 	double Res = pPointCluster->evaluateProbability(TestIndex);
 	EXPECT_LE(Res, 1.0);
 	EXPECT_GE(Res, 0.0);
