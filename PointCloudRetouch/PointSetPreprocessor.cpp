@@ -72,9 +72,9 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 				{
 					if (Pair.first - MinDepth < WorldLengthLimit)
 					{
-						//Mutex.lock();
+						Mutex.lock();
 						ResultPoints.insert(Pair.second);
-						//Mutex.unlock();
+						Mutex.unlock();
 					}
 
 				}
