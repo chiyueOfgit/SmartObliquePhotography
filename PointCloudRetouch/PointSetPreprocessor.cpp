@@ -45,7 +45,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 			for (int i = 0; i < vioPointSet.size(); i++)
 			{
-				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(i);
+				Eigen::Vector4f Pos4f = CloudScene.getPositionAt(vioPointSet[i]);
 				Eigen::Vector3d Pos = { (double)Pos4f.x(), (double)Pos4f.y() ,(double)Pos4f.z() };
 				//Eigen::Vector4f Normal4f = CloudScene.getNormalAt(i);
 				//Eigen::Vector3f Normal = { Normal4f.x(), Normal4f.y(), Normal4f.z() };
