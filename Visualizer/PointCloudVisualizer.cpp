@@ -124,7 +124,12 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "Cloud2Show");
 
 	if (vResetCamera)
+	{
 		m_pPCLVisualizer->resetCamera();
+		pcl::visualization::Camera Camera;
+		m_pPCLVisualizer->getCameraParameters(Camera);
+		m_WindowSize = { Camera.window_size[0], Camera.window_size[1] };
+	}
 
 	m_pPCLVisualizer->updateCamera();
 

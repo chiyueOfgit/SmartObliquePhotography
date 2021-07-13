@@ -158,14 +158,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				m_IsRefreshImmediately = RefreshImmediately.value();
 		}
 
-		m_Radius = (int)m_Radius;
-
-		std::vector<pcl::index_t> PickedIndices;
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);	//rectangle
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
-
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
 		Eigen::Matrix4d Proj, View;
@@ -174,8 +166,18 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Eigen::Matrix4d PV = Proj * View;
 		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
 
+		m_Radius = (int)m_Radius;
+		auto ZoomRate = Camera.window_size[1] / m_pVisualizer->m_WindowSize.y();
+		auto ZoomedRadius = m_Radius * ZoomRate;
+
+		std::vector<pcl::index_t> PickedIndices;
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - ZoomedRadius, PosY - ZoomedRadius, PosX + ZoomedRadius, PosY + ZoomedRadius, PickedIndices);	//rectangle
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
+		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
+
 		Eigen::Vector2d CircleCenter = { 2 * (PosX / Camera.window_size[0]) - 1, 2 * (PosY / Camera.window_size[1]) - 1 };
-		double RadiusInNDC = 2 * m_Radius / Camera.window_size[0];
+		double RadiusInNDC = 2 * m_Radius / Camera.window_size[0] * ZoomRate;
 
 		auto pFunc = [&](Eigen::Vector2d vPos) -> double
 		{
@@ -232,7 +234,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
 		if (!m_MousePressStatus[0])
 		{
-			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.001 * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
+			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.00115 * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->updateCamera();
 		}
