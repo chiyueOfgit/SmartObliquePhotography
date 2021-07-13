@@ -93,7 +93,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;_UNIT_TEST;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestModel\)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;_UNIT_TEST;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestData\)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
@@ -125,7 +125,7 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_UNIT_TEST;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestModel\)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_UNIT_TEST;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;TESTMODEL_DIR=R"($(SolutionDir)UnitTests\TestData\)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
