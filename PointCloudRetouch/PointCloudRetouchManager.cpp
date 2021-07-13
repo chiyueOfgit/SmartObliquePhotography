@@ -158,7 +158,7 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 		}
 		return true;
 	}
-	catch (std::runtime_error&)
+	catch (std::runtime_error& e)
 	{
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to execute marker because of the following error: [%1%].", e.what()));
 	}

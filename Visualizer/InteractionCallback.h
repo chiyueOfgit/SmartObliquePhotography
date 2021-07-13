@@ -32,13 +32,11 @@ namespace hiveObliquePhotography
 			bool m_KeyPressStatus[256] = { false };
 			bool m_MousePressStatus[2] = { false };
 
-			bool m_UnwantedMode = true;
-			bool m_PartitionMode = true;
-			bool m_LineMode = false;
-			bool m_IsRefreshImmediately = true;	//点选是否立即刷新
-
 			double m_Radius = 40.0;
 			double m_Hardness = 0.8;
+
+			bool m_UnwantedMode = true;
+			bool m_IsRefreshImmediately = true;	//点选是否立即刷新
 
 			CPointCloudVisualizer* m_pVisualizer = nullptr;
 

@@ -146,7 +146,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			std::optional<float> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS);
 			if (ScreenCircleRadius.has_value())
 				m_Radius = ScreenCircleRadius.value();
-
 			std::optional<float> ScreenCircleHardness = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_HARDNESS);
 			if (ScreenCircleHardness.has_value())
 				m_Hardness = ScreenCircleHardness.value();
@@ -154,6 +153,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			std::optional<float> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
 			if (UnwantedMode.has_value())
 				m_UnwantedMode = UnwantedMode.value();
+			std::optional<float> RefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY);
+			if (RefreshImmediately.has_value())
+				m_IsRefreshImmediately = RefreshImmediately.value();
 		}
 
 		m_Radius = (int)m_Radius;
@@ -169,27 +171,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Eigen::Matrix4d Proj, View;
 		Camera.computeProjectionMatrix(Proj);
 		Camera.computeViewMatrix(View);
+		Eigen::Matrix4d PV = Proj * View;
 		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
 
-		Eigen::Matrix4d Proj, View;
-		Camera.computeProjectionMatrix(Proj);
-		Camera.computeViewMatrix(View);
-		Eigen::Matrix4d PV = Proj * View;
-
-		if (m_UnwantedMode)                                                                                   
-			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, PV, { Camera.window_size[0], Camera.window_size[1] });
-		else
-			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, PV, { Camera.window_size[0], Camera.window_size[1] });
-
-		m_IsRefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY).value();
-		if (m_IsRefreshImmediately)
-		{
-			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-			m_pVisualizer->refresh(PointLabel);
-		}
-
-	}
 		Eigen::Vector2d CircleCenter = { 2 * (PosX / Camera.window_size[0]) - 1, 2 * (PosY / Camera.window_size[1]) - 1 };
 		double RadiusInNDC = 2 * m_Radius / Camera.window_size[0];
 
@@ -203,26 +187,21 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				return 1;
 		};
 
-		PointCloudRetouch::hivePreprocessSelected(PickedIndices, Proj * View, pFunc, ViewPos);
+		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, pFunc, ViewPos);
+		if (m_UnwantedMode)                                                                                   
+			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, m_Hardness);
+		else
+			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, m_Hardness);
 
-		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-//
-//		if (m_UnwantedMode)                                                                                   
-//			PointCloudRetouch::hiveMarkLitter(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
-//		else
-//			PointCloudRetouch::hiveMarkBackground(PickedIndices, m_Hardness, m_Radius, { PosX, PosY }, Proj * View, { Camera.window_size[0], Camera.window_size[1] });
-//
-//		m_IsRefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY).value();
-//
-//		if (m_IsRefreshImmediately)
-//		{
-//			std::vector<std::size_t> PointLabel;
-//			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-//			m_pVisualizer->refresh(PointLabel);
-//		}
-//
+		if (m_IsRefreshImmediately)
+		{
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
 	}
 
+	//draw point picking hint circle
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
 	{
 		pcl::visualization::Camera Camera;
