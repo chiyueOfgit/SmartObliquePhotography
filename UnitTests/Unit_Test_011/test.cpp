@@ -17,7 +17,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 #define radians(x) (x * PI / 180)
 
 class CTestCreateInitialCluster : public testing::Test
-{
+{ 
 protected:
 	void SetUp() override
 	{

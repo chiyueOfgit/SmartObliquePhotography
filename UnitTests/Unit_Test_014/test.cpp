@@ -69,7 +69,7 @@ TEST_F(TestExpander, NoRepeatIndex)
 	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
 
 	std::vector<pcl::index_t> UserMarkedRegion{ 1,2,3,4 };
-	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, PV, { 1000,800 }, EPointLabel::KEPT);
+	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, PV, 1, EPointLabel::KEPT);
 
 	std::queue<pcl::index_t> CandidateQueue = pPointClusterExpander->initExpandingCandidateQueue(UserSpecifiedCluster);
 	int Sum = 0;
@@ -88,8 +88,7 @@ TEST_F(TestExpander, EmptyInput)
 	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
 
 	std::vector<pcl::index_t> UserMarkedRegion{};
-	Eigen::Matrix4d Pv;
-	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, 0.8, 10, { 400,400 }, PV, { 1000,800 }, EPointLabel::KEPT);
+	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, PV, 1, EPointLabel::KEPT);
 	
 	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
 }
