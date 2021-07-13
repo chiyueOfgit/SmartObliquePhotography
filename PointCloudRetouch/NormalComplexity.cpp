@@ -10,6 +10,50 @@ _REGISTER_EXCLUSIVE_PRODUCT(CNormalComplexity, KEYWORD::NORMAL_COMPLEXITY)
 
 //*****************************************************************
 //FUNCTION: 
+bool CNormalComplexity::onProductCreatedV(const hiveConfig::CHiveConfig* vFeatureConfig)
+{
+	_ASSERTE(vFeatureConfig);
+	m_pConfig = vFeatureConfig;
+
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+
+	const double SmallScaleRadius = *m_pConfig->getAttribute<double>("SMALL_SCALE_RADIUS");
+	const double LargeScaleRadius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	for (size_t i = 0; i < CloudScene.getNumPoint(); i++)
+	{
+		const auto& Position = CloudScene.getPositionAt(i);
+		pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
+	}
+
+	pcl::PointCloud<pcl::PointNormal>::Ptr pSmallScalePointCloud(new pcl::PointCloud<pcl::PointNormal>);
+	pcl::PointCloud<pcl::PointNormal>::Ptr pLargeScalePointCloud(new pcl::PointCloud<pcl::PointNormal>);
+
+	pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::PointNormal> NormalEstimation;
+	NormalEstimation.setInputCloud(pPointCloud);
+
+	NormalEstimation.setRadiusSearch(SmallScaleRadius);
+	NormalEstimation.compute(*pSmallScalePointCloud);
+
+	NormalEstimation.setRadiusSearch(LargeScaleRadius);
+	NormalEstimation.compute(*pLargeScalePointCloud);
+
+	pcl::copyPointCloud(*pPointCloud, m_DonCloud);
+	
+	pcl::DifferenceOfNormalsEstimation<pcl::PointXYZ, pcl::PointNormal, pcl::PointNormal> DonEstimation;
+	DonEstimation.setInputCloud(pPointCloud);
+	DonEstimation.setNormalScaleSmall(pSmallScalePointCloud);
+	DonEstimation.setNormalScaleLarge(pLargeScalePointCloud);
+	if (!DonEstimation.initCompute())
+		throw std::runtime_error("Don initCompute error");
+	DonEstimation.computeFeature(m_DonCloud);
+	
+	return true;
+}
+
+//*****************************************************************
+//FUNCTION: 
 double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
@@ -26,51 +70,18 @@ double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDet
 //FUNCTION: 
 double CNormalComplexity::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-	const double LargeScaleRadius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
-
-	auto SinglePointFeature = __calcPointCloudNormalComplexity(CPointCloudRetouchManager::getInstance()->buildNeighborhoodByRadius(vInputPoint, LargeScaleRadius));
-	return 1.0 - static_cast<double>(abs(SinglePointFeature - m_AverageDon));
+	return 1.0 - static_cast<double>(abs(m_DonCloud.at(vInputPoint).curvature - m_AverageDon));
 }
 
 //*****************************************************************
 //FUNCTION: 
 float CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices)
 {
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-	
-	const double SmallScaleRadius = *m_pConfig->getAttribute<double>("SMALL_SCALE_RADIUS");
-	const double LargeScaleRadius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
-
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for (auto i : vPointIndices)
+	double Sum = 0.0;
+	for (auto& i : vPointIndices)
 	{
-		const auto& Position = CloudScene.getPositionAt(i);
-		pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
+		Sum += m_DonCloud.at(i).curvature;
 	}
-	
-	pcl::PointCloud<pcl::PointNormal>::Ptr pSmallScalePointCloud(new pcl::PointCloud<pcl::PointNormal>);
-	pcl::PointCloud<pcl::PointNormal>::Ptr pLargeScalePointCloud(new pcl::PointCloud<pcl::PointNormal>);
 
-	pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::PointNormal> NormalEstimation;
-	NormalEstimation.setInputCloud(pPointCloud);
-
-	NormalEstimation.setRadiusSearch(SmallScaleRadius);
-	NormalEstimation.compute(*pSmallScalePointCloud);
-
-	NormalEstimation.setRadiusSearch(LargeScaleRadius);
-	NormalEstimation.compute(*pLargeScalePointCloud);
-
-	pcl::PointCloud<pcl::PointNormal> DonCloud;
-	pcl::copyPointCloud(*pPointCloud, DonCloud);
-	
-	pcl::DifferenceOfNormalsEstimation<pcl::PointXYZ, pcl::PointNormal, pcl::PointNormal> DonEstimation;
-	DonEstimation.setInputCloud(pPointCloud);
-	DonEstimation.setNormalScaleSmall(pSmallScalePointCloud);
-	DonEstimation.setNormalScaleLarge(pLargeScalePointCloud);
-	if (!DonEstimation.initCompute())
-		throw std::runtime_error("Don initCompute error");
-	DonEstimation.computeFeature(DonCloud);
-
-	auto DonMap = DonCloud.getMatrixXfMap(1, sizeof(pcl::PointNormal) / sizeof(float), offsetof(pcl::PointNormal, curvature) / sizeof(float));
-	return DonMap.mean();
+	return Sum / vPointIndices.size();
 }

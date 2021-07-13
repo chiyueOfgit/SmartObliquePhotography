@@ -4,9 +4,6 @@
 #include "NeighborhoodBuilder.h"
 #include "OutlierDetector.h"
 
-//TODO: NeighborhoodBuilder设计不当
-#include "EuclideanNeighborhoodBuilder.h"
-
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
@@ -176,14 +173,6 @@ void CPointCloudRetouchManager::setLabel(const std::vector<pcl::index_t>& vPoint
 		if (Label == EPointLabel::KEPT || Label == EPointLabel::UNWANTED)
 			m_PointLabelSet.tagPointLabel(Index, vTarget, 0, 0);
 	}
-}
-
-//*****************************************************************
-//FUNCTION: 
-std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhoodByRadius(pcl::index_t vSeed, double vRadius) const
-{
-	//TODO: NeighborhoodBuilder接口设计不当
-	return dynamic_cast<CEuclideanNeighborhoodBuilder*>(m_pNeighborhoodBuilder)->buildNeighborhoodByRadius(vSeed, vRadius);
 }
 
 //*****************************************************************
