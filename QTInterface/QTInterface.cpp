@@ -305,7 +305,7 @@ void CQTInterface::onActionOutlierDetection()
 {
     if (m_pCloud)
     {
-        PointCloudRetouch::hiveRemoveOutlier();
+        PointCloudRetouch::hiveMarkIsolatedAreaAsLitter();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel);
@@ -316,9 +316,9 @@ void CQTInterface::onActionDiscardAndRecover()
 {
     static int i = 1;
     if (i++ % 2)
-        PointCloudRetouch::hiveDiscardUnwantedPoints();
+        PointCloudRetouch::hiveHideLitter();
     else
-        PointCloudRetouch::hiveRecoverDiscardPoints2Unwanted();
+        PointCloudRetouch::hiveDisplayLitter();
 
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
@@ -327,7 +327,7 @@ void CQTInterface::onActionDiscardAndRecover()
 
 void CQTInterface::onActionDelete()
 {
-    PointCloudRetouch::hiveClearMarkerResult();
+    PointCloudRetouch::hiveClearMark();
     Visualization::hiveCancelAllHighlighting();
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
