@@ -64,7 +64,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 			int Offset = k + i * Resolution.x();
 			_ASSERTE(Offset >= 0);
 
-			const double WorldLengthLimit = 10.0;	//magic
+			const double WorldLengthLimit = 100.0;	//magic
 			if (Offset < PointsDepth.size() && !DepthAndIndices.empty())
 			{
 				auto MinDepth = DepthAndIndices.begin()->first;
