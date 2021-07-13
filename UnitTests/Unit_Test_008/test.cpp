@@ -31,7 +31,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 using namespace  hiveObliquePhotography::PointCloudRetouch;
 
 const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test008_PointCloudRetouchConfig.xml");
-const std::string ModelPath = TESTMODEL_DIR + std::string("General/slice 16.pcd");
+const std::string ModelPath = TESTMODEL_DIR + std::string("General/slice 15.pcd");
 const std::string IndicesPath = TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingInput.txt");
 const std::string CameraPath = TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingCameraInfo.txt");
 
@@ -91,31 +91,31 @@ protected:
 	}
 };
 
-TEST_F(CTestUndo, Empty_ResultQueue_Expect_Test)
-{
-	initTest(ModelPath);
-
-	EXPECT_FALSE(pManager->undo());
-	ASSERT_NO_FATAL_FAILURE(pManager->undo());
-	ASSERT_NO_THROW(pManager->undo());
-}
-
-TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
-{
-	initTest(ModelPath);
-	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
-	
-	hiveDumpPointLabel(LabelSetBeforeUndo);
-	expandOnce(IndicesPath, CameraPath);
-	hiveUndo();
-	hiveDumpPointLabel(LabelSetAfterUndo);
-
-	std::vector<std::size_t> SymmetricDifference;
-	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
-		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
-		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
-	ASSERT_EQ(SymmetricDifference.size(), 0);
-}
+//TEST_F(CTestUndo, Empty_ResultQueue_Expect_Test)
+//{
+//	initTest(ModelPath);
+//
+//	EXPECT_FALSE(pManager->undo());
+//	ASSERT_NO_FATAL_FAILURE(pManager->undo());
+//	ASSERT_NO_THROW(pManager->undo());
+//}
+//
+//TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
+//{
+//	initTest(ModelPath);
+//	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
+//	
+//	hiveDumpPointLabel(LabelSetBeforeUndo);
+//	expandOnce(IndicesPath, CameraPath);
+//	hiveUndo();
+//	hiveDumpPointLabel(LabelSetAfterUndo);
+//
+//	std::vector<std::size_t> SymmetricDifference;
+//	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
+//		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
+//		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
+//	ASSERT_EQ(SymmetricDifference.size(), 0);
+//}
 
 TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
 {
