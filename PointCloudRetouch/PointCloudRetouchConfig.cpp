@@ -32,4 +32,7 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("SEARCH_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("MIN_NEIGHBORS_IN_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	_defineAttribute("POINT_FILTER_CONDITION", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+	_defineAttribute("SMALL_SCALE_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
+	_defineAttribute("LARGE_SCALE_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
+	
 }
