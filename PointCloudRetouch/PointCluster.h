@@ -23,7 +23,7 @@ namespace hiveObliquePhotography
 
 			EPointLabel getLabel() const { return m_Label; }
 
-			void outputDebugInfos(pcl::index_t vIndex) const;
+			std::string getDebugInfos(pcl::index_t vIndex) const;
 
 		protected:
 			std::vector<IFeature*> m_FeatureSet;
