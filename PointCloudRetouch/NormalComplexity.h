@@ -11,7 +11,7 @@ namespace hiveObliquePhotography
 			CNormalComplexity() = default;
 			~CNormalComplexity() override = default;
 
-			bool onProductCreatedV(const hiveConfig::CHiveConfig* vFeatureConfig) override;
+			//bool onProductCreatedV(const hiveConfig::CHiveConfig* vFeatureConfig) override;
 			
 			double generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter) override;
 			double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;

@@ -24,6 +24,8 @@
 //  * DeathTest_InitRetouchTaskWithErrorConfig: 尝试用错Config初始化Task
 // 
 //  * InitPointCloudRetouchManager: 能够正常初始化Manager
+//  * ResetPointCloudRetouchManager: 能够正常重置Manager
+//  * ReInitPointCloudRetouchManager: 能够重复初始化Manager
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
