@@ -176,6 +176,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
 
+		if (PickedIndices.empty())
+			return;
+		
 		Eigen::Vector2d CircleCenter = { 2 * (PosX / Camera.window_size[0]) - 1, 2 * (PosY / Camera.window_size[1]) - 1 };
 		double RadiusInNDC = 2 * m_Radius / Camera.window_size[0] * ZoomRate;
 
@@ -190,7 +193,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		};
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, pFunc, ViewPos);
-		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
+		//m_pVisualizer->addUserColoreKdPoints(PickedIndices, { 255, 255, 255 });
 
 		if (m_UnwantedMode)                                                                                   
 			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, m_Hardness);

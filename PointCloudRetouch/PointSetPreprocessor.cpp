@@ -18,7 +18,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 	int NumSqrtPoints = static_cast<int>(sqrt(vioPointSet.size()));
 
-	const Eigen::Vector2i TileResolution = { int(0.1 * NumSqrtPoints), int(0.1 * NumSqrtPoints) };
+	const Eigen::Vector2i TileResolution = { int(0.1 * NumSqrtPoints) + 1, int(0.1 * NumSqrtPoints) + 1 };
 	const Eigen::Vector2d TileDeltaNDC = { (MaxPos.x() - MinPos.x()) / TileResolution.x(), (MaxPos.y() - MinPos.y()) / TileResolution.y() };
 	std::vector<std::vector<pcl::index_t>> TileData(TileResolution.x() * TileResolution.y());
 

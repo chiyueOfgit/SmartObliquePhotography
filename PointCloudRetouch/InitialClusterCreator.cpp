@@ -84,7 +84,7 @@ void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::
 
 	for(size_t i = 0;i <vUserMarkedRegion.size();i++)
 	{
-		if (vPointHardnessSet[i] < vDivideThreshold && vPointHardnessSet[i] != 0.0f)
+		if (vPointHardnessSet[i] <= vDivideThreshold)
 		{
 			voValidationSet.push_back(vUserMarkedRegion[i]);
 			OutputMessage(vUserMarkedRegion[i], OutputValidationSet);
