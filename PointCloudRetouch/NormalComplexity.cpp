@@ -77,7 +77,7 @@ double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDet
 //FUNCTION: 
 double CNormalComplexity::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-	return 1.0 - static_cast<double>(abs(m_DonCloud.at(vInputPoint).curvature - m_AverageDon));
+	return 1.0 - static_cast<double>(abs(__calcSinglePointNormalComplexity(vInputPoint) - m_AverageDon));
 }
 
 //*****************************************************************
@@ -89,4 +89,11 @@ float CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl:
 		Sum += m_DonCloud.at(i).curvature;
 
 	return Sum / vPointIndices.size();
+}
+
+//*****************************************************************
+//FUNCTION: 
+float CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputPoint)
+{
+	return m_DonCloud.at(vInputPoint).curvature;
 }
