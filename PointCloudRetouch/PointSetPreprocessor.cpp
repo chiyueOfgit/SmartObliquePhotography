@@ -51,7 +51,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 
 	Eigen::Matrix4d PVInverse = vPvMatrix.inverse();
 
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int i = 0; i < Resolution.y(); i++)
 	{
 		double Y = MinPos.y() + (i + 0.5) * SampleDeltaNDC.y();
