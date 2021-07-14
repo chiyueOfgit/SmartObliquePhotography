@@ -22,11 +22,6 @@
         <DISTANCE_TOLERANCE> 0.12 </DISTANCE_TOLERANCE>
       </FEATURE>
       <FEATURE>
-        VFHFeature
-        <SIG> VFH_FEATURE </SIG>
-        <CONVOLUTION_KERNEL_SIZE> 5 </CONVOLUTION_KERNEL_SIZE>
-      </FEATURE>
-      <FEATURE>
         ColorFeature
         <SIG> COLOR_FEATURE </SIG>
         <COLOR_THRESHOLD> 10.0 </COLOR_THRESHOLD>
@@ -36,7 +31,6 @@
       <FEATURE>
         NormalComplexityFeature
         <SIG> NORMAL_COMPLEXITY </SIG>
-        <SMALL_SCALE_RADIUS> 0.8 </SMALL_SCALE_RADIUS>
         <LARGE_SCALE_RADIUS> 3.0 </LARGE_SCALE_RADIUS>
       </FEATURE>
     </CLUSTER>
@@ -60,11 +54,6 @@
         <DISTANCE_TOLERANCE> 0.12 </DISTANCE_TOLERANCE>
       </FEATURE>
       <FEATURE>
-        VFHFeature
-        <SIG> VFH_FEATURE </SIG>
-        <CONVOLUTION_KERNEL_SIZE> 5 </CONVOLUTION_KERNEL_SIZE>
-      </FEATURE>
-      <FEATURE>
         ColorFeature
         <SIG> COLOR_FEATURE </SIG>
         <COLOR_THRESHOLD> 10.0 </COLOR_THRESHOLD>
@@ -74,7 +63,6 @@
       <FEATURE>
         NormalComplexityFeature
         <SIG> NORMAL_COMPLEXITY </SIG>
-        <SMALL_SCALE_RADIUS> 0.8 </SMALL_SCALE_RADIUS>
         <LARGE_SCALE_RADIUS> 3.0 </LARGE_SCALE_RADIUS>
       </FEATURE>
     </CLUSTER>
