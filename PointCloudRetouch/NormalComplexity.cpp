@@ -85,7 +85,7 @@ double CNormalComplexity::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 std::string CNormalComplexity::outputDebugInfosV(pcl::index_t vIndex) const
 {
 	std::string Infos;
-	Infos += "\nNormal Feature:\n";
+	Infos += "\nNormal Featrue:\n";
 	Infos += _FORMAT_STR1("Average Normal Complexity is: %1%\n", m_AverageDon);
 	Infos += _FORMAT_STR1("Point's Normal Complexity is: %1%\n", const_cast<CNormalComplexity*>(this)->__calcSinglePointNormalComplexity(vIndex));
 	Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CNormalComplexity*>(this)->evaluateFeatureMatchFactorV(vIndex));
