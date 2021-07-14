@@ -22,6 +22,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
+#include "pcl/visualization/pcl_visualizer.h"
+#include "pcl/visualization/common/common.h"
+
 #include "common/Product.h"
 #include "common/Singleton.h"
 #include "common/CommonMicro.h"

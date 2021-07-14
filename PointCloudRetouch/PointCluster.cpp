@@ -34,7 +34,7 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 //FUNCTION: 
 bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t vClusterCenter, EPointLabel vLabel, const std::vector<pcl::index_t>& vFeatureGenerationSet, const std::vector<pcl::index_t>& vValidationSet, std::uint32_t vCreationTimestamp)
 {
-	_ASSERTE(vConfig && !vFeatureGenerationSet.empty() && !vValidationSet.empty() && !m_pConfig);
+	_ASSERTE(vConfig && !vFeatureGenerationSet.empty() && !m_pConfig);
 	m_pConfig = vConfig;
 
 	m_CreationTimestamp = vCreationTimestamp;
@@ -61,14 +61,14 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 		m_FeatureWeightSet.emplace_back(e->generateFeatureV(m_ClusterCoreRegion, vValidationSet, m_ClusterCenter));
 	}
 
-	//debug
-	std::string ClusterLog;
-	ClusterLog = _FORMAT_STR1("Num Features: %1%\n", m_FeatureSet.size()) + "Their Weights are:";
-	for (auto Weight : m_FeatureWeightSet)
-		ClusterLog += (" " + std::to_string(Weight));
-	ClusterLog += "\n";
-	hiveEventLogger::hiveOutputEvent(ClusterLog);
-	//debug
+	////debug
+	//std::string ClusterLog;
+	//ClusterLog = _FORMAT_STR1("Num Features: %1%\n", m_FeatureSet.size()) + "Their Weights are:";
+	//for (auto Weight : m_FeatureWeightSet)
+	//	ClusterLog += (" " + std::to_string(Weight));
+	//ClusterLog += "\n";
+	//hiveEventLogger::hiveOutputEvent(ClusterLog);
+	////debug
 
 	return true;
 }
