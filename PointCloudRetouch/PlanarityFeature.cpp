@@ -68,10 +68,10 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 std::string CPlanarityFeature::outputDebugInfosV(pcl::index_t vIndex) const
 {
 	std::string Infos;
-	Infos += "Planarity Feature:\n";
+	Infos += "\nPlanarity Feature:\n";
 	Infos += _FORMAT_STR3("Plane's Normal is: %1%, %2%, %3%\n", m_Plane.x(), m_Plane.y(), m_Plane.z());
 	Infos += _FORMAT_STR2("Plane's Peak is: %1%, %2%\n", m_Peak.first, m_Peak.second);
-	Infos += _FORMAT_STR1("Similarity is: %1%\n\n", const_cast<CPlanarityFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
+	Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CPlanarityFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
 
 	return Infos;
 }

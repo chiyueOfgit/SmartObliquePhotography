@@ -119,6 +119,32 @@ TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
 TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
 {
 	initTest(ModelPath);
+
+	EXPECT_FALSE(pManager->undo());
+	ASSERT_NO_FATAL_FAILURE(pManager->undo());
+	ASSERT_NO_THROW(pManager->undo());
+}
+
+TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
+{
+	initTest(ModelPath);
+	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
+	
+	hiveDumpPointLabel(LabelSetBeforeUndo);
+	expandOnce(IndicesPath, CameraPath);
+	hiveUndo();
+	hiveDumpPointLabel(LabelSetAfterUndo);
+
+	std::vector<std::size_t> SymmetricDifference;
+	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
+		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
+		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
+	ASSERT_EQ(SymmetricDifference.size(), 0);
+}
+
+TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
+{
+	initTest(ModelPath);
 	
 	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
 	expandOnce(IndicesPath, CameraPath);

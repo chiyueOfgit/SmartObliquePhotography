@@ -37,7 +37,7 @@ namespace hiveObliquePhotography
             QStandardItemModel* m_pWorkSpaceStandardItemModels = nullptr;
             QSlider* m_pPointSizeSlider = nullptr;
             std::string m_CurrentCloud = "";
-            std::string m_DirectoryOpenPath = "../Models/Tile1";
+            std::string m_DirectoryOpenPath = "../Models";
             size_t m_SceneIndex = -1;
             int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;

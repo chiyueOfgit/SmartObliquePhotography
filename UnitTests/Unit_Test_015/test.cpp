@@ -354,11 +354,11 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	generateInOutRadiusPoint(GTPosition, 6,8,true, 1.0f, *pCloud, 5);
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
 
-	/*CPointCloudRetouchManager* pManager = nullptr;
+	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
-	pManager->init(pCloud, pConfig);*/
+	pManager->init(pCloud, pConfig);
 	
-	auto Res = pTileLoader->calcSinglePointNormalComplexity(0, pCloud);
+	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
 
 	GTEST_ASSERT_EQ(Res, 0.0);
 }
@@ -416,7 +416,7 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	pManager = CPointCloudRetouchManager::getInstance();
 	pManager->init(pCloud, pConfig);*/
 	
-	auto Res = pTileLoader->calcSinglePointNormalComplexity(0, pCloud);
+	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
 
 	auto Diff = (InNormal - OutNormal)/ 2.0f;
 
@@ -444,22 +444,22 @@ TEST(Normal_Feature_BaseTest_3, Test_9)
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(ModelPath, *pCloud);
 
-	/*CPointCloudRetouchManager* pManager = nullptr;
+	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
-	pManager->init(pCloud, pConfig);*/
+	pManager->init(pCloud, pConfig);
 	
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
 	double ResTree = 0.0;
 	for(auto Index: Tree)
 	{
-		ResTree += pTileLoader->calcSinglePointNormalComplexity(Index, pCloud);
+		ResTree += pTileLoader->calcSinglePointNormalComplexity(Index);
 	}
 	ResTree /= Tree.size();
 
 	double ResGround = 0.0;
 	for (auto Index : Ground)
 	{
-		ResGround += pTileLoader->calcSinglePointNormalComplexity(Index, pCloud);
+		ResGround += pTileLoader->calcSinglePointNormalComplexity(Index);
 	}
 	ResGround /= Ground.size();
 

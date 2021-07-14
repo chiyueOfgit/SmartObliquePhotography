@@ -77,7 +77,7 @@ double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 std::string CColorFeature::outputDebugInfosV(pcl::index_t vIndex) const
 {
     std::string Infos;
-    Infos += _FORMAT_STR1("Color Feature:\nNum Main Colors are %1%, They are\n", m_MainBaseColors.size());
+    Infos += _FORMAT_STR1("\nColor Feature:\nNum Main Colors are %1%, They are\n", m_MainBaseColors.size());
     for (auto& Color : m_MainBaseColors)
         Infos += _FORMAT_STR3("%1%, %2%, %3%\n", Color.x(), Color.y(), Color.z());
     auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(vIndex);
