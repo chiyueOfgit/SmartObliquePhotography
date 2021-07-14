@@ -17,10 +17,14 @@ namespace hiveObliquePhotography
 			double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
 			virtual std::string outputDebugInfosV(pcl::index_t vIndex) const override;
 
+#ifdef _UNIT_TEST
+			float calcSinglePointNormalComplexity(pcl::index_t vInputPoint) { return __calcSinglePointNormalComplexity(vInputPoint); }
+#endif
 		private:
 			float m_AverageDon;
 			pcl::PointCloud<pcl::PointNormal> m_DonCloud;
 			float __calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices);
+			float __calcSinglePointNormalComplexity(pcl::index_t vInputPoint);
 		};
 	}
 }
