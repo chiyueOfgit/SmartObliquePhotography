@@ -82,6 +82,15 @@ double CNormalComplexity::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 
 //*****************************************************************
 //FUNCTION: 
+std::string CNormalComplexity::outputDebugInfosV(pcl::index_t vIndex) const
+{
+	std::string Infos;
+
+	return Infos;
+}
+
+//*****************************************************************
+//FUNCTION: 
 float CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices)
 {
 	double Sum = 0.0;
