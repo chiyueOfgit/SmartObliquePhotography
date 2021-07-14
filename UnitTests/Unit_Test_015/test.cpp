@@ -444,9 +444,9 @@ TEST(Normal_Feature_BaseTest_3, Test_9)
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(ModelPath, *pCloud);
 
-	/*CPointCloudRetouchManager* pManager = nullptr;
+	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
-	pManager->init(pCloud, pConfig);*/
+	pManager->init(pCloud, pConfig);
 	
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
 	double ResTree = 0.0;
