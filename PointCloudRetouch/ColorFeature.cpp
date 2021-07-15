@@ -8,7 +8,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_NORMAL_PRODUCT(CColorFeature, KEYWORD::COLOR_FEATURE)
+_REGISTER_EXCLUSIVE_PRODUCT(CColorFeature, KEYWORD::COLOR_FEATURE)
 
 //*****************************************************************
 //FUNCTION: 

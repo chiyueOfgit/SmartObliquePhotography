@@ -6,15 +6,12 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_NORMAL_PRODUCT(CNormalComplexity, KEYWORD::NORMAL_COMPLEXITY)
+_REGISTER_EXCLUSIVE_PRODUCT(CNormalComplexity, KEYWORD::NORMAL_COMPLEXITY)
 
 //*****************************************************************
 //FUNCTION: 
-bool CNormalComplexity::onProductCreatedV(const hiveConfig::CHiveConfig* vFeatureConfig)
+bool CNormalComplexity::onProductCreatedV()
 {
-	_ASSERTE(vFeatureConfig);
-	m_pConfig = vFeatureConfig;
-
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);

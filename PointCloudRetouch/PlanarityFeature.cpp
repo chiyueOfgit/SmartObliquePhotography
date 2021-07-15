@@ -5,7 +5,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_NORMAL_PRODUCT(CPlanarityFeature, KEYWORD::PLANARITY_FEATURE)
+_REGISTER_EXCLUSIVE_PRODUCT(CPlanarityFeature, KEYWORD::PLANARITY_FEATURE)
 
 //*****************************************************************
 //FUNCTION: 

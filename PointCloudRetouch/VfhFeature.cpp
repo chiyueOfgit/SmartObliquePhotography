@@ -5,7 +5,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_NORMAL_PRODUCT(CVfhFeature, KEYWORD::VFH_FEATURE)
+_REGISTER_EXCLUSIVE_PRODUCT(CVfhFeature, KEYWORD::VFH_FEATURE)
 
 CVfhFeature::CVfhFeature()
 {
