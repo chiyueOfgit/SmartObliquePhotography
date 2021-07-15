@@ -10,50 +10,28 @@ _REGISTER_NORMAL_PRODUCT(CNormalComplexity, KEYWORD::NORMAL_COMPLEXITY)
 
 //*****************************************************************
 //FUNCTION: 
-//bool CNormalComplexity::onProductCreatedV(const hiveConfig::CHiveConfig* vFeatureConfig)
-//{
-//	_ASSERTE(vFeatureConfig);
-//	m_pConfig = vFeatureConfig;
-//
-//	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-//
-//	const double LargeScaleRadius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
-//
-//	pcl::PointCloud<pcl::PointNormal>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointNormal>);
-//	for (size_t i = 0; i < CloudScene.getNumPoint(); i++)
-//	{
-//		pcl::PointNormal Point;
-//		const auto& Position = CloudScene.getPositionAt(i);
-//		Point.x = Position.x();
-//		Point.y = Position.y();
-//		Point.z = Position.z();
-//		const auto& Normal = CloudScene.getNormalAt(i);
-//		Point.normal_x = Normal.x();
-//		Point.normal_y = Normal.y();
-//		Point.normal_z = Normal.z();
-//		
-//		pPointCloud->push_back(Point);
-//	}
-//	pcl::PointCloud<pcl::PointNormal>::Ptr pLargeScalePointCloud(new pcl::PointCloud<pcl::PointNormal>);
-//
-//	pcl::NormalEstimationOMP<pcl::PointNormal, pcl::PointNormal> NormalEstimation;
-//	NormalEstimation.setInputCloud(pPointCloud);
-//
-//	NormalEstimation.setRadiusSearch(LargeScaleRadius);
-//	NormalEstimation.compute(*pLargeScalePointCloud);
-//
-//	pcl::copyPointCloud(*pPointCloud, m_DonCloud);
-//	
-//	pcl::DifferenceOfNormalsEstimation<pcl::PointNormal, pcl::PointNormal, pcl::PointNormal> DonEstimation;
-//	DonEstimation.setInputCloud(pPointCloud);
-//	DonEstimation.setNormalScaleSmall(pPointCloud);
-//	DonEstimation.setNormalScaleLarge(pLargeScalePointCloud);
-//	if (!DonEstimation.initCompute())
-//		throw std::runtime_error("Don initCompute error");
-//	DonEstimation.computeFeature(m_DonCloud);
-//	
-//	return true;
-//}
+bool CNormalComplexity::onProductCreatedV(const hiveConfig::CHiveConfig* vFeatureConfig)
+{
+	_ASSERTE(vFeatureConfig);
+	m_pConfig = vFeatureConfig;
+
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	for (size_t i = 0; i < CloudScene.getNumPoint(); i++)
+	{
+		const auto& Position = CloudScene.getPositionAt(i);
+		pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
+	}
+	
+	if (pPointCloud->isOrganized())
+		m_pTree.reset(new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
+	else
+		m_pTree.reset(new pcl::search::KdTree<pcl::PointXYZ>(false));
+	m_pTree->setInputCloud(pPointCloud);
+	
+	return true;
+}
 
 //*****************************************************************
 //FUNCTION: 
@@ -77,7 +55,7 @@ double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDet
 //FUNCTION: 
 double CNormalComplexity::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-	return 1.0 - static_cast<double>(abs(__calcSinglePointNormalComplexity(vInputPoint) - m_AverageDon));
+	return 1.0 - abs(__calcSinglePointNormalComplexity(vInputPoint) - m_AverageDon);
 }
 
 //*****************************************************************
@@ -95,18 +73,48 @@ std::string CNormalComplexity::outputDebugInfosV(pcl::index_t vIndex) const
 
 //*****************************************************************
 //FUNCTION: 
-float CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices)
+double CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices)
 {
 	double Sum = 0.0;
 	for (auto& i : vPointIndices)
-		Sum += m_DonCloud.at(i).curvature;
-
+		Sum += __calcSinglePointNormalComplexity(i);
 	return Sum / vPointIndices.size();
 }
 
 //*****************************************************************
 //FUNCTION: 
-float CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputPoint)
+double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputPoint) const
 {
-	return m_DonCloud.at(vInputPoint).curvature;
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const double Radius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
+	
+	pcl::Indices Neighborhood;
+	std::vector<float> DistanceSet;
+	m_pTree->radiusSearch(vInputPoint, Radius, Neighborhood, DistanceSet);
+
+	double MinD = DBL_MAX;
+	double MaxD = -DBL_MAX;
+	double MeanD = 0.0;
+	const auto& Normal = CloudScene.getNormalAt(vInputPoint);
+	//Normal.normalize();
+	for (auto& NeighborIndex : Neighborhood)
+	{
+		const double D = CloudScene.getPositionAt(NeighborIndex).dot(Normal);
+		MeanD += D;
+		if (MinD > D)
+			MinD = D;
+		if (MaxD < D)
+			MaxD = D;
+	}
+	MeanD /= Neighborhood.size();
+
+	double Complexity;
+	if (MeanD * 2 < MinD + MaxD)
+		Complexity = MeanD - MinD;
+	else
+		Complexity = MaxD - MeanD;
+	//double Complexity = (MaxD - MinD) / 2;
+	Complexity /= Radius;
+	
+	return Complexity;
 }

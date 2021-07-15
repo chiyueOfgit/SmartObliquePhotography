@@ -27,11 +27,11 @@ class CTestCreateInitialCluster : public testing::Test
 protected:
 	void SetUp() override
 	{
-		m_pCloud.reset(new PointCloud_t);
-		float AngleStep = 10.0f, RadiusStep = 0.1f;
-		for (float Angle = 0.0f; Angle < 360.0f; Angle+= AngleStep)
+		m_pCloud.reset(new PointCloud_t);	
+		float AngleStep = 10.0f, RadiusStep = 0.1f, Epsilon = 0.0001f;
+		for (float Angle = 0.0f; Angle < 360.0f; Angle += AngleStep)
 		{
-			for (float Radius = 0.1f; Radius <= m_CircleRadius; Radius += RadiusStep)
+			for (float Radius = 0.1f; Radius - m_CircleRadius <= Epsilon; Radius += RadiusStep)
 			{
 				pcl::PointSurfel Point;
 				Point.x = Radius * cos(radians(Angle));
@@ -57,7 +57,8 @@ protected:
 		m_pVisualizer.reset(new pcl::visualization::PCLVisualizer);
 		m_pVisualizer->addPointCloud<pcl::PointSurfel>(m_pCloud, "Cloud2Show");
 		m_pVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "Cloud2Show");
-		m_pVisualizer->loadCameraParameters(CameraPath);
+		//m_pVisualizer->loadCameraParameters(CameraPath);
+		m_pVisualizer->resetCamera();
 		m_pVisualizer->updateCamera();
 
 		pcl::visualization::Camera Camera;
@@ -71,10 +72,10 @@ protected:
 
 	void TearDown() override
 	{
-		//while (!m_pVisualizer->wasStopped())
-		//{
-		//	m_pVisualizer->spinOnce(16);
-		//}
+		while (!m_pVisualizer->wasStopped())
+		{
+			m_pVisualizer->spinOnce(16);
+		}
 
 		delete m_pConfig;
 	}

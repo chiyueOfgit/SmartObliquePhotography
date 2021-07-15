@@ -51,12 +51,16 @@ namespace hiveObliquePhotography
 			const auto& getRetouchScene() const { return m_Scene; }
 			
 #ifdef _UNIT_TEST
+			void reset4UnitTest() { __reset(); }
 			const auto& getOutlierConfig() const { return m_pOutlierConfig; }
 			const auto& getClusterConfig(bool vIsLitter) const { return vIsLitter ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig(); }
 			const auto& getClusterSet() const { return m_PointClusterSet; }
 			const auto& getLabelSet() const { return m_PointLabelSet; }
 			const auto& getLitterMarker() const { return m_LitterMarker; }
 			const auto& getBackgroundMarker() const { return m_BackgroundMarker; }
+			const auto& getNeighborhoodBuilder() const { return m_pNeighborhoodBuilder; }
+			const auto& getStatusQueue() const { return m_StatusQueue; }
+			const auto& getConfig() const { return m_pConfig; }
 			CPointCluster* generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness, EPointLabel vTargetLabel)
 			{
 				return __generateInitialCluster(vUserMarkedRegion, vPvMatrix, vHardness, vTargetLabel);
@@ -81,7 +85,10 @@ namespace hiveObliquePhotography
 			const hiveConfig::CHiveConfig* m_pOutlierConfig = nullptr;
 			
 			std::deque<std::pair<CPointLabelSet, std::uint32_t>> m_StatusQueue;
+			
 			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness, EPointLabel vTargetLabel);
+
+			bool __reset();
 
 		friend class hiveDesignPattern::CSingleton<CPointCloudRetouchManager>;
 		};

@@ -12,8 +12,8 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 {
 	_ASSERTE(vPointCloud && vConfig);
 
-	if (m_StatusQueue.size())
-		m_StatusQueue.clear();
+	_ASSERTE(__reset());
+
 	m_Scene.init(vPointCloud);
 	m_PointLabelSet.init(m_Scene.getNumPoint());
 	m_pConfig = vConfig;
@@ -73,10 +73,25 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 
 //*****************************************************************
 //FUNCTION: 
+bool CPointCloudRetouchManager::__reset()
+{
+	m_pConfig = nullptr;
+	m_pOutlierConfig = nullptr;
+	m_LitterMarker.reset();
+	m_BackgroundMarker.reset();
+	if (m_StatusQueue.size())
+		m_StatusQueue.clear();
+	clearMark();
+	return true;
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CPointCloudRetouchManager::clearMark()
 {
 	m_PointLabelSet.reset();
-	m_pNeighborhoodBuilder->reset();
+	if (m_pNeighborhoodBuilder)
+		m_pNeighborhoodBuilder->reset();
 	m_PointClusterSet.reset();
 }
 
@@ -146,6 +161,7 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 	{
 		CPointCluster* pInitCluster = __generateInitialCluster(vUserMarkedRegion, vPvMatrix, vHardness, vTargetLabel);
 		_ASSERTE(pInitCluster);
+		m_PointClusterSet.addCluster(pInitCluster);
 		m_PointLabelSet.tagCoreRegion4Cluster(pInitCluster->getCoreRegion(), vTargetLabel, pInitCluster->getClusterIndex());
 
 		if (vTargetLabel == EPointLabel::UNWANTED)

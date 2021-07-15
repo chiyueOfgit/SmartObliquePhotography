@@ -18,6 +18,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/segmentation/impl/extract_clusters.hpp>
+#include "pcl/visualization/pcl_visualizer.h"
+#include "pcl/visualization/common/common.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>

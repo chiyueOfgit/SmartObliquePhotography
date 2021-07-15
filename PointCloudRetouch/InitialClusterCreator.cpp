@@ -26,6 +26,7 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 		_THROW_RUNTIME_ERROR("Empty pvmatrix or clusterconfig");
 	
 	const auto DistanceSet = __computeDistanceSetFromCenter(vUserMarkedRegion, vPvMatrix);
+
 	const auto HardnessSet = __generateHardness4EveryPoint(DistanceSet, vHardness);
 	const std::uint32_t CenterIndex = std::min_element(DistanceSet.begin(), DistanceSet.end()) - DistanceSet.begin();
 	
