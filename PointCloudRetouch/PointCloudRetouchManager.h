@@ -52,6 +52,7 @@ namespace hiveObliquePhotography
 			
 #ifdef _UNIT_TEST
 			const auto& getOutlierConfig() const { return m_pOutlierConfig; }
+			const auto& getClusterConfig(bool vIsLitter) const { return vIsLitter ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig(); }
 			const auto& getClusterSet() const { return m_PointClusterSet; }
 			const auto& getLabelSet() const { return m_PointLabelSet; }
 			const auto& getLitterMarker() const { return m_LitterMarker; }

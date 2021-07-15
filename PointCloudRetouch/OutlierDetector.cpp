@@ -9,7 +9,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_NORMAL_PRODUCT(COutlierDetector, KEYWORD::OUTLIER_DETECTOR)
+_REGISTER_EXCLUSIVE_PRODUCT(COutlierDetector, KEYWORD::OUTLIER_DETECTOR)
 
 //*****************************************************************
 //FUNCTION: 

@@ -86,8 +86,8 @@ double CVfhFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 std::string CVfhFeature::outputDebugInfosV(pcl::index_t vIndex) const
 {
 	std::string Infos;
-	Infos += "VFH Feature:\n";
-	Infos += _FORMAT_STR1("Similarity is: %1%\n\n", const_cast<CVfhFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
+	Infos += "\nVFH Feature:\n";
+	Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CVfhFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
 
 	return Infos;
 }

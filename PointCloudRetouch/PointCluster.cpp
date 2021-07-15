@@ -34,7 +34,7 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 //FUNCTION: 
 bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t vClusterCenter, EPointLabel vLabel, const std::vector<pcl::index_t>& vFeatureGenerationSet, const std::vector<pcl::index_t>& vValidationSet, std::uint32_t vCreationTimestamp)
 {
-	_ASSERTE(vConfig && !vFeatureGenerationSet.empty() && !vValidationSet.empty() && !m_pConfig);
+	_ASSERTE(vConfig && !vFeatureGenerationSet.empty() && !m_pConfig);
 	m_pConfig = vConfig;
 
 	m_CreationTimestamp = vCreationTimestamp;
@@ -51,7 +51,7 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 	__createFeatureObjectSet();
 	if (m_FeatureSet.empty())
 	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to initialize cluster [%1%] because no feature object is created.", m_pConfig->getName()));
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to initialize cluster %1% because no feature object is created.", m_pConfig->getName()));
 		m_pConfig = nullptr;
 		return false;
 	}
@@ -61,18 +61,27 @@ bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t v
 		m_FeatureWeightSet.emplace_back(e->generateFeatureV(m_ClusterCoreRegion, vValidationSet, m_ClusterCenter));
 	}
 
+	////debug
+	//std::string ClusterLog;
+	//ClusterLog = _FORMAT_STR1("Num Features: %1%\n", m_FeatureSet.size()) + "Their Weights are:";
+	//for (auto Weight : m_FeatureWeightSet)
+	//	ClusterLog += (" " + std::to_string(Weight));
+	//ClusterLog += "\n";
+	//hiveEventLogger::hiveOutputEvent(ClusterLog);
+	////debug
+
 	return true;
 }
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCluster::outputDebugInfos(pcl::index_t vIndex) const
+std::string CPointCluster::getDebugInfos(pcl::index_t vIndex) const
 {
 	std::string Infos;
 	for (auto pFeature : m_FeatureSet)
 		Infos += pFeature->outputDebugInfosV(vIndex);
 
-	hiveEventLogger::hiveOutputEvent(Infos);
+	return Infos;
 }
 
 //*****************************************************************
