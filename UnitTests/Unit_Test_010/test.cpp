@@ -27,15 +27,32 @@
 //  * ResetPointCloudRetouchManager: 能够正常重置Manager
 //  * ReInitPointCloudRetouchManager: 能够重复初始化Manager
 
-using namespace hiveObliquePhotography::PointCloudRetouch;
+using namespace hiveObliquePhotography::PointCloudRetouch; 
 
-const std::string g_CloudPath = TESTMODEL_DIR + std::string("General/Panda.pcd");
+class CTestInitPointCloudRetouch : public testing::Test
+{
+public:
+	hiveConfig::CHiveConfig* pConfig = nullptr;
+	CPointCloudRetouchManager* pManager = nullptr;
 
+protected:
+	void SetUp() override
+	{
+		//pConfig = new CPointCloudRetouchConfig;
+		//if (hiveConfig::hiveParseConfig(g_ConfigPath, hiveConfig::EConfigType::XML, ))
+		//{
+
+		//}
+	}
+};
+
+const std::string g_CloudPath = TESTMODEL_DIR + std::string("General/slice 1.pcd");
 const std::string g_BuilderSig = "";
-
 const std::string g_ConfigPath = TESTMODEL_DIR + std::string("Config/Test010_PointCloudRetouchConfig.xml");
 const std::string g_LitterSig = "LitterMarker";
 const std::string g_BackgroundSig = "BackgroundMarker";
+const std::string g_IndicesPath = TESTMODEL_DIR + std::string("Test010_Model/CompleteBuildingInput.txt");
+const std::string g_CameraPath = TESTMODEL_DIR + std::string("Test010_Model/CompleteBuildingCameraInfo.txt");
 
 TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchScene)
 {
@@ -166,4 +183,23 @@ TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchManager)
 	ASSERT_EQ(pManager->getLabelSet().getSize(), pCloud->size());
 	ASSERT_NE(pManager->getLitterMarker().getExpander(), nullptr);
 	ASSERT_NE(pManager->getBackgroundMarker().getExpander(), nullptr);
+}
+
+TEST(Test_InitPointCloudRetouch, ResetPointCloudRetouchManager)
+{
+	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	pcl::io::loadPCDFile(g_CloudPath, *pCloud);
+	ASSERT_GT(pCloud->size(), 0);
+	auto pManager = CPointCloudRetouchManager::getInstance();
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	hiveConfig::hiveParseConfig(g_ConfigPath, hiveConfig::EConfigType::XML, pConfig);
+	
+	pManager->init(pCloud, pConfig);
+
+
+}
+
+TEST()
+{
+
 }

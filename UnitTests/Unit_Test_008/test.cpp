@@ -16,8 +16,6 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
 
-using namespace hiveObliquePhotography::PointCloudRetouch;
-
 //测试用例列表：
 //  * LabelSet_Undo_Overview_Test:   是否成功撤销对LabelSet的更改
 //  * Timestamp_Undo_Overview_Test:  是否成功撤销对Timestamp的更改
@@ -119,32 +117,6 @@ TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
 TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
 {
 	initTest(ModelPath);
-
-	EXPECT_FALSE(pManager->undo());
-	ASSERT_NO_FATAL_FAILURE(pManager->undo());
-	ASSERT_NO_THROW(pManager->undo());
-}
-
-TEST_F(CTestUndo, LabelSet_Undo_Overview_Test)
-{
-	initTest(ModelPath);
-	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
-	
-	hiveDumpPointLabel(LabelSetBeforeUndo);
-	expandOnce(IndicesPath, CameraPath);
-	hiveUndo();
-	hiveDumpPointLabel(LabelSetAfterUndo);
-
-	std::vector<std::size_t> SymmetricDifference;
-	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
-		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
-		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
-	ASSERT_EQ(SymmetricDifference.size(), 0);
-}
-
-TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
-{
-	initTest(ModelPath);
 	
 	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
 	expandOnce(IndicesPath, CameraPath);
@@ -154,44 +126,44 @@ TEST_F(CTestUndo, Timestamp_Undo_Overview_Test)
 	ASSERT_EQ(TimestampBeforeUndo, TimestampAfterUndo);
 }
 
-//TEST_F(CTestUndo, LabelSet_Undo_Cleanup_Test)
-//{
-//	initTest(ModelPath);
-//	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
-//
-//	expandOnce(IndicesPath, CameraPath);
-//	hiveDumpPointLabel(LabelSetBeforeUndo);
-//	hiveUndo();
-//	expandOnce(IndicesPath, CameraPath);
-//	hiveDumpPointLabel(LabelSetAfterUndo);
-//	
-//	std::vector<std::size_t> SymmetricDifference;
-//	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
-//		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
-//		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
-//	ASSERT_EQ(SymmetricDifference.size(), 0);
-//}
-//
-//TEST_F(CTestUndo, Timestamp_Undo_Cleanup_Test)
-//{
-//	initTest(ModelPath);
-//
-//	expandOnce(IndicesPath, CameraPath);
-//	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
-//	hiveUndo();
-//	expandOnce(IndicesPath, CameraPath);
-//	const auto TimestampAfterUndo = pManager->addAndGetTimestamp();
-//
-//	ASSERT_EQ(TimestampBeforeUndo, TimestampAfterUndo);
-//}
-//
-//TEST_F(CTestUndo, Empty_Input_Expect_Test)
-//{
-//	initTest(ModelPath);
-//
-//	expandOnce({}, CameraPath);
-//
-//	EXPECT_FALSE(pManager->undo());
-//	ASSERT_NO_FATAL_FAILURE(pManager->undo());
-//	ASSERT_NO_THROW(pManager->undo());
-//}
+TEST_F(CTestUndo, LabelSet_Undo_Cleanup_Test)
+{
+	initTest(ModelPath);
+	std::vector<std::size_t> LabelSetBeforeUndo, LabelSetAfterUndo;
+
+	expandOnce(IndicesPath, CameraPath);
+	hiveDumpPointLabel(LabelSetBeforeUndo);
+	hiveUndo();
+	expandOnce(IndicesPath, CameraPath);
+	hiveDumpPointLabel(LabelSetAfterUndo);
+	
+	std::vector<std::size_t> SymmetricDifference;
+	std::set_symmetric_difference(LabelSetBeforeUndo.begin(), LabelSetBeforeUndo.end(),
+		LabelSetAfterUndo.begin(), LabelSetAfterUndo.end(),
+		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
+	ASSERT_EQ(SymmetricDifference.size(), 0);
+}
+
+TEST_F(CTestUndo, Timestamp_Undo_Cleanup_Test)
+{
+	initTest(ModelPath);
+
+	expandOnce(IndicesPath, CameraPath);
+	const auto TimestampBeforeUndo = pManager->addAndGetTimestamp();
+	hiveUndo();
+	expandOnce(IndicesPath, CameraPath);
+	const auto TimestampAfterUndo = pManager->addAndGetTimestamp();
+
+	ASSERT_EQ(TimestampBeforeUndo, TimestampAfterUndo);
+}
+
+TEST_F(CTestUndo, Empty_Input_Expect_Test)
+{
+	initTest(ModelPath);
+
+	expandOnce({}, CameraPath);
+
+	EXPECT_FALSE(pManager->undo());
+	ASSERT_NO_FATAL_FAILURE(pManager->undo());
+	ASSERT_NO_THROW(pManager->undo());
+}
