@@ -32,7 +32,6 @@ namespace hiveObliquePhotography
 			float __calculateCIEDE2000(const LAB& lab1, const LAB& lab2) const;
 			LAB __RGB2LAB(const Eigen::Vector3f& vRGBColor) const;
 
-			PointCloud_t::Ptr m_pCloud = nullptr;
 			std::vector<Eigen::Vector3i> m_MainBaseColors;
 
 			float m_ColorThreshold = 10.0f;

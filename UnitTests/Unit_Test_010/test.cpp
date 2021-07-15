@@ -88,7 +88,7 @@ protected:
 		Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 		Camera.computeViewMatrix(ViewMatrix);
 		Camera.computeProjectionMatrix(ProjectionMatrix);
-		hiveMarkLitter(Indices, ProjectionMatrix * ViewMatrix, 0.8);
+		pManager->executeMarker(Indices, ProjectionMatrix * ViewMatrix, 0.8, EPointLabel::UNWANTED);
 	}
 
 	void TearDown() override {}
@@ -231,6 +231,7 @@ TEST_F(CTestInitPointCloudRetouch, ResetPointCloudRetouchManager)
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	initTest(g_CloudPath, pCloud);
 	expandOnce(g_IndicesPath, g_CameraPath);
+	auto i = pManager->getNumCluster();
 	pManager->reset4UnitTest();
 
 	EXPECT_EQ(pManager->getConfig(), nullptr);	
@@ -243,6 +244,10 @@ TEST_F(CTestInitPointCloudRetouch, ResetPointCloudRetouchManager)
 	EXPECT_EQ(pManager->addAndGetTimestamp(), 1);
 	EXPECT_EQ(pManager->getStatusQueue().size(), 0);
 	EXPECT_EQ(pManager->getNeighborhoodBuilder(), nullptr);
+
+	//连续reset是否报错
+	EXPECT_NO_THROW(pManager->reset4UnitTest(););
+	EXPECT_NO_THROW(pManager->reset4UnitTest(););
 }
 
 TEST_F(CTestInitPointCloudRetouch, ReInitPointCloudRetouchManager)
@@ -252,7 +257,8 @@ TEST_F(CTestInitPointCloudRetouch, ReInitPointCloudRetouchManager)
 	expandOnce(g_IndicesPath, g_CameraPath);
 	initTest(g_CloudPath, pCloud);
 
-	EXPECT_EQ(pManager->addAndGetTimestamp(), 2);
+	//init前reset过，全为初始状态
+	EXPECT_EQ(pManager->addAndGetTimestamp(), 1);
 	EXPECT_EQ(pManager->getStatusQueue().size(), 1);
 	EXPECT_EQ(pManager->getLabelSet().getSize(), pCloud->size());
 	EXPECT_EQ(pManager->getRetouchScene().getNumPoint(), pCloud->size());

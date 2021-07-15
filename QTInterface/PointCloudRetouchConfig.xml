@@ -25,7 +25,7 @@
       <FEATURE>
         NormalComplexityFeature
         <SIG> NORMAL_COMPLEXITY </SIG>
-        <LARGE_SCALE_RADIUS> 1.0 </LARGE_SCALE_RADIUS>
+        <LARGE_SCALE_RADIUS> 1.5 </LARGE_SCALE_RADIUS>
       </FEATURE>
     </CLUSTER>
     <CLASSIFIER>
@@ -57,7 +57,7 @@
       <FEATURE>
         NormalComplexityFeature
         <SIG> NORMAL_COMPLEXITY </SIG>
-        <LARGE_SCALE_RADIUS> 1.0 </LARGE_SCALE_RADIUS>
+        <LARGE_SCALE_RADIUS> 1.5 </LARGE_SCALE_RADIUS>
       </FEATURE>
     </CLUSTER>
     <CLASSIFIER>

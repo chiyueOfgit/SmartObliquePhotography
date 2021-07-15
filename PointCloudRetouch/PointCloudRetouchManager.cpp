@@ -12,8 +12,8 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 {
 	_ASSERTE(vPointCloud && vConfig);
 
-	if (m_StatusQueue.size())
-		m_StatusQueue.clear();
+	_ASSERTE(__reset());
+
 	m_Scene.init(vPointCloud);
 	m_PointLabelSet.init(m_Scene.getNumPoint());
 	m_pConfig = vConfig;
@@ -73,16 +73,54 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 
 //*****************************************************************
 //FUNCTION: 
+bool CPointCloudRetouchManager::__reset()
+{
+	try
+	{
+		m_pConfig = nullptr;
+		m_pOutlierConfig = nullptr;
+
+		m_Timestamp = 0;
+
+		m_LitterMarker.reset();
+		m_BackgroundMarker.reset();
+
+		m_Scene.reset();
+		m_PointClusterSet.reset();
+
+		if (m_pNeighborhoodBuilder)
+		{
+			m_pNeighborhoodBuilder->reset();
+			m_pNeighborhoodBuilder = nullptr;
+		}
+		m_PointLabelSet.clear();
+		m_StatusQueue.clear();
+		return true;
+	}
+	catch (std::runtime_error&)
+	{
+
+	}
+	catch (...)
+	{
+
+	}
+	return false;
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CPointCloudRetouchManager::clearMark()
 {
 	m_PointLabelSet.reset();
-	m_pNeighborhoodBuilder->reset();
+	if (m_pNeighborhoodBuilder)
+		m_pNeighborhoodBuilder->reset();
 	m_PointClusterSet.reset();
 }
 
 //*****************************************************************
 //FUNCTION: 
-CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness, EPointLabel vTargetLabel)
+CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel)
 {
 	_ASSERTE(m_pConfig);
 	_ASSERTE((vTargetLabel == EPointLabel::KEPT) || (vTargetLabel == EPointLabel::UNWANTED));
@@ -90,7 +128,7 @@ CPointCluster* CPointCloudRetouchManager::__generateInitialCluster(const std::ve
 	const hiveConfig::CHiveConfig* pClusterConfig = (vTargetLabel == EPointLabel::KEPT) ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig();
 	_ASSERTE(pClusterConfig);
 
-	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vPvMatrix, vHardness, vTargetLabel, pClusterConfig);
+	return m_InitialClusterCreator.createInitialCluster(vUserMarkedRegion, vPvMatrix, vHardnessFunc, vTargetLabel, pClusterConfig);
 }
 
 //*****************************************************************
@@ -138,25 +176,25 @@ bool CPointCloudRetouchManager::executePreprocessor(std::vector<pcl::index_t>& v
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness, EPointLabel vTargetLabel)
+bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel)
 {
 	_ASSERTE((vTargetLabel == EPointLabel::UNWANTED) || (vTargetLabel == EPointLabel::KEPT));
 
 	try
 	{
-		CPointCluster* pInitCluster = __generateInitialCluster(vUserMarkedRegion, vPvMatrix, vHardness, vTargetLabel);
+		CPointCluster* pInitCluster = __generateInitialCluster(vUserMarkedRegion, vPvMatrix, vHardnessFunc, vTargetLabel);
 		_ASSERTE(pInitCluster);
+		m_PointClusterSet.addCluster(pInitCluster);
 		m_PointLabelSet.tagCoreRegion4Cluster(pInitCluster->getCoreRegion(), vTargetLabel, pInitCluster->getClusterIndex());
 
 		if (vTargetLabel == EPointLabel::UNWANTED)
 		{
-			m_LitterMarker.execute(pInitCluster);
+			return m_LitterMarker.execute(pInitCluster);
 		}
 		else
 		{
-			m_BackgroundMarker.execute(pInitCluster);
+			return m_BackgroundMarker.execute(pInitCluster);
 		}
-		return true;
 	}
 	catch (std::runtime_error& e)
 	{
@@ -248,11 +286,4 @@ void CPointCloudRetouchManager::recordCurrentStatus()
 	m_StatusQueue.push_back(std::make_pair(m_PointLabelSet, m_Timestamp));
 	if (m_StatusQueue.size() > 10)
 		m_StatusQueue.pop_front();
-}
-
-//*****************************************************************
-//FUNCTION: 
-bool CPointCloudRetouchManager::reset()
-{
-	return true;
 }

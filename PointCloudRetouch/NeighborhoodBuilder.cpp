@@ -53,6 +53,7 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 void INeighborhoodBuilder::reset()
 {
 	//清空 哪些Cluster访问过这个点
-	for (auto i = 0; i < m_pPointCloudScene->size(); i++)
-		m_ClusterTag[i].clear();
+	if (m_pPointCloudScene)
+		for (auto i = 0; i < m_pPointCloudScene->size(); i++)
+			m_ClusterTag[i].clear();
 }

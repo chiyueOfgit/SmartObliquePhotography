@@ -10,11 +10,15 @@ namespace hiveObliquePhotography
 			IFeature() = default;
 			virtual ~IFeature() = default;
 
-			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vFeatureConfig)
+			virtual bool onProductCreatedV()
 			{
-				_ASSERTE(vFeatureConfig); 
-				m_pConfig = vFeatureConfig; 
-				return true; 
+				return true;
+			}
+
+			void init(const hiveConfig::CHiveConfig* vFeatureConfig)
+			{
+				_ASSERTE(vFeatureConfig);
+				m_pConfig = vFeatureConfig;
 			}
 
 			virtual double generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter) = 0;
