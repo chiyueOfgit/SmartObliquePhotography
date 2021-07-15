@@ -170,7 +170,9 @@ TEST(Color_Feature_BaseTest_1, Test_1)
 	generateNoiseColorSet(Data, 5);
 
 	std::vector<Eigen::Vector3i> MainColorSet;
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
+	pTileLoader->initV(pConfig);
+	
 	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
 	
 	int Sum = 0;
@@ -197,7 +199,8 @@ TEST(Color_Feature_BaseTest_2, Test_2)
 	generateNoiseColorSet(Data, 8);
 	
 	std::vector<Eigen::Vector3i> MainColorSet;
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
+	pTileLoader->initV(pConfig);
 	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
 	
 	int Sum = 0;
@@ -226,9 +229,10 @@ TEST(Color_Feature_BaseTest_3, Test_3)
 	generateNoiseColorSet(Data, 20);
 
 	std::vector<Eigen::Vector3i> MainColorSet;
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
+	pTileLoader->initV(pConfig);
 	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
-
+	
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
 		if ((Color - MainColor).norm() < 8 || (Color - OtherColor).norm() < 8 || (Color - AnotherColor).norm() < 8)
@@ -257,9 +261,11 @@ TEST(Color_Feature_BaseTest_4, Test_4)
 	generateNoiseColorSet(Data, 30);
 
 	std::vector<Eigen::Vector3i> MainColorSet;
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE, pConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
+	pTileLoader->initV(pConfig);
 	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
-
+	
+	
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
 		if ((Color - MainColor).norm() < 8 || (Color - OtherColor).norm() < 8 || (Color - AnotherColor).norm() < 8 || (Color - ForthColor).norm() < 8)
@@ -287,7 +293,8 @@ TEST(Plane_Feature_BaseTest_1, Test_5)
 		pCloud->push_back(generateRandomPointByPlane(Plane, false));
 		//pCloud->push_back(generateNoisePoint());
 
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE, pConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE);
+	pTileLoader->initV(pConfig);
 	auto FittingPlane = pTileLoader->fitPlane(pCloud);
 
 	Eigen::Vector3f PlaneNormal{ Plane[0],Plane[1],Plane[2]};
@@ -317,7 +324,8 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 		pCloud->push_back(generateRandomPointByPlane(Plane, false));
 		//pCloud->push_back(generateNoisePoint());
 
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE, pConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE);
+	pTileLoader->initV(pConfig);
 	auto FittingPlane = pTileLoader->fitPlane(pCloud);
 
 	Eigen::Vector3f PlaneNormal{ Plane[0],Plane[1],Plane[2] };
@@ -358,13 +366,14 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	pCloud->push_back(Temp);
 	auto Radius = *pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
 	generateInOutRadiusPoint(GTPosition, 0, Radius, true,0.0f, *pCloud, 20);
-	generateInOutRadiusPoint(GTPosition, Radius, Radius + 3,true, 1.0f, *pCloud, 5);
+	generateInOutRadiusPoint(GTPosition, Radius + 2, Radius + 4,true, 1.0f, *pCloud, 5);
 
 	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
 	pManager->init(pCloud, pTestConfig);
 	
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pTestConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY);
+	pTileLoader->initV(pConfig);
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
 
 	GTEST_ASSERT_EQ(Res, 0.0);
@@ -409,7 +418,7 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	pcl::PointCloud<pcl::Normal>::Ptr OtherNormals(new pcl::PointCloud<pcl::Normal>);
 	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> OtherNormalEstimation;
 	OtherNormalEstimation.setInputCloud(pCloud);
-	OtherNormalEstimation.setRadiusSearch(10);
+	OtherNormalEstimation.setRadiusSearch(Radius);
 	pcl::search::KdTree<pcl::PointSurfel>::Ptr OtherKdtree(new pcl::search::KdTree<pcl::PointSurfel>);
 	OtherNormalEstimation.setSearchMethod(OtherKdtree);
 	OtherNormalEstimation.compute(*OtherNormals);
@@ -417,13 +426,14 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	Eigen::Vector3f OutNormal{ OtherNormals->points[0].normal_x,OtherNormals->points[0].normal_y ,OtherNormals->points[0].normal_z };
 	OutNormal /= OutNormal.norm();
 	
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pTestConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY);
+	pTileLoader->initV(pConfig);
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
 
 	auto Diff = (GTNormal - OutNormal)/ 2.0f;
 
 	auto GT = Diff.norm();
-	GTEST_ASSERT_LT(abs(Res - GT),0.1);
+	GTEST_ASSERT_LT(abs(Res - GT),0.2);
 	
 }
 
@@ -458,7 +468,8 @@ TEST(Normal_Feature_BaseTest_3, Test_9)
 	pManager = CPointCloudRetouchManager::getInstance();
 	pManager->init(pCloud, pTestConfig);
 	
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pTestConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY);
+	pTileLoader->initV(pConfig);
 	double ResTree = 0.0;
 	for(auto Index: Tree)
 	{

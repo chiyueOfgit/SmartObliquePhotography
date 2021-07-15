@@ -102,7 +102,7 @@ void CPointCluster::__createFeatureObjectSet()
 					auto pFeature = hiveDesignPattern::hiveGetOrCreateProduct<IFeature>(FeatureSig.value());
 					if (pFeature)
 					{
-						pFeature->init(pConfig);
+						pFeature->initV(pConfig);
 						m_FeatureSet.push_back(pFeature);
 					}
 

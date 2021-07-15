@@ -10,12 +10,7 @@ namespace hiveObliquePhotography
 			IFeature() = default;
 			virtual ~IFeature() = default;
 
-			virtual bool onProductCreatedV()
-			{
-				return true;
-			}
-
-			void init(const hiveConfig::CHiveConfig* vFeatureConfig)
+			virtual void initV(const hiveConfig::CHiveConfig* vFeatureConfig)
 			{
 				_ASSERTE(vFeatureConfig);
 				m_pConfig = vFeatureConfig;
