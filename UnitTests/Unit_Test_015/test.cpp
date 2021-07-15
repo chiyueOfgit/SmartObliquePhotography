@@ -113,15 +113,13 @@ void generateNoiseColorSet(std::vector<Eigen::Vector3i>& vioColorCluster, int vN
 
 Eigen::Vector3f generatePosition(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo, bool vOnThePlane)
 {
-	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(vFrom, vTo, 3);
-	auto OtherRandomSet = hiveMath::hiveGenerateRandomRealSet(6.0f, 8.0f, 3);
-	if (vTo <= 6)
-		if(vOnThePlane)
-		    return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2]};
-		else
-			return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] };
+	float SmallOffset = sqrt(vFrom * vFrom / 3);
+	float LargeOffset = sqrt(vTo * vTo / 3);
+	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(SmallOffset, LargeOffset, 3);
+	if(vOnThePlane)
+		return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2]};
 	else
-		return Eigen::Vector3f{ vCenterPosition[0] + 2 * OtherRandomSet[0],vCenterPosition[1] + OtherRandomSet[1],vCenterPosition[2] + OtherRandomSet[2] };
+	    return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] };
 }
 
 Eigen::Vector3f generateNormal(Eigen::Vector3f& vStandardNormal, float vDisturb)
@@ -350,14 +348,15 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	Temp.normal_y = GTNormal[1];
 	Temp.normal_z = GTNormal[2];
 	pCloud->push_back(Temp);
-	generateInOutRadiusPoint(GTPosition, 0,5, true,0.0f, *pCloud, 20);
-	generateInOutRadiusPoint(GTPosition, 6,8,true, 1.0f, *pCloud, 5);
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
+	auto Radius = *pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
+	generateInOutRadiusPoint(GTPosition, 0, Radius, true,0.0f, *pCloud, 20);
+	generateInOutRadiusPoint(GTPosition, Radius, Radius + 3,true, 1.0f, *pCloud, 5);
 
 	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
 	pManager->init(pCloud, pConfig);
 	
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
 
 	GTEST_ASSERT_EQ(Res, 0.0);
@@ -376,28 +375,20 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
 	Eigen::Vector3f GTNormal{ 1.0f,1.0f,1.0f };
 	GTNormal = GTNormal / GTNormal.norm();
-	pcl::PointSurfel Temp;
-	Temp.x = GTPosition[0];
-	Temp.y = GTPosition[1];
-	Temp.z = GTPosition[2];
-	Temp.normal_x = GTNormal[0];
-	Temp.normal_y = GTNormal[1];
-	Temp.normal_z = GTNormal[2];
-	pCloud->push_back(Temp);
-	generateInOutRadiusPoint(GTPosition, 0,0.4, false,1.0f, *pCloud, 20);
+	pcl::PointSurfel ThisPoint;
+	ThisPoint.x = GTPosition[0];
+	ThisPoint.y = GTPosition[1];
+	ThisPoint.z = GTPosition[2];
+	ThisPoint.normal_x = GTNormal[0];
+	ThisPoint.normal_y = GTNormal[1];
+	ThisPoint.normal_z = GTNormal[2];
+	pCloud->push_back(ThisPoint);
+	auto Radius = *pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
+	generateInOutRadiusPoint(GTPosition, 0, Radius, false,1.0f, *pCloud, 20);
 
-	pcl::PointCloud<pcl::Normal>::Ptr Normals(new pcl::PointCloud<pcl::Normal>);
-	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> NormalEstimation;
-	NormalEstimation.setInputCloud(pCloud);
-	NormalEstimation.setRadiusSearch(0.8);
-	pcl::search::KdTree<pcl::PointSurfel>::Ptr Kdtree(new pcl::search::KdTree<pcl::PointSurfel>);
-	NormalEstimation.setSearchMethod(Kdtree);
-	NormalEstimation.compute(*Normals);
-
-	Eigen::Vector3f InNormal{ Normals->points[0].normal_x,Normals->points[0].normal_y ,Normals->points[0].normal_z };
-	InNormal /= InNormal.norm();
-	
-	generateInOutRadiusPoint(GTPosition, 0.5, 5, false,1.0f, *pCloud, 20);
+	CPointCloudRetouchManager* pManager = nullptr;
+	pManager = CPointCloudRetouchManager::getInstance();
+	pManager->init(pCloud, pConfig);
 	
 	pcl::PointCloud<pcl::Normal>::Ptr OtherNormals(new pcl::PointCloud<pcl::Normal>);
 	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> OtherNormalEstimation;
@@ -411,14 +402,9 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	OutNormal /= OutNormal.norm();
 	
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
-
-	/*CPointCloudRetouchManager* pManager = nullptr;
-	pManager = CPointCloudRetouchManager::getInstance();
-	pManager->init(pCloud, pConfig);*/
-	
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
 
-	auto Diff = (InNormal - OutNormal)/ 2.0f;
+	auto Diff = (GTNormal - OutNormal)/ 2.0f;
 
 	auto GT = Diff.norm();
 	GTEST_ASSERT_LT(abs(Res - GT),0.1);
