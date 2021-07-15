@@ -238,13 +238,16 @@ TEST_F(CTestInitPointCloudRetouch, ResetPointCloudRetouchManager)
 	EXPECT_EQ(pManager->getOutlierConfig(), nullptr);
 	EXPECT_EQ(pManager->getBackgroundMarker().getClusterConfig(), nullptr);
 	EXPECT_EQ(pManager->getLitterMarker().getClusterConfig(), nullptr);
-	for (int i = 0; i < pManager->getLabelSet().getSize(); i++)
-		EXPECT_EQ(pManager->getLabelSet().getLabelAt(i), EPointLabel::UNDETERMINED);
+	EXPECT_EQ(pManager->getLabelSet().getSize(), 0);
 	EXPECT_EQ(pManager->getRetouchScene().getNumPoint(), 0);
 	EXPECT_EQ(pManager->getNumCluster(), 0);
 	EXPECT_EQ(pManager->addAndGetTimestamp(), 1);
 	EXPECT_EQ(pManager->getStatusQueue().size(), 0);
 	EXPECT_EQ(pManager->getNeighborhoodBuilder(), nullptr);
+
+	//连续reset是否报错
+	EXPECT_NO_THROW(pManager->reset4UnitTest(););
+	EXPECT_NO_THROW(pManager->reset4UnitTest(););
 }
 
 TEST_F(CTestInitPointCloudRetouch, ReInitPointCloudRetouchManager)
@@ -254,7 +257,8 @@ TEST_F(CTestInitPointCloudRetouch, ReInitPointCloudRetouchManager)
 	expandOnce(g_IndicesPath, g_CameraPath);
 	initTest(g_CloudPath, pCloud);
 
-	EXPECT_EQ(pManager->addAndGetTimestamp(), 2);
+	//init前reset过，全为初始状态
+	EXPECT_EQ(pManager->addAndGetTimestamp(), 1);
 	EXPECT_EQ(pManager->getStatusQueue().size(), 1);
 	EXPECT_EQ(pManager->getLabelSet().getSize(), pCloud->size());
 	EXPECT_EQ(pManager->getRetouchScene().getNumPoint(), pCloud->size());

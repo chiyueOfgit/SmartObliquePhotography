@@ -25,6 +25,15 @@ void CPointLabelSet::init(std::size_t vSize)
 	m_LabelSet = std::vector<SPointLabel>(vSize);
 }
 
+//*****************************************************************
+//FUNCTION: 
+void CPointLabelSet::clear()
+{
+	m_LabelSet.clear();
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CPointLabelSet::reset()
 {
 	m_LabelSet = std::vector<SPointLabel>(m_LabelSet.size());
