@@ -16,7 +16,6 @@
 
 using namespace hiveObliquePhotography;
 
-//const std::string ConfigPath = "Test012.xml";
 const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test012_PointCloudRetouchConfig.xml");
 
 class TestPointCluster : public testing::Test

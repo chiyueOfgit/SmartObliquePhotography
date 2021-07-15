@@ -11,7 +11,7 @@ _REGISTER_NORMAL_PRODUCT(CPointClusterExpander, KEYWORD::CLUSTER_EXPANDER)
 //FUNCTION: 
 void CPointClusterExpander::runV(const CPointCluster* vCluster)
 {
-	if (vCluster == nullptr)
+	if (vCluster == nullptr || vCluster->getCoreRegion().size() == 0)
 		_THROW_RUNTIME_ERROR("Expander input error");
 
 	m_ExpandPoints.clear();

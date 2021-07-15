@@ -38,7 +38,7 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 
 	for (auto e : __buildNeighborhoodV(vSeed))
 	{
-		if (std::find(m_ClusterTag[e].begin(), m_ClusterTag[e].end(), vSeedClusterIndex) == m_ClusterTag[e].end())
+		if (std::find(m_ClusterTag[e].begin(), m_ClusterTag[e].end(), vSeedClusterIndex) == m_ClusterTag[e].end() && e != vSeed)
 		{
 			Neighborhood.push_back(e);
 			m_ClusterTag[e].push_back(vSeedClusterIndex);
