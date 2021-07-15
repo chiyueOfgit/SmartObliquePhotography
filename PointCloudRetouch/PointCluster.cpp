@@ -34,7 +34,7 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 //FUNCTION: 
 bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t vClusterCenter, EPointLabel vLabel, const std::vector<pcl::index_t>& vFeatureGenerationSet, const std::vector<pcl::index_t>& vValidationSet, std::uint32_t vCreationTimestamp)
 {
-	_ASSERTE(vConfig && !vFeatureGenerationSet.empty() && !m_pConfig);
+	_ASSERTE(vConfig && !m_pConfig);
 	m_pConfig = vConfig;
 
 	m_CreationTimestamp = vCreationTimestamp;
@@ -99,9 +99,13 @@ void CPointCluster::__createFeatureObjectSet()
 				{
 					std::optional<std::string> FeatureSig = pConfig->getAttribute<std::string>("SIG");
 					_ASSERTE(FeatureSig.has_value());
-					auto pFeature = hiveDesignPattern::hiveGetOrCreateProduct<IFeature>(FeatureSig.value(), pConfig);
+					auto pFeature = hiveDesignPattern::hiveGetOrCreateProduct<IFeature>(FeatureSig.value());
 					if (pFeature)
+					{
+						pFeature->init(pConfig);
 						m_FeatureSet.push_back(pFeature);
+					}
+
 					else
 						_HIVE_OUTPUT_WARNING(_FORMAT_STR2("The feature [%1%] defined in point cluster [%2%] is ignored due to the failure of creating feature object.", FeatureSig.value(), vClusterName));
 					return true;

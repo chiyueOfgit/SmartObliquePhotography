@@ -51,7 +51,7 @@ namespace hiveObliquePhotography
 			const auto& getRetouchScene() const { return m_Scene; }
 			
 #ifdef _UNIT_TEST
-			void reset4UnitTest() { reset(); }
+			void reset4UnitTest() { __reset(); }
 			const auto& getOutlierConfig() const { return m_pOutlierConfig; }
 			const auto& getClusterConfig(bool vIsLitter) const { return vIsLitter ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig(); }
 			const auto& getClusterSet() const { return m_PointClusterSet; }
@@ -86,8 +86,9 @@ namespace hiveObliquePhotography
 			
 			std::deque<std::pair<CPointLabelSet, std::uint32_t>> m_StatusQueue;
 			
-			bool reset();
 			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness, EPointLabel vTargetLabel);
+
+			bool __reset();
 
 		friend class hiveDesignPattern::CSingleton<CPointCloudRetouchManager>;
 		};

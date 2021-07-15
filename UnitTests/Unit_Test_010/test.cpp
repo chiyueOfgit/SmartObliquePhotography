@@ -88,7 +88,7 @@ protected:
 		Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 		Camera.computeViewMatrix(ViewMatrix);
 		Camera.computeProjectionMatrix(ProjectionMatrix);
-		hiveMarkLitter(Indices, ProjectionMatrix * ViewMatrix, 0.8);
+		pManager->executeMarker(Indices, ProjectionMatrix * ViewMatrix, 0.8, EPointLabel::UNWANTED);
 	}
 
 	void TearDown() override {}
@@ -231,13 +231,15 @@ TEST_F(CTestInitPointCloudRetouch, ResetPointCloudRetouchManager)
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	initTest(g_CloudPath, pCloud);
 	expandOnce(g_IndicesPath, g_CameraPath);
+	auto i = pManager->getNumCluster();
 	pManager->reset4UnitTest();
 
 	EXPECT_EQ(pManager->getConfig(), nullptr);	
 	EXPECT_EQ(pManager->getOutlierConfig(), nullptr);
 	EXPECT_EQ(pManager->getBackgroundMarker().getClusterConfig(), nullptr);
 	EXPECT_EQ(pManager->getLitterMarker().getClusterConfig(), nullptr);
-	EXPECT_EQ(pManager->getLabelSet().getSize(), 0);
+	for (int i = 0; i < pManager->getLabelSet().getSize(); i++)
+		EXPECT_EQ(pManager->getLabelSet().getLabelAt(i), EPointLabel::UNDETERMINED);
 	EXPECT_EQ(pManager->getRetouchScene().getNumPoint(), 0);
 	EXPECT_EQ(pManager->getNumCluster(), 0);
 	EXPECT_EQ(pManager->addAndGetTimestamp(), 1);
