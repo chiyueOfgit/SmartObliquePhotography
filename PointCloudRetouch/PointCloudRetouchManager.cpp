@@ -254,5 +254,5 @@ void CPointCloudRetouchManager::recordCurrentStatus()
 //FUNCTION: 
 bool CPointCloudRetouchManager::reset()
 {
-
+	return true;
 }

@@ -51,7 +51,7 @@ namespace hiveObliquePhotography
 			const auto& getRetouchScene() const { return m_Scene; }
 			
 #ifdef _UNIT_TEST
-			bool reset4UnitTest() { reset(); }
+			void reset4UnitTest() { reset(); }
 			const auto& getOutlierConfig() const { return m_pOutlierConfig; }
 			const auto& getClusterConfig(bool vIsLitter) const { return vIsLitter ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig(); }
 			const auto& getClusterSet() const { return m_PointClusterSet; }
