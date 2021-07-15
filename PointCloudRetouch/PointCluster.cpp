@@ -34,7 +34,7 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 //FUNCTION: 
 bool CPointCluster::init(const hiveConfig::CHiveConfig* vConfig, std::uint32_t vClusterCenter, EPointLabel vLabel, const std::vector<pcl::index_t>& vFeatureGenerationSet, const std::vector<pcl::index_t>& vValidationSet, std::uint32_t vCreationTimestamp)
 {
-	_ASSERTE(vConfig && !vFeatureGenerationSet.empty() && !m_pConfig);
+	_ASSERTE(vConfig && !m_pConfig);
 	m_pConfig = vConfig;
 
 	m_CreationTimestamp = vCreationTimestamp;

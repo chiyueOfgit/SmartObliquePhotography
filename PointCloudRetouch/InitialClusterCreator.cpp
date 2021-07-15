@@ -13,9 +13,18 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //FUNCTION: 
 CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, float vHardness, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig *vClusterConfig)
 {
+	if (vHardness < 0.0f)
+		vHardness = 0.0f;
+	else if(vHardness > 1.0f)
+		vHardness = 1.0f;
 	CPointCluster* pInitialCluster = new CPointCluster;
 	auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-
+	for (auto CurrentIndex : vUserMarkedRegion)
+		if (CurrentIndex < 0 || CurrentIndex >= CloudScene.getNumPoint())
+			_THROW_RUNTIME_ERROR("Index is out of range");
+	if(vPvMatrix == Eigen::Matrix4d{} || vClusterConfig == nullptr)
+		_THROW_RUNTIME_ERROR("Empty pvmatrix or clusterconfig");
+	
 	const auto DistanceSet = __computeDistanceSetFromCenter(vUserMarkedRegion, vPvMatrix);
 
 	const auto HardnessSet = __generateHardness4EveryPoint(DistanceSet, vHardness);
@@ -107,12 +116,20 @@ std::vector<float> CInitialClusterCreator::__generateHardness4EveryPoint(const s
 {
 	const auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	const auto Size = vDistanceSetFromCenter.size();
-	
-	const auto MaxDistance = *std::max_element(vDistanceSetFromCenter.begin(), vDistanceSetFromCenter.end());
 	std::vector<float> HardnessSet;
 	HardnessSet.reserve(Size);
+	if (vDistanceSetFromCenter.empty())
+		return HardnessSet;
+	const auto MaxDistance = *std::max_element(vDistanceSetFromCenter.begin(), vDistanceSetFromCenter.end());
+	
+	
 	for (auto i : vDistanceSetFromCenter)
 	{
+		if(vHardness == 0)
+		{
+			HardnessSet.push_back(0.0f);
+			continue;
+		}
 		i -= vHardness * MaxDistance;
 		if (i <= 0)
 			HardnessSet.push_back(1.0f);
