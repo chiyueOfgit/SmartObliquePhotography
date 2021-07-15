@@ -150,13 +150,12 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 
 		if (vTargetLabel == EPointLabel::UNWANTED)
 		{
-			m_LitterMarker.execute(pInitCluster);
+			return m_LitterMarker.execute(pInitCluster);
 		}
 		else
 		{
-			m_BackgroundMarker.execute(pInitCluster);
+			return m_BackgroundMarker.execute(pInitCluster);
 		}
-		return true;
 	}
 	catch (std::runtime_error& e)
 	{
