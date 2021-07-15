@@ -11,12 +11,9 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, float vHardness, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig *vClusterConfig)
+CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig *vClusterConfig)
 {
-	if (vHardness < 0.0f)
-		vHardness = 0.0f;
-	else if(vHardness > 1.0f)
-		vHardness = 1.0f;
+
 	CPointCluster* pInitialCluster = new CPointCluster;
 	auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	for (auto CurrentIndex : vUserMarkedRegion)
@@ -25,10 +22,8 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 	if(vPvMatrix == Eigen::Matrix4d{} || vClusterConfig == nullptr)
 		_THROW_RUNTIME_ERROR("Empty pvmatrix or clusterconfig");
 	
-	const auto DistanceSet = __computeDistanceSetFromCenter(vUserMarkedRegion, vPvMatrix);
-
-	const auto HardnessSet = __generateHardness4EveryPoint(DistanceSet, vHardness);
-	const std::uint32_t CenterIndex = std::min_element(DistanceSet.begin(), DistanceSet.end()) - DistanceSet.begin();
+	const auto HardnessSet = __generateHardness4EveryPoint(vUserMarkedRegion, vPvMatrix, vHardnessFunc);
+	const auto CenterIndex = __computeCenterIndex(vUserMarkedRegion, vPvMatrix);
 	
 	std::optional<float> DivideThreshold = vClusterConfig->getAttribute<float>("HARDNESS_THRESHOLD");
 	if (!DivideThreshold.has_value())
@@ -47,12 +42,12 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<float> CInitialClusterCreator::__computeDistanceSetFromCenter(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix)
+pcl::index_t CInitialClusterCreator::__computeCenterIndex(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix) const
 {
 	const auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	const auto Size = vUserMarkedRegion.size();
 	
-	std::vector<Eigen::Vector2f> NdcCoordSet(Size);
+	std::vector<Eigen::Vector2d> NdcCoordSet(Size);
 	for (size_t i = 0; i < Size; i++)
 	{
 		auto Position = CloudScene.getPositionAt(i);
@@ -64,16 +59,24 @@ std::vector<float> CInitialClusterCreator::__computeDistanceSetFromCenter(const 
 		NdcCoordSet[i] = { Position.x(), Position.y() };
 	}
 
-	Eigen::Vector2f Center(0.0f, 0.0f);
+	Eigen::Vector2d Center(0.0, 0.0);
 	for (auto i : NdcCoordSet)
 		Center += i;
 	Center /= vUserMarkedRegion.size();
 
-	std::vector<float> DistanceSet(Size);
+	pcl::index_t CenterIndex = 0;
+	double MinSquaredDistance = DBL_MAX;
 	for (size_t i = 0; i < Size; i++)
-		DistanceSet[i] = (NdcCoordSet[i] - Center).norm();
-	
-	return DistanceSet;
+	{
+		auto SquaredDistance = (NdcCoordSet.at(i) - Center).squaredNorm();
+		if (MinSquaredDistance > SquaredDistance)
+		{
+			MinSquaredDistance = SquaredDistance;
+			CenterIndex = i;
+		}
+	}
+
+	return CenterIndex;
 }
 
 void OutputMessage(pcl::index_t vUserMarkedRegionPoint, std::string& vioOutputString)
@@ -87,7 +90,7 @@ void OutputMessage(pcl::index_t vUserMarkedRegionPoint, std::string& vioOutputSt
 
 //*****************************************************************
 //FUNCTION: 
-void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<float>& vPointHardnessSet, float vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet)
+void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::index_t>& vUserMarkedRegion, const std::vector<double>& vPointHardnessSet, float vDivideThreshold, std::vector<pcl::index_t>& voFeatureGenerationSet, std::vector<pcl::index_t>& voValidationSet)
 {
 	std::string OutputValidationSet = "";
 	std::string OutputFeatureGenerationSet = "";
@@ -112,35 +115,21 @@ void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<float> CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<float>& vDistanceSetFromCenter, float vHardness)
+std::vector<double> CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc) const
 {
 	const auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-	const auto Size = vDistanceSetFromCenter.size();
-	std::vector<float> HardnessSet;
-	HardnessSet.reserve(Size);
-	if (vDistanceSetFromCenter.empty())
-		return HardnessSet;
-	const auto MaxDistance = *std::max_element(vDistanceSetFromCenter.begin(), vDistanceSetFromCenter.end());
+
+	std::vector<double> HardnessSet;
+	HardnessSet.resize(vUserMarkedRegion.size());
 	
-	
-	for (auto i : vDistanceSetFromCenter)
+#pragma omp parallel for
+	for (int i = 0; i < vUserMarkedRegion.size(); i++)
 	{
-		if(vHardness == 0)
-		{
-			HardnessSet.push_back(0.0f);
-			continue;
-		}
-		i -= vHardness * MaxDistance;
-		if (i <= 0)
-			HardnessSet.push_back(1.0f);
-		else
-		{
-			i /= (1 - vHardness) * MaxDistance;
-			//i ¡Ê (0, 1]
-			i *= i;//x^2
-			i = i * (i - 2) + 1;//x^4 - 2 * x^2 + 1
-			HardnessSet.push_back(i);
-		}
+		Eigen::Vector4f Position = CloudScene.getPositionAt(i);
+		Position = vPvMatrix.cast<float>() * Position;
+		Position /= Position.eval().w();
+
+		HardnessSet.at(i) = vHardnessFunc({ Position.x(), Position.y() });
 	}
 
 	return HardnessSet;
