@@ -75,14 +75,37 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 //FUNCTION: 
 bool CPointCloudRetouchManager::__reset()
 {
-	m_pConfig = nullptr;
-	m_pOutlierConfig = nullptr;
-	m_LitterMarker.reset();
-	m_BackgroundMarker.reset();
-	if (m_StatusQueue.size())
+	try
+	{
+		m_pConfig = nullptr;
+		m_pOutlierConfig = nullptr;
+
+		m_Timestamp = 0;
+
+		m_LitterMarker.reset();
+		m_BackgroundMarker.reset();
+
+		m_Scene.reset();
+		m_PointClusterSet.reset();
+
+		if (m_pNeighborhoodBuilder)
+		{
+			m_pNeighborhoodBuilder->reset();
+			m_pNeighborhoodBuilder = nullptr;
+		}
+		m_PointLabelSet.clear();
 		m_StatusQueue.clear();
-	clearMark();
-	return true;
+		return true;
+	}
+	catch (std::runtime_error&)
+	{
+
+	}
+	catch (...)
+	{
+
+	}
+	return false;
 }
 
 //*****************************************************************

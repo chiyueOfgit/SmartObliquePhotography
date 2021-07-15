@@ -10,8 +10,10 @@ _REGISTER_EXCLUSIVE_PRODUCT(CNormalComplexity, KEYWORD::NORMAL_COMPLEXITY)
 
 //*****************************************************************
 //FUNCTION: 
-bool CNormalComplexity::onProductCreatedV()
+void  CNormalComplexity::initV(const hiveConfig::CHiveConfig* vFeatureConfig)
 {
+	_ASSERTE(vFeatureConfig);
+	m_pConfig = vFeatureConfig;
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
 	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -20,14 +22,12 @@ bool CNormalComplexity::onProductCreatedV()
 		const auto& Position = CloudScene.getPositionAt(i);
 		pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
 	}
-	
+
 	if (pPointCloud->isOrganized())
 		m_pTree.reset(new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
 	else
 		m_pTree.reset(new pcl::search::KdTree<pcl::PointXYZ>(false));
 	m_pTree->setInputCloud(pPointCloud);
-	
-	return true;
 }
 
 //*****************************************************************
@@ -91,27 +91,26 @@ double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputP
 
 	double MinD = DBL_MAX;
 	double MaxD = -DBL_MAX;
-	double MeanD = 0.0;
 	const auto& Normal = CloudScene.getNormalAt(vInputPoint);
 	//Normal.normalize();
 	for (auto& NeighborIndex : Neighborhood)
 	{
 		const double D = CloudScene.getPositionAt(NeighborIndex).dot(Normal);
-		MeanD += D;
 		if (MinD > D)
 			MinD = D;
 		if (MaxD < D)
 			MaxD = D;
 	}
-	MeanD /= Neighborhood.size();
 
-	double Complexity;
-	if (MeanD * 2 < MinD + MaxD)
-		Complexity = MeanD - MinD;
-	else
-		Complexity = MaxD - MeanD;
+	double Complexity = std::min(
+		abs(MaxD - CloudScene.getPositionAt(vInputPoint).dot(Normal)),
+		abs(MinD - CloudScene.getPositionAt(vInputPoint).dot(Normal))	);
+	
 	//double Complexity = (MaxD - MinD) / 2;
 	Complexity /= Radius;
+
+	if (Complexity > 1)
+		return 1;
 	
 	return Complexity;
 }
