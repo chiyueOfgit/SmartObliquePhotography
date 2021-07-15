@@ -174,39 +174,54 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Eigen::Matrix4d PV = Proj * View;
 		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
 
-		m_Radius = (int)m_Radius;
-		auto ZoomRate = Camera.window_size[1] / m_pVisualizer->m_WindowSize.y();
-		auto ZoomedRadius = m_Radius * ZoomRate;
+		m_Radius = static_cast<int>(m_Radius);
+		double RadiusOnWindow = m_Radius * Camera.window_size[1] / m_pVisualizer->m_WindowSize.y();
+		Eigen::Vector2d CircleCenterOnWindow = { PosX, PosY };
 
 		std::vector<pcl::index_t> PickedIndices;
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - ZoomedRadius, PosY - ZoomedRadius, PosX + ZoomedRadius, PosY + ZoomedRadius, PickedIndices);	//rectangle
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - RadiusOnWindow, PosY - RadiusOnWindow, PosX + RadiusOnWindow, PosY + RadiusOnWindow, PickedIndices);	//rectangle
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
 
 		if (PickedIndices.empty())
 			return;
 		
-		Eigen::Vector2d CircleCenter = { 2 * (PosX / Camera.window_size[0]) - 1, 2 * (PosY / Camera.window_size[1]) - 1 };
-		double RadiusInNDC = 2 * m_Radius / Camera.window_size[0] * ZoomRate;
-
-		auto pFunc = [&](Eigen::Vector2d vPos) -> double
+		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
-			Eigen::Vector2d DeltaPos4Radius = { vPos.x() - CircleCenter.x(), (Camera.window_size[1] / Camera.window_size[0]) * (vPos.y() - CircleCenter.y()) };
+			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
 
-			if (DeltaPos4Radius.norm() <= RadiusInNDC)
+			if ((PosOnWindow - CircleCenterOnWindow).norm() <= RadiusOnWindow)
 				return -1;
 			else
 				return 1;
 		};
 
-		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, pFunc, ViewPos);
-		//m_pVisualizer->addUserColoreKdPoints(PickedIndices, { 255, 255, 255 });
+		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
+		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
+		auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
+		{
+			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+
+			double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
+			if (X <= 1.0)
+			{
+				X -= m_Hardness;
+				if (X < 0)
+					return 1.0;
+				X /= (1 - m_Hardness);
+				X *= X;
+				
+				return X * (X - 2) + 1;
+			}
+			else
+				return 0;
+		};
 		if (m_UnwantedMode)                                                                                   
-			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, m_Hardness);
+			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
 		else
-			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, m_Hardness);
+			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
 
 		if (m_IsRefreshImmediately)
 		{
