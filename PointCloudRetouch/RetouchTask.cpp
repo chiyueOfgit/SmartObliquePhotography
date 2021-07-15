@@ -54,6 +54,12 @@ bool CRetouchTask::init(const hiveConfig::CHiveConfig* vConfig)
 	return true;
 }
 
+void CRetouchTask::reset()
+{
+	m_pConfig = nullptr;
+	m_pClusterConfig = nullptr;
+}
+
 //*****************************************************************
 //FUNCTION: 
 bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster) const

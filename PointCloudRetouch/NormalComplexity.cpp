@@ -6,7 +6,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_EXCLUSIVE_PRODUCT(CNormalComplexity, KEYWORD::NORMAL_COMPLEXITY)
+_REGISTER_NORMAL_PRODUCT(CNormalComplexity, KEYWORD::NORMAL_COMPLEXITY)
 
 //*****************************************************************
 //FUNCTION: 

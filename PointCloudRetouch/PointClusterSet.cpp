@@ -6,6 +6,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 CPointClusterSet::~CPointClusterSet()
 {
+	reset();
 }
 
 void CPointClusterSet::reset()

@@ -99,7 +99,7 @@ void CPointCluster::__createFeatureObjectSet()
 				{
 					std::optional<std::string> FeatureSig = pConfig->getAttribute<std::string>("SIG");
 					_ASSERTE(FeatureSig.has_value());
-					auto pFeature = hiveDesignPattern::hiveGetOrCreateProduct<IFeature>(FeatureSig.value(), pConfig);
+					auto pFeature = hiveDesignPattern::hiveCreateProduct<IFeature>(FeatureSig.value(), pConfig);
 					if (pFeature)
 						m_FeatureSet.push_back(pFeature);
 					else
