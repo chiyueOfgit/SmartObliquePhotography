@@ -249,3 +249,10 @@ void CPointCloudRetouchManager::recordCurrentStatus()
 	if (m_StatusQueue.size() > 10)
 		m_StatusQueue.pop_front();
 }
+
+//*****************************************************************
+//FUNCTION: 
+bool CPointCloudRetouchManager::reset()
+{
+
+}

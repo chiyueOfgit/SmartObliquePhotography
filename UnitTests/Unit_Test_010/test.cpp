@@ -29,23 +29,6 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch; 
 
-class CTestInitPointCloudRetouch : public testing::Test
-{
-public:
-	hiveConfig::CHiveConfig* pConfig = nullptr;
-	CPointCloudRetouchManager* pManager = nullptr;
-
-protected:
-	void SetUp() override
-	{
-		//pConfig = new CPointCloudRetouchConfig;
-		//if (hiveConfig::hiveParseConfig(g_ConfigPath, hiveConfig::EConfigType::XML, ))
-		//{
-
-		//}
-	}
-};
-
 const std::string g_CloudPath = TESTMODEL_DIR + std::string("General/slice 1.pcd");
 const std::string g_BuilderSig = "";
 const std::string g_ConfigPath = TESTMODEL_DIR + std::string("Config/Test010_PointCloudRetouchConfig.xml");
@@ -53,6 +36,60 @@ const std::string g_LitterSig = "LitterMarker";
 const std::string g_BackgroundSig = "BackgroundMarker";
 const std::string g_IndicesPath = TESTMODEL_DIR + std::string("Test010_Model/CompleteBuildingInput.txt");
 const std::string g_CameraPath = TESTMODEL_DIR + std::string("Test010_Model/CompleteBuildingCameraInfo.txt");
+
+class CTestInitPointCloudRetouch : public testing::Test
+{
+public:
+	hiveConfig::CHiveConfig* pConfig = nullptr;
+	CPointCloudRetouchManager* pManager = nullptr;
+	PointCloud_t::Ptr pCloud = nullptr;
+
+protected:
+	void SetUp() override
+	{
+		pConfig = new CPointCloudRetouchConfig;
+		if (hiveConfig::hiveParseConfig(g_ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+		{
+			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", g_ConfigPath));
+			return;
+		}
+	}
+
+	void initTest(const std::string& vModelPath)
+	{
+		pcl::io::loadPCDFile(vModelPath, *pCloud);
+		ASSERT_GT(pCloud->size(), 0);
+		pManager = CPointCloudRetouchManager::getInstance();
+		pManager->init(pCloud, pConfig);
+	}
+
+	void loadIndices(const std::string& vPath, pcl::Indices& voIndices)
+	{
+		std::ifstream File(vPath);
+		boost::archive::text_iarchive ia(File);
+		ia >> BOOST_SERIALIZATION_NVP(voIndices);
+		File.close();
+	}
+
+	void expandOnce(const std::string& vIndicesPath, const std::string& vCameraPath)
+	{
+		pcl::Indices Indices;
+		if (!vIndicesPath.empty())
+			loadIndices(vIndicesPath, Indices);
+
+		pcl::visualization::Camera Camera;
+		auto pVisualizer = new pcl::visualization::PCLVisualizer("Viewer", true);
+		pVisualizer->loadCameraParameters(vCameraPath);
+		pVisualizer->getCameraParameters(Camera);
+		Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+		Camera.computeViewMatrix(ViewMatrix);
+		Camera.computeProjectionMatrix(ProjectionMatrix);
+		hiveMarkLitter(Indices, ProjectionMatrix * ViewMatrix, 0.8);
+	}
+
+	void TearDown() override {}
+
+};
 
 TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchScene)
 {
@@ -185,21 +222,34 @@ TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchManager)
 	ASSERT_NE(pManager->getBackgroundMarker().getExpander(), nullptr);
 }
 
-TEST(Test_InitPointCloudRetouch, ResetPointCloudRetouchManager)
+TEST_F(CTestInitPointCloudRetouch, ResetPointCloudRetouchManager)
 {
-	PointCloud_t::Ptr pCloud(new PointCloud_t);
-	pcl::io::loadPCDFile(g_CloudPath, *pCloud);
-	ASSERT_GT(pCloud->size(), 0);
-	auto pManager = CPointCloudRetouchManager::getInstance();
-	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
-	hiveConfig::hiveParseConfig(g_ConfigPath, hiveConfig::EConfigType::XML, pConfig);
-	
-	pManager->init(pCloud, pConfig);
+	initTest(g_CloudPath);
+	expandOnce(g_IndicesPath, g_CameraPath);
+	pManager->reset4UnitTest();
 
-
+	EXPECT_EQ(pManager->getConfig(), nullptr);	
+	EXPECT_EQ(pManager->getOutlierConfig(), nullptr);
+	EXPECT_EQ(pManager->getBackgroundMarker().getClusterConfig(), nullptr);
+	EXPECT_EQ(pManager->getLitterMarker().getClusterConfig(), nullptr);
+	EXPECT_EQ(pManager->getLabelSet().getSize(), 0);
+	EXPECT_EQ(pManager->getRetouchScene().getNumPoint(), 0);
+	EXPECT_EQ(pManager->getNumCluster(), 0);
+	EXPECT_EQ(pManager->addAndGetTimestamp(), 1);
+	EXPECT_EQ(pManager->getStatusQueue().size(), 0);
+	EXPECT_EQ(pManager->getNeighborhoodBuilder(), nullptr);
 }
 
-TEST()
+TEST_F(CTestInitPointCloudRetouch, ReInitPointCloudRetouchManager)
 {
+	initTest(g_CloudPath);
+	expandOnce(g_IndicesPath, g_CameraPath);
+	initTest(g_CloudPath);
 
+	EXPECT_EQ(pManager->addAndGetTimestamp(), 2);
+	EXPECT_EQ(pManager->getStatusQueue().size(), 1);
+	EXPECT_EQ(pManager->getLabelSet().getSize(), pCloud->size());
+	EXPECT_EQ(pManager->getRetouchScene().getNumPoint(), pCloud->size());
+	EXPECT_EQ(pManager->getConfig()->getSubconfigAt(0)->getSubconfigType(), std::string("POINT_CLOUD_RETOUCN_CONFIG"));
+	EXPECT_EQ(pManager->getOutlierConfig()->getName(), std::string("Outlier"));
 }
