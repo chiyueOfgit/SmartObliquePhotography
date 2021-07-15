@@ -45,7 +45,7 @@ constexpr float SPACE_SIZE = 100.0f;
 
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
-const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig.xml");
+const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig_Simple.xml");
 
 
 PointCloud_t::PointType generateRandomPointByPlane(const Eigen::Vector4f& vPlane, bool vOnThePlane, float vNoise = 0.0f)
@@ -113,15 +113,13 @@ void generateNoiseColorSet(std::vector<Eigen::Vector3i>& vioColorCluster, int vN
 
 Eigen::Vector3f generatePosition(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo, bool vOnThePlane)
 {
-	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(vFrom, vTo, 3);
-	auto OtherRandomSet = hiveMath::hiveGenerateRandomRealSet(6.0f, 8.0f, 3);
-	if (vTo <= 6)
-		if(vOnThePlane)
-		    return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2]};
-		else
-			return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] };
+	float SmallOffset = sqrt(vFrom * vFrom / 3);
+	float LargeOffset = sqrt(vTo * vTo / 3);
+	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(SmallOffset, LargeOffset, 3);
+	if(vOnThePlane)
+		return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2]};
 	else
-		return Eigen::Vector3f{ vCenterPosition[0] + 2 * OtherRandomSet[0],vCenterPosition[1] + OtherRandomSet[1],vCenterPosition[2] + OtherRandomSet[2] };
+	    return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] };
 }
 
 Eigen::Vector3f generateNormal(Eigen::Vector3f& vStandardNormal, float vDisturb)
@@ -338,37 +336,11 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 		return;
 	}
 
-	PointCloud_t::Ptr pCloud(new PointCloud_t);
-	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
-	Eigen::Vector3f GTNormal{ 1.0f,1.0f,1.0f };
-	GTNormal = GTNormal / GTNormal.norm();
-	pcl::PointSurfel Temp;
-	Temp.x = GTPosition[0];
-	Temp.y = GTPosition[1];
-	Temp.z = GTPosition[2];
-	Temp.normal_x = GTNormal[0];
-	Temp.normal_y = GTNormal[1];
-	Temp.normal_z = GTNormal[2];
-	pCloud->push_back(Temp);
-	generateInOutRadiusPoint(GTPosition, 0,5, true,0.0f, *pCloud, 20);
-	generateInOutRadiusPoint(GTPosition, 6,8,true, 1.0f, *pCloud, 5);
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
-
-	CPointCloudRetouchManager* pManager = nullptr;
-	pManager = CPointCloudRetouchManager::getInstance();
-	pManager->init(pCloud, pConfig);
-	
-	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
-
-	GTEST_ASSERT_EQ(Res, 0.0);
-}
-
-TEST(Normal_Feature_BaseTest_2, Test_8)
-{
-	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
-	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	std::string Path = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig_Complete.xml");
+	hiveConfig::CHiveConfig* pTestConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(Path, hiveConfig::EConfigType::XML, pTestConfig) != hiveConfig::EParseResult::SUCCEED)
 	{
-		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", Path));
 		return;
 	}
 
@@ -384,20 +356,55 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	Temp.normal_y = GTNormal[1];
 	Temp.normal_z = GTNormal[2];
 	pCloud->push_back(Temp);
-	generateInOutRadiusPoint(GTPosition, 0,0.4, false,1.0f, *pCloud, 20);
+	auto Radius = *pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
+	generateInOutRadiusPoint(GTPosition, 0, Radius, true,0.0f, *pCloud, 20);
+	generateInOutRadiusPoint(GTPosition, Radius, Radius + 3,true, 1.0f, *pCloud, 5);
 
-	pcl::PointCloud<pcl::Normal>::Ptr Normals(new pcl::PointCloud<pcl::Normal>);
-	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> NormalEstimation;
-	NormalEstimation.setInputCloud(pCloud);
-	NormalEstimation.setRadiusSearch(0.8);
-	pcl::search::KdTree<pcl::PointSurfel>::Ptr Kdtree(new pcl::search::KdTree<pcl::PointSurfel>);
-	NormalEstimation.setSearchMethod(Kdtree);
-	NormalEstimation.compute(*Normals);
-
-	Eigen::Vector3f InNormal{ Normals->points[0].normal_x,Normals->points[0].normal_y ,Normals->points[0].normal_z };
-	InNormal /= InNormal.norm();
+	CPointCloudRetouchManager* pManager = nullptr;
+	pManager = CPointCloudRetouchManager::getInstance();
+	pManager->init(pCloud, pTestConfig);
 	
-	generateInOutRadiusPoint(GTPosition, 0.5, 5, false,1.0f, *pCloud, 20);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pTestConfig);
+	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
+
+	GTEST_ASSERT_EQ(Res, 0.0);
+}
+
+TEST(Normal_Feature_BaseTest_2, Test_8)
+{
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+		return;
+	}
+
+	std::string Path = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig_Complete.xml");
+	hiveConfig::CHiveConfig* pTestConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(Path, hiveConfig::EConfigType::XML, pTestConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", Path));
+		return;
+	}
+
+	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
+	Eigen::Vector3f GTNormal{ 1.0f,1.0f,1.0f };
+	GTNormal = GTNormal / GTNormal.norm();
+	pcl::PointSurfel ThisPoint;
+	ThisPoint.x = GTPosition[0];
+	ThisPoint.y = GTPosition[1];
+	ThisPoint.z = GTPosition[2];
+	ThisPoint.normal_x = GTNormal[0];
+	ThisPoint.normal_y = GTNormal[1];
+	ThisPoint.normal_z = GTNormal[2];
+	pCloud->push_back(ThisPoint);
+	auto Radius = *pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
+	generateInOutRadiusPoint(GTPosition, 0, Radius, false,1.0f, *pCloud, 20);
+
+	CPointCloudRetouchManager* pManager = nullptr;
+	pManager = CPointCloudRetouchManager::getInstance();
+	pManager->init(pCloud, pTestConfig);
 	
 	pcl::PointCloud<pcl::Normal>::Ptr OtherNormals(new pcl::PointCloud<pcl::Normal>);
 	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> OtherNormalEstimation;
@@ -410,15 +417,10 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	Eigen::Vector3f OutNormal{ OtherNormals->points[0].normal_x,OtherNormals->points[0].normal_y ,OtherNormals->points[0].normal_z };
 	OutNormal /= OutNormal.norm();
 	
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
-
-	/*CPointCloudRetouchManager* pManager = nullptr;
-	pManager = CPointCloudRetouchManager::getInstance();
-	pManager->init(pCloud, pConfig);*/
-	
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pTestConfig);
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
 
-	auto Diff = (InNormal - OutNormal)/ 2.0f;
+	auto Diff = (GTNormal - OutNormal)/ 2.0f;
 
 	auto GT = Diff.norm();
 	GTEST_ASSERT_LT(abs(Res - GT),0.1);
@@ -434,6 +436,14 @@ TEST(Normal_Feature_BaseTest_3, Test_9)
 		return;
 	}
 
+	std::string Path = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig_Complete.xml");
+	hiveConfig::CHiveConfig* pTestConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(Path, hiveConfig::EConfigType::XML, pTestConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", Path));
+		return;
+	}
+
 	pcl::Indices Tree;
 	loadIndices(TESTMODEL_DIR + std::string("Test017_Model/CompleteTree/CompleteTreeGT.txt"), Tree);
 
@@ -446,9 +456,9 @@ TEST(Normal_Feature_BaseTest_3, Test_9)
 
 	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
-	pManager->init(pCloud, pConfig);
+	pManager->init(pCloud, pTestConfig);
 	
-	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pConfig);
+	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CNormalComplexity>(KEYWORD::NORMAL_COMPLEXITY, pTestConfig);
 	double ResTree = 0.0;
 	for(auto Index: Tree)
 	{

@@ -18,7 +18,7 @@ namespace hiveObliquePhotography
 			virtual std::string outputDebugInfosV(pcl::index_t vIndex) const override;
 
 #ifdef _UNIT_TEST
-			float calcSinglePointNormalComplexity(pcl::index_t vInputPoint) { return __calcSinglePointNormalComplexity(vInputPoint); }
+			float calcSinglePointNormalComplexity(pcl::index_t vInputPoint) { return 0; }
 #endif
 		private:
 			float m_AverageDon;
