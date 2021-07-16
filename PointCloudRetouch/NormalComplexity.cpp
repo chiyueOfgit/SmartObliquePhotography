@@ -94,7 +94,7 @@ double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputP
 	const auto& Normal = CloudScene.getNormalAt(vInputPoint);
 	//Normal.normalize();
 	for (auto& NeighborIndex : Neighborhood)
-	{
+	{		
 		const double D = CloudScene.getPositionAt(NeighborIndex).dot(Normal);
 		if (MinD > D)
 			MinD = D;
