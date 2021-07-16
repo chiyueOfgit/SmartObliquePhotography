@@ -91,20 +91,21 @@ double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputP
 
 	double MinD = DBL_MAX;
 	double MaxD = -DBL_MAX;
+	double MeanD = 0.0;
 	const auto& Normal = CloudScene.getNormalAt(vInputPoint);
 	//Normal.normalize();
 	for (auto& NeighborIndex : Neighborhood)
 	{		
 		const double D = CloudScene.getPositionAt(NeighborIndex).dot(Normal);
+		MeanD += D;
 		if (MinD > D)
 			MinD = D;
 		if (MaxD < D)
 			MaxD = D;
 	}
-
-	double Complexity = std::min(
-		abs(MaxD - CloudScene.getPositionAt(vInputPoint).dot(Normal)),
-		abs(MinD - CloudScene.getPositionAt(vInputPoint).dot(Normal))	);
+	MeanD /= Neighborhood.size();
+	
+	double Complexity = std::min(abs(MinD - MeanD), abs(MaxD - MeanD));
 	
 	//double Complexity = (MaxD - MinD) / 2;
 	Complexity /= Radius;

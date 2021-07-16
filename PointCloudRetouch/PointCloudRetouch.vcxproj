@@ -181,6 +181,7 @@
     <ClInclude Include="PointClusterSet.h" />
     <ClInclude Include="PointLabelSet.h" />
     <ClInclude Include="PointSetPreprocessor.h" />
+    <ClInclude Include="PrecomputeManager.h" />
     <ClInclude Include="RetouchTask.h" />
     <ClInclude Include="VfhFeature.h" />
   </ItemGroup>
@@ -208,6 +209,7 @@
     <ClCompile Include="PointClusterSet.cpp" />
     <ClCompile Include="PointLabelSet.cpp" />
     <ClCompile Include="PointSetPreprocessor.cpp" />
+    <ClCompile Include="PrecomputeManager.cpp" />
     <ClCompile Include="RetouchTask.cpp" />
     <ClCompile Include="VfhFeature.cpp" />
   </ItemGroup>
