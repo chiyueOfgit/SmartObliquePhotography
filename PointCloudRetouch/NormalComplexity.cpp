@@ -3,6 +3,7 @@
 #include "pcl/features/normal_3d_omp.h"
 #include "pcl/features/don.h"
 #include "EuclideanNeighborhoodBuilder.h"
+#include "pcl/io/pcd_io.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -14,20 +15,35 @@ void  CNormalComplexity::initV(const hiveConfig::CHiveConfig* vFeatureConfig)
 {
 	_ASSERTE(vFeatureConfig);
 	m_pConfig = vFeatureConfig;
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for (size_t i = 0; i < CloudScene.getNumPoint(); i++)
+	std::optional<std::string> PrecomputeCloudPath = m_pConfig->getAttribute<std::string>("PRECOMPUTE_CLOUD_PATH");
+	PointCloud_t pPrecomputeCloud;
+
+	std::string FileName = hiveUtility::hiveLocateFile(PrecomputeCloudPath.value());
+	PointCloud_t::Ptr pTempCloud(new PointCloud_t);
+	if (PrecomputeCloudPath.has_value() && !FileName.empty() && pcl::io::loadPCDFile(PrecomputeCloudPath.value(), *pTempCloud) == 0)
 	{
-		const auto& Position = CloudScene.getPositionAt(i);
-		pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
+		hiveEventLogger::hiveOutputEvent("successfully load precomputed normal complexity.");
+		
+		m_pNormalComplexity = pTempCloud;
 	}
-
-	if (pPointCloud->isOrganized())
-		m_pTree.reset(new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
 	else
-		m_pTree.reset(new pcl::search::KdTree<pcl::PointXYZ>(false));
-	m_pTree->setInputCloud(pPointCloud);
+	{
+		const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+
+		pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
+		for (size_t i = 0; i < CloudScene.getNumPoint(); i++)
+		{
+			const auto& Position = CloudScene.getPositionAt(i);
+			pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
+		}
+
+		if (pPointCloud->isOrganized())
+			m_pTree.reset(new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
+		else
+			m_pTree.reset(new pcl::search::KdTree<pcl::PointXYZ>(false));
+		m_pTree->setInputCloud(pPointCloud);
+	}
 }
 
 //*****************************************************************
@@ -70,6 +86,13 @@ std::string CNormalComplexity::outputDebugInfosV(pcl::index_t vIndex) const
 
 //*****************************************************************
 //FUNCTION: 
+bool CNormalComplexity::__precomputeSceneCloudNormalComplexity()
+{
+	
+}
+
+//*****************************************************************
+//FUNCTION: 
 double CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices)
 {
 	double Sum = 0.0;
@@ -82,6 +105,8 @@ double CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl
 //FUNCTION: 
 double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputPoint) const
 {
+	if (m_pNormalComplexity)
+
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	const double Radius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
 	
