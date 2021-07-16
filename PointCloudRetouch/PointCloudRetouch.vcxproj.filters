@@ -16,6 +16,9 @@
     <Filter Include="PointCluster\Feature">
       <UniqueIdentifier>{926b71ef-dc67-44ac-ae60-fb66ef7901a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Precompute">
+      <UniqueIdentifier>{db0fdec4-d856-4bde-aff7-fdd9f89879f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PointCluster.h">
@@ -76,6 +79,9 @@
     <ClInclude Include="NormalComplexity.h">
       <Filter>PointCluster\Feature</Filter>
     </ClInclude>
+    <ClInclude Include="PrecomputeManager.h">
+      <Filter>Precompute</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -127,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="NormalComplexity.cpp">
       <Filter>PointCluster\Feature</Filter>
+    </ClCompile>
+    <ClCompile Include="PrecomputeManager.cpp">
+      <Filter>Precompute</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
