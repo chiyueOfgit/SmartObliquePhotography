@@ -97,9 +97,9 @@ TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 {
 	//无硬度
 	{
-		float ZeroHardness = 0.0f;
+		double ZeroHardness = 0.0f;
 		PointCloudRetouch::CPointCluster* pCluster = nullptr;
-		ASSERT_NO_THROW(pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, ZeroHardness, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+		ASSERT_NO_THROW(pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, [&](auto) { return ZeroHardness; }, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 		ASSERT_NE(pCluster, nullptr);
 		if (pCluster)
 		{
@@ -110,8 +110,8 @@ TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 
 	//硬度满
 	{
-		float FullHardness = 1.0f;
-		auto pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, FullHardness, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true));
+		double FullHardness = 1.0f;
+		auto pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, [&](auto) { return FullHardness; }, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true));
 		ASSERT_NE(pCluster, nullptr);
 		if (pCluster)
 		{
@@ -121,9 +121,9 @@ TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 	}
 
 	//非特殊情况
-	for (float Hardness = 0.1f; Hardness < 1.0f; Hardness += 0.2f)
+	for (double Hardness = 0.1f; Hardness < 1.0f; Hardness += 0.2f)
 	{
-		auto pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, Hardness, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true));
+		auto pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, [&](auto) { return Hardness; }, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true));
 		ASSERT_NE(pCluster, nullptr);
 		if (pCluster)
 		{
@@ -190,7 +190,7 @@ TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 
 	//KEPT也能成功创建
 	{
-		auto pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, 0.5f, PointCloudRetouch::EPointLabel::KEPT, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(false));
+		auto pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, [](auto) { return 0.5f; }, PointCloudRetouch::EPointLabel::KEPT, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(false));
 		ASSERT_NE(pCluster, nullptr);
 		if (pCluster)
 		{
@@ -207,17 +207,17 @@ TEST_F(CTestCreateInitialCluster, DeathTest1_User_Caused_Error)
 {
 	//空索引
 	std::vector<int> EmptyIndices;
-	ASSERT_NO_THROW(m_Creator.createInitialCluster(EmptyIndices, m_PV, 0.5f, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+	ASSERT_NO_THROW(m_Creator.createInitialCluster(EmptyIndices, m_PV, [](auto) { return 0.5f; }, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 	
 	//负硬度和超过1的
 	float MinusHardness = -1.0f;
-	ASSERT_NO_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, MinusHardness, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+	ASSERT_NO_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, [&](auto) { return MinusHardness; }, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 	float BigHardness = 2.0f;
-	ASSERT_NO_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, BigHardness, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+	ASSERT_NO_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, [&](auto) { return BigHardness; }, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 
 	//错误Label: Discard, Undetermined
-	ASSERT_NO_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, 0.5f, PointCloudRetouch::EPointLabel::DISCARDED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
-	ASSERT_NO_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, 0.5f, PointCloudRetouch::EPointLabel::UNDETERMINED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+	ASSERT_NO_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, [](auto) { return 0.5f; }, PointCloudRetouch::EPointLabel::DISCARDED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+	ASSERT_NO_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, [](auto) { return 0.5f; }, PointCloudRetouch::EPointLabel::UNDETERMINED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 }
 
 //错误索引集，错误PV矩阵，错误config
@@ -226,17 +226,17 @@ TEST_F(CTestCreateInitialCluster, DeathTest2_User_Caused_Error)
 	//带负数
 	std::vector<int> MinusIndices;
 	MinusIndices.push_back(-1);
-	ASSERT_ANY_THROW(m_Creator.createInitialCluster(MinusIndices, m_PV, 0.5f, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+	ASSERT_ANY_THROW(m_Creator.createInitialCluster(MinusIndices, m_PV, [](auto) { return 0.5f; }, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 
 	//超区域
 	std::vector<int> GreatIndices;
 	GreatIndices.push_back(m_Indices.size());
-	ASSERT_ANY_THROW(m_Creator.createInitialCluster(GreatIndices, m_PV, 0.5f, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+	ASSERT_ANY_THROW(m_Creator.createInitialCluster(GreatIndices, m_PV, [](auto) { return 0.5f; }, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 
 	//空PV矩阵
-	ASSERT_ANY_THROW(m_Creator.createInitialCluster(m_Indices, Eigen::Matrix4d{}, 0.5f, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+	ASSERT_ANY_THROW(m_Creator.createInitialCluster(m_Indices, Eigen::Matrix4d{}, [](auto) { return 0.5f; }, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 
 	//空config
-	ASSERT_ANY_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, 0.5f, PointCloudRetouch::EPointLabel::UNWANTED, nullptr));
+	ASSERT_ANY_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, [](auto) { return 0.5f; }, PointCloudRetouch::EPointLabel::UNWANTED, nullptr));
 
 }
