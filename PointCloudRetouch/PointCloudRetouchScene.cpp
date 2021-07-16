@@ -65,4 +65,3 @@ Eigen::Vector3i CPointCloudRetouchScene::__extractRgba(float vRgba) const
 
 	return Rgb;
 }
-
