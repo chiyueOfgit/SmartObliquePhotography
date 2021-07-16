@@ -23,9 +23,8 @@ namespace hiveObliquePhotography
 			std::pair<float, float> m_Peak;
 			float m_Tolerance = 0.12f;
 
-			PointCloud_t::Ptr __createPositionCloud(const std::vector<pcl::index_t>& vIndexSet);
-			Eigen::Vector4f __fitPlane(PointCloud_t::Ptr vCloud) const;
-			std::pair<float, float> __computePeakDistance(PointCloud_t::Ptr vCloud, Eigen::Vector4f vPlane);
+			Eigen::Vector4f __fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud) const;
+			std::pair<float, float> __computePeakDistance(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, Eigen::Vector4f vPlane);
 		};
 	}
 }
