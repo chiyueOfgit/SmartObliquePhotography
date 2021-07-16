@@ -218,7 +218,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			else
 				return 0;
 		};
-		if (m_UnwantedMode)                                                                                   
+		if (m_UnwantedMode)
 			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
 		else
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);

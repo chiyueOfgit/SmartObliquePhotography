@@ -61,9 +61,9 @@ namespace hiveObliquePhotography
 			const auto& getNeighborhoodBuilder() const { return m_pNeighborhoodBuilder; }
 			const auto& getStatusQueue() const { return m_StatusQueue; }
 			const auto& getConfig() const { return m_pConfig; }
-			CPointCluster* generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, double vHardness, EPointLabel vTargetLabel)
+			CPointCluster* generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel)
 			{
-				return __generateInitialCluster(vUserMarkedRegion, vPvMatrix, vHardness, vTargetLabel);
+				return __generateInitialCluster(vUserMarkedRegion, vPvMatrix, vHardnessFunc, vTargetLabel);
 			}
 #endif // _UNIT_TEST
 

@@ -60,7 +60,7 @@ TEST_F(TestPointCluster, DeathTest_InvalidIndex)
 	
 	pcl::index_t TestIndex = -1;
 	Eigen::Matrix4d Pv;
-	const auto* pPointCluster = pManager->generateInitialCluster(UserMarkedRegion,  Pv, 0.8, PointCloudRetouch::EPointLabel::KEPT);
+	const auto* pPointCluster = pManager->generateInitialCluster(UserMarkedRegion,  Pv, [](auto) { return 1; }, PointCloudRetouch::EPointLabel::KEPT);
 	ASSERT_ANY_THROW(pPointCluster->evaluateProbability(TestIndex));
 	//double Res = pPointCluster->evaluteProbability(TestIndex);
 }
@@ -83,7 +83,7 @@ TEST_F(TestPointCluster, FalseProbability_Test)
 	
 	pcl::index_t TestIndex = 1;
 
-	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, Pv, 0.8, PointCloudRetouch::EPointLabel::KEPT);
+	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, Pv, [](auto) { return 1; }, PointCloudRetouch::EPointLabel::KEPT);
 	double Res = pPointCluster->evaluateProbability(TestIndex);
 	EXPECT_LE(Res, 1.0);
 	EXPECT_GE(Res, 0.0);
