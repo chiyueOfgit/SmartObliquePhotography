@@ -14,13 +14,13 @@ namespace hiveObliquePhotography
 			void init(const hiveConfig::CHiveConfig* vConfig) { m_pClusterConfig = vConfig; }
 
 			template<class T>
-			void registerPrecompute(std::function<bool()> vPrecomputeFunc, const std::string& vPath, T& vContainer)
+			void registerPrecompute(std::function<bool()> vPrecomputeFunc, const std::string& vPath, T* vContainer)
 			{
 				if (!hiveUtility::hiveLocateFile(vPath).empty())
 				{
 					T Temp;
-					__deserialization<T>(vPath, Temp);
-					vContainer = Temp;
+					__deserialization<T>(vPath, &Temp);
+					*vContainer = Temp;
 				}
 				else
 				{
@@ -41,20 +41,20 @@ namespace hiveObliquePhotography
 
 		private:
 			template<class T>
-			void __serialization(const std::string& vPath, const T& vContainer) const
+			void __serialization(const std::string& vPath, const T* vContainer) const
 			{
 				std::ofstream file(vPath.c_str());
 				boost::archive::text_oarchive oa(file);
-				oa& BOOST_SERIALIZATION_NVP(vContainer);
+				oa& BOOST_SERIALIZATION_NVP(*vContainer);
 				file.close();
 			}
 
 			template<class T>
-			void __deserialization(const std::string& vPath, T& voContainer) const
+			void __deserialization(const std::string& vPath, T* voContainer) const
 			{
 				std::ifstream file(vPath.c_str());
 				boost::archive::text_iarchive ia(file);
-				ia >> BOOST_SERIALIZATION_NVP(voContainer);
+				ia >> BOOST_SERIALIZATION_NVP(*voContainer);
 				file.close();
 			}
 			

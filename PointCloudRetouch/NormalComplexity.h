@@ -19,7 +19,7 @@ namespace hiveObliquePhotography
 
 			bool precomputeSceneCloudNormalComplexity();
 
-			auto& getReference2Container() { return m_NormalComplexity; }
+			auto* getPtr2Container() { return &m_NormalComplexity; }
 
 #ifdef _UNIT_TEST
 			double calcSinglePointNormalComplexity(pcl::index_t vInputPoint) const { return __calcSinglePointNormalComplexity(vInputPoint); }

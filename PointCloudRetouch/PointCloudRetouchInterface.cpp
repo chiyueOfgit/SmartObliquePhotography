@@ -2,6 +2,7 @@
 #include "PointCloudRetouchInterface.h"
 #include "PointCloudRetouchManager.h"
 #include "NormalComplexity.h"
+#include "common/StringUtility.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -105,12 +106,15 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveUndo()
 	return CPointCloudRetouchManager::getInstance()->undo();
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveTestPrecompute()
+void hiveObliquePhotography::PointCloudRetouch::hiveRunPrecompute(const std::string& vModelName)
 {
 	auto pFeature = dynamic_cast<CNormalComplexity*>(hiveDesignPattern::hiveGetOrCreateProduct<IFeature>(KEYWORD::NORMAL_COMPLEXITY));
 	auto pPrecomputeManager = CPointCloudRetouchManager::getInstance()->getPrecomputeManager();
 	pFeature->initV(pPrecomputeManager->getFeatureConfig(KEYWORD::NORMAL_COMPLEXITY));
-	pPrecomputeManager->registerPrecompute<std::vector<double>>([&]()->bool {return pFeature->precomputeSceneCloudNormalComplexity(); }, "Precomputed_Normal_Complexity.txt", pFeature->getReference2Container());
+
+	if (_access(KEYWORD::PRECOMPUTE_FOLDER.c_str(), 0) == -1)
+		_mkdir(KEYWORD::PRECOMPUTE_FOLDER.c_str());
+	pPrecomputeManager->registerPrecompute<std::vector<double>>([=]()->bool {return pFeature->precomputeSceneCloudNormalComplexity(); }, KEYWORD::PRECOMPUTE_FOLDER + vModelName + "_Normal_Complexity.txt", pFeature->getPtr2Container());
 
 	pPrecomputeManager->runAllPrecompute();
 }

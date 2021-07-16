@@ -31,7 +31,7 @@ namespace hiveObliquePhotography
             virtual void keyPressEvent(QKeyEvent* vEvent);
 
         private:
-            Ui::CQTInterfaceClass ui;
+            Ui::CQTInterfaceClass m_UI;
 
             QStandardItemModel* m_pResourceSpaceStandardItemModels = nullptr;
             QStandardItemModel* m_pWorkSpaceStandardItemModels = nullptr;
@@ -70,6 +70,7 @@ namespace hiveObliquePhotography
             void onActionSave();
             void onActionDiscardAndRecover();
             void onActionDelete();
+            void onActionPrecompute();
             void onActionRubber();
             void onActionBrush();
             void onActionOutlierDetection();

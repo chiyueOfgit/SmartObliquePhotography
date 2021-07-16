@@ -40,7 +40,7 @@ using namespace hiveObliquePhotography::QTInterface;
 CQTInterface::CQTInterface(QWidget * vParent)
     : QMainWindow(vParent)
 {
-    ui.setupUi(this);
+    m_UI.setupUi(this);
 }
 
 CQTInterface::~CQTInterface()
@@ -62,47 +62,48 @@ void CQTInterface::init()
 
 void CQTInterface::__connectSignals()
 {
-    QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
-    QObject::connect(ui.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
-    QObject::connect(ui.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
-    QObject::connect(ui.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
-    QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionDelete()));
-    QObject::connect(ui.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
-    QObject::connect(ui.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
-    QObject::connect(ui.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
-    QObject::connect(ui.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
-    QObject::connect(ui.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
+    QObject::connect(m_UI.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
+    QObject::connect(m_UI.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
+    QObject::connect(m_UI.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
+    QObject::connect(m_UI.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
+    QObject::connect(m_UI.actionDelete, SIGNAL(triggered()), this, SLOT(onActionDelete()));
+    QObject::connect(m_UI.actionPrecompute, SIGNAL(triggered()), this, SLOT(onActionPrecompute()));
+    QObject::connect(m_UI.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
+    QObject::connect(m_UI.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
+    QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
+    QObject::connect(m_UI.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
+    QObject::connect(m_UI.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
 }
 
 void CQTInterface::__initialVTKWidget()
 {
     auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
-    ui.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
-    pViewer->setupInteractor(ui.VTKWidget->GetInteractor(), ui.VTKWidget->GetRenderWindow());
-    ui.VTKWidget->update();
+    m_UI.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
+    pViewer->setupInteractor(m_UI.VTKWidget->GetInteractor(), m_UI.VTKWidget->GetRenderWindow());
+    m_UI.VTKWidget->update();
 }
 
 void CQTInterface::__initialResourceSpaceDockWidget()
 {
-    m_pResourceSpaceStandardItemModels = new QStandardItemModel(ui.resourceSpaceTreeView);
-    ui.resourceSpaceTreeView->setModel(m_pResourceSpaceStandardItemModels);
+    m_pResourceSpaceStandardItemModels = new QStandardItemModel(m_UI.resourceSpaceTreeView);
+    m_UI.resourceSpaceTreeView->setModel(m_pResourceSpaceStandardItemModels);
     m_pResourceSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    CQTInterface::__initialDockWidgetTitleBar(ui.resourceSpaceDockWidget, "Resource Space");
+    CQTInterface::__initialDockWidgetTitleBar(m_UI.resourceSpaceDockWidget, "Resource Space");
 }
 
 void CQTInterface::__initialWorkSpaceDockWidget()
 {
-    m_pWorkSpaceStandardItemModels = new QStandardItemModel(ui.workSpaceTreeView);
-    ui.workSpaceTreeView->setModel(m_pWorkSpaceStandardItemModels);
+    m_pWorkSpaceStandardItemModels = new QStandardItemModel(m_UI.workSpaceTreeView);
+    m_UI.workSpaceTreeView->setModel(m_pWorkSpaceStandardItemModels);
     m_pWorkSpaceStandardItemModels->setHorizontalHeaderLabels(QStringList() << QStringLiteral(""));
 
-    CQTInterface::__initialDockWidgetTitleBar(ui.workSpaceDockWidget, "Work Space");
+    CQTInterface::__initialDockWidgetTitleBar(m_UI.workSpaceDockWidget, "Work Space");
 }
 
 void CQTInterface::__initialMessageDockWidget()
 {
-    CQTInterface::__initialDockWidgetTitleBar(ui.messageDockWidget, "Output Message");
+    CQTInterface::__initialDockWidgetTitleBar(m_UI.messageDockWidget, "Output Message");
 }
 
 void CQTInterface::__initialDockWidgetTitleBar(QDockWidget* vParentWidget, const std::string& vTitleBarText)
@@ -122,7 +123,7 @@ void CQTInterface::__initialSlider(const QStringList& vFilePathList)
     const std::string& FirstCloudFilePath = vFilePathList[0].toStdString();
     auto FileCloudFileName = CQTInterface::__getFileName(FirstCloudFilePath);
 
-    auto pSubWindow = new QMdiSubWindow(ui.VTKWidget);
+    auto pSubWindow = new QMdiSubWindow(m_UI.VTKWidget);
 
     m_pPointSizeSlider = new QSlider(Qt::Horizontal);
     m_pPointSizeSlider->setMinimum(1);
@@ -182,7 +183,7 @@ bool CQTInterface::__messageDockWidgetOutputText(QString vString)
 {
     QDateTime CurrentDateTime = QDateTime::currentDateTime();
     QString CurrentDateTimeString = CurrentDateTime.toString("[yyyy-MM-dd hh:mm:ss] ");
-    ui.textBrowser->append(CurrentDateTimeString + vString);
+    m_UI.textBrowser->append(CurrentDateTimeString + vString);
 
     return true;
 }
@@ -201,9 +202,9 @@ void CQTInterface::onActionPointPicking()
 {
     if (m_pCloud)
     {
-        if (ui.actionPointPicking->isChecked())
+        if (m_UI.actionPointPicking->isChecked())
         {
-            m_pPointPickingDockWidget = new CSliderSizeDockWidget(ui.VTKWidget, m_pVisualizationConfig);
+            m_pPointPickingDockWidget = new CSliderSizeDockWidget(m_UI.VTKWidget, m_pVisualizationConfig);
             m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
             m_pPointPickingDockWidget->show();
             CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to select mode."));
@@ -220,7 +221,7 @@ void CQTInterface::onActionPointPicking()
         }
 
         if (m_pVisualizationConfig)
-            m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, ui.actionPointPicking->isChecked());
+            m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, m_UI.actionPointPicking->isChecked());
     }
 
 }
@@ -263,8 +264,6 @@ void CQTInterface::onActionOpen()
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel, true);
         CQTInterface::__initialSlider(FilePathList);
-        
-        PointCloudRetouch::hiveTestPrecompute();
 
         if (FilePathSet.size() == 1)
         {
@@ -294,7 +293,7 @@ void CQTInterface::onActionRubber()
 {
     if (m_pVisualizationConfig)
     {
-        m_pVisualizationConfig->overwriteAttribute("RUBBER_MODE", ui.actionRubber->isChecked());
+        m_pVisualizationConfig->overwriteAttribute("RUBBER_MODE", m_UI.actionRubber->isChecked());
     }
 }
 
@@ -334,6 +333,13 @@ void CQTInterface::onActionDelete()
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
     Visualization::hiveRefreshVisualizer(PointLabel);
+}
+
+void CQTInterface::onActionPrecompute()
+{
+    PointCloudRetouch::hiveRunPrecompute(m_CurrentCloud);
+    m_UI.actionPrecompute->setChecked(false);
+    __messageDockWidgetOutputText(QString::fromStdString(m_CurrentCloud + "'s precompute is finished."));
 }
 
 void CQTInterface::onActionInstructions()
