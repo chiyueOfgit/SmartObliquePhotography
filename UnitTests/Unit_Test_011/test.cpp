@@ -154,7 +154,7 @@ TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 	}
 
 	//非特殊情况
-	for (float Hardness = 0.1f; Hardness < 1.0f; Hardness += 0.2f)
+	for (double Hardness = 0.1f; Hardness < 1.0f; Hardness += 0.2f)
 	{
 		m_CurrentHardness = Hardness;
 		auto pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, m_pHardnessFunc, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true));
