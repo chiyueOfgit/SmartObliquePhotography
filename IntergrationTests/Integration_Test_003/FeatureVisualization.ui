@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CFeatureVisualizationClass</class>
+ <widget class="QMainWindow" name="CFeatureVisualizationClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>832</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>FeatureVisualization</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QVTKWidget" name="VTKWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>960</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <widget class="QMenu" name="menu">
+     <property name="title">
+      <string>在这里输入</string>
+     </property>
+    </widget>
+    <addaction name="actionAreaPicking"/>
+    <addaction name="actionSetting"/>
+    <addaction name="menu"/>
+   </widget>
+   <widget class="QMenu" name="menuDisplay">
+    <property name="title">
+     <string>Display</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuDisplay"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="separator"/>
+   <addaction name="actionPointPicking"/>
+   <addaction name="actionBrush"/>
+   <addaction name="actionRubber"/>
+   <addaction name="actionOutlierDetection"/>
+   <addaction name="actionUpdate"/>
+   <addaction name="separator"/>
+   <addaction name="actionDelete"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/open.png</normaloff>:/featureVisualization/Icon/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/save.png</normaloff>:/featureVisualization/Icon/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSetting">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/setting.png</normaloff>:/featureVisualization/Icon/setting.png</iconset>
+   </property>
+   <property name="text">
+    <string>Setting</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionAreaPicking">
+   <property name="text">
+    <string>AreaPicking</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/delete.png</normaloff>:/featureVisualization/Icon/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionBrush">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/brush.png</normaloff>:/featureVisualization/Icon/brush.png</iconset>
+   </property>
+   <property name="text">
+    <string>Brush</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRubber">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/rubber.png</normaloff>:/featureVisualization/Icon/rubber.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rubber</string>
+   </property>
+  </action>
+  <action name="actionDichotomy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/dichotomy.png</normaloff>:/featureVisualization/Icon/dichotomy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dichotomy</string>
+   </property>
+  </action>
+  <action name="actionRegionGrowing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/regionGrowing.png</normaloff>:/featureVisualization/Icon/regionGrowing.png</iconset>
+   </property>
+   <property name="text">
+    <string>RegionGrowing</string>
+   </property>
+  </action>
+  <action name="actionUpdate">
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/update.png</normaloff>:/featureVisualization/Icon/update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Update</string>
+   </property>
+  </action>
+  <action name="actionBlend">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/blend.png</normaloff>:/featureVisualization/Icon/blend.png</iconset>
+   </property>
+   <property name="text">
+    <string>Blend</string>
+   </property>
+  </action>
+  <action name="actionPointPicking">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/pointPicking.png</normaloff>:/featureVisualization/Icon/pointPicking.png</iconset>
+   </property>
+   <property name="text">
+    <string>PointPicking</string>
+   </property>
+  </action>
+  <action name="actionInstructions">
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/instructions.png</normaloff>:/featureVisualization/Icon/instructions.png</iconset>
+   </property>
+   <property name="text">
+    <string>Instructions</string>
+   </property>
+  </action>
+  <action name="actionOutlierDetection">
+   <property name="icon">
+    <iconset resource="FeatureVisualization.qrc">
+     <normaloff>:/featureVisualization/Icon/Outlier.png</normaloff>:/featureVisualization/Icon/Outlier.png</iconset>
+   </property>
+   <property name="text">
+    <string>Outlier Detection</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QVTKWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">qvtkwidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="FeatureVisualization.qrc"/>
+ </resources>
+ <connections/>
+</ui>
