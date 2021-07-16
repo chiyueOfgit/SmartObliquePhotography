@@ -34,6 +34,7 @@
 #include "common/HiveConfig.h"
 #include "common/ConfigInterface.h"
 #include "common/MathInterface.h"
+#include "common/UtilityInterface.h"
 
 #include "PointCloudRetouchCommon.h"
 #include "PointCloudRetouchManager.h"

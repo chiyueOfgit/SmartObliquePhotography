@@ -22,9 +22,11 @@ namespace hiveObliquePhotography
 #endif
 		private:
 			double m_AverageDon;
+			PointCloud_t::Ptr m_pNormalComplexity = nullptr;
 			pcl::search::Search<pcl::PointXYZ>::Ptr m_pTree;
 			double __calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices);
 			double __calcSinglePointNormalComplexity(pcl::index_t vInputPoint) const;
+			bool __precomputeSceneCloudNormalComplexity();
 		};
 	}
 }
