@@ -261,7 +261,7 @@ bool CPointCloudRetouchManager::executeOutlierDetector(EPointLabel vTo)
 	std::vector<pcl::index_t> Indices;
 	dumpIndicesByLabel(Indices, EPointLabel::UNDETERMINED);
 	dumpIndicesByLabel(Indices, EPointLabel::KEPT);
-	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
+	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
 	return pOutlierDetector->execute<COutlierDetector>(Indices, vTo, m_pOutlierConfig);
 }
 
