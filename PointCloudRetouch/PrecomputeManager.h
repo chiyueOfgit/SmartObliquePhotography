@@ -1,4 +1,5 @@
 #pragma once
+#include <boost/any.hpp>
 
 namespace hiveObliquePhotography
 {
@@ -10,7 +11,29 @@ namespace hiveObliquePhotography
 			CPrecomputeManager() = default;
 			~CPrecomputeManager() = default;
 
-			void registerPrecomputeFunction(std::function<bool()> vPrecomputeFunc);
+			void init(const hiveConfig::CHiveConfig* vConfig) { m_pClusterConfig = vConfig; }
+
+			template<class T>
+			void registerPrecompute(std::function<bool()> vPrecomputeFunc, const std::string& vPath, T& vContainer)
+			{
+				if (!hiveUtility::hiveLocateFile(vPath).empty())
+				{
+					T Temp;
+					__deserialization<T>(vPath, Temp);
+					vContainer = Temp;
+				}
+				else
+				{
+					auto pFunc = [=]()
+					{
+						if (vPrecomputeFunc())
+							__serialization<T>(vPath, vContainer);
+					};
+					m_PrecomputeList.push_back(pFunc);
+				}
+			}
+
+			const hiveConfig::CHiveConfig* getFeatureConfig(const std::string& vFeatureSig);
 
 			void runAllPrecompute();
 
@@ -22,7 +45,7 @@ namespace hiveObliquePhotography
 			{
 				std::ofstream file(vPath.c_str());
 				boost::archive::text_oarchive oa(file);
-				oa& BOOST_SERIALIZATION_NVP(vIndices);
+				oa& BOOST_SERIALIZATION_NVP(vContainer);
 				file.close();
 			}
 
@@ -35,8 +58,9 @@ namespace hiveObliquePhotography
 				file.close();
 			}
 			
-			std::vector<std::function<bool()>> m_PrecomputeList;
-			
+			std::vector<std::function<void()>> m_PrecomputeList;
+
+			const hiveConfig::CHiveConfig* m_pClusterConfig;
 		};
 	}
 }

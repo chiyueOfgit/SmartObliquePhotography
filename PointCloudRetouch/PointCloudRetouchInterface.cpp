@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PointCloudRetouchInterface.h"
 #include "PointCloudRetouchManager.h"
+#include "NormalComplexity.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -102,4 +103,14 @@ void hiveObliquePhotography::PointCloudRetouch::hiveEraseMark(const std::vector<
 bool hiveObliquePhotography::PointCloudRetouch::hiveUndo()
 {
 	return CPointCloudRetouchManager::getInstance()->undo();
+}
+
+void hiveObliquePhotography::PointCloudRetouch::hiveTestPrecompute()
+{
+	auto pFeature = dynamic_cast<CNormalComplexity*>(hiveDesignPattern::hiveGetOrCreateProduct<IFeature>(KEYWORD::NORMAL_COMPLEXITY));
+	auto pPrecomputeManager = CPointCloudRetouchManager::getInstance()->getPrecomputeManager();
+	pFeature->initV(pPrecomputeManager->getFeatureConfig(KEYWORD::NORMAL_COMPLEXITY));
+	pPrecomputeManager->registerPrecompute<std::vector<double>>([&]()->bool {return pFeature->precomputeSceneCloudNormalComplexity(); }, "Precomputed_Normal_Complexity.txt", pFeature->getReference2Container());
+
+	pPrecomputeManager->runAllPrecompute();
 }

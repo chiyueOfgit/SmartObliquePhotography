@@ -34,6 +34,5 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("POINT_FILTER_CONDITION", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 	_defineAttribute("SMALL_SCALE_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 	_defineAttribute("LARGE_SCALE_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
-	_defineAttribute("PRECOMPUTE_CLOUD_PATH", hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 	
 }

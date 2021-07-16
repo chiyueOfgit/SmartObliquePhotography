@@ -26,7 +26,6 @@
         NormalComplexityFeature
         <SIG> NORMAL_COMPLEXITY </SIG>
         <LARGE_SCALE_RADIUS> 1.5 </LARGE_SCALE_RADIUS>
-        <PRECOMPUTE_CLOUD_PATH> Precomputed_Normal_Complexity.pcd </PRECOMPUTE_CLOUD_PATH>
       </FEATURE>
     </CLUSTER>
     <CLASSIFIER>

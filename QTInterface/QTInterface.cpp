@@ -264,6 +264,8 @@ void CQTInterface::onActionOpen()
         Visualization::hiveRefreshVisualizer(PointLabel, true);
         CQTInterface::__initialSlider(FilePathList);
         
+        PointCloudRetouch::hiveTestPrecompute();
+
         if (FilePathSet.size() == 1)
         {
             CQTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
