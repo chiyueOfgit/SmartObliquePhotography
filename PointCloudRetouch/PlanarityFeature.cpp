@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "PlanarityFeature.h"
-#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
-#include <pcl/sample_consensus/impl/ransac.hpp>
+#include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/sample_consensus/ransac.h>
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -67,4 +67,51 @@ std::string CPlanarityFeature::outputDebugInfosV(pcl::index_t vIndex) const
 	Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CPlanarityFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
 
 	return Infos;
+}
+
+//*****************************************************************
+//FUNCTION: 
+Eigen::Vector4f CPlanarityFeature::fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, double vDistanceThreshold, const Eigen::Vector3f& vUp)
+{
+	Eigen::VectorXf Coeff;
+	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr ModelPlane(new pcl::SampleConsensusModelPlane<pcl::PointXYZ>(vCloud));
+	pcl::RandomSampleConsensus<pcl::PointXYZ> Ransac(ModelPlane);
+	Ransac.setDistanceThreshold(vDistanceThreshold);
+	Ransac.computeModel();
+	Ransac.getModelCoefficients(Coeff);
+	if (!Coeff.size())
+		return { 0, 0, 0, 0 };
+	const Eigen::Vector3f Normal(Coeff.x(), Coeff.y(), Coeff.z());
+	if (Normal.dot(vUp) < 0.0f)
+		Coeff *= -1.0f;
+	return Coeff / Normal.norm();
+}
+
+//*****************************************************************
+//FUNCTION: 
+std::pair<float, float> CPlanarityFeature::computePeakDistance(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, const Eigen::Vector4f& vPlane)
+{
+	float MinDistance = FLT_MAX;
+	float MaxDistance = -FLT_MAX;
+	for (auto& i : *vCloud)
+	{
+		MinDistance = std::min(MinDistance, vPlane.dot(i.getVector4fMap()));
+		MaxDistance = std::max(MaxDistance, vPlane.dot(i.getVector4fMap()));
+	}
+
+	return { MinDistance, MaxDistance };
+}
+
+//*****************************************************************
+//FUNCTION: 
+float CPlanarityFeature::smoothAttenuation(float vFrom, float vTo, float vX)
+{
+	auto Factor = (vX - vFrom) / (vTo - vFrom);
+
+	if (Factor >= 1 || Factor <= 0)
+		return 0;
+
+	//x^4 - 2 * x^2 + 1 
+	Factor *= Factor;
+	return Factor * (Factor - 2) + 1;
 }
