@@ -28,6 +28,7 @@
 #include "PointCloudVisualizer.h"
 #include "InteractionCallback.h"
 #include "VisualizationConfig.h"
+#include "NormalComplexityVisualization.h"
 
 #include "pcl/io/pcd_io.h"
 
@@ -247,7 +248,8 @@ void CFeatureVisualization::onActionFeatureColor()
 
 void CFeatureVisualization::onActionFeatureNormalComplexity()
 {
-
+    Feature::CNormalComplexityVisualization::getInstance()->init(m_pCloud);
+    Feature::CNormalComplexityVisualization::getInstance()->run();
 }
 
 void CFeatureVisualization::onActionFeaturePlanarity()
