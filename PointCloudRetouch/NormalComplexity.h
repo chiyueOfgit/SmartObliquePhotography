@@ -17,14 +17,21 @@ namespace hiveObliquePhotography
 			double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
 			virtual std::string outputDebugInfosV(pcl::index_t vIndex) const override;
 
+			bool precomputeSceneCloudNormalComplexity();
+
+			auto* getPtr2Container() { return &m_NormalComplexity; }
+
 #ifdef _UNIT_TEST
 			double calcSinglePointNormalComplexity(pcl::index_t vInputPoint) const { return __calcSinglePointNormalComplexity(vInputPoint); }
 #endif
 		private:
 			double m_AverageDon;
+			std::vector<double> m_NormalComplexity;
 			pcl::search::Search<pcl::PointXYZ>::Ptr m_pTree;
 			double __calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices);
 			double __calcSinglePointNormalComplexity(pcl::index_t vInputPoint) const;
+			void __buildSearchTree();
+
 		};
 	}
 }

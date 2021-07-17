@@ -5,6 +5,7 @@
 #include "RetouchTask.h"
 #include "InitialClusterCreator.h"
 #include "PointSetPreprocessor.h"
+#include "PrecomputeManager.h"
 
 namespace hiveObliquePhotography
 {
@@ -49,7 +50,8 @@ namespace hiveObliquePhotography
 			void dumpIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel);
 			
 			const auto& getRetouchScene() const { return m_Scene; }
-			
+			const auto& getPrecomputeManager() const { return m_pPrecomputeManager; }
+
 #ifdef _UNIT_TEST
 			void reset4UnitTest() { __reset(); }
 			const auto& getOutlierConfig() const { return m_pOutlierConfig; }
@@ -80,6 +82,7 @@ namespace hiveObliquePhotography
 			CRetouchTask             m_BackgroundMarker;
 			CInitialClusterCreator   m_InitialClusterCreator;
 			CPointSetPreprocessor    m_Preprocessor;
+			CPrecomputeManager		*m_pPrecomputeManager = nullptr;
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 			const hiveConfig::CHiveConfig* m_pOutlierConfig = nullptr;

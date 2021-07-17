@@ -79,7 +79,7 @@ protected:
 		Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 		Camera.computeViewMatrix(ViewMatrix);
 		Camera.computeProjectionMatrix(ProjectionMatrix);
-		pManager->executeMarker(Indices, ProjectionMatrix * ViewMatrix, [](auto) { return 1; }, EPointLabel::UNWANTED);
+		pManager->executeMarker(Indices, ProjectionMatrix * ViewMatrix, [](auto) { return 0.8f; }, EPointLabel::UNWANTED);
 	}
 	
 	void TearDown() override

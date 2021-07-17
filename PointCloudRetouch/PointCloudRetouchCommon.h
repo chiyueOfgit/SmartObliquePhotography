@@ -18,6 +18,8 @@ namespace hiveObliquePhotography
 			const std::string CLUSTER_EXPANDER = "CLUSTER_EXPANDER";
 			const std::string OUTLIER_DETECTOR = "OUTLIER_DETECTOR";
 
+			const std::string PRECOMPUTE_FOLDER = "Temp/";
+
 		}
 		enum class EPointLabel : unsigned char
 		{

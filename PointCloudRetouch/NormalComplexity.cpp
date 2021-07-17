@@ -3,6 +3,7 @@
 #include "pcl/features/normal_3d_omp.h"
 #include "pcl/features/don.h"
 #include "EuclideanNeighborhoodBuilder.h"
+#include <omp.h>
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -14,20 +15,8 @@ void  CNormalComplexity::initV(const hiveConfig::CHiveConfig* vFeatureConfig)
 {
 	_ASSERTE(vFeatureConfig);
 	m_pConfig = vFeatureConfig;
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for (size_t i = 0; i < CloudScene.getNumPoint(); i++)
-	{
-		const auto& Position = CloudScene.getPositionAt(i);
-		pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
-	}
-
-	if (pPointCloud->isOrganized())
-		m_pTree.reset(new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
-	else
-		m_pTree.reset(new pcl::search::KdTree<pcl::PointXYZ>(false));
-	m_pTree->setInputCloud(pPointCloud);
+	if (m_NormalComplexity.empty())
+		__buildSearchTree();
 }
 
 //*****************************************************************
@@ -70,6 +59,28 @@ std::string CNormalComplexity::outputDebugInfosV(pcl::index_t vIndex) const
 
 //*****************************************************************
 //FUNCTION: 
+bool CNormalComplexity::precomputeSceneCloudNormalComplexity()
+{
+	std::vector<double> Temp;
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	auto NumPoints = CloudScene.getNumPoint();
+
+	std::mutex Mutex;
+
+#pragma omp parallel for
+	for (int i = 0; i < NumPoints; i++)
+	{
+		double NormalComplexity = __calcSinglePointNormalComplexity(i);
+		Mutex.lock();
+		Temp.push_back(NormalComplexity);
+		Mutex.unlock();
+	}
+	m_NormalComplexity = std::move(Temp);
+	return true;
+}
+
+//*****************************************************************
+//FUNCTION: 
 double CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl::index_t>& vPointIndices)
 {
 	double Sum = 0.0;
@@ -82,36 +93,64 @@ double CNormalComplexity::__calcPointCloudNormalComplexity(const std::vector<pcl
 //FUNCTION: 
 double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputPoint) const
 {
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-	const double Radius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
-	
-	pcl::Indices Neighborhood;
-	std::vector<float> DistanceSet;
-	m_pTree->radiusSearch(vInputPoint, Radius, Neighborhood, DistanceSet);
-
-	double MinD = DBL_MAX;
-	double MaxD = -DBL_MAX;
-	double MeanD = 0.0;
-	const auto& Normal = CloudScene.getNormalAt(vInputPoint);
-	//Normal.normalize();
-	for (auto& NeighborIndex : Neighborhood)
-	{		
-		const double D = CloudScene.getPositionAt(NeighborIndex).dot(Normal);
-		MeanD += D;
-		if (MinD > D)
-			MinD = D;
-		if (MaxD < D)
-			MaxD = D;
+	if (!m_NormalComplexity.empty())
+	{
+		_ASSERTE(vInputPoint < m_NormalComplexity.size());
+		return m_NormalComplexity[vInputPoint];
 	}
-	MeanD /= Neighborhood.size();
-	
-	double Complexity = std::min(abs(MinD - MeanD), abs(MaxD - MeanD));
-	
-	//double Complexity = (MaxD - MinD) / 2;
-	Complexity /= Radius;
+	else
+	{
+		const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+		const double Radius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
 
-	if (Complexity > 1)
-		return 1;
-	
-	return Complexity;
+		pcl::Indices Neighborhood;
+		std::vector<float> DistanceSet;
+		m_pTree->radiusSearch(vInputPoint, Radius, Neighborhood, DistanceSet);
+
+		double MinD = DBL_MAX;
+		double MaxD = -DBL_MAX;
+		double MeanD = 0.0;
+		const auto& Normal = CloudScene.getNormalAt(vInputPoint);
+		//Normal.normalize();
+		for (auto& NeighborIndex : Neighborhood)
+		{
+			const double D = CloudScene.getPositionAt(NeighborIndex).dot(Normal);
+			MeanD += D;
+			if (MinD > D)
+				MinD = D;
+			if (MaxD < D)
+				MaxD = D;
+		}
+		MeanD /= Neighborhood.size();
+
+		double Complexity = std::min(abs(MinD - MeanD), abs(MaxD - MeanD));
+
+		//double Complexity = (MaxD - MinD) / 2;
+		Complexity /= Radius;
+
+		if (Complexity > 1)
+			return 1;
+
+		return Complexity;
+	}
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CNormalComplexity::__buildSearchTree()
+{
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	for (size_t i = 0; i < CloudScene.getNumPoint(); i++)
+	{
+		const auto& Position = CloudScene.getPositionAt(i);
+		pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
+	}
+
+	if (pPointCloud->isOrganized())
+		m_pTree.reset(new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
+	else
+		m_pTree.reset(new pcl::search::KdTree<pcl::PointXYZ>(false));
+	m_pTree->setInputCloud(pPointCloud);
 }
