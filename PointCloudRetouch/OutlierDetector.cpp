@@ -17,11 +17,10 @@ void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vExpectLabe
 {
 	if (vInputIndices.empty())
 		return;
-    auto pManager = CPointCloudRetouchManager::getInstance();
+	auto pManager = CPointCloudRetouchManager::getInstance();
 	for (auto CurrentIndex : vInputIndices)
 		if (CurrentIndex < 0 || CurrentIndex >= pManager->getRetouchScene().getNumPoint())
 			_THROW_RUNTIME_ERROR("Index is out of range");
-	
 	
 	PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
 	for (auto Index : vInputIndices)
