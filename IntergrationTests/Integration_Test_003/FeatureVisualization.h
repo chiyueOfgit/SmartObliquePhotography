@@ -54,6 +54,9 @@ namespace hiveObliquePhotography
             void onActionDelete();
             void onActionRubber();
             void onActionOutlierDetection();
+            void onActionFeatureColor();
+            void onActionFeatureNormalComplexity();
+            void onActionFeaturePlanarity();
         };
     }
 }

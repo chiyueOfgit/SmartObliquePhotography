@@ -64,6 +64,9 @@ void CFeatureVisualization::__connectSignals()
     QObject::connect(ui.actionDelete, SIGNAL(triggered()), this, SLOT(onActionDelete()));
     QObject::connect(ui.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
     QObject::connect(ui.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
+    QObject::connect(ui.actionColor, SIGNAL(triggered()), this, SLOT(onActionFeatureColor()));
+    QObject::connect(ui.actionNormalComplexity, SIGNAL(triggered()), this, SLOT(onActionFeatureNormalComplexity()));
+    QObject::connect(ui.actionPlanarity, SIGNAL(triggered()), this, SLOT(onActionFeaturePlanarity()));
 }
 
 void CFeatureVisualization::__initialVTKWidget()
@@ -235,6 +238,21 @@ void CFeatureVisualization::onActionDelete()
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
     Visualization::CPointCloudVisualizer::getInstance()->refresh(PointLabel);
+}
+
+void CFeatureVisualization::onActionFeatureColor()
+{
+
+}
+
+void CFeatureVisualization::onActionFeatureNormalComplexity()
+{
+
+}
+
+void CFeatureVisualization::onActionFeaturePlanarity()
+{
+
 }
 
 void CFeatureVisualization::closeEvent(QCloseEvent* vEvent)

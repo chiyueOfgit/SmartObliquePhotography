@@ -52,19 +52,16 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <widget class="QMenu" name="menu">
-     <property name="title">
-      <string>在这里输入</string>
-     </property>
-    </widget>
     <addaction name="actionAreaPicking"/>
     <addaction name="actionSetting"/>
-    <addaction name="menu"/>
    </widget>
    <widget class="QMenu" name="menuDisplay">
     <property name="title">
-     <string>Display</string>
+     <string>Feature</string>
     </property>
+    <addaction name="actionColor"/>
+    <addaction name="actionNormalComplexity"/>
+    <addaction name="actionPlanarity"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -243,6 +240,21 @@
    </property>
    <property name="text">
     <string>Outlier Detection</string>
+   </property>
+  </action>
+  <action name="actionColor">
+   <property name="text">
+    <string>Color</string>
+   </property>
+  </action>
+  <action name="actionNormalComplexity">
+   <property name="text">
+    <string>NormalComplexity</string>
+   </property>
+  </action>
+  <action name="actionPlanarity">
+   <property name="text">
+    <string>Planarity</string>
    </property>
   </action>
  </widget>
