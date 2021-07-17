@@ -6,6 +6,9 @@
 #include <common/ConfigInterface.h>
 #include <omp.h>
 #include <mutex>
+#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
+#include <pcl/sample_consensus/impl/ransac.hpp>
+#include "PlanarityFeature.h"
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -200,28 +203,61 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
-		auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
+		m_pVisualizer->removeAllUserColoredPoints();
+		pcl::PointCloud<pcl::PointXYZ>::Ptr pPickedCloud(new pcl::PointCloud<pcl::PointXYZ>);
+		for (auto& i : PickedIndices)
 		{
-			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+			pcl::PointXYZ Point;
+			memcpy(Point.data, m_pVisualizer->m_pSceneCloud->at(i).data, sizeof(Point.data));
 
-			double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
-			if (X <= 1.0)
-			{
-				X -= m_Hardness;
-				if (X < 0)
-					return 1.0;
-				X /= (1 - m_Hardness);
-				X *= X;
-				
-				return X * (X - 2) + 1;
-			}
+			pPickedCloud->push_back(Point);
+		}
+		
+		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, 0.4, { 0.0f, 0.0f, 1.0f });
+		const auto Peak = PointCloudRetouch::CPlanarityFeature::computePeakDistance(pPickedCloud, Plane);
+
+		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
+		{
+			const auto& Point = m_pVisualizer->m_pSceneCloud->at(i);
+			float Distance = Plane.dot(Point.getVector4fMap());
+
+			int Color;
+			const auto Tolerance = 0.12f;
+			if (Distance <= Peak.first || Distance >= Peak.second)
+				Color = 0;
+			else if (Peak.first * Tolerance <= Distance && Distance <= Peak.second * Tolerance)
+				Color = 255;
+			else if (Distance < 0)
+				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.first * Tolerance, Peak.first, Distance);
 			else
-				return 0;
-		};
-		if (m_UnwantedMode)
-			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
-		else
-			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
+				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.second * Tolerance, Peak.second, Distance);
+
+			if (Color != 0)
+				m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
+		}
+				
+		//auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
+		//{
+		//	Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+
+		//	double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
+		//	if (X <= 1.0)
+		//	{
+		//		X -= m_Hardness;
+		//		if (X < 0)
+		//			return 1.0;
+		//		X /= (1 - m_Hardness);
+		//		X *= X;
+		//		
+		//		return X * (X - 2) + 1;
+		//	}
+		//	else
+		//		return 0;
+		//};
+		//if (m_UnwantedMode)
+		//	PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
+		//else
+		//	PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
 
 		if (m_IsRefreshImmediately)
 		{
