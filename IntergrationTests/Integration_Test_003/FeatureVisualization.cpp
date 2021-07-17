@@ -24,8 +24,10 @@
 #include "SliderSizeDockWidget.h"
 #include "ObliquePhotographyDataInterface.h"
 #include "PointCloudRetouchInterface.h"
-#include "VisualizationInterface.h"
 #include "PointCloudRetouchConfig.h"
+#include "PointCloudVisualizer.h"
+#include "InteractionCallback.h"
+#include "VisualizationConfig.h"
 
 #include "pcl/io/pcd_io.h"
 
@@ -47,7 +49,7 @@ CFeatureVisualization::~CFeatureVisualization()
 void CFeatureVisualization::init()
 {
     {
-        Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
+        m_pVisualizationConfig = hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance();
     }
 
     __connectSignals();
@@ -66,7 +68,7 @@ void CFeatureVisualization::__connectSignals()
 
 void CFeatureVisualization::__initialVTKWidget()
 {
-    auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
+    auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->getVisualizer());
     ui.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
     pViewer->setupInteractor(ui.VTKWidget->GetInteractor(), ui.VTKWidget->GetRenderWindow());
     ui.VTKWidget->update();
@@ -95,7 +97,7 @@ void CFeatureVisualization::__initialSlider(const QStringList& vFilePathList)
             {
                 std::vector<std::size_t> PointLabel;
                 PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-                Visualization::hiveRefreshVisualizer(PointLabel);
+                Visualization::CPointCloudVisualizer::getInstance()->refresh(PointLabel);
             }
         }
     );
@@ -144,7 +146,7 @@ void CFeatureVisualization::onActionPointPicking()
 
             std::vector<std::size_t> PointLabel;
             PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-            Visualization::hiveRefreshVisualizer(PointLabel);
+            Visualization::CPointCloudVisualizer::getInstance()->refresh(PointLabel);
         }
 
         if (m_pVisualizationConfig)
@@ -184,12 +186,12 @@ void CFeatureVisualization::onActionOpen()
         auto num = config->getNumSubconfig();
 
         PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(m_pCloud, true);
+        Visualization::CPointCloudVisualizer::getInstance()->init(m_pCloud, true);
         //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         CFeatureVisualization::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-        Visualization::hiveRefreshVisualizer(PointLabel, true);
+        Visualization::CPointCloudVisualizer::getInstance()->refresh(PointLabel, true);
         CFeatureVisualization::__initialSlider(FilePathList);
     }
 }
@@ -209,7 +211,7 @@ void CFeatureVisualization::onActionOutlierDetection()
         PointCloudRetouch::hiveMarkIsolatedAreaAsLitter();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-        Visualization::hiveRefreshVisualizer(PointLabel);
+        Visualization::CPointCloudVisualizer::getInstance()->refresh(PointLabel);
     }
 }
 
@@ -223,16 +225,16 @@ void CFeatureVisualization::onActionDiscardAndRecover()
 
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-    Visualization::hiveRefreshVisualizer(PointLabel);
+    Visualization::CPointCloudVisualizer::getInstance()->refresh(PointLabel);
 }
 
 void CFeatureVisualization::onActionDelete()
 {
     PointCloudRetouch::hiveClearMark();
-    Visualization::hiveCancelAllHighlighting();
+    Visualization::CPointCloudVisualizer::getInstance()->removeAllUserColoredPoints();
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-    Visualization::hiveRefreshVisualizer(PointLabel);
+    Visualization::CPointCloudVisualizer::getInstance()->refresh(PointLabel);
 }
 
 void CFeatureVisualization::closeEvent(QCloseEvent* vEvent)
