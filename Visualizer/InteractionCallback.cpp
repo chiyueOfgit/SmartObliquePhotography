@@ -6,6 +6,9 @@
 #include <common/ConfigInterface.h>
 #include <omp.h>
 #include <mutex>
+#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
+#include <pcl/sample_consensus/impl/ransac.hpp>
+#include "PlanarityFeature.h"
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -199,7 +202,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-
+				
 		auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "PlanarityFeature.h"
-#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
-#include <pcl/sample_consensus/impl/ransac.hpp>
+#include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/sample_consensus/ransac.h>
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -16,15 +16,14 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pDeterminantCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	const pcl::PointCloud<pcl::PointXYZ>::Ptr pDeterminantCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	CloudScene.dumpPointCloud(vDeterminantPointSet, *pDeterminantCloud);
 	
-	auto Plane = __fitPlane(pDeterminantCloud);
-	if (Plane.norm() < 1.0f)
+	m_Plane = fitPlane(pDeterminantCloud, 0.4, { 0.0f, 0.0f, 1.0f });
+	if (m_Plane.norm() < 1.0f)
 		return 0.0;
-	else
-		m_Plane = Plane;
-	m_Peak = __computePeakDistance(pDeterminantCloud, m_Plane);
+	
+	m_Peak = computePeakDistance(pDeterminantCloud, m_Plane);
 	
 	double SumMatch = 0.0;
 	for (auto& i : vValidationSet)
@@ -44,27 +43,17 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
 	const auto& Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(vInputPoint);
-	float Distance = m_Plane.dot(Position);
+	const float Distance = m_Plane.dot(Position);
 
-	if (Distance >= m_Peak.second || Distance <= m_Peak.first)
+	const auto Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
+	if (Distance <= m_Peak.first || Distance >= m_Peak.second)
 		return 0;
-
-	auto m_Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
-
-	if (m_Peak.first * m_Tolerance <= Distance && Distance <= m_Peak.second * m_Tolerance)
+	else if (m_Peak.first * Tolerance <= Distance && Distance <= m_Peak.second * Tolerance)
 		return 1;
-
-	if (Distance < 0)
-	{
-		Distance -= m_Peak.first * m_Tolerance;
-		Distance /= m_Peak.first * (m_Tolerance - 1.0f);
-	}
+	else if (Distance < 0)
+		return smoothAttenuation(m_Peak.first * Tolerance, m_Peak.first, Distance);
 	else
-	{
-		Distance -= m_Peak.second * m_Tolerance;
-		Distance /= m_Peak.second * (1.0f - m_Tolerance);
-	}
-	return { pow(Distance, 4.0f) - 2.0f * pow(Distance, 2.0f) + 1.0f };
+		return smoothAttenuation(m_Peak.second * Tolerance, m_Peak.second, Distance);
 }
 
 //*****************************************************************
@@ -82,31 +71,25 @@ std::string CPlanarityFeature::outputDebugInfosV(pcl::index_t vIndex) const
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector4f CPlanarityFeature::__fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud) const
+Eigen::Vector4f CPlanarityFeature::fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, double vDistanceThreshold, const Eigen::Vector3f& vUp)
 {
-	_ASSERTE(m_pConfig);
 	Eigen::VectorXf Coeff;
-	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr ModelPlane
-		(new pcl::SampleConsensusModelPlane<pcl::PointXYZ>(vCloud));
+	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr ModelPlane(new pcl::SampleConsensusModelPlane<pcl::PointXYZ>(vCloud));
 	pcl::RandomSampleConsensus<pcl::PointXYZ> Ransac(ModelPlane);
-	
-	Ransac.setDistanceThreshold(m_pConfig->getAttribute<float>("DISTANCE_THRESHOLD").value());
+	Ransac.setDistanceThreshold(vDistanceThreshold);
 	Ransac.computeModel();
 	Ransac.getModelCoefficients(Coeff);
 	if (!Coeff.size())
 		return { 0, 0, 0, 0 };
 	const Eigen::Vector3f Normal(Coeff.x(), Coeff.y(), Coeff.z());
-	//TODO: move to config
-	const Eigen::Vector3f Up(0.0f, 0.0f, 1.0f);
-	if (Normal.dot(Up) < 0.0f)
+	if (Normal.dot(vUp) < 0.0f)
 		Coeff *= -1.0f;
-
 	return Coeff / Normal.norm();
 }
 
 //*****************************************************************
 //FUNCTION: 
-std::pair<float, float> CPlanarityFeature::__computePeakDistance(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, Eigen::Vector4f vPlane)
+std::pair<float, float> CPlanarityFeature::computePeakDistance(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, const Eigen::Vector4f& vPlane)
 {
 	float MinDistance = FLT_MAX;
 	float MaxDistance = -FLT_MAX;
@@ -117,4 +100,18 @@ std::pair<float, float> CPlanarityFeature::__computePeakDistance(pcl::PointCloud
 	}
 
 	return { MinDistance, MaxDistance };
+}
+
+//*****************************************************************
+//FUNCTION: 
+float CPlanarityFeature::smoothAttenuation(float vFrom, float vTo, float vX)
+{
+	auto Factor = (vX - vFrom) / (vTo - vFrom);
+
+	if (Factor >= 1 || Factor <= 0)
+		return 0;
+
+	//x^4 - 2 * x^2 + 1 
+	Factor *= Factor;
+	return Factor * (Factor - 2) + 1;
 }
