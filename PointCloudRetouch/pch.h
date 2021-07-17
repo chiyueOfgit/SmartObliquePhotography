@@ -16,6 +16,8 @@
 #include <string>
 #include <set>
 #include <ctime>
+#include <io.h>
+#include <direct.h>
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -34,6 +36,7 @@
 #include "common/HiveConfig.h"
 #include "common/ConfigInterface.h"
 #include "common/MathInterface.h"
+#include "common/UtilityInterface.h"
 
 #include "PointCloudRetouchCommon.h"
 #include "PointCloudRetouchManager.h"
