@@ -45,15 +45,12 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	const auto& Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(vInputPoint);
 	const float Distance = m_Plane.dot(Position);
 
+	const auto Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
 	if (Distance <= m_Peak.first || Distance >= m_Peak.second)
 		return 0;
-
-	const auto Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
-
-	if (m_Peak.first * Tolerance <= Distance && Distance <= m_Peak.second * Tolerance)
+	else if (m_Peak.first * Tolerance <= Distance && Distance <= m_Peak.second * Tolerance)
 		return 1;
-
-	if (Distance < 0)
+	else if (Distance < 0)
 		return smoothAttenuation(m_Peak.first * Tolerance, m_Peak.first, Distance);
 	else
 		return smoothAttenuation(m_Peak.second * Tolerance, m_Peak.second, Distance);

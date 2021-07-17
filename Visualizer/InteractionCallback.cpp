@@ -222,14 +222,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			float Distance = Plane.dot(Point.getVector4fMap());
 
 			int Color;
+			const auto Tolerance = 0.12f;
 			if (Distance <= Peak.first || Distance >= Peak.second)
 				Color = 0;
-
-			const auto Tolerance = 0.12f;
-			if (Peak.first * Tolerance <= Distance && Distance <= Peak.second * Tolerance)
+			else if (Peak.first * Tolerance <= Distance && Distance <= Peak.second * Tolerance)
 				Color = 255;
-
-			if (Distance < 0)
+			else if (Distance < 0)
 				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.first * Tolerance, Peak.first, Distance);
 			else
 				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.second * Tolerance, Peak.second, Distance);
