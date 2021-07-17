@@ -6,6 +6,8 @@
 #include <common/ConfigInterface.h>
 #include <omp.h>
 #include <mutex>
+#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
+#include <pcl/sample_consensus/impl/ransac.hpp>
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -199,29 +201,95 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-
-		auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
+		
+		Eigen::Vector4f Plane;
+		float Tolerance = 0.12f;
 		{
-			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+			_ASSERTE(m_pConfig);
+			Eigen::VectorXf Coeff;
+			pcl::SampleConsensusModelPlane<pcl::PointSurfel>::Ptr ModelPlane
+			(new pcl::SampleConsensusModelPlane<pcl::PointSurfel>(m_pVisualizer->m_pSceneCloud, PickedIndices));
+			pcl::RandomSampleConsensus<pcl::PointSurfel> Ransac(ModelPlane);
 
-			double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
-			if (X <= 1.0)
+			Ransac.setDistanceThreshold(0.4);
+			Ransac.computeModel();
+			Ransac.getModelCoefficients(Coeff);
+			if (!Coeff.size())
+				Plane = { 0, 0, 0, 0 };
+			const Eigen::Vector3f Normal(Coeff.x(), Coeff.y(), Coeff.z());
+			//TODO: move to config
+			const Eigen::Vector3f Up(0.0f, 0.0f, 1.0f);
+			if (Normal.dot(Up) < 0.0f)
+				Coeff *= -1.0f;
+
+			Plane = Coeff / Normal.norm();
+		}
+		std::pair<float, float> Peak;
+		{
+			float MinDistance = FLT_MAX;
+			float MaxDistance = -FLT_MAX;
+			for (auto& Index : PickedIndices)
 			{
-				X -= m_Hardness;
-				if (X < 0)
-					return 1.0;
-				X /= (1 - m_Hardness);
-				X *= X;
-				
-				return X * (X - 2) + 1;
+				const auto& Point = m_pVisualizer->m_pSceneCloud->at(Index);
+
+				MinDistance = std::min(MinDistance, Plane.dot(Point.getVector4fMap()));
+				MaxDistance = std::max(MaxDistance, Plane.dot(Point.getVector4fMap()));
 			}
+
+			Peak = { MinDistance, MaxDistance };
+		}
+
+		m_pVisualizer->removeAllUserColoredPoints();
+		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
+		{
+			const auto& Point = m_pVisualizer->m_pSceneCloud->at(i);
+			float Distance = Plane.dot(Point.getVector4fMap());
+
+			int Color;
+			if (Distance <= Peak.first || Distance >= Peak.second)
+				Color = 0;
+			else if (Peak.first * Tolerance <= Distance && Distance <= Peak.second * Tolerance)
+				Color = 255;
 			else
-				return 0;
-		};
-		if (m_UnwantedMode)
-			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
-		else
-			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
+			{
+				if (Distance < 0)
+					Distance /= -Peak.first;
+				else
+					Distance /= Peak.second;
+
+				Distance -= Tolerance;
+				Distance /= 1.0f - Tolerance;
+				Distance *= Distance;
+				
+				Color = 255 * Distance * (Distance - 2.0f) + 1.0f;
+			}
+
+			if (Color != 0)
+				m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
+		}
+				
+		//auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
+		//{
+		//	Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+
+		//	double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
+		//	if (X <= 1.0)
+		//	{
+		//		X -= m_Hardness;
+		//		if (X < 0)
+		//			return 1.0;
+		//		X /= (1 - m_Hardness);
+		//		X *= X;
+		//		
+		//		return X * (X - 2) + 1;
+		//	}
+		//	else
+		//		return 0;
+		//};
+		//if (m_UnwantedMode)
+		//	PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
+		//else
+		//	PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
 
 		if (m_IsRefreshImmediately)
 		{
