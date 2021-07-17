@@ -8,6 +8,7 @@
 #include <mutex>
 #include <pcl/sample_consensus/impl/sac_model_plane.hpp>
 #include <pcl/sample_consensus/impl/ransac.hpp>
+#include "PlanarityFeature.h"
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -201,45 +202,20 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-		
-		Eigen::Vector4f Plane;
-		float Tolerance = 0.12f;
-		{
-			_ASSERTE(m_pConfig);
-			Eigen::VectorXf Coeff;
-			pcl::SampleConsensusModelPlane<pcl::PointSurfel>::Ptr ModelPlane
-			(new pcl::SampleConsensusModelPlane<pcl::PointSurfel>(m_pVisualizer->m_pSceneCloud, PickedIndices));
-			pcl::RandomSampleConsensus<pcl::PointSurfel> Ransac(ModelPlane);
-
-			Ransac.setDistanceThreshold(0.4);
-			Ransac.computeModel();
-			Ransac.getModelCoefficients(Coeff);
-			if (!Coeff.size())
-				Plane = { 0, 0, 0, 0 };
-			const Eigen::Vector3f Normal(Coeff.x(), Coeff.y(), Coeff.z());
-			//TODO: move to config
-			const Eigen::Vector3f Up(0.0f, 0.0f, 1.0f);
-			if (Normal.dot(Up) < 0.0f)
-				Coeff *= -1.0f;
-
-			Plane = Coeff / Normal.norm();
-		}
-		std::pair<float, float> Peak;
-		{
-			float MinDistance = FLT_MAX;
-			float MaxDistance = -FLT_MAX;
-			for (auto& Index : PickedIndices)
-			{
-				const auto& Point = m_pVisualizer->m_pSceneCloud->at(Index);
-
-				MinDistance = std::min(MinDistance, Plane.dot(Point.getVector4fMap()));
-				MaxDistance = std::max(MaxDistance, Plane.dot(Point.getVector4fMap()));
-			}
-
-			Peak = { MinDistance, MaxDistance };
-		}
 
 		m_pVisualizer->removeAllUserColoredPoints();
+		pcl::PointCloud<pcl::PointXYZ>::Ptr pPickedCloud(new pcl::PointCloud<pcl::PointXYZ>);
+		for (auto& i : PickedIndices)
+		{
+			pcl::PointXYZ Point;
+			memcpy(Point.data, m_pVisualizer->m_pSceneCloud->at(i).data, sizeof(Point.data));
+
+			pPickedCloud->push_back(Point);
+		}
+		
+		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, 0.4, { 0.0f, 0.0f, 1.0f });
+		const auto Peak = PointCloudRetouch::CPlanarityFeature::computePeakDistance(pPickedCloud, Plane);
+
 		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
 		{
 			const auto& Point = m_pVisualizer->m_pSceneCloud->at(i);
@@ -248,21 +224,15 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			int Color;
 			if (Distance <= Peak.first || Distance >= Peak.second)
 				Color = 0;
-			else if (Peak.first * Tolerance <= Distance && Distance <= Peak.second * Tolerance)
-				Color = 255;
-			else
-			{
-				if (Distance < 0)
-					Distance /= -Peak.first;
-				else
-					Distance /= Peak.second;
 
-				Distance -= Tolerance;
-				Distance /= 1.0f - Tolerance;
-				Distance *= Distance;
-				
-				Color = 255 * Distance * (Distance - 2.0f) + 1.0f;
-			}
+			const auto Tolerance = 0.12f;
+			if (Peak.first * Tolerance <= Distance && Distance <= Peak.second * Tolerance)
+				Color = 255;
+
+			if (Distance < 0)
+				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.first * Tolerance, Peak.first, Distance);
+			else
+				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.second * Tolerance, Peak.second, Distance);
 
 			if (Color != 0)
 				m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
