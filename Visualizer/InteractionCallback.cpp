@@ -203,7 +203,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 				
-		auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
+		auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 		{
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
 
@@ -240,7 +240,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
 
-		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
+		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, -0.8f, 1.0f };
 
 		Eigen::Matrix4d Proj, View;
 		Camera.computeProjectionMatrix(Proj);
