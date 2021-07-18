@@ -21,6 +21,8 @@ namespace hiveObliquePhotography
 
 			void areaPicking(const pcl::visualization::AreaPickingEvent& vEvent);
 
+			void setPointPickingMode(const std::string& vMode) { _ASSERTE(vMode != ""); m_PointPickingMode = vMode; }
+
 			~CInteractionCallback() = default;
 
 		private:
@@ -32,6 +34,8 @@ namespace hiveObliquePhotography
 
 			bool m_UnwantedMode = true;
 			bool m_IsRefreshImmediately = true;	//点选是否立即刷新
+
+			std::string m_PointPickingMode = "";
 
 			CPointCloudVisualizer* m_pVisualizer = nullptr;
 

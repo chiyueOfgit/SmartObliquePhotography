@@ -22,6 +22,10 @@
 #include <pcl/search/kdtree.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/search/organized.h>
+#include <pcl/features/normal_3d_omp.h>
+#include <pcl/filters/conditional_removal.h>
+#include <pcl/features/don.h>
 
 #include "common/Product.h"
 #include "common/Singleton.h"

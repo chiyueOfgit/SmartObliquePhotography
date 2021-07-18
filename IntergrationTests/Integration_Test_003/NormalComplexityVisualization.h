@@ -2,6 +2,11 @@
 
 namespace hiveObliquePhotography
 {
+	namespace Visualization
+	{
+		class CPointCloudVisualizer;
+	}
+
 	namespace Feature
 	{
 		class CNormalComplexityVisualization : public hiveDesignPattern::CSingleton<CNormalComplexityVisualization>
@@ -17,7 +22,7 @@ namespace hiveObliquePhotography
 			CNormalComplexityVisualization();
 
 			PointCloud_t::Ptr m_pCloud = nullptr;
-			PointCloud_t::Ptr m_pFeatureCloud = nullptr;
+			Visualization::CPointCloudVisualizer* m_pVisualizer = nullptr;
 
 			friend class hiveDesignPattern::CSingleton<CNormalComplexityVisualization>;
 

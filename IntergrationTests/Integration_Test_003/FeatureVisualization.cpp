@@ -248,8 +248,12 @@ void CFeatureVisualization::onActionFeatureColor()
 
 void CFeatureVisualization::onActionFeatureNormalComplexity()
 {
+
     Feature::CNormalComplexityVisualization::getInstance()->init(m_pCloud);
     Feature::CNormalComplexityVisualization::getInstance()->run();
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::CPointCloudVisualizer::getInstance()->refresh(PointLabel);
 }
 
 void CFeatureVisualization::onActionFeaturePlanarity()
