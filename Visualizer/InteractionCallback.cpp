@@ -125,7 +125,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		if (m_pVisualizationConfig)
 		{
-			std::optional<float> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS);
+			std::optional<double> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS);
 			if (ScreenCircleRadius.has_value())
 				m_Radius = ScreenCircleRadius.value();
 		}
@@ -154,17 +154,17 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		if (m_pVisualizationConfig)
 		{
-			std::optional<float> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS);
+			std::optional<double> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS);
 			if (ScreenCircleRadius.has_value())
 				m_Radius = ScreenCircleRadius.value();
-			std::optional<float> ScreenCircleHardness = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_HARDNESS);
+			std::optional<double> ScreenCircleHardness = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_HARDNESS);
 			if (ScreenCircleHardness.has_value())
 				m_Hardness = ScreenCircleHardness.value();
 
-			std::optional<float> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
+			std::optional<bool> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
 			if (UnwantedMode.has_value())
 				m_UnwantedMode = UnwantedMode.value();
-			std::optional<float> RefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY);
+			std::optional<bool> RefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY);
 			if (RefreshImmediately.has_value())
 				m_IsRefreshImmediately = RefreshImmediately.value();
 		}
@@ -201,7 +201,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		};
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
-		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
+		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 				
 		auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 		{
@@ -221,10 +221,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			else
 				return 0;
 		};
-		if (m_UnwantedMode)
-			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
-		else
-			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
+		//if (m_UnwantedMode)
+		//	PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
+		//else
+		//	PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
 
 		if (m_IsRefreshImmediately)
 		{
