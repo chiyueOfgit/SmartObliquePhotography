@@ -142,7 +142,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			m_pVisualizer->refresh(PointLabel);
 		}
 	}
-
+	
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && m_MousePressStatus[1] && OnceMousePressStatus[1])
 	{
 		{
@@ -212,30 +212,32 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			pPickedCloud->push_back(Point);
 		}
 
-		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, 0.4, { 0.0f, 0.0f, 1.0f });
-		auto Peak = PointCloudRetouch::CPlanarityFeature::computePeakDistance(pPickedCloud, Plane);
-		const auto Tolerance = 0.12f;
-		Peak.first -= Tolerance;
-		Peak.second += Tolerance;
-
+		constexpr auto DistanceThreshold = 1.0f;
+		constexpr auto Tolerance = 0.2f;
+		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
+		m_ModelPlane.values.clear();
+		m_ModelPlane.values.push_back(Plane.x());
+		m_ModelPlane.values.push_back(Plane.y());
+		m_ModelPlane.values.push_back(Plane.z());
+		m_ModelPlane.values.push_back(Plane.w());
 		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
 		{
-			const auto& Point = m_pVisualizer->m_pSceneCloud->at(i);
-			float Distance = Plane.dot(Point.getVector4fMap());
-
+			const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
+			const auto Distance = abs(Plane.dot(Position));
+			
 			int Color;
-			if (Distance <= Peak.first || Distance >= Peak.second)
+			if (Distance >= DistanceThreshold)
 				Color = 0;
-			else if (Peak.first * Tolerance <= Distance && Distance <= Peak.second * Tolerance)
-				Color = 255;
-			else if (Distance < 0)
-				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.first * Tolerance, Peak.first, Distance);
+			else if (Distance >= DistanceThreshold * Tolerance)
+				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
 			else
-				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.second * Tolerance, Peak.second, Distance);
+				Color = 255;
 
 			if (Color != 0)
 				m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
 		}
+
+		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 		
 		//auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
 		//{
@@ -295,6 +297,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		auto Length = (CameraPos - PixelPos).norm();
 
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
+		m_pVisualizer->getVisualizer()->addPlane(m_ModelPlane);
 		if (!m_MousePressStatus[0])
 		{
 			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.00115 * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
