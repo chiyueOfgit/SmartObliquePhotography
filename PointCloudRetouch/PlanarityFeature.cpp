@@ -19,7 +19,7 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	const pcl::PointCloud<pcl::PointXYZ>::Ptr pDeterminantCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	CloudScene.dumpPointCloud(vDeterminantPointSet, *pDeterminantCloud);
 	
-	m_Plane = fitPlane(pDeterminantCloud, 0.4, { 0.0f, 0.0f, 1.0f });
+	m_Plane = fitPlane(pDeterminantCloud, m_DistanceThreshold, { 0.0f, 0.0f, 1.0f });
 	if (m_Plane.norm() < 1.0f)
 		return 0.0;
 		
@@ -40,16 +40,15 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 //FUNCTION: 
 double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-	constexpr auto DistanceThreshold = 1.0f;
 	const auto Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
 	
 	const auto& Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(vInputPoint);
 	const auto Distance = abs(m_Plane.dot(Position));
 
-	if (Distance >= DistanceThreshold)
+	if (Distance >= m_DistanceThreshold)
 		return 0;
-	else if (Distance >= DistanceThreshold * Tolerance)
-		return smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
+	else if (Distance >= m_DistanceThreshold * Tolerance)
+		return smoothAttenuation(m_DistanceThreshold * Tolerance, m_DistanceThreshold, Distance);
 	else
 		return 1;
 }
@@ -74,7 +73,6 @@ Eigen::Vector4f CPlanarityFeature::fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr 
 	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr ModelPlane(new pcl::SampleConsensusModelPlane<pcl::PointXYZ>(vCloud));
 	pcl::RandomSampleConsensus<pcl::PointXYZ> Ransac(ModelPlane);
 	Ransac.setDistanceThreshold(vDistanceThreshold);
-	//Ransac.setProbability(0.5);
 	Ransac.computeModel();
 	Ransac.getModelCoefficients(Coeff);
 	if (!Coeff.size())

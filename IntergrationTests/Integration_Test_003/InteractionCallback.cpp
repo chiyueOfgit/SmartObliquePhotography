@@ -213,13 +213,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		}
 
 		constexpr auto DistanceThreshold = 1.0f;
-		constexpr auto Tolerance = 0.2f;
+		constexpr auto Tolerance = 0.1f;
 		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
-		m_ModelPlane.values.clear();
-		m_ModelPlane.values.push_back(Plane.x());
-		m_ModelPlane.values.push_back(Plane.y());
-		m_ModelPlane.values.push_back(Plane.z());
-		m_ModelPlane.values.push_back(Plane.w());
 		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
 		{
 			const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
@@ -297,7 +292,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		auto Length = (CameraPos - PixelPos).norm();
 
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
-		m_pVisualizer->getVisualizer()->addPlane(m_ModelPlane);
 		if (!m_MousePressStatus[0])
 		{
 			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.00115 * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");

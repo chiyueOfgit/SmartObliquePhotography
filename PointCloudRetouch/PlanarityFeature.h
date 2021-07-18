@@ -23,6 +23,7 @@ namespace hiveObliquePhotography
 		private:
 			//(normalized.normal.x, normalized.normal.y, normalized.normal.z, distance)
 			Eigen::Vector4f m_Plane;
+			const float m_DistanceThreshold = 1.0f;
 		};
 	}
 }
