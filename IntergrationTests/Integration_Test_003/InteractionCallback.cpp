@@ -220,12 +220,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_ModelPlane.values.push_back(Plane.y());
 		m_ModelPlane.values.push_back(Plane.z());
 		m_ModelPlane.values.push_back(Plane.w());
-		const auto Peak = PointCloudRetouch::CPlanarityFeature::computePeakDistance(pPickedCloud, Plane);
-
 		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
 		{
-			auto Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
-			auto Distance = abs(Plane.dot(Position));
+			const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
+			const auto Distance = abs(Plane.dot(Position));
 			
 			int Color;
 			if (Distance >= DistanceThreshold)
