@@ -213,7 +213,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		}
 
 		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, 0.4, { 0.0f, 0.0f, 1.0f });
-		const auto Peak = PointCloudRetouch::CPlanarityFeature::computePeakDistance(pPickedCloud, Plane);
+		auto Peak = PointCloudRetouch::CPlanarityFeature::computePeakDistance(pPickedCloud, Plane);
+		const auto Tolerance = 0.12f;
+		Peak.first -= Tolerance;
+		Peak.second += Tolerance;
 
 		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
 		{
@@ -221,7 +224,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			float Distance = Plane.dot(Point.getVector4fMap());
 
 			int Color;
-			const auto Tolerance = 0.12f;
 			if (Distance <= Peak.first || Distance >= Peak.second)
 				Color = 0;
 			else if (Peak.first * Tolerance <= Distance && Distance <= Peak.second * Tolerance)
