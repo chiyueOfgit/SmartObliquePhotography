@@ -215,8 +215,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		constexpr auto DistanceThreshold = 1.0f;
 		constexpr auto Tolerance = 0.1f;
 		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
-		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
-		{
+
+		if (Plane.squaredNorm() >= 0.5f)
+			for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
+		{			
 			const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
 			const auto Distance = abs(Plane.dot(Position));
 			
