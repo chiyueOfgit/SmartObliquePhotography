@@ -214,21 +214,23 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				pPickedCloud->push_back(Point);
 			}
 
-			constexpr auto DistanceThreshold = 1.0f;
-			constexpr auto Tolerance = 0.1f;
-			const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
-			for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
-			{
-				const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
-				const auto Distance = abs(Plane.dot(Position));
+		constexpr auto DistanceThreshold = 1.0f;
+		constexpr auto Tolerance = 0.1f;
+		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
 
-				int Color;
-				if (Distance >= DistanceThreshold)
-					Color = 0;
-				else if (Distance >= DistanceThreshold * Tolerance)
-					Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
-				else
-					Color = 255;
+		if (Plane.squaredNorm() >= 0.5f)
+			for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
+		{			
+			const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
+			const auto Distance = abs(Plane.dot(Position));
+			
+			int Color;
+			if (Distance >= DistanceThreshold)
+				Color = 0;
+			else if (Distance >= DistanceThreshold * Tolerance)
+				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
+			else
+				Color = 255;
 
 				if (Color != 0)
 					m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });

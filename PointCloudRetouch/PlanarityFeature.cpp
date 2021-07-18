@@ -40,6 +40,9 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 //FUNCTION: 
 double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
+	if (m_Plane.squaredNorm() < 0.5f)
+		return 0.0;
+	
 	const auto Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
 	
 	const auto& Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(vInputPoint);
