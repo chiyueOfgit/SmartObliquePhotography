@@ -263,7 +263,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
 		if (!m_MousePressStatus[0])
 		{
-			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.00115 * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
+			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.5555 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->updateCamera();
 		}
