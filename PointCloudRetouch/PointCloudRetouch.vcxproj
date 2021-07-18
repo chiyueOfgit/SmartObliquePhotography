@@ -163,7 +163,6 @@
     <ClInclude Include="EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="Feature.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="GroundHeightFilter.h" />
     <ClInclude Include="InitialClusterCreator.h" />
     <ClInclude Include="NeighborhoodBuilder.h" />
     <ClInclude Include="NormalComplexity.h" />
@@ -190,7 +189,6 @@
     <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EuclideanNeighborhoodBuilder.cpp" />
-    <ClCompile Include="GroundHeightFilter.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
     <ClCompile Include="NeighborhoodBuilder.cpp" />
     <ClCompile Include="NormalComplexity.cpp" />
