@@ -77,6 +77,7 @@ Eigen::Vector4f CPlanarityFeature::fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr 
 	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr ModelPlane(new pcl::SampleConsensusModelPlane<pcl::PointXYZ>(vCloud));
 	pcl::RandomSampleConsensus<pcl::PointXYZ> Ransac(ModelPlane);
 	Ransac.setDistanceThreshold(vDistanceThreshold);
+	//Ransac.setProbability(0.5);
 	Ransac.computeModel();
 	Ransac.getModelCoefficients(Coeff);
 	if (!Coeff.size())
@@ -91,15 +92,25 @@ Eigen::Vector4f CPlanarityFeature::fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr 
 //FUNCTION: 
 std::pair<float, float> CPlanarityFeature::computePeakDistance(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, const Eigen::Vector4f& vPlane)
 {
+	int Cnt = 0;
+	
 	float MinDistance = FLT_MAX;
 	float MaxDistance = -FLT_MAX;
-	for (auto& i : *vCloud)
+	for (const auto& i : *vCloud)
 	{
-		MinDistance = std::min(MinDistance, vPlane.dot(i.getVector4fMap()));
-		MaxDistance = std::max(MaxDistance, vPlane.dot(i.getVector4fMap()));
+		if (MinDistance > vPlane.dot(i.getVector4fMap()))
+		{
+			++Cnt;
+			MinDistance = vPlane.dot(i.getVector4fMap());
+		}
+		if (MaxDistance < vPlane.dot(i.getVector4fMap()))
+		{
+			++Cnt;
+			MaxDistance = vPlane.dot(i.getVector4fMap());
+		}
 	}
 
-	return { MinDistance, MaxDistance };
+	return { Cnt,vCloud->size() };
 }
 
 //*****************************************************************
