@@ -25,7 +25,7 @@ namespace hiveObliquePhotography
 			template<typename Point_t>
 			void dumpPoint(pcl::index_t vIndex, Point_t& voPoint) const
 			{
-				_ASSERTE(Index < m_pPointCloudScene->size());
+				_ASSERTE(vIndex < m_pPointCloudScene->size());
 				__dumpPoint(m_pPointCloudScene->points[vIndex], voPoint);
 			}
 			
