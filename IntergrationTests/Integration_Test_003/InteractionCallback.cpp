@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include "PlanarityFeature.h"
+#include "ColorVisualization.h"
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -200,62 +201,45 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		};
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
-		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
-		m_pVisualizer->removeAllUserColoredPoints();
-		pcl::PointCloud<pcl::PointXYZ>::Ptr pPickedCloud(new pcl::PointCloud<pcl::PointXYZ>);
-		for (auto& i : PickedIndices)
+		if (m_pVisualizer->getFeatureMode() == EFeatureMode::PlaneFeature)
 		{
-			pcl::PointXYZ Point;
-			memcpy(Point.data, m_pVisualizer->m_pSceneCloud->at(i).data, sizeof(Point.data));
+			m_pVisualizer->removeAllUserColoredPoints();
+			pcl::PointCloud<pcl::PointXYZ>::Ptr pPickedCloud(new pcl::PointCloud<pcl::PointXYZ>);
+			for (auto& i : PickedIndices)
+			{
+				pcl::PointXYZ Point;
+				memcpy(Point.data, m_pVisualizer->m_pSceneCloud->at(i).data, sizeof(Point.data));
 
-			pPickedCloud->push_back(Point);
+				pPickedCloud->push_back(Point);
+			}
+
+			constexpr auto DistanceThreshold = 1.0f;
+			constexpr auto Tolerance = 0.1f;
+			const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
+			for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
+			{
+				const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
+				const auto Distance = abs(Plane.dot(Position));
+
+				int Color;
+				if (Distance >= DistanceThreshold)
+					Color = 0;
+				else if (Distance >= DistanceThreshold * Tolerance)
+					Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
+				else
+					Color = 255;
+
+				if (Color != 0)
+					m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
+			}
 		}
-
-		constexpr auto DistanceThreshold = 1.0f;
-		constexpr auto Tolerance = 0.1f;
-		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
-		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
+		else if (m_pVisualizer->getFeatureMode() == EFeatureMode::ColorFeature)
 		{
-			const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
-			const auto Distance = abs(Plane.dot(Position));
-			
-			int Color;
-			if (Distance >= DistanceThreshold)
-				Color = 0;
-			else if (Distance >= DistanceThreshold * Tolerance)
-				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
-			else
-				Color = 255;
-
-			if (Color != 0)
-				m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
+			m_pVisualizer->removeAllUserColoredPoints();
+			hiveObliquePhotography::Feature::CColorVisualization::getInstance()->init(m_pVisualizer->m_pSceneCloud);
+			hiveObliquePhotography::Feature::CColorVisualization::getInstance()->run(PickedIndices);
 		}
-
-		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-		
-		//auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
-		//{
-		//	Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
-
-		//	double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
-		//	if (X <= 1.0)
-		//	{
-		//		X -= m_Hardness;
-		//		if (X < 0)
-		//			return 1.0;
-		//		X /= (1 - m_Hardness);
-		//		X *= X;
-		//		
-		//		return X * (X - 2) + 1;
-		//	}
-		//	else
-		//		return 0;
-		//};
-		//if (m_UnwantedMode)
-		//	PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
-		//else
-		//	PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
 
 		if (m_IsRefreshImmediately)
 		{
