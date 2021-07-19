@@ -19,8 +19,8 @@ using namespace hiveObliquePhotography;
 #define PI 3.141592653589793
 #define radians(x) (x * PI / 180)
 
-const std::string ConfigPath = "../TestData/Config/Test011_PointCloudRetouchConfig.xml";
-const std::string CameraPath = "../TestData/Test011_Model/VirtualCircleCameraInfo.txt";
+const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test011_PointCloudRetouchConfig.xml");
+const std::string CameraPath = TESTMODEL_DIR + std::string("Test011_Model/VirtualCircleCameraInfo.txt");
 
 class CTestCreateInitialCluster : public testing::Test
 { 
