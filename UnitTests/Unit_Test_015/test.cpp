@@ -358,7 +358,7 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
-	Eigen::Vector3f GTNormal{ 1.0f,1.0f,1.0f };
+	Eigen::Vector3f GTNormal{ 0.0f,0.0f,1.0f };
 	GTNormal = GTNormal / GTNormal.norm();
 	pcl::PointSurfel Temp;
 	Temp.x = GTPosition[0];
@@ -402,7 +402,7 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
-	Eigen::Vector3f GTNormal{ 1.0f,1.0f,1.0f };
+	Eigen::Vector3f GTNormal{ 0.0f,0.0f,1.0f };
 	GTNormal = GTNormal / GTNormal.norm();
 	pcl::PointSurfel ThisPoint;
 	ThisPoint.x = GTPosition[0];
