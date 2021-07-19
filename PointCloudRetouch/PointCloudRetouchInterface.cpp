@@ -116,5 +116,5 @@ void hiveObliquePhotography::PointCloudRetouch::hiveRunPrecompute(const std::str
 		_mkdir(KEYWORD::PRECOMPUTE_FOLDER.c_str());
 	pPrecomputeManager->registerPrecompute<std::vector<double>>([=]()->bool {return pFeature->precomputeSceneCloudNormalComplexity(); }, KEYWORD::PRECOMPUTE_FOLDER + vModelName + "_Normal_Complexity.txt", pFeature->getPtr2Container());
 
-	pPrecomputeManager->runAllPrecompute();
+	pPrecomputeManager->precompute();
 }
