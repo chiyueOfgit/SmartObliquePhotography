@@ -73,8 +73,9 @@ protected:
 		Pos = Proj * View * Pos;
 		Pos /= Pos.w();
 
-		m_RadiusInWindow = Pos.norm() * m_WindowSize.y();
+		m_RadiusInWindow = Pos.y() * m_WindowSize.y();
 
+		int i = 0;
 		m_pHardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 		{
 			if (m_CurrentHardness <= 0)
