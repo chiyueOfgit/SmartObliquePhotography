@@ -249,7 +249,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
 
-		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, -0.8f, 1.0f };
+		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
 
 		Eigen::Matrix4d Proj, View;
 		Camera.computeProjectionMatrix(Proj);

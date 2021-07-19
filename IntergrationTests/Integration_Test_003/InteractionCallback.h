@@ -32,6 +32,8 @@ namespace hiveObliquePhotography
 			double m_Radius = 40.0;
 			double m_Hardness = 0.8;
 
+			std::vector<Eigen::Vector3i> m_MainBaseColors;
+
 			bool m_UnwantedMode = true;
 			bool m_IsRefreshImmediately = true;	//点选是否立即刷新
 
