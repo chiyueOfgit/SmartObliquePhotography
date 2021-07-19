@@ -35,7 +35,7 @@ namespace hiveObliquePhotography
 
 			const hiveConfig::CHiveConfig* getFeatureConfig(const std::string& vFeatureSig);
 
-			void runAllPrecompute();
+			void precompute();
 
 			void clear();
 

@@ -18,9 +18,10 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	
 	const pcl::PointCloud<pcl::PointXYZ>::Ptr pDeterminantCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	CloudScene.dumpPointCloud(vDeterminantPointSet, *pDeterminantCloud);
-	
+
+	m_DistanceThreshold = m_pConfig->getAttribute<float>("DISTANCE_THRESHOLD").value();
 	m_Plane = fitPlane(pDeterminantCloud, m_DistanceThreshold, { 0.0f, 0.0f, 1.0f });
-	if (m_Plane.norm() < 1.0f)
+	if (m_Plane.squaredNorm() < 0.5f)
 		return 0.0;
 		
 	double SumMatch = 0.0;

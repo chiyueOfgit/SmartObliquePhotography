@@ -13,7 +13,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-void CPrecomputeManager::runAllPrecompute()
+void CPrecomputeManager::precompute()
 {
 	for (auto pFunc : m_PrecomputeList)
 		pFunc();

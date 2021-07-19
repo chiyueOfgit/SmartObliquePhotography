@@ -235,10 +235,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 					int Color;
 					if (Distance >= DistanceThreshold)
 						Color = 0;
-					else if (Distance >= DistanceThreshold * Tolerance)
-						Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
 					else
-						Color = 255;
+						Color = 255 - 255 * Distance / DistanceThreshold;
+					//else if (Distance >= DistanceThreshold * Tolerance)
+					//	Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
+					//else
+					//	Color = 255;
 
 					if (Color != 0)
 						m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
