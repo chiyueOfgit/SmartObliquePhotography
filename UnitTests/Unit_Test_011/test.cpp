@@ -28,7 +28,7 @@ protected:
 	void SetUp() override
 	{
 		m_pCloud.reset(new PointCloud_t);	
-		float AngleStep = 10.0f, RadiusStep = 0.1f, Epsilon = 0.0001f;
+		float AngleStep = 10.0f, RadiusStep = 0.05f, Epsilon = 0.0001f;
 		for (float Radius = 0.1f; Radius - m_CircleRadius <= Epsilon; Radius += RadiusStep)
 		{
 			for (float Angle = 0.0f; Angle < 360.0f; Angle += AngleStep)
@@ -126,9 +126,9 @@ protected:
 //给定圆内点集及不同硬度，能创建出具有分界的GenerationSet, ValidationSet的CPointCluster
 TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 {
-	//无硬度
+	//小硬度
 	{
-		float ZeroHardness = 0.0f;
+		float ZeroHardness = 0.05f;
 		m_CurrentHardness = ZeroHardness;
 		PointCloudRetouch::CPointCluster* pCluster = nullptr;
 		ASSERT_NO_THROW(pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, m_pHardnessFunc, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
@@ -136,13 +136,13 @@ TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 		if (pCluster)
 		{
 			auto GenerationSet = pCluster->getCoreRegion();
-			ASSERT_TRUE(GenerationSet.empty());
+			ASSERT_TRUE(!GenerationSet.empty());
 		}
 	}
 
-	//硬度满
+	//大硬度
 	{
-		float FullHardness = 1.0f;
+		float FullHardness = 0.95f;
 		m_CurrentHardness = FullHardness;
 		auto pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, m_pHardnessFunc, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true));
 		ASSERT_NE(pCluster, nullptr);
