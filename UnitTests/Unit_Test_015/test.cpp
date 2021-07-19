@@ -132,7 +132,7 @@ Eigen::Vector3f generateNormal(Eigen::Vector3f& vStandardNormal, float vDisturb)
 
 void generateInOutRadiusPoint(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo, bool vOnThePlane, float vDisturb, PointCloud_t& vioPointSet, int vNum)
 {
-	Eigen::Vector3f StandardNormal{ 1.0f,1.0f,1.0f };
+	Eigen::Vector3f StandardNormal{ 0.0f,0.0f,1.0f };
 	while (vNum--)
 	{
 		Eigen::Vector3f Position = generatePosition(vCenterPosition, vFrom, vTo, vOnThePlane);
@@ -370,7 +370,7 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	pCloud->push_back(Temp);
 	auto Radius = *pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
 	generateInOutRadiusPoint(GTPosition, 0, Radius, true,0.0f, *pCloud, 20);
-	generateInOutRadiusPoint(GTPosition, Radius + 2, Radius + 4,true, 1.0f, *pCloud, 5);
+	generateInOutRadiusPoint(GTPosition, Radius + 2, Radius + 4,true, 0.4f, *pCloud, 5);
 
 	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
@@ -413,7 +413,7 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	ThisPoint.normal_z = GTNormal[2];
 	pCloud->push_back(ThisPoint);
 	auto Radius = *pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
-	generateInOutRadiusPoint(GTPosition, 0, Radius, false,1.0f, *pCloud, 20);
+	generateInOutRadiusPoint(GTPosition, 0, Radius, false,0.4f, *pCloud, 20);
 
 	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
