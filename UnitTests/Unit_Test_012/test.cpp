@@ -60,7 +60,18 @@ TEST_F(TestPointCluster, DeathTest_InvalidIndex)
 	
 	pcl::index_t TestIndex = -1;
 	Eigen::Matrix4d Pv;
-	const auto* pPointCluster = pManager->generateInitialCluster(UserMarkedRegion,  Pv, [](auto) { return 1; }, PointCloudRetouch::EPointLabel::KEPT);
+	const std::string CameraPath = TESTMODEL_DIR + std::string("Test008_Model/CompleteBuildingCameraInfo.txt");
+	pcl::visualization::PCLVisualizer* pVisualizer = nullptr;
+	pVisualizer = new pcl::visualization::PCLVisualizer("Viewer", true);
+	pcl::visualization::Camera Camera;
+	pVisualizer->loadCameraParameters(CameraPath);
+	pVisualizer->getCameraParameters(Camera);
+	Eigen::Matrix4d Proj, View;
+	Camera.computeProjectionMatrix(Proj);
+	Camera.computeViewMatrix(View);
+	Pv = Proj * View;
+
+	const auto* pPointCluster = pManager->generateInitialCluster(UserMarkedRegion,  Pv, [](auto) { static int i = 0; return i++ % 2 ? 0.9f : 0.1f; }, PointCloudRetouch::EPointLabel::KEPT);
 	ASSERT_ANY_THROW(pPointCluster->evaluateProbability(TestIndex));
 	//double Res = pPointCluster->evaluteProbability(TestIndex);
 }
@@ -83,7 +94,7 @@ TEST_F(TestPointCluster, FalseProbability_Test)
 	
 	pcl::index_t TestIndex = 1;
 
-	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, Pv, [](auto) { return 1; }, PointCloudRetouch::EPointLabel::KEPT);
+	auto pPointCluster = pManager->generateInitialCluster(UserMarkedRegion, Pv, [](auto) { static int i = 0; return i++ % 2 ? 0.9f : 0.1f; }, PointCloudRetouch::EPointLabel::KEPT);
 	double Res = pPointCluster->evaluateProbability(TestIndex);
 	EXPECT_LE(Res, 1.0);
 	EXPECT_GE(Res, 0.0);
