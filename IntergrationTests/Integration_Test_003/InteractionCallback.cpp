@@ -104,6 +104,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_MousePressStatus[1] = PressStatus;
 		OnceMousePressStatus[1] = PressStatus;
 	}
+	else if (Button == pcl::visualization::MouseEvent::MiddleButton)
+	{
+		m_MousePressStatus[2] = PressStatus;
+		OnceMousePressStatus[2] = PressStatus;
+	}
 
 	static int DeltaX, PosX, DeltaY, PosY;
 	DeltaX = vEvent.getX() - PosX;
@@ -296,7 +301,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		auto Length = (CameraPos - PixelPos).norm();
 
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
-		if (!m_MousePressStatus[0])
+		if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
 		{
 			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.5555 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");

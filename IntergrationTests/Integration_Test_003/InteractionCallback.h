@@ -27,7 +27,7 @@ namespace hiveObliquePhotography
 
 		private:
 			bool m_KeyPressStatus[256] = { false };
-			bool m_MousePressStatus[2] = { false };
+			bool m_MousePressStatus[3] = { false };
 
 			double m_Radius = 40.0;
 			double m_Hardness = 0.8;
