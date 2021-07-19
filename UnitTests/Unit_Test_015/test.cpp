@@ -119,7 +119,7 @@ Eigen::Vector3f generatePosition(Eigen::Vector3f& vCenterPosition, float vFrom, 
 	if(vOnThePlane)
 		return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2]};
 	else
-	    return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] };
+	    return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] / 2 };
 }
 
 Eigen::Vector3f generateNormal(Eigen::Vector3f& vStandardNormal, float vDisturb)
@@ -359,7 +359,7 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
 	Eigen::Vector3f GTNormal{ 0.0f,0.0f,1.0f };
-	GTNormal = GTNormal / GTNormal.norm();
+	GTNormal /= GTNormal.norm();
 	pcl::PointSurfel Temp;
 	Temp.x = GTPosition[0];
 	Temp.y = GTPosition[1];
@@ -403,7 +403,7 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
 	Eigen::Vector3f GTNormal{ 0.0f,0.0f,1.0f };
-	GTNormal = GTNormal / GTNormal.norm();
+	GTNormal /= GTNormal.norm();
 	pcl::PointSurfel ThisPoint;
 	ThisPoint.x = GTPosition[0];
 	ThisPoint.y = GTPosition[1];
@@ -434,10 +434,10 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	pTileLoader->initV(pConfig);
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
 
-	auto Diff = (GTNormal - OutNormal)/ 2.0f;
+	double Diff = GTNormal.dot(OutNormal);
 
-	auto GT = Diff.norm();
-	GTEST_ASSERT_LT(abs(Res - GT),0.2);
+	auto GT = sqrt(1 - Diff * Diff);
+	GTEST_ASSERT_LT(abs(Res - GT),0.15);
 	
 }
 
