@@ -31,7 +31,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.cpp" />
-    <ClCompile Include="..\ObliquePhotographyData\pch.cpp" />
+    <ClCompile Include="..\ObliquePhotographyData\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\ObliquePhotographyData\PointCloudLoader.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\PointCloudPCDLoader.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\PointCloudPLYLoader.cpp" />
@@ -146,7 +148,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;HIVE_STATIC_LIBRARY;_UNIT_TEST;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
