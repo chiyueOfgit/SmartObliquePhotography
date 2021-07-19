@@ -62,5 +62,6 @@
   <ItemGroup>
     <Xml Include="VisualizationConfig.xml" />
     <Xml Include="SingleStepConfig.xml" />
+    <Xml Include="PointCloudRetouchConfig.xml" />
   </ItemGroup>
 </Project>

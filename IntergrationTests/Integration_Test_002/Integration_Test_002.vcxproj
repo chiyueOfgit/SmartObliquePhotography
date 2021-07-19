@@ -147,6 +147,7 @@
     <QtRcc Include="SingleStepWindow.qrc" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="PointCloudRetouchConfig.xml" />
     <Xml Include="SingleStepConfig.xml" />
     <Xml Include="VisualizationConfig.xml" />
   </ItemGroup>
