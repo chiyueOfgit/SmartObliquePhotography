@@ -12,7 +12,8 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 {
 	_ASSERTE(vPointCloud && vConfig);
 
-	_ASSERTE(__reset());
+	bool Status = __reset();
+	_ASSERTE(Status);
 
 	m_Scene.init(vPointCloud);
 	m_PointLabelSet.init(m_Scene.getNumPoint());

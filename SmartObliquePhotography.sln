@@ -49,9 +49,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_001(highli
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_002(single_step_expand)", "IntergrationTests\Integration_Test_002\Integration_Test_002.vcxproj", "{732A8EE3-B788-471E-B4CF-801F7C705AC8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "markdown", "markdown", "{D58CE4FB-BDF9-4589-A050-3327EBE37EB3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestReport", "TestReport", "{D58CE4FB-BDF9-4589-A050-3327EBE37EB3}"
 	ProjectSection(SolutionItems) = preProject
-		UnitTests\Markdown\Report7.7.md = UnitTests\Markdown\Report7.7.md
+		UnitTests\TestReport\TestReport.md = UnitTests\TestReport\TestReport.md
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_009 (outlier_detector)", "UnitTests\Unit_Test_009\Unit_Test_009.vcxproj", "{4328358C-5988-4654-9998-BF998A36A4EE}"

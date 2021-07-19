@@ -103,6 +103,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_MousePressStatus[1] = PressStatus;
 		OnceMousePressStatus[1] = PressStatus;
 	}
+	else if (Button == pcl::visualization::MouseEvent::MiddleButton)
+	{
+		m_MousePressStatus[2] = PressStatus;
+		OnceMousePressStatus[2] = PressStatus;
+	}
 
 	static int DeltaX, PosX, DeltaY, PosY;
 	DeltaX = vEvent.getX() - PosX;
@@ -146,6 +151,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && m_MousePressStatus[1] && OnceMousePressStatus[1])
 	{
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
+
 		{
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
@@ -232,6 +239,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
 		}
+
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
 	}
 
 	//draw point picking hint circle
@@ -261,7 +270,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		auto Length = (CameraPos - PixelPos).norm();
 
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
-		if (!m_MousePressStatus[0])
+		if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
 		{
 			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.5555 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");

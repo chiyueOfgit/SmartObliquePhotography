@@ -67,6 +67,7 @@ TEST_F(CTestNeighborhoodBuilder, Nearest_Illegal_Input_Test)
 	ASSERT_ANY_THROW(pManagerNearest->buildNeighborhood(-1, 1));
 	ASSERT_ANY_THROW(pManagerNearest->buildNeighborhood(1000000, 1));
 }
+
 TEST_F(CTestNeighborhoodBuilder, Radius_Symmetry_Test)
 {
 	auto pManager = generateRandomTestee(1000, -100, 100, RadiusConfigFilePath);
@@ -77,58 +78,14 @@ TEST_F(CTestNeighborhoodBuilder, Radius_Symmetry_Test)
 		auto TestIndex = hiveMath::hiveGenerateRandomInteger(0, 999);
 		
 		auto TestIndexNeighborhood = pManager->buildNeighborhood(TestIndex, ++SeedClusterIndex);
-		if (TestIndexNeighborhood.size() == 1)
+		if (TestIndexNeighborhood.size() == 0)
 			continue;
-		
-		for (std::vector<int>::iterator it = TestIndexNeighborhood.begin(); it != TestIndexNeighborhood.end(); ++it)
-			if (*it == TestIndex)
-				it = TestIndexNeighborhood.erase(it);
 
 		auto Neighbor = TestIndexNeighborhood.back();
 		
 		auto Neighborhood = pManager->buildNeighborhood(Neighbor, ++SeedClusterIndex);
 		auto k = Neighborhood.begin();
 		for (; k != Neighborhood.end(); ++k)
-			if (*k == TestIndex)
-				break;
-
-		ASSERT_NE(k, Neighborhood.end());
-	}
-}
-
-TEST_F(CTestNeighborhoodBuilder, Radius_Reflexive_Test)
-{
-	auto pManager = generateRandomTestee(1000, -100, 100, RadiusConfigFilePath);
-	int SeedClusterIndex = 0;
-
-	for (size_t i = 0; i < 500; i++)
-	{
-		auto TestIndex = hiveMath::hiveGenerateRandomInteger(0, 999);
-
-		std::vector<pcl::index_t> Neighborhood = pManager->buildNeighborhood(TestIndex, ++SeedClusterIndex);
-
-		auto k = Neighborhood.begin();
-		for (; k != Neighborhood.end(); k++)
-			if (*k == TestIndex)
-				break;
-
-		ASSERT_NE(k, Neighborhood.end());
-	}
-}
-
-TEST_F(CTestNeighborhoodBuilder, Nearest_Reflexive_Test)
-{
-	auto pManager = generateRandomTestee(1000, -100, 100, NearestConfigFilePath);
-	int SeedClusterIndex = 0;
-
-	for (size_t i = 0; i < 500; i++)
-	{
-		auto TestIndex = hiveMath::hiveGenerateRandomInteger(0, 999);
-
-		std::vector<pcl::index_t> Neighborhood = pManager->buildNeighborhood(TestIndex, ++SeedClusterIndex);
-
-		auto k = Neighborhood.begin();
-		for (; k != Neighborhood.end(); k++)
 			if (*k == TestIndex)
 				break;
 

@@ -19,8 +19,8 @@ using namespace hiveObliquePhotography;
 #define PI 3.141592653589793
 #define radians(x) (x * PI / 180)
 
-const std::string ConfigPath = "../TestData/Config/Test011_PointCloudRetouchConfig.xml";
-const std::string CameraPath = "../TestData/Test011_Model/VirtualCircleCameraInfo.txt";
+const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test011_PointCloudRetouchConfig.xml");
+const std::string CameraPath = TESTMODEL_DIR + std::string("Test011_Model/VirtualCircleCameraInfo.txt");
 
 class CTestCreateInitialCluster : public testing::Test
 { 
@@ -28,8 +28,8 @@ protected:
 	void SetUp() override
 	{
 		m_pCloud.reset(new PointCloud_t);	
-		float AngleStep = 10.0f, RadiusStep = 0.05f, Epsilon = 0.0001f;
-		for (float Radius = 0.1f; Radius - m_CircleRadius <= Epsilon; Radius += RadiusStep)
+		float AngleStep = 10.0f, RadiusStep = 0.05f, Epsilon = 0.0005f;
+		for (float Radius = RadiusStep; Radius - m_CircleRadius <= Epsilon; Radius += RadiusStep)
 		{
 			for (float Angle = 0.0f; Angle < 360.0f; Angle += AngleStep)
 			{
@@ -71,12 +71,18 @@ protected:
 
 		Eigen::Vector4d Pos = { 0.0, m_CircleRadius, 0.0, 1.0 };
 		Pos = Proj * View * Pos;
-		Pos /= Pos.w();
+		Pos /= Pos.eval().w();
 
-		m_RadiusInWindow = Pos.norm() * m_WindowSize.y();
+		m_RadiusInWindow = Pos.y() * m_WindowSize.y();
 
+		int i = 0;
 		m_pHardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 		{
+			if (m_CurrentHardness <= 0)
+				return 0.0;
+			else if (m_CurrentHardness >= 1)
+				return 1.0;
+
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * m_WindowSize.x() / 2, (vPos.y() + 1) * m_WindowSize.y() / 2);
 
 			double X = (PosOnWindow - 0.5 * m_WindowSize).norm() / m_RadiusInWindow;
@@ -175,7 +181,9 @@ TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 					MaxIndex = Index;
 				}
 			}
-				std::cerr << "MaxIndex: " << MaxIndex << std::endl;
+
+			std::cerr << "CurrentHardness: " << Hardness << std::endl;
+			std::cerr << "MaxIndex: " << MaxIndex << std::endl;
 			ASSERT_NE(MaxGenerationRadius, m_CircleRadius);
 			ASSERT_NE(GenerationSet.size(), m_Indices.size());
 

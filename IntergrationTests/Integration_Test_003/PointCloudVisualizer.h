@@ -2,6 +2,11 @@
 
 namespace hiveObliquePhotography
 {
+	namespace FeatureVisualization
+	{
+		class CFeatureVisualization;
+	}
+
 	namespace Visualization
 	{
 		enum class EFeatureMode
@@ -34,6 +39,8 @@ namespace hiveObliquePhotography
 
 			pcl::visualization::PCLVisualizer* getVisualizer() { return m_pPCLVisualizer; }
 
+			void setQtWindow(FeatureVisualization::CFeatureVisualization* vWindow) { m_pQtWindow = vWindow; }
+
 			int addUserColoredPoints(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor);
 			void removeUserColoredPoints(int vId);
 			void removeAllUserColoredPoints() { m_UserColoredPoints.clear(); }
@@ -48,6 +55,8 @@ namespace hiveObliquePhotography
 			CInteractionCallback* m_pCallback = nullptr;
 
 			PointCloud_t::Ptr m_pSceneCloud = nullptr;
+
+			FeatureVisualization::CFeatureVisualization* m_pQtWindow = nullptr;
 
 			Eigen::Vector2d m_WindowSize;
 

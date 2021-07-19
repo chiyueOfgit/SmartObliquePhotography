@@ -119,7 +119,7 @@ Eigen::Vector3f generatePosition(Eigen::Vector3f& vCenterPosition, float vFrom, 
 	if(vOnThePlane)
 		return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2]};
 	else
-	    return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] };
+	    return Eigen::Vector3f{ vCenterPosition[0] + RandomSet[0],vCenterPosition[1] + RandomSet[1],vCenterPosition[2] + RandomSet[2] / 2 };
 }
 
 Eigen::Vector3f generateNormal(Eigen::Vector3f& vStandardNormal, float vDisturb)
@@ -132,7 +132,7 @@ Eigen::Vector3f generateNormal(Eigen::Vector3f& vStandardNormal, float vDisturb)
 
 void generateInOutRadiusPoint(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo, bool vOnThePlane, float vDisturb, PointCloud_t& vioPointSet, int vNum)
 {
-	Eigen::Vector3f StandardNormal{ 1.0f,1.0f,1.0f };
+	Eigen::Vector3f StandardNormal{ 0.0f,0.0f,1.0f };
 	while (vNum--)
 	{
 		Eigen::Vector3f Position = generatePosition(vCenterPosition, vFrom, vTo, vOnThePlane);
@@ -295,7 +295,9 @@ TEST(Plane_Feature_BaseTest_1, Test_5)
 
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE);
 	pTileLoader->initV(pConfig);
-	auto FittingPlane = pTileLoader->fitPlane(pCloud);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pPositionCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::copyPointCloud(*pCloud, *pPositionCloud);
+	auto FittingPlane = pTileLoader->fitPlane(pPositionCloud, 1.0, {0, 0, 1});
 
 	Eigen::Vector3f PlaneNormal{ Plane[0],Plane[1],Plane[2]};
 	PlaneNormal /= PlaneNormal.norm();
@@ -326,7 +328,9 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE);
 	pTileLoader->initV(pConfig);
-	auto FittingPlane = pTileLoader->fitPlane(pCloud);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pPositionCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::copyPointCloud(*pCloud, *pPositionCloud);
+	auto FittingPlane = pTileLoader->fitPlane(pPositionCloud, 1.0, { 0, 0, 1 });
 
 	Eigen::Vector3f PlaneNormal{ Plane[0],Plane[1],Plane[2] };
 	PlaneNormal /= PlaneNormal.norm();
@@ -354,8 +358,8 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
-	Eigen::Vector3f GTNormal{ 1.0f,1.0f,1.0f };
-	GTNormal = GTNormal / GTNormal.norm();
+	Eigen::Vector3f GTNormal{ 0.0f,0.0f,1.0f };
+	GTNormal /= GTNormal.norm();
 	pcl::PointSurfel Temp;
 	Temp.x = GTPosition[0];
 	Temp.y = GTPosition[1];
@@ -366,7 +370,7 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	pCloud->push_back(Temp);
 	auto Radius = *pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
 	generateInOutRadiusPoint(GTPosition, 0, Radius, true,0.0f, *pCloud, 20);
-	generateInOutRadiusPoint(GTPosition, Radius + 2, Radius + 4,true, 1.0f, *pCloud, 5);
+	generateInOutRadiusPoint(GTPosition, Radius + 2, Radius + 4,true, 0.4f, *pCloud, 5);
 
 	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
@@ -398,8 +402,8 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
-	Eigen::Vector3f GTNormal{ 1.0f,1.0f,1.0f };
-	GTNormal = GTNormal / GTNormal.norm();
+	Eigen::Vector3f GTNormal{ 0.0f,0.0f,1.0f };
+	GTNormal /= GTNormal.norm();
 	pcl::PointSurfel ThisPoint;
 	ThisPoint.x = GTPosition[0];
 	ThisPoint.y = GTPosition[1];
@@ -409,7 +413,7 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	ThisPoint.normal_z = GTNormal[2];
 	pCloud->push_back(ThisPoint);
 	auto Radius = *pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
-	generateInOutRadiusPoint(GTPosition, 0, Radius, false,1.0f, *pCloud, 20);
+	generateInOutRadiusPoint(GTPosition, 0, Radius, false,0.4f, *pCloud, 20);
 
 	CPointCloudRetouchManager* pManager = nullptr;
 	pManager = CPointCloudRetouchManager::getInstance();
@@ -430,10 +434,10 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	pTileLoader->initV(pConfig);
 	auto Res = pTileLoader->calcSinglePointNormalComplexity(0);
 
-	auto Diff = (GTNormal - OutNormal)/ 2.0f;
+	double Diff = GTNormal.dot(OutNormal);
 
-	auto GT = Diff.norm();
-	GTEST_ASSERT_LT(abs(Res - GT),0.2);
+	auto GT = sqrt(1 - Diff * Diff);
+	GTEST_ASSERT_LT(abs(Res - GT), 0.2);
 	
 }
 

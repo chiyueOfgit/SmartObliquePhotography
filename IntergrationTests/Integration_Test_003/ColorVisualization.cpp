@@ -56,9 +56,9 @@ void CColorVisualization::run(const std::vector<pcl::index_t>& vPoints)
 
         if (MinColorDifference < m_ColorThreshold)
         {
-            Mutex.lock();
-            IndexAndColor[i] = m_MainBaseColors[Index];
-            Mutex.unlock();
+            //Mutex.lock();
+            //IndexAndColor[i] = m_MainBaseColors[Index];
+            //Mutex.unlock();
         }
         else
         {
