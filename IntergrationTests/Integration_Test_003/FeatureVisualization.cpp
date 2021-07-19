@@ -29,6 +29,7 @@
 #include "InteractionCallback.h"
 #include "VisualizationConfig.h"
 #include "NormalComplexityVisualization.h"
+#include "ColorVisualization.h"
 
 #include "pcl/io/pcd_io.h"
 
@@ -243,12 +244,11 @@ void CFeatureVisualization::onActionDelete()
 
 void CFeatureVisualization::onActionFeatureColor()
 {
-
+    Visualization::CPointCloudVisualizer::getInstance()->setFeatureMode(Visualization::EFeatureMode::ColorFeature);
 }
 
 void CFeatureVisualization::onActionFeatureNormalComplexity()
 {
-
     Feature::CNormalComplexityVisualization::getInstance()->init(m_pCloud);
     Feature::CNormalComplexityVisualization::getInstance()->run();
     std::vector<std::size_t> PointLabel;
@@ -258,7 +258,7 @@ void CFeatureVisualization::onActionFeatureNormalComplexity()
 
 void CFeatureVisualization::onActionFeaturePlanarity()
 {
-
+    Visualization::CPointCloudVisualizer::getInstance()->setFeatureMode(Visualization::EFeatureMode::PlaneFeature);
 }
 
 void CFeatureVisualization::closeEvent(QCloseEvent* vEvent)

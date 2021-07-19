@@ -19,12 +19,10 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	const pcl::PointCloud<pcl::PointXYZ>::Ptr pDeterminantCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	CloudScene.dumpPointCloud(vDeterminantPointSet, *pDeterminantCloud);
 	
-	m_Plane = fitPlane(pDeterminantCloud, 0.4, { 0.0f, 0.0f, 1.0f });
+	m_Plane = fitPlane(pDeterminantCloud, m_DistanceThreshold, { 0.0f, 0.0f, 1.0f });
 	if (m_Plane.norm() < 1.0f)
 		return 0.0;
-	
-	m_Peak = computePeakDistance(pDeterminantCloud, m_Plane);
-	
+		
 	double SumMatch = 0.0;
 	for (auto& i : vValidationSet)
 	{
@@ -42,18 +40,20 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 //FUNCTION: 
 double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-	const auto& Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(vInputPoint);
-	const float Distance = m_Plane.dot(Position);
-
+	if (m_Plane.squaredNorm() < 0.5f)
+		return 0.0;
+	
 	const auto Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
-	if (Distance <= m_Peak.first || Distance >= m_Peak.second)
+	
+	const auto& Position = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(vInputPoint);
+	const auto Distance = abs(m_Plane.dot(Position));
+
+	if (Distance >= m_DistanceThreshold)
 		return 0;
-	else if (m_Peak.first * Tolerance <= Distance && Distance <= m_Peak.second * Tolerance)
-		return 1;
-	else if (Distance < 0)
-		return smoothAttenuation(m_Peak.first * Tolerance, m_Peak.first, Distance);
+	else if (Distance >= m_DistanceThreshold * Tolerance)
+		return smoothAttenuation(m_DistanceThreshold * Tolerance, m_DistanceThreshold, Distance);
 	else
-		return smoothAttenuation(m_Peak.second * Tolerance, m_Peak.second, Distance);
+		return 1;
 }
 
 //*****************************************************************
@@ -63,7 +63,6 @@ std::string CPlanarityFeature::outputDebugInfosV(pcl::index_t vIndex) const
 	std::string Infos;
 	Infos += "\nPlanarity Feature:\n";
 	Infos += _FORMAT_STR3("Plane's Normal is: %1%, %2%, %3%\n", m_Plane.x(), m_Plane.y(), m_Plane.z());
-	Infos += _FORMAT_STR2("Plane's Peak is: %1%, %2%\n", m_Peak.first, m_Peak.second);
 	Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CPlanarityFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
 
 	return Infos;
@@ -85,21 +84,6 @@ Eigen::Vector4f CPlanarityFeature::fitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr 
 	if (Normal.dot(vUp) < 0.0f)
 		Coeff *= -1.0f;
 	return Coeff / Normal.norm();
-}
-
-//*****************************************************************
-//FUNCTION: 
-std::pair<float, float> CPlanarityFeature::computePeakDistance(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, const Eigen::Vector4f& vPlane)
-{
-	float MinDistance = FLT_MAX;
-	float MaxDistance = -FLT_MAX;
-	for (auto& i : *vCloud)
-	{
-		MinDistance = std::min(MinDistance, vPlane.dot(i.getVector4fMap()));
-		MaxDistance = std::max(MaxDistance, vPlane.dot(i.getVector4fMap()));
-	}
-
-	return { MinDistance, MaxDistance };
 }
 
 //*****************************************************************

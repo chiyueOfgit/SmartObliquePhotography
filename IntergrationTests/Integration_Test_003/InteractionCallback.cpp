@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include "PlanarityFeature.h"
+#include "ColorVisualization.h"
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -142,7 +143,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			m_pVisualizer->refresh(PointLabel);
 		}
 	}
-
+	
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && m_MousePressStatus[1] && OnceMousePressStatus[1])
 	{
 		{
@@ -153,17 +154,17 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		if (m_pVisualizationConfig)
 		{
-			std::optional<float> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS);
+			std::optional<double> ScreenCircleRadius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS);
 			if (ScreenCircleRadius.has_value())
 				m_Radius = ScreenCircleRadius.value();
-			std::optional<float> ScreenCircleHardness = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_HARDNESS);
+			std::optional<double> ScreenCircleHardness = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_HARDNESS);
 			if (ScreenCircleHardness.has_value())
 				m_Hardness = ScreenCircleHardness.value();
 
-			std::optional<float> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
+			std::optional<bool> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
 			if (UnwantedMode.has_value())
 				m_UnwantedMode = UnwantedMode.value();
-			std::optional<float> RefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY);
+			std::optional<bool> RefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY);
 			if (RefreshImmediately.has_value())
 				m_IsRefreshImmediately = RefreshImmediately.value();
 		}
@@ -200,65 +201,49 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		};
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
-		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
-		m_pVisualizer->removeAllUserColoredPoints();
-		pcl::PointCloud<pcl::PointXYZ>::Ptr pPickedCloud(new pcl::PointCloud<pcl::PointXYZ>);
-		for (auto& i : PickedIndices)
+		if (m_pVisualizer->getFeatureMode() == EFeatureMode::PlaneFeature)
 		{
-			pcl::PointXYZ Point;
-			memcpy(Point.data, m_pVisualizer->m_pSceneCloud->at(i).data, sizeof(Point.data));
+			m_pVisualizer->removeAllUserColoredPoints();
+			pcl::PointCloud<pcl::PointXYZ>::Ptr pPickedCloud(new pcl::PointCloud<pcl::PointXYZ>);
+			for (auto& i : PickedIndices)
+			{
+				pcl::PointXYZ Point;
+				memcpy(Point.data, m_pVisualizer->m_pSceneCloud->at(i).data, sizeof(Point.data));
 
-			pPickedCloud->push_back(Point);
-		}
+				pPickedCloud->push_back(Point);
+			}
 
-		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, 0.4, { 0.0f, 0.0f, 1.0f });
-		auto Peak = PointCloudRetouch::CPlanarityFeature::computePeakDistance(pPickedCloud, Plane);
-		const auto Tolerance = 0.12f;
-		Peak.first -= Tolerance;
-		Peak.second += Tolerance;
+		constexpr auto DistanceThreshold = 1.0f;
+		constexpr auto Tolerance = 0.1f;
+		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
 
-		for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
-		{
-			const auto& Point = m_pVisualizer->m_pSceneCloud->at(i);
-			float Distance = Plane.dot(Point.getVector4fMap());
-
+		if (Plane.squaredNorm() >= 0.5f)
+			for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
+		{			
+			const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
+			const auto Distance = abs(Plane.dot(Position));
+			
 			int Color;
-			if (Distance <= Peak.first || Distance >= Peak.second)
+			if (Distance >= DistanceThreshold)
 				Color = 0;
-			else if (Peak.first * Tolerance <= Distance && Distance <= Peak.second * Tolerance)
-				Color = 255;
-			else if (Distance < 0)
-				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.first * Tolerance, Peak.first, Distance);
+			else if (Distance >= DistanceThreshold * Tolerance)
+				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
 			else
-				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(Peak.second * Tolerance, Peak.second, Distance);
+				Color = 255;
 
-			if (Color != 0)
-				m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
+				if (Color != 0)
+					m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
+			}
 		}
-		
-		//auto HardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
-		//{
-		//	Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+		else if (m_pVisualizer->getFeatureMode() == EFeatureMode::ColorFeature)
+		{
+			m_pVisualizer->removeAllUserColoredPoints();
+			hiveObliquePhotography::Feature::CColorVisualization::getInstance()->init(m_pVisualizer->m_pSceneCloud);
+			hiveObliquePhotography::Feature::CColorVisualization::getInstance()->run(PickedIndices);
+		}
 
-		//	double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
-		//	if (X <= 1.0)
-		//	{
-		//		X -= m_Hardness;
-		//		if (X < 0)
-		//			return 1.0;
-		//		X /= (1 - m_Hardness);
-		//		X *= X;
-		//		
-		//		return X * (X - 2) + 1;
-		//	}
-		//	else
-		//		return 0;
-		//};
-		//if (m_UnwantedMode)
-		//	PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
-		//else
-		//	PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
+		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
 		if (m_IsRefreshImmediately)
 		{
@@ -274,7 +259,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
 
-		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
+		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, -0.8f, 1.0f };
 
 		Eigen::Matrix4d Proj, View;
 		Camera.computeProjectionMatrix(Proj);
@@ -297,7 +282,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
 		if (!m_MousePressStatus[0])
 		{
-			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.00115 * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
+			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.5555 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->updateCamera();
 		}

@@ -28,7 +28,7 @@ protected:
 	void SetUp() override
 	{
 		m_pCloud.reset(new PointCloud_t);	
-		float AngleStep = 10.0f, RadiusStep = 0.1f, Epsilon = 0.0001f;
+		float AngleStep = 10.0f, RadiusStep = 0.05f, Epsilon = 0.0001f;
 		for (float Radius = 0.1f; Radius - m_CircleRadius <= Epsilon; Radius += RadiusStep)
 		{
 			for (float Angle = 0.0f; Angle < 360.0f; Angle += AngleStep)
@@ -126,7 +126,7 @@ protected:
 //给定圆内点集及不同硬度，能创建出具有分界的GenerationSet, ValidationSet的CPointCluster
 TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 {
-	//无硬度
+	//空硬度
 	{
 		float ZeroHardness = 0.0f;
 		m_CurrentHardness = ZeroHardness;

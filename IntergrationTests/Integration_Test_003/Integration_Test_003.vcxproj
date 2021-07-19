@@ -75,6 +75,7 @@
       <PreprocessorDefinitions>QT_PLUGIN;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -118,6 +119,7 @@
     <QtMoc Include="FeatureVisualization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColorVisualization.cpp" />
     <ClCompile Include="FeatureVisualization.cpp" />
     <ClCompile Include="FloatSlider.cpp" />
     <ClCompile Include="InteractionCallback.cpp" />
@@ -138,6 +140,7 @@
     <QtUic Include="SliderSizeDockWidget.ui" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorVisualization.h" />
     <ClInclude Include="NormalComplexityVisualization.h" />
     <ClInclude Include="PointCloudVisualizer.h" />
     <ClInclude Include="VisualizationConfig.h" />

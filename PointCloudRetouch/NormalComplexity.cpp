@@ -61,9 +61,9 @@ std::string CNormalComplexity::outputDebugInfosV(pcl::index_t vIndex) const
 //FUNCTION: 
 bool CNormalComplexity::precomputeSceneCloudNormalComplexity()
 {
-	std::vector<double> Temp;
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	auto NumPoints = CloudScene.getNumPoint();
+	std::vector<double> Temp(NumPoints);
 
 	std::mutex Mutex;
 
@@ -71,9 +71,7 @@ bool CNormalComplexity::precomputeSceneCloudNormalComplexity()
 	for (int i = 0; i < NumPoints; i++)
 	{
 		double NormalComplexity = __calcSinglePointNormalComplexity(i);
-		Mutex.lock();
-		Temp.push_back(NormalComplexity);
-		Mutex.unlock();
+		Temp.at(i) = NormalComplexity;
 	}
 	m_NormalComplexity = std::move(Temp);
 	return true;

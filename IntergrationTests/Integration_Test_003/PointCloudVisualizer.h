@@ -4,6 +4,12 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
+		enum class EFeatureMode
+		{
+			PlaneFeature,
+			ColorFeature,
+		};
+
 		struct SHighlightPoints
 		{
 			std::vector<pcl::index_t> PointSet;
@@ -32,6 +38,9 @@ namespace hiveObliquePhotography
 			void removeUserColoredPoints(int vId);
 			void removeAllUserColoredPoints() { m_UserColoredPoints.clear(); }
 
+			EFeatureMode getFeatureMode() const { return m_FeatureMode; }
+			void setFeatureMode(EFeatureMode vMode) { m_FeatureMode = vMode; }
+
 		private:
 			CPointCloudVisualizer();
 
@@ -41,6 +50,8 @@ namespace hiveObliquePhotography
 			PointCloud_t::Ptr m_pSceneCloud = nullptr;
 
 			Eigen::Vector2d m_WindowSize;
+
+			EFeatureMode m_FeatureMode = EFeatureMode::PlaneFeature;
 
 			std::vector<SHighlightPoints> m_UserColoredPoints;
 
