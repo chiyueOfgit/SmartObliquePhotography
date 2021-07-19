@@ -126,9 +126,9 @@ protected:
 //给定圆内点集及不同硬度，能创建出具有分界的GenerationSet, ValidationSet的CPointCluster
 TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 {
-	//小硬度
+	//空硬度
 	{
-		float ZeroHardness = 0.05f;
+		float ZeroHardness = 0.0f;
 		m_CurrentHardness = ZeroHardness;
 		PointCloudRetouch::CPointCluster* pCluster = nullptr;
 		ASSERT_NO_THROW(pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, m_pHardnessFunc, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
@@ -136,13 +136,13 @@ TEST_F(CTestCreateInitialCluster, BaseTest1_Create_Cluster)
 		if (pCluster)
 		{
 			auto GenerationSet = pCluster->getCoreRegion();
-			ASSERT_TRUE(!GenerationSet.empty());
+			ASSERT_TRUE(GenerationSet.empty());
 		}
 	}
 
-	//大硬度
+	//硬度满
 	{
-		float FullHardness = 0.95f;
+		float FullHardness = 1.0f;
 		m_CurrentHardness = FullHardness;
 		auto pCluster = m_Creator.createInitialCluster(m_Indices, m_PV, m_pHardnessFunc, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true));
 		ASSERT_NE(pCluster, nullptr);
