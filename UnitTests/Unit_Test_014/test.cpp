@@ -90,7 +90,7 @@ TEST_F(TestExpander, EmptyInput)
 	std::vector<pcl::index_t> UserMarkedRegion{};
 	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, PV, [](auto) { return 1; }, EPointLabel::KEPT);
 	
-	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
+	EXPECT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
 }
 
 TEST_F(TestExpander, NullptrInput)
@@ -98,5 +98,5 @@ TEST_F(TestExpander, NullptrInput)
 	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
 	CPointCluster* UserSpecifiedCluster = nullptr;
 
-	ASSERT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
+	EXPECT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
 }
