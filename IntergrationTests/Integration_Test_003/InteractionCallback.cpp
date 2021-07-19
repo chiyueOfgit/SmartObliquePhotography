@@ -239,7 +239,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 			std::string Info;
 			Info += "\nPlanarity Feature:\n";
-			Info += _FORMAT_STR3("Plane's Normal is: %1%, %2%, %3%\n", Plane.x(), Plane.y(), Plane.z());
+			Info += _FORMAT_STR3("Plane's Normal is: %1%, %2%, %3%", Plane.x(), Plane.y(), Plane.z());
 
 			m_pVisualizer->m_pQtWindow->outputMessage(Info);
 		}
@@ -255,7 +255,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			Info += _FORMAT_STR1("\nColor Feature:\nNum Main Colors are %1%, They are\n", MainBaseColors.size());
 			for (auto& Color : MainBaseColors)
 				Info += _FORMAT_STR3("%1%, %2%, %3%\n", Color.x(), Color.y(), Color.z());
-			Info += "\n";
 
 			m_pVisualizer->m_pQtWindow->outputMessage(Info);
 		}
