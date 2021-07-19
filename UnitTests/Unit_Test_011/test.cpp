@@ -75,7 +75,7 @@ protected:
 
 		m_RadiusInWindow = Pos.norm() * m_WindowSize.y();
 
-		m_pHardnessFunc = [&](const Eigen::Vector2d& vPos) -> double
+		m_pHardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 		{
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * m_WindowSize.x() / 2, (vPos.y() + 1) * m_WindowSize.y() / 2);
 

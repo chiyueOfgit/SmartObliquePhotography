@@ -88,7 +88,7 @@ protected:
 		Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
 		Camera.computeViewMatrix(ViewMatrix);
 		Camera.computeProjectionMatrix(ProjectionMatrix);
-		pManager->executeMarker(Indices, ProjectionMatrix * ViewMatrix, [](auto) { return 0.8f; }, EPointLabel::UNWANTED);
+		pManager->executeMarker(Indices, ProjectionMatrix * ViewMatrix, [](auto) { static int i = 0; return i++ % 2 ? 0.9f : 0.1f; }, EPointLabel::UNWANTED);
 	}
 
 	void TearDown() override {}
@@ -102,7 +102,7 @@ TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchScene)
 	CPointCloudRetouchScene Scene;
 
 	Scene.init(pCloud);
-	ASSERT_EQ(Scene.getNumPoint(), 16145);
+	ASSERT_EQ(Scene.getNumPoint(), 189235);
 }
 
 TEST(Test_InitPointCloudRetouch, DeathTest_InitSceneWithErrorPtr)
