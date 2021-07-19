@@ -30,6 +30,7 @@
 #include "common/DesignPatternInterface.h"
 #include "common/ConfigInterface.h"
 #include "common/MathInterface.h"
+#include "common/UtilityInterface.h"
 
 #include "PointCloudRetouchCommon.h"
 
