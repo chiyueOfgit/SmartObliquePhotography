@@ -77,6 +77,8 @@ void CFeatureVisualization::__initialVTKWidget()
     ui.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
     pViewer->setupInteractor(ui.VTKWidget->GetInteractor(), ui.VTKWidget->GetRenderWindow());
     ui.VTKWidget->update();
+
+    hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance()->setQtWindow(this);
 }
 
 void CFeatureVisualization::__initialSlider(const QStringList& vFilePathList)
@@ -259,6 +261,13 @@ void CFeatureVisualization::onActionFeatureNormalComplexity()
 void CFeatureVisualization::onActionFeaturePlanarity()
 {
     Visualization::CPointCloudVisualizer::getInstance()->setFeatureMode(Visualization::EFeatureMode::PlaneFeature);
+}
+
+void CFeatureVisualization::outputMessage(const std::string& vInfo)
+{
+    QDateTime CurrentDateTime = QDateTime::currentDateTime();
+    QString CurrentDateTimeString = CurrentDateTime.toString("[yyyy-MM-dd hh:mm:ss] ");
+    ui.textBrowser->append(CurrentDateTimeString + QString::fromStdString(vInfo));
 }
 
 void CFeatureVisualization::closeEvent(QCloseEvent* vEvent)
