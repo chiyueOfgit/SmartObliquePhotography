@@ -58,6 +58,9 @@
     <ClCompile Include="NormalComplexityVisualization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ColorVisualization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="FeatureVisualization.qrc">
@@ -89,6 +92,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NormalComplexityVisualization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorVisualization.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -119,6 +119,7 @@
     <QtMoc Include="FeatureVisualization.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ColorVisualization.cpp" />
     <ClCompile Include="FeatureVisualization.cpp" />
     <ClCompile Include="FloatSlider.cpp" />
     <ClCompile Include="InteractionCallback.cpp" />
@@ -139,6 +140,7 @@
     <QtUic Include="SliderSizeDockWidget.ui" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorVisualization.h" />
     <ClInclude Include="NormalComplexityVisualization.h" />
     <ClInclude Include="PointCloudVisualizer.h" />
     <ClInclude Include="VisualizationConfig.h" />

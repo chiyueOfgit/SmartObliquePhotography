@@ -35,6 +35,7 @@
 #include "common/DesignPatternInterface.h"
 #include "common/HiveConfig.h"
 #include "common/ConfigInterface.h"
+#include "common/MathInterface.h"
 
 using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 
