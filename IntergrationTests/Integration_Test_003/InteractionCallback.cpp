@@ -9,6 +9,7 @@
 
 #include "PlanarityFeature.h"
 #include "ColorVisualization.h"
+#include "FeatureVisualization.h"
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -214,33 +215,48 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				pPickedCloud->push_back(Point);
 			}
 
-		constexpr auto DistanceThreshold = 1.0f;
-		constexpr auto Tolerance = 0.1f;
-		const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
+			constexpr auto DistanceThreshold = 1.0f;
+			constexpr auto Tolerance = 0.1f;
+			const auto Plane = PointCloudRetouch::CPlanarityFeature::fitPlane(pPickedCloud, DistanceThreshold, { 0.0f, 0.0f, 1.0f });
 
-		if (Plane.squaredNorm() >= 0.5f)
-			for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
-		{			
-			const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
-			const auto Distance = abs(Plane.dot(Position));
-			
-			int Color;
-			if (Distance >= DistanceThreshold)
-				Color = 0;
-			else if (Distance >= DistanceThreshold * Tolerance)
-				Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
-			else
-				Color = 255;
+			if (Plane.squaredNorm() >= 0.5f)
+				for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
+				{
+					const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
+					const auto Distance = abs(Plane.dot(Position));
 
-				if (Color != 0)
-					m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
-			}
+					int Color;
+					if (Distance >= DistanceThreshold)
+						Color = 0;
+					else if (Distance >= DistanceThreshold * Tolerance)
+						Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
+					else
+						Color = 255;
+
+					if (Color != 0)
+						m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
+				}
+
+			std::string Info;
+			Info += "\nPlanarity Feature:\n";
+			Info += _FORMAT_STR3("Plane's Normal is: %1%, %2%, %3%", Plane.x(), Plane.y(), Plane.z());
+
+			m_pVisualizer->m_pQtWindow->outputMessage(Info);
 		}
-		else if (m_pVisualizer->getFeatureMode() == EFeatureMode::ColorFeature)
+		if (m_pVisualizer->getFeatureMode() == EFeatureMode::ColorFeature)
 		{
 			m_pVisualizer->removeAllUserColoredPoints();
-			hiveObliquePhotography::Feature::CColorVisualization::getInstance()->init(m_pVisualizer->m_pSceneCloud);
-			hiveObliquePhotography::Feature::CColorVisualization::getInstance()->run(PickedIndices);
+			auto pColorVisualization = hiveObliquePhotography::Feature::CColorVisualization::getInstance();
+			pColorVisualization->init(m_pVisualizer->m_pSceneCloud);
+			pColorVisualization->run(PickedIndices);
+			auto MainBaseColors = pColorVisualization->getMainBaseColors();
+
+			std::string Info;
+			Info += _FORMAT_STR1("\nColor Feature:\nNum Main Colors are %1%, They are\n", MainBaseColors.size());
+			for (auto& Color : MainBaseColors)
+				Info += _FORMAT_STR3("%1%, %2%, %3%\n", Color.x(), Color.y(), Color.z());
+
+			m_pVisualizer->m_pQtWindow->outputMessage(Info);
 		}
 
 		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });

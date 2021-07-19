@@ -25,6 +25,8 @@ namespace hiveObliquePhotography
 
 			void run(const std::vector<pcl::index_t>& vPoints);
 
+			const auto& getMainBaseColors() const { return m_MainBaseColors; }
+
 		private:
 			CColorVisualization();
 

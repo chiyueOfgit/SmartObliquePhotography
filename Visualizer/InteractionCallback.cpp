@@ -146,6 +146,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && m_MousePressStatus[1] && OnceMousePressStatus[1])
 	{
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
+
 		{
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
@@ -232,6 +234,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
 		}
+
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
 	}
 
 	//draw point picking hint circle

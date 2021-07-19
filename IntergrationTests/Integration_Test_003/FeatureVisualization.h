@@ -23,6 +23,7 @@ namespace hiveObliquePhotography
             ~CFeatureVisualization();
 
             void init();
+            void outputMessage(const std::string& vInfo);
             void closeEvent(QCloseEvent* vEvent) override;
 
         private:
