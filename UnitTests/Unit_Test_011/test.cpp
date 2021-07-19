@@ -71,7 +71,7 @@ protected:
 
 		Eigen::Vector4d Pos = { 0.0, m_CircleRadius, 0.0, 1.0 };
 		Pos = Proj * View * Pos;
-		Pos /= Pos.w();
+		Pos /= Pos.eval().w();
 
 		m_RadiusInWindow = Pos.y() * m_WindowSize.y();
 
