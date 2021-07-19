@@ -295,7 +295,9 @@ TEST(Plane_Feature_BaseTest_1, Test_5)
 
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE);
 	pTileLoader->initV(pConfig);
-	auto FittingPlane = pTileLoader->fitPlane(pCloud);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pPositionCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::copyPointCloud(*pCloud, *pPositionCloud);
+	auto FittingPlane = pTileLoader->fitPlane(pPositionCloud, 1.0, {0, 0, 1});
 
 	Eigen::Vector3f PlaneNormal{ Plane[0],Plane[1],Plane[2]};
 	PlaneNormal /= PlaneNormal.norm();
@@ -326,7 +328,9 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE);
 	pTileLoader->initV(pConfig);
-	auto FittingPlane = pTileLoader->fitPlane(pCloud);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr pPositionCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::copyPointCloud(*pCloud, *pPositionCloud);
+	auto FittingPlane = pTileLoader->fitPlane(pPositionCloud, 1.0, { 0, 0, 1 });
 
 	Eigen::Vector3f PlaneNormal{ Plane[0],Plane[1],Plane[2] };
 	PlaneNormal /= PlaneNormal.norm();
