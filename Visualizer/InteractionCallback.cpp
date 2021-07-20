@@ -82,6 +82,14 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("TestCameraInfo.txt");
 		}
 
+		if (KeyString == "Delete")
+		{
+			hiveObliquePhotography::PointCloudRetouch::hiveClearMark();
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+
 	}
 }
 
@@ -240,8 +248,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			for (auto Index : NearestPoints)
 			{
 				auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
+				Eigen::Vector3f CameraPos2Point = { float(Camera.pos[0] - Point.x), float(Camera.pos[1] - Point.y), float(Camera.pos[2] - Point.z) };
 				Eigen::Vector3i Color{ Point.r, Point.g, Point.b };
-				m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 30.0);
+				m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 0.01f * CameraPos2Point, 30.0);
 			}
 		}
 
@@ -306,7 +315,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				std::string CircleName = "Circle" + std::to_string(i);
 				if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
 				{
-					m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), float(m_pVisualizer->m_MainColors[i].x()) / 255, float(m_pVisualizer->m_MainColors[i].y()) / 255, float(m_pVisualizer->m_MainColors[i].z()) / 255, CircleName);
+					m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * 40.0, float(m_pVisualizer->m_MainColors[i].x()) / 255, float(m_pVisualizer->m_MainColors[i].y()) / 255, float(m_pVisualizer->m_MainColors[i].z()) / 255, CircleName);
 				}
 			}
 		}
