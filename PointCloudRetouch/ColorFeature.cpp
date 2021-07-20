@@ -148,6 +148,8 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
 
     std::vector<std::vector<Eigen::Vector3i>> ClusterResults;
 
+    std::vector<std::size_t> NumResultPoints(vMaxK, 0);
+
     for (int CurrentK = 1; CurrentK <= vMaxK; CurrentK++)
     {
         std::vector<std::pair<Eigen::Vector3i*, Eigen::Vector3i>> TagAndColorSet(vColorSet.size(), { nullptr, Eigen::Vector3i() });
@@ -221,10 +223,20 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
             }
         }
 
+        std::vector<std::vector<pcl::index_t>> ClusterIndices(CurrentK);
+        auto Ptr = ClusterCentroids.data();
+        for (int i = 0; i < TagAndColorSet.size(); i++)
+        {
+            if (TagAndColorSet[i].first)
+            {
+                ClusterIndices[int(TagAndColorSet[i].first - Ptr)].push_back(i);
+            }
+        }
+
         ClusterResults.push_back(ClusterCentroids);
     }
 
-    std::pair<float, std::size_t> AverageDifferenceAndIndex(FLT_MAX, -1);
+ /*   std::pair<float, std::size_t> AverageDifferenceAndIndex(FLT_MAX, -1);
 
     for (int i = 0; i < ClusterResults.size(); i++)
     {
@@ -251,7 +263,15 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
             break;
     }
 	
-	return ClusterResults[AverageDifferenceAndIndex.second];
+    int MaxIndex = 0;
+    for (int i = 0; i < vMaxK; i++)
+    {
+        if (NumResultPoints[i] > NumResultPoints[MaxIndex])
+            MaxIndex = i;
+    }*/
+
+    return ClusterResults[0];
+	//return ClusterResults[AverageDifferenceAndIndex.second];
 }
 
 //*****************************************************************
