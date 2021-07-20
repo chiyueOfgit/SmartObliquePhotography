@@ -306,7 +306,7 @@ TEST(Color_Feature_BaseTest_5, Test_5)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 
-	double Hardness = 0.4;
+	double Hardness = 0.7;
 	double RadiusOnWindow = 55.321;
 	Eigen::Vector2d CircleCenterOnWindow = { 534, 228 };
 

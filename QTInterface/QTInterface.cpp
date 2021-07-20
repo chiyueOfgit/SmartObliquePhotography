@@ -230,7 +230,7 @@ void CQTInterface::onActionPointPicking()
 
 void CQTInterface::onActionOpen()
 {
-    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_DirectoryOpenPath), tr("Open PointCloud files(*.pcd)"));
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_DirectoryOpenPath), tr("PointCloud Files(*.pcd *.ply)"));
     std::vector<std::string> FilePathSet;
     bool FileOpenSuccessFlag = true;
 
