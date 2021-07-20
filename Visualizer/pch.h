@@ -13,12 +13,16 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <fstream>
 
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/search/kdtree.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
+#include <boost/archive/text_oarchive.hpp> 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include "common/Product.h"
 #include "common/Factory.h"

@@ -17,6 +17,7 @@
 #include <pcl/features/normal_3d.h>
 
 #include "PointCloudRetouchManager.h"
+#include "PointClusterExpander.h"
 
 constexpr float EPSILON = 1e-4f;
 constexpr float SPACE_SIZE = 100.0f;
@@ -46,6 +47,10 @@ constexpr float SPACE_SIZE = 100.0f;
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig_Simple.xml");
+const std::string PickedIndicesPath = TESTMODEL_DIR + std::string("Test015_Model/PickedIndices.txt");
+const std::string CameraPath = TESTMODEL_DIR + std::string("Test015_Model/Camera.txt");
+const std::string PointCloudPath = TESTMODEL_DIR + std::string("General/slice 16.pcd");
+const std::string CompleteConfigPath = TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig_Complete.xml");
 
 
 PointCloud_t::PointType generateRandomPointByPlane(const Eigen::Vector4f& vPlane, bool vOnThePlane, float vNoise = 0.0f)
@@ -129,7 +134,6 @@ Eigen::Vector3f generateNormal(Eigen::Vector3f& vStandardNormal, float vDisturb)
 	return Normal / Normal.norm();
 }
 
-
 void generateInOutRadiusPoint(Eigen::Vector3f& vCenterPosition, float vFrom, float vTo, bool vOnThePlane, float vDisturb, PointCloud_t& vioPointSet, int vNum)
 {
 	Eigen::Vector3f StandardNormal{ 0.0f,0.0f,1.0f };
@@ -155,6 +159,7 @@ void loadIndices(const std::string& vPath, pcl::Indices& voIndices)
 	ia >> BOOST_SERIALIZATION_NVP(voIndices);
 	File.close();
 }
+
 TEST(Color_Feature_BaseTest_1, Test_1)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
@@ -273,7 +278,70 @@ TEST(Color_Feature_BaseTest_4, Test_4)
 	GTEST_ASSERT_GE(Sum, 4);
 }
 
-TEST(Plane_Feature_BaseTest_1, Test_5)
+TEST(Color_Feature_BaseTest_5, Test_5)
+{
+	bool result = hiveUtility::hiveFileSystem::hiveIsFileExisted(PickedIndicesPath);
+
+	pcl::Indices PickedIndices;
+	std::ifstream File(PickedIndicesPath);
+	boost::archive::text_iarchive ia(File);
+	ia >> BOOST_SERIALIZATION_NVP(PickedIndices);
+	File.close();
+
+	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	pcl::io::loadPCDFile(PointCloudPath, *pCloud);
+
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(CompleteConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", CompleteConfigPath));
+		return;
+	}
+
+	pcl::visualization::Camera Camera;
+	auto pVisualizer = new pcl::visualization::PCLVisualizer("Viewer", true);
+	pVisualizer->loadCameraParameters(CameraPath);
+	pVisualizer->getCameraParameters(Camera);
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+
+	double Hardness = 0.4;
+	double RadiusOnWindow = 55.321;
+	Eigen::Vector2d CircleCenterOnWindow = { 534, 228 };
+
+	auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
+	{
+		Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+
+		double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
+		if (X <= 1.0)
+		{
+			X -= Hardness;
+			if (X < 0)
+				return 1.0;
+			X /= (1 - Hardness);
+			X *= X;
+
+			return X * (X - 2) + 1;
+		}
+		else
+			return 0;
+	};
+
+	auto pManager = CPointCloudRetouchManager::getInstance();
+	pManager->init(pCloud, pConfig);
+	pManager->executeMarker(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::UNWANTED);
+	auto SmallHardnessExpandPointsNumber = pManager->getLitterMarker().getExpander()->getExpandPoints().size();
+
+	Hardness = 0.8;
+	pManager->executeMarker(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::UNWANTED);
+	auto LargeHardnessExpandPointsNumber = pManager->getLitterMarker().getExpander()->getExpandPoints().size();
+
+	EXPECT_GE(LargeHardnessExpandPointsNumber, SmallHardnessExpandPointsNumber);
+}
+
+TEST(Plane_Feature_BaseTest_1, Test_6)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
@@ -306,7 +374,7 @@ TEST(Plane_Feature_BaseTest_1, Test_5)
 	GTEST_ASSERT_GE(abs(PlaneNormal.dot(FittingPlaneNormal)), 0.8);
 }
 
-TEST(Plane_Feature_BaseTest_2, Test_6)
+TEST(Plane_Feature_BaseTest_2, Test_7)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
@@ -339,7 +407,7 @@ TEST(Plane_Feature_BaseTest_2, Test_6)
 	GTEST_ASSERT_GE(abs(PlaneNormal.dot(FittingPlaneNormal)), 0.8);
 }
 
-TEST(Normal_Feature_BaseTest_1, Test_7)
+TEST(Normal_Feature_BaseTest_1, Test_8)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
@@ -383,7 +451,7 @@ TEST(Normal_Feature_BaseTest_1, Test_7)
 	GTEST_ASSERT_EQ(Res, 0.0);
 }
 
-TEST(Normal_Feature_BaseTest_2, Test_8)
+TEST(Normal_Feature_BaseTest_2, Test_9)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
@@ -441,7 +509,7 @@ TEST(Normal_Feature_BaseTest_2, Test_8)
 	
 }
 
-TEST(Normal_Feature_BaseTest_3, Test_9)
+TEST(Normal_Feature_BaseTest_3, Test_10)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)

@@ -52,6 +52,12 @@
     <ProjectReference Include="..\..\PointCloudRetouch_Lib\PointCloudRetouch_Lib.vcxproj">
       <Project>{87879ac2-2e99-42c7-8ff9-a456d9350873}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\visualization\pcl_visualization.vcxproj">
+      <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Visualizer\Visualization.vcxproj">
+      <Project>{6673a1f9-724d-47a0-8159-6ca26b818506}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -97,7 +103,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
-      <AdditionalIncludeDirectories>../../PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../PointCloudRetouch;../../visualizer;../../Visualization/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -131,7 +137,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>..\..\PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\PointCloudRetouch;../../visualizer;../../visualization/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
