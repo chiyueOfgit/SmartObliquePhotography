@@ -91,7 +91,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 {
 	auto Button = vEvent.getButton();
 	bool PressStatus = (vEvent.getType() == pcl::visualization::MouseEvent::MouseButtonPress) ? true : false;
-	bool OnceMousePressStatus[2] = { false };
+	bool OnceMousePressStatus[3] = { false };
 
 	if (Button == pcl::visualization::MouseEvent::LeftButton)
 	{
