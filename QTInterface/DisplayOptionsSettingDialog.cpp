@@ -5,7 +5,7 @@ using namespace hiveObliquePhotography::QTInterface;
 
 bool CDisplayOptionsSettingDialog::m_ColorStatus = false;
 bool CDisplayOptionsSettingDialog::m_PlanarStatus = false;
-bool CDisplayOptionsSettingDialog::m_NormalStatus = false;
+bool CDisplayOptionsSettingDialog::m_NormalStatus = true;
 
 void CDisplayOptionsSettingDialog::onActionColorFeatureCheckBox()
 {
@@ -65,4 +65,5 @@ void CDisplayOptionsSettingDialog::onActionOK()
 		MultiByteToWideChar(CP_ACP, 0, FileName, strlen(FileName) + 1, buf, sizeof(buf) / sizeof(buf[0]));
 		CopyFile(buf, L"./PointCloudRetouchConfig.xml", false);
 	}
+	
 }
