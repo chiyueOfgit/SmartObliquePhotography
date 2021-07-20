@@ -28,23 +28,33 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 
     m_MainBaseColors = __adjustKMeansCluster(PointCloudColors, m_MaxNumMainColors);
 
-    std::string OutputMainBaseColors = "";
-    for (auto MainBaseColor : m_MainBaseColors)
-    {
-        OutputMainBaseColors += " (" + std::to_string(MainBaseColor[0]) + ", " + std::to_string(MainBaseColor[1]) + ", " + std::to_string(MainBaseColor[2]) + ")\n ";
-    }
+    m_NearestPoints.resize(m_MainBaseColors.size());
 
-    hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("MainBaseColors: \n %1%", OutputMainBaseColors));
+    std::mutex Mutex;
+    for (int i = 0; i < m_NearestPoints.size(); i++)
+    {
+        float MinColorDifference = FLT_MAX;
+        int NearestIndex = -1;
+#pragma omp parallel for
+        for (int k = 0; k < PointCloudColors.size(); k++)
+        {
+            float TempColorDifference = __calcColorDifferences(m_MainBaseColors[i], PointCloudColors[k]);
+            Mutex.lock();
+            if (TempColorDifference < MinColorDifference)
+            {
+                MinColorDifference = TempColorDifference;
+                NearestIndex = vDeterminantPointSet[k];
+            }
+            Mutex.unlock();
+        }
+        m_NearestPoints[i] = NearestIndex;
+    }
 
 	double Score = 0.0;
 	for (auto ValidationIndex : vValidationSet)
 	{
 		Score += evaluateFeatureMatchFactorV(ValidationIndex);
 	}
-
-    //DEBUG
-    //hiveEventLogger::hiveOutputEvent((_FORMAT_STR1("Color Feature's Weight is: %1%\n", Score / vValidationSet.size())));
-    //DEBUG
 
 	return Score / vValidationSet.size();
 }

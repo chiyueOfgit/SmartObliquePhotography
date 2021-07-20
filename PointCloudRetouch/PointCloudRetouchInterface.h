@@ -19,6 +19,9 @@ namespace hiveObliquePhotography
 		RETOUCH_DECLSPEC bool hiveDumpPointLabel(std::vector<std::size_t>& voPointLabel);
 		RETOUCH_DECLSPEC void hiveDumpExpandResult(std::vector<pcl::index_t>& voExpandPoints, bool vIsLitterMarker = true);
 
+		RETOUCH_DECLSPEC bool hiveDumpColorFeatureMainColors(std::vector<Eigen::Vector3i>& voMainColors);
+		RETOUCH_DECLSPEC bool hiveDumpColorFeatureNearestPoints(std::vector<pcl::index_t>& vNearestPoints);
+
 		RETOUCH_DECLSPEC void hiveRunPrecompute(const std::string& vModelName);
 
 		//TODO: È¨ÏÞÂÔ´ó

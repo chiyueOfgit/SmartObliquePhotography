@@ -130,3 +130,15 @@ bool CPointCluster::isBelongingTo(double vProbability) const
 {
 	return vProbability >= m_ExpectProbability ? true : false;
 }
+
+//*****************************************************************
+//FUNCTION: 
+const IFeature* CPointCluster::getFeatureBySig(const std::string& vSig) const
+{
+	for (auto pFeature : m_FeatureSet)
+	{
+		if (pFeature->getProductSig() == vSig)
+			return pFeature;
+	}
+	return nullptr;
+}

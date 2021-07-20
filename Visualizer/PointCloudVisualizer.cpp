@@ -106,22 +106,46 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	{
 		for (auto& Record : m_UserColoredPoints)
 		{
-			for (auto Index : Record.PointSet)
+			if (!Record.IsNewCloud)
 			{
-				if (Index < m_pSceneCloud->size())
+				for (auto Index : Record.PointSet)
 				{
-					unsigned char UserColor[4] = { Record.Color.z(), Record.Color.y(), Record.Color.x(), 255 };
-					std::memcpy(&pCloud2Show->points[Index].rgba, UserColor, sizeof(UserColor));
+					if (Index < m_pSceneCloud->size())
+					{
+						unsigned char UserColor[4] = { Record.Color.z(), Record.Color.y(), Record.Color.x(), 255 };
+						std::memcpy(&pCloud2Show->points[Index].rgba, UserColor, sizeof(UserColor));
+					}
 				}
 			}
 		}
 	}
 
-	auto PointSize = *hiveObliquePhotography::Visualization::CVisualizationConfig::getInstance()->getAttribute<double>(POINT_SHOW_SIZE);
+	auto PointSize = *CVisualizationConfig::getInstance()->getAttribute<double>(POINT_SHOW_SIZE);
 	
 	pcl::visualization::PointCloudColorHandlerRGBAField<PointCloud_t::PointType> RGBAColor(pCloud2Show);
 	m_pPCLVisualizer->addPointCloud(pCloud2Show, RGBAColor, "Cloud2Show");
 	m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "Cloud2Show");
+
+	for (int i = 0; i < m_UserColoredPoints.size(); i++)
+	{
+		auto& Record = m_UserColoredPoints[i];
+		if (Record.IsNewCloud)
+		{
+			PointCloud_t::Ptr pUserCloud(new PointCloud_t);
+
+			for (auto Index : Record.PointSet)
+			{
+				pcl::PointSurfel TempPoint = m_pSceneCloud->points[Index];
+				TempPoint.r = Record.Color.x();
+				TempPoint.g = Record.Color.y();
+				TempPoint.b = Record.Color.z();
+				pUserCloud->push_back(TempPoint);
+			}
+
+			m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(pUserCloud, "UserCloud" + std::to_string(i));
+			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, Record.PointSize, "UserCloud" + std::to_string(i));
+		}
+	}
 
 	if (vResetCamera)
 	{
@@ -148,7 +172,15 @@ int CPointCloudVisualizer::addUserColoredPoints(const std::vector<pcl::index_t>&
 {
 	static int HighlightId = -1;
 	HighlightId++;
-	m_UserColoredPoints.push_back({ vPointSet, vColor, HighlightId });
+	m_UserColoredPoints.push_back({ vPointSet, vColor, CVisualizationConfig::getInstance()->getAttribute<double>(POINT_SHOW_SIZE).value(), false, HighlightId });
+	return HighlightId;
+}
+
+int CPointCloudVisualizer::addUserColoredPointsAsNewCloud(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, double vPointSize)
+{
+	static int HighlightId = -1;
+	HighlightId++;
+	m_UserColoredPoints.push_back({ vPointSet, vColor, vPointSize, true, HighlightId });
 	return HighlightId;
 }
 

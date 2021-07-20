@@ -23,6 +23,8 @@ namespace hiveObliquePhotography
 
 			EPointLabel getLabel() const { return m_Label; }
 
+			const IFeature* getFeatureBySig(const std::string& vSig) const;
+
 			std::string getDebugInfos(pcl::index_t vIndex) const;
 
 		protected:

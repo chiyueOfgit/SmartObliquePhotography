@@ -562,9 +562,8 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   vtkSmartPointer<vtkSphereSource> data = vtkSmartPointer<vtkSphereSource>::New ();
   data->SetRadius (radius);
   data->SetCenter (double (center.x), double (center.y), double (center.z));
-  data->SetPhiResolution (100);
-  data->SetThetaResolution (100);
-  //data->LatLongTessellationOn();
+  data->SetPhiResolution (50);
+  data->SetThetaResolution (50);
   data->LatLongTessellationOff ();
   data->Update ();
  
