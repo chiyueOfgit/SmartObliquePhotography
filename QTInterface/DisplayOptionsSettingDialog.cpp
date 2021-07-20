@@ -5,12 +5,14 @@ using namespace hiveObliquePhotography::QTInterface;
 
 bool CDisplayOptionsSettingDialog::m_ColorStatus = false;
 bool CDisplayOptionsSettingDialog::m_PlanarStatus = false;
+bool CDisplayOptionsSettingDialog::m_NormalStatus = false;
 
 void CDisplayOptionsSettingDialog::onActionColorFeatureCheckBox()
 {
 	if (m_pUi->ColorFeatureCheckBox->isChecked())
 	{
 		m_pUi->PlanarFeatureCheckBox->setChecked(false);
+		m_pUi->NormalFeatureCheckBox->setChecked(false);
 	}
 	m_ColorStatus = m_pUi->ColorFeatureCheckBox->isChecked();
 }
@@ -20,8 +22,19 @@ void CDisplayOptionsSettingDialog::onActionPlanarFeatureCheckBox()
 	if (m_pUi->PlanarFeatureCheckBox->isChecked())
 	{
 		m_pUi->ColorFeatureCheckBox->setChecked(false);
+		m_pUi->NormalFeatureCheckBox->setChecked(false);
 	}
 	m_PlanarStatus = m_pUi->PlanarFeatureCheckBox->isChecked();
+}
+
+void CDisplayOptionsSettingDialog::onActionNormalFeatureCheckBox()
+{
+	if (m_pUi->NormalFeatureCheckBox->isChecked())
+	{
+		m_pUi->ColorFeatureCheckBox->setChecked(false);
+		m_pUi->PlanarFeatureCheckBox->setChecked(false);
+	}
+	m_NormalStatus = m_pUi->NormalFeatureCheckBox->isChecked();
 }
 
 void CDisplayOptionsSettingDialog::onActionOK()
@@ -34,6 +47,10 @@ void CDisplayOptionsSettingDialog::onActionOK()
 	else if (m_pUi->PlanarFeatureCheckBox->isChecked())
 	{
 		FileName = "./Config/PlanarFeature/PointCloudRetouchConfig.xml";
+	}
+	else if (m_pUi->NormalFeatureCheckBox->isChecked())
+	{
+		FileName = "./Config/NormalFeature/PointCloudRetouchConfig.xml";
 	}
 	
 	if (FileName != "")
