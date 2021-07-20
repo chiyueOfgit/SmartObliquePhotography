@@ -35,136 +35,36 @@
    <item row="0" column="0" colspan="2">
     <widget class="QTabWidget" name="DisplayOptionsSettingTabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="ColorsAndMaterialsTab">
+     <widget class="QWidget" name="SelectFeaturesTab">
       <attribute name="title">
-       <string>Colors and Materials</string>
+       <string>SelectFeatures</string>
       </attribute>
-     </widget>
-     <widget class="QWidget" name="ColorScaleTab">
-      <attribute name="title">
-       <string>Color Scale</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="LabelsTab">
-      <attribute name="title">
-       <string>Labels</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="OtherOptionsTab">
-      <attribute name="title">
-       <string>Other Options</string>
-      </attribute>
-      <widget class="QRadioButton" name="AverageButton">
+      <widget class="QCheckBox" name="ColorFeatureCheckBox">
        <property name="geometry">
         <rect>
-         <x>190</x>
+         <x>20</x>
          <y>30</y>
-         <width>151</width>
+         <width>111</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Growing Use Average</string>
+        <string>Color Feature</string>
        </property>
       </widget>
-      <widget class="QRadioButton" name="MedianButton">
+      <widget class="QCheckBox" name="PlanarFeatureCheckBox">
        <property name="geometry">
         <rect>
-         <x>190</x>
+         <x>20</x>
          <y>60</y>
-         <width>141</width>
+         <width>111</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Growing Use Median</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="SizeLabel">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>100</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Growing Search Size</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="ThresholdLabel">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>160</y>
-         <width>151</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Growing Color Threshold</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="ColorTest">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>141</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Growing Color Test</string>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="GroundTest">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>40</y>
-         <width>141</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Growing Ground Test</string>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="SizeBox">
-       <property name="geometry">
-        <rect>
-         <x>180</x>
-         <y>120</y>
-         <width>62</width>
-         <height>22</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="ThresholdBox">
-       <property name="geometry">
-        <rect>
-         <x>180</x>
-         <y>180</y>
-         <width>62</width>
-         <height>22</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QCheckBox" name="NormalTest">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>70</y>
-         <width>141</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Growing Normal Test</string>
+        <string>Planar Feature</string>
        </property>
       </widget>
      </widget>

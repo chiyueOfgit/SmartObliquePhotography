@@ -284,14 +284,57 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	//draw point picking hint circle
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
 	{
+		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
+
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-
-		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
 
 		Eigen::Matrix4d Proj, View;
 		Camera.computeProjectionMatrix(Proj);
 		Camera.computeViewMatrix(View);
+
+		if (m_MainBaseColors.size())
+		{
+			pcl::visualization::Camera Camera;
+			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+
+			float CircleY = 0.7, DistanceX = 0.2;
+			std::vector<Eigen::Vector2f> CirclesNDCPos;
+
+			float DeltaX = float(m_MainBaseColors.size() - 1) * 0.5f;
+
+			for (int i = 0; i < m_MainBaseColors.size(); i++)
+			{
+				CirclesNDCPos.push_back({ (i - DeltaX) * DistanceX, CircleY });
+			}
+
+			for (int i = 0; i < m_MainBaseColors.size(); i++)
+			{
+				Eigen::Vector4d PixelPosition = { CirclesNDCPos[i].x(), CirclesNDCPos[i].y(), -0.5f, 1.0f };
+
+				PixelPosition = (Proj * View).inverse() * PixelPosition;
+				PixelPosition /= PixelPosition.w();
+
+				pcl::PointXYZ Circle;
+
+				Circle.x = PixelPosition.x();
+				Circle.y = PixelPosition.y();
+				Circle.z = PixelPosition.z();
+
+				Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+				Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
+
+				auto Length = (CameraPos - PixelPos).norm();
+
+				std::string CircleName = "Circle" + std::to_string(i);
+				if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
+				{
+					m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), float(m_MainBaseColors[i].x()) / 255, float(m_MainBaseColors[i].y()) / 255, float(m_MainBaseColors[i].z()) / 255, CircleName);
+				}
+			}
+		}
+
+		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
 
 		PixelPosition = (Proj * View).inverse() * PixelPosition;
 		PixelPosition /= PixelPosition.w();
@@ -307,52 +350,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		auto Length = (CameraPos - PixelPos).norm();
 
-		m_pVisualizer->m_pPCLVisualizer->removeShape("Circle");
 		if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
 		{
 			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.5555 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");
 			m_pVisualizer->m_pPCLVisualizer->updateCamera();
 		}
-	}
-
-	if (m_MainBaseColors.size())
-	{
-		pcl::visualization::Camera Camera;
-		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-
-		Eigen::Vector2f CircleStartNDCPos = { -0.7, 0.7 };
-		for (int i = 0; i < m_MainBaseColors.size(); i++)
-		{
-			Eigen::Vector4d PixelPosition = { CircleStartNDCPos.x() + 0.2 * i, CircleStartNDCPos.y(), -0.5f, 1.0f };
-
-			Eigen::Matrix4d Proj, View;
-			Camera.computeProjectionMatrix(Proj);
-			Camera.computeViewMatrix(View);
-
-			PixelPosition = (Proj * View).inverse() * PixelPosition;
-			PixelPosition /= PixelPosition.w();
-
-			pcl::PointXYZ Circle;
-
-			Circle.x = PixelPosition.x();
-			Circle.y = PixelPosition.y();
-			Circle.z = PixelPosition.z();
-
-			Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-			Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
-
-			auto Length = (CameraPos - PixelPos).norm();
-
-			std::string CircleName = "Circle" + std::to_string(i);
-			if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
-			{
-				m_pVisualizer->m_pPCLVisualizer->removeShape(CircleName);
-				m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), float(m_MainBaseColors[i].x()) / 255, float(m_MainBaseColors[i].y()) / 255, float(m_MainBaseColors[i].z()) / 255, CircleName);
-			}
-		}
-		m_pVisualizer->m_pPCLVisualizer->updateCamera();
-
 	}
 
 }
