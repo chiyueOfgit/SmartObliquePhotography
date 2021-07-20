@@ -29,6 +29,7 @@
 #include "PointCloudRetouchInterface.h"
 #include "VisualizationInterface.h"
 #include "PointCloudRetouchConfig.h"
+#include "DisplayOptionsSettingDialog.h"
 
 #include "pcl/io/pcd_io.h"
 
@@ -70,6 +71,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionPrecompute, SIGNAL(triggered()), this, SLOT(onActionPrecompute()));
     QObject::connect(m_UI.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
     QObject::connect(m_UI.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
+    QObject::connect(m_UI.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
     QObject::connect(m_UI.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
     QObject::connect(m_UI.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
@@ -346,6 +348,13 @@ void CQTInterface::onActionInstructions()
 {
     m_pInstructionsDialog = new CInstructionsDialog(this);
     m_pInstructionsDialog->exec();
+}
+
+void CQTInterface::onActionSetting()
+{
+    std::shared_ptr<CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<CDisplayOptionsSettingDialog>(this);
+    pDisplayOptionsSettingDialog->show();
+    pDisplayOptionsSettingDialog->exec();
 }
 
 void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)

@@ -75,6 +75,7 @@ namespace hiveObliquePhotography
             void onActionBrush();
             void onActionOutlierDetection();
             void onActionInstructions();
+            void onActionSetting();
             void onResourceSpaceItemDoubleClick(QModelIndex);
         };
     }
