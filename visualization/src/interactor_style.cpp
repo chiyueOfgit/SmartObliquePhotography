@@ -1394,7 +1394,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnRightButtonDown ()
     MouseEvent event (MouseEvent::MouseDblClick, MouseEvent::RightButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey (), Superclass::CurrentMode);
     mouse_signal_ (event);
   }
-  Superclass::OnRightButtonDown ();
+  //Superclass::OnRightButtonDown ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1405,7 +1405,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnRightButtonUp ()
   int y = this->Interactor->GetEventPosition()[1];
   MouseEvent event (MouseEvent::MouseButtonRelease, MouseEvent::RightButton, x, y, Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey (), Superclass::CurrentMode);
   mouse_signal_ (event);
-  Superclass::OnRightButtonUp ();
+  //Superclass::OnRightButtonUp ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

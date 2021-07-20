@@ -295,7 +295,7 @@ void CQTInterface::onActionOpen()
 
 void CQTInterface::onActionSave()
 {
-    const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("Save PointCloud files(*.pcd)")).toStdString();
+    const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("PCD files(*.pcd);;""PLY files(*.ply)")).toStdString();
 
     PointCloud_t::Ptr pCloud(new PointCloud_t);
     PointCloudRetouch::hiveDumpPointCloudtoSave(pCloud);

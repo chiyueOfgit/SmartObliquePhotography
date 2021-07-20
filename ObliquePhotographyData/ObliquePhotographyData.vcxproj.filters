@@ -48,6 +48,9 @@
     <ClInclude Include="PointCloudPCDSaver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="PointCloudPLYSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -75,6 +78,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PointCloudPCDSaver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudPLYSaver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

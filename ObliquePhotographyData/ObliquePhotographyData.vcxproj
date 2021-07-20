@@ -170,6 +170,7 @@
     <ClInclude Include="PointCloudPCDLoader.h" />
     <ClInclude Include="PointCloudPCDSaver.h" />
     <ClInclude Include="PointCloudPLYLoader.h" />
+    <ClInclude Include="PointCloudPLYSaver.h" />
     <ClInclude Include="PointCloudSaver.h" />
     <ClInclude Include="PointCloudScene.h" />
     <ClInclude Include="PointCloudLoader.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="PointCloudPCDLoader.cpp" />
     <ClCompile Include="PointCloudPCDSaver.cpp" />
     <ClCompile Include="PointCloudPLYLoader.cpp" />
+    <ClCompile Include="PointCloudPLYSaver.cpp" />
     <ClCompile Include="PointCloudSaver.cpp" />
     <ClCompile Include="PointCloudScene.cpp" />
     <ClCompile Include="PointCloudLoader.cpp" />
