@@ -25,6 +25,11 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 		pcl::index_t Candidate = ExpandingCandidateQueue.front();
 		ExpandingCandidateQueue.pop();
 
+		std::size_t CandidateLabel;
+		pManager->dumpPointLabelAt(CandidateLabel, Candidate);
+		if (vCluster->getLabel() == EPointLabel::UNWANTED && static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
+			continue;
+		
 		std::uint32_t OldClusterIndex = pManager->getClusterIndexAt(Candidate);
 		//_ASSERTE(OldClusterIndex != vCluster->getClusterIndex());
 
@@ -46,6 +51,7 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 		{
 		//	//WARNING!
 		//	pManager->tagPointLabel(Candidate, EPointLabel::FILLED, pManager->getClusterIndexAt(Candidate), pManager->getClusterBelongingProbabilityAt(Candidate));
+			pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 		//	//WARNING!
 		//	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Point: %1% is left in expander, its probability is %2%, below are infos:\n", Candidate, CurrentProbability) + vCluster->getDebugInfos(Candidate));
 		}

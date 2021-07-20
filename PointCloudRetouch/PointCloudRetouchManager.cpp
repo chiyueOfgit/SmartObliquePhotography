@@ -167,6 +167,23 @@ bool CPointCloudRetouchManager::dumpPointLabel(std::vector<std::size_t>& voPoint
 
 //*****************************************************************
 //FUNCTION: 
+bool CPointCloudRetouchManager::dumpPointLabelAt(std::size_t& voPointLabel, std::uint32_t vIndex) const
+{
+	auto NumPoints = m_Scene.getNumPoint();
+	if (vIndex < NumPoints)
+	{
+		auto Label = m_PointLabelSet.getLabelAt(vIndex);
+		voPointLabel = static_cast<std::size_t>(Label);
+		
+		return true;
+	}
+	else
+		return false;
+}
+
+
+//*****************************************************************
+//FUNCTION: 
 bool CPointCloudRetouchManager::executePreprocessor(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc, const Eigen::Vector3d& vViewPos)
 {
 	//TODO: ÕÍ…∆
