@@ -243,7 +243,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			{
 				auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
 				Eigen::Vector3i Color{ Point.r, Point.g, Point.b };
-				m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 50.0);
+				m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 30.0);
 			}
 		}
 
