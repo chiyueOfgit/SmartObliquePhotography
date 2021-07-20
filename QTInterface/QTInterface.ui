@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>960</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -71,6 +71,9 @@
    <addaction name="menuDisplay"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -184,6 +187,9 @@ background-color: rgb(255, 255, 255);</string>
    </property>
   </action>
   <action name="actionSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
      <normaloff>:/QTInterface/Icon/save.png</normaloff>:/QTInterface/Icon/save.png</iconset>
@@ -197,7 +203,7 @@ background-color: rgb(255, 255, 255);</string>
     <bool>false</bool>
    </property>
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
@@ -218,6 +224,9 @@ background-color: rgb(255, 255, 255);</string>
    </property>
   </action>
   <action name="actionDelete">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
      <normaloff>:/QTInterface/Icon/delete.png</normaloff>:/QTInterface/Icon/delete.png</iconset>
@@ -250,6 +259,9 @@ background-color: rgb(255, 255, 255);</string>
   <action name="actionRubber">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
@@ -284,6 +296,9 @@ background-color: rgb(255, 255, 255);</string>
    </property>
   </action>
   <action name="actionUpdate">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
      <normaloff>:/QTInterface/Icon/update.png</normaloff>:/QTInterface/Icon/update.png</iconset>
@@ -308,6 +323,9 @@ background-color: rgb(255, 255, 255);</string>
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
      <normaloff>:/QTInterface/Icon/pointPicking.png</normaloff>:/QTInterface/Icon/pointPicking.png</iconset>
@@ -326,6 +344,9 @@ background-color: rgb(255, 255, 255);</string>
    </property>
   </action>
   <action name="actionOutlierDetection">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">
      <normaloff>:/QTInterface/Icon/Outlier.png</normaloff>:/QTInterface/Icon/Outlier.png</iconset>
@@ -337,6 +358,9 @@ background-color: rgb(255, 255, 255);</string>
   <action name="actionPrecompute">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="QTInterface.qrc">

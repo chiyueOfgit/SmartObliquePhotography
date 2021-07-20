@@ -67,6 +67,19 @@
         <string>Planar Feature</string>
        </property>
       </widget>
+      <widget class="QCheckBox" name="NormalFeatureCheckBox">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>90</y>
+         <width>111</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Normal Feature</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>

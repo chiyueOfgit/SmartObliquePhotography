@@ -173,6 +173,7 @@ bool CQTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
     StandardItem->setCheckable(true);
     StandardItem->setCheckState(Qt::Checked);
     StandardItem->setEditable(false);
+    m_pResourceSpaceStandardItemModels->removeRow(0);
     m_pResourceSpaceStandardItemModels->appendRow(StandardItem);
 
     m_CurrentCloud = FileName;
@@ -266,6 +267,19 @@ void CQTInterface::onActionOpen()
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel, true);
         CQTInterface::__initialSlider(FilePathList);
+
+        //enable ui icons
+        {
+            m_UI.actionPointPicking->setEnabled(true);
+            m_UI.actionSave->setEnabled(true);
+            m_UI.actionUpdate->setEnabled(true);
+            m_UI.actionDelete->setEnabled(true);
+            m_UI.actionPrecompute->setEnabled(true);
+            m_UI.actionRubber->setEnabled(true);
+            m_UI.actionBrush->setEnabled(true);
+            m_UI.actionSetting->setEnabled(true);
+            m_UI.actionOutlierDetection->setEnabled(true);
+        }
 
         if (FilePathSet.size() == 1)
         {
