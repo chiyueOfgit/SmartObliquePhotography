@@ -229,18 +229,21 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			if (Plane.squaredNorm() >= 0.5f)
 				for (int i = 0; i < m_pVisualizer->m_pSceneCloud->size(); i++)
 				{
-					const auto& Position = m_pVisualizer->m_pSceneCloud->at(i).getVector4fMap();
+					const auto& Point = m_pVisualizer->m_pSceneCloud->at(i);
+					const auto& Position = Point.getVector4fMap();
+					const auto& Normal = Point.getNormalVector4fMap();
 					const auto Distance = abs(Plane.dot(Position));
+					const auto NormalDot = abs(Plane.dot(Normal));
 
 					int Color;
 					if (Distance >= DistanceThreshold)
 						Color = 0;
-					else
-						Color = 255 - 255 * Distance / DistanceThreshold;
-					//else if (Distance >= DistanceThreshold * Tolerance)
-					//	Color = 255 * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
 					//else
-					//	Color = 255;
+					//	Color = 255 - 255 * Distance / DistanceThreshold;
+					else if (Distance >= DistanceThreshold * Tolerance)
+						Color = 255 * NormalDot * PointCloudRetouch::CPlanarityFeature::smoothAttenuation(DistanceThreshold * Tolerance, DistanceThreshold, Distance);
+					else
+						Color = 255 * NormalDot;
 
 					if (Color != 0)
 						m_pVisualizer->addUserColoredPoints({ i }, { Color, 0, 0 });
