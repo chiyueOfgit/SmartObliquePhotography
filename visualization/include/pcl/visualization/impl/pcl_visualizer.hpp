@@ -571,7 +571,6 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   // Setup actor and mapper 
   vtkSmartPointer <vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
   mapper->SetInputConnection (data->GetOutputPort ());
-
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New ();
   actor->SetMapper (mapper);
@@ -583,6 +582,9 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   actor->GetMapper ()->ImmediateModeRenderingOn ();
 #endif
   actor->GetMapper ()->StaticOn ();
+  actor->GetProperty()->SetAmbient(1.0);
+  actor->GetProperty()->SetDiffuse(0.0);
+  actor->GetProperty()->SetSpecular(0.0);
   actor->GetMapper ()->ScalarVisibilityOff ();
   actor->GetMapper ()->Update ();
   addActorToRenderer (actor, viewport);
