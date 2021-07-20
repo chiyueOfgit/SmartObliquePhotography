@@ -66,6 +66,14 @@ protected:
 		File.close();
 	}
 
+	void saveIndices(const std::string& vPath, pcl::Indices& viIndices)
+	{
+		std::ofstream File(vPath);
+		boost::archive::text_oarchive oa(File);
+		oa << BOOST_SERIALIZATION_NVP(viIndices);
+		File.close();
+	}
+
 	void expandOnce(const std::string& vIndicesPath, const std::string& vCameraPath)
 	{
 		pcl::Indices Indices;
