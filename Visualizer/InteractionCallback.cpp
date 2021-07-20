@@ -196,7 +196,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		if (PickedIndices.empty())
 			return;
-		
+
 		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
@@ -209,7 +209,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-				
+
 		auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 		{
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
@@ -222,7 +222,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 					return 1.0;
 				X /= (1 - m_Hardness);
 				X *= X;
-				
+
 				return X * (X - 2) + 1;
 			}
 			else
