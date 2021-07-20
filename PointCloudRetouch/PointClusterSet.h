@@ -13,6 +13,7 @@ namespace hiveObliquePhotography
 			~CPointClusterSet();
 
 			void addCluster(CPointCluster* vCluster) { m_ClusterSet.push_back(vCluster); }
+			void removeLastCluster();
 
 			const CPointCluster* getLastCluster() const { return !m_ClusterSet.empty() ? m_ClusterSet.back() : nullptr; }
 			void reset();

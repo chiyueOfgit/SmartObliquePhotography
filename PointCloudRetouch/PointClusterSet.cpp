@@ -9,6 +9,19 @@ CPointClusterSet::~CPointClusterSet()
 	reset();
 }
 
+//*****************************************************************
+//FUNCTION: 
+void CPointClusterSet::removeLastCluster()
+{
+	if (!m_ClusterSet.empty())
+	{
+		delete m_ClusterSet.back();
+		m_ClusterSet.pop_back();
+	}
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CPointClusterSet::reset()
 {
 	for (auto pCluster : m_ClusterSet)
