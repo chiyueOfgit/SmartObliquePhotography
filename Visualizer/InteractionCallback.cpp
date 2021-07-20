@@ -82,6 +82,14 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("TestCameraInfo.txt");
 		}
 
+		if (KeyString == "Delete")
+		{
+			hiveObliquePhotography::PointCloudRetouch::hiveClearMark();
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+
 	}
 }
 
