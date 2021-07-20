@@ -136,6 +136,9 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			for (auto Index : Record.PointSet)
 			{
 				pcl::PointSurfel TempPoint = m_pSceneCloud->points[Index];
+				TempPoint.x += Record.DeltaPos.x();
+				TempPoint.y += Record.DeltaPos.y();
+				TempPoint.z += Record.DeltaPos.z();
 				TempPoint.r = Record.Color.x();
 				TempPoint.g = Record.Color.y();
 				TempPoint.b = Record.Color.z();
@@ -172,15 +175,15 @@ int CPointCloudVisualizer::addUserColoredPoints(const std::vector<pcl::index_t>&
 {
 	static int HighlightId = -1;
 	HighlightId++;
-	m_UserColoredPoints.push_back({ vPointSet, vColor, CVisualizationConfig::getInstance()->getAttribute<double>(POINT_SHOW_SIZE).value(), false, HighlightId });
+	m_UserColoredPoints.push_back({ vPointSet, vColor, { 0.0f, 0.0f, 0.0f }, CVisualizationConfig::getInstance()->getAttribute<double>(POINT_SHOW_SIZE).value(), false, HighlightId });
 	return HighlightId;
 }
 
-int CPointCloudVisualizer::addUserColoredPointsAsNewCloud(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, double vPointSize)
+int CPointCloudVisualizer::addUserColoredPointsAsNewCloud(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, const Eigen::Vector3f& vDeltaPos, double vPointSize)
 {
 	static int HighlightId = -1;
 	HighlightId++;
-	m_UserColoredPoints.push_back({ vPointSet, vColor, vPointSize, true, HighlightId });
+	m_UserColoredPoints.push_back({ vPointSet, vColor, vDeltaPos, vPointSize, true, HighlightId });
 	return HighlightId;
 }
 
