@@ -101,6 +101,16 @@ void hiveObliquePhotography::PointCloudRetouch::hiveEraseMark(const std::vector<
 	CPointCloudRetouchManager::getInstance()->setLabel(vPoints, EPointLabel::UNDETERMINED);
 }
 
+bool hiveObliquePhotography::PointCloudRetouch::hiveDumpColorFeatureMainColors(std::vector<Eigen::Vector3i>& voMainColors)
+{
+	return CPointCloudRetouchManager::getInstance()->dumpColorFeatureMainColors(voMainColors);
+}
+
+bool hiveObliquePhotography::PointCloudRetouch::hiveDumpColorFeatureNearestPoints(std::vector<pcl::index_t>& vNearestPoints)
+{
+	return CPointCloudRetouchManager::getInstance()->dumpColorFeatureNearestPoints(vNearestPoints);
+}
+
 bool hiveObliquePhotography::PointCloudRetouch::hiveUndo()
 {
 	return CPointCloudRetouchManager::getInstance()->undo();

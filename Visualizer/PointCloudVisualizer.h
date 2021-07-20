@@ -8,6 +8,8 @@ namespace hiveObliquePhotography
 		{
 			std::vector<pcl::index_t> PointSet;
 			Eigen::Vector3i Color{0, 0, 0};
+			double PointSize = 3.0;
+			bool IsNewCloud = false;
 			int Id = -1;
 		};
 
@@ -27,6 +29,7 @@ namespace hiveObliquePhotography
 			void run();
 
 			int addUserColoredPoints(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor);
+			int addUserColoredPointsAsNewCloud(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, double vPointSize = 3.0);
 			void removeUserColoredPoints(int vId);
 			void removeAllUserColoredPoints() { m_UserColoredPoints.clear(); }
 

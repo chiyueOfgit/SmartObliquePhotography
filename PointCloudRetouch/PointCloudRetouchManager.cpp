@@ -4,6 +4,8 @@
 #include "NeighborhoodBuilder.h"
 #include "OutlierDetector.h"
 
+#include "ColorFeature.h"
+
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
@@ -182,6 +184,44 @@ bool CPointCloudRetouchManager::executePreprocessor(std::vector<pcl::index_t>& v
 	{
 
 	}
+	return false;
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool CPointCloudRetouchManager::dumpColorFeatureMainColors(std::vector<Eigen::Vector3i>& vMainColors) const
+{
+	auto pCluster = m_PointClusterSet.getLastCluster();
+	const CColorFeature* pColorFeature = nullptr;
+	if (pCluster)
+	{
+		pColorFeature = dynamic_cast<const CColorFeature*>(pCluster->getFeatureBySig(KEYWORD::COLOR_FEATURE));
+		if (pColorFeature)
+		{
+			vMainColors = pColorFeature->getMainBaseColors();
+			return true;
+		}
+	}
+
+	return false;
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool CPointCloudRetouchManager::dumpColorFeatureNearestPoints(std::vector<pcl::index_t>& vNearestPoints) const
+{
+	auto pCluster = m_PointClusterSet.getLastCluster();
+	const CColorFeature* pColorFeature = nullptr;
+	if (pCluster)
+	{
+		pColorFeature = dynamic_cast<const CColorFeature*>(pCluster->getFeatureBySig(KEYWORD::COLOR_FEATURE));
+		if (pColorFeature)
+		{
+			vNearestPoints = pColorFeature->getMainColorsNearestPoints();
+			return true;
+		}
+	}
+
 	return false;
 }
 

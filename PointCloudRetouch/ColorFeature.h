@@ -22,6 +22,10 @@ namespace hiveObliquePhotography
 			virtual double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
 			virtual std::string outputDebugInfosV(pcl::index_t vIndex) const override;
 
+			const auto& getMainBaseColors() const { return m_MainBaseColors; }
+
+			const auto& getMainColorsNearestPoints() const { return m_NearestPoints; }
+
 #ifdef _UNIT_TEST
 			std::vector<Eigen::Vector3i> adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __adjustKMeansCluster(vColorSet, vK); };
 #endif
@@ -33,6 +37,7 @@ namespace hiveObliquePhotography
 			LAB __RGB2LAB(const Eigen::Vector3f& vRGBColor) const;
 
 			std::vector<Eigen::Vector3i> m_MainBaseColors;
+			std::vector<pcl::index_t> m_NearestPoints;
 
 			float m_ColorThreshold = 10.0f;
 			std::size_t m_MaxNumMainColors = 5;
