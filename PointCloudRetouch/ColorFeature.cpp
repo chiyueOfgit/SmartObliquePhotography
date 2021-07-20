@@ -150,6 +150,8 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
 
     std::vector<std::size_t> NumResultPoints(vMaxK, 0);
 
+    std::vector<float> Factors(vMaxK, -FLT_MAX);
+
     for (int CurrentK = 1; CurrentK <= vMaxK; CurrentK++)
     {
         std::vector<std::pair<Eigen::Vector3i*, Eigen::Vector3i>> TagAndColorSet(vColorSet.size(), { nullptr, Eigen::Vector3i() });
@@ -232,6 +234,49 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
                 ClusterIndices[int(TagAndColorSet[i].first - Ptr)].push_back(i);
             }
         }
+        
+        if (CurrentK != 1)
+        {
+            float SumFactor = 0.0f;
+            for (int i = 0; i < ClusterIndices.size(); i++)
+            {
+                auto& Cluster = ClusterIndices[i];
+
+                float Difference = 0.0f;
+                for (auto Index : Cluster)
+                {
+                    Difference += __calcColorDifferences(ClusterCentroids[i], TagAndColorSet[Index].second);
+                }
+                Difference /= Cluster.size();
+
+                float MinDifference = FLT_MAX;
+                int MinCluster = -1;
+                for (int k = 0; k < ClusterIndices.size(); k++)
+                {
+                    if (k != i)
+                    {
+                        auto Temp = __calcColorDifferences(ClusterCentroids[i], ClusterCentroids[k]);
+                        if (Temp < MinDifference)
+                        {
+                            MinDifference = Temp;
+                            MinCluster = k;
+                        }
+                    }
+                }
+
+                auto& NearestCluster = ClusterIndices[MinCluster];
+                float NearestDifference = 0.0f;
+                for (auto Index : NearestCluster)
+                {
+                    NearestDifference += __calcColorDifferences(ClusterCentroids[i], TagAndColorSet[Index].second);
+                }
+                NearestDifference /= NearestCluster.size();
+
+                SumFactor += (NearestDifference - Difference) / std::max(NearestDifference, Difference);
+            }
+
+            Factors[CurrentK - 1] = SumFactor / CurrentK;
+        }
 
         ClusterResults.push_back(ClusterCentroids);
     }
@@ -270,7 +315,14 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
             MaxIndex = i;
     }*/
 
-    return ClusterResults[0];
+    int MaxIndex = 0;
+    for (int i = 0; i < vMaxK; i++)
+    {
+        if (Factors[i] > Factors[MaxIndex])
+            MaxIndex = i;
+    }
+
+    return ClusterResults[MaxIndex];
 	//return ClusterResults[AverageDifferenceAndIndex.second];
 }
 
