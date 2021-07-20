@@ -355,6 +355,16 @@ void CQTInterface::onActionSetting()
     std::shared_ptr<CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<CDisplayOptionsSettingDialog>(this);
     pDisplayOptionsSettingDialog->show();
     pDisplayOptionsSettingDialog->exec();
+
+    __parseConfigFile();
+    PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
+
+    Visualization::hiveRemoveAllShapes();
+    Visualization::hiveCancelAllHighlighting();
+
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::hiveRefreshVisualizer(PointLabel);
 }
 
 void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)

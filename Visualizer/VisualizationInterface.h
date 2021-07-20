@@ -20,6 +20,8 @@ namespace hiveObliquePhotography
 
 		VISUALIZATION_DECLSPEC void hiveCancelAllHighlighting();
 
+		VISUALIZATION_DECLSPEC void hiveRemoveAllShapes();
+
 		VISUALIZATION_DECLSPEC pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
 
 		VISUALIZATION_DECLSPEC bool hiveGetVisualizationConfig(CVisualizationConfig*& voConfig);

@@ -46,6 +46,12 @@ void hiveObliquePhotography::Visualization::hiveCancelAllHighlighting()
 	CPointCloudVisualizer::getInstance()->removeAllUserColoredPoints();
 }
 
+void hiveObliquePhotography::Visualization::hiveRemoveAllShapes()
+{
+	CPointCloudVisualizer::getInstance()->m_MainColors.clear();
+	CPointCloudVisualizer::getInstance()->m_pPCLVisualizer->removeAllShapes();
+}
+
 pcl::visualization::PCLVisualizer*& hiveObliquePhotography::Visualization::hiveGetPCLVisualizer()
 {
 	return CPointCloudVisualizer::getInstance()->m_pPCLVisualizer;

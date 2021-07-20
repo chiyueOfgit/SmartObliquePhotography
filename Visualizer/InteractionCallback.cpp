@@ -146,14 +146,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		}
 	}
 
-	static std::vector<Eigen::Vector3i> MainColors;
-
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && m_MousePressStatus[1])
 	{
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
 
 		//reset
-		MainColors.clear();
+		m_pVisualizer->m_MainColors.clear();
 		m_pVisualizer->removeAllUserColoredPoints();
 
 		{
@@ -263,7 +261,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
 
 		//colors
-		PointCloudRetouch::hiveDumpColorFeatureMainColors(MainColors);
+		PointCloudRetouch::hiveDumpColorFeatureMainColors(m_pVisualizer->m_MainColors);
 
 		pcl::visualization::Camera Camera;
 		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
@@ -272,7 +270,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		Camera.computeProjectionMatrix(Proj);
 		Camera.computeViewMatrix(View);
 
-		if (MainColors.size())
+		if (m_pVisualizer->m_MainColors.size())
 		{
 			pcl::visualization::Camera Camera;
 			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
@@ -280,14 +278,14 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			float CircleY = 0.7, DistanceX = 0.2;
 			std::vector<Eigen::Vector2f> CirclesNDCPos;
 
-			float DeltaX = float(MainColors.size() - 1) * 0.5f;
+			float DeltaX = float(m_pVisualizer->m_MainColors.size() - 1) * 0.5f;
 
-			for (int i = 0; i < MainColors.size(); i++)
+			for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
 			{
 				CirclesNDCPos.push_back({ (i - DeltaX) * DistanceX, CircleY });
 			}
 
-			for (int i = 0; i < MainColors.size(); i++)
+			for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
 			{
 				Eigen::Vector4d PixelPosition = { CirclesNDCPos[i].x(), CirclesNDCPos[i].y(), -0.5f, 1.0f };
 
@@ -308,7 +306,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				std::string CircleName = "Circle" + std::to_string(i);
 				if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
 				{
-					m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), float(MainColors[i].x()) / 255, float(MainColors[i].y()) / 255, float(MainColors[i].z()) / 255, CircleName);
+					m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), float(m_pVisualizer->m_MainColors[i].x()) / 255, float(m_pVisualizer->m_MainColors[i].y()) / 255, float(m_pVisualizer->m_MainColors[i].z()) / 255, CircleName);
 				}
 			}
 		}

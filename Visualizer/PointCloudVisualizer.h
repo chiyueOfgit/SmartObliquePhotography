@@ -45,10 +45,13 @@ namespace hiveObliquePhotography
 
 			std::vector<SHighlightPoints> m_UserColoredPoints;
 
+			std::vector<Eigen::Vector3i> m_MainColors;
+
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
 			friend class CInteractionCallback;
 			friend pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
 			friend int hiveHighlightPointSet(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor);
+			friend void hiveRemoveAllShapes();
 
 		};
 	}

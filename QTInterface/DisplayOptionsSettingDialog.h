@@ -18,12 +18,17 @@ namespace hiveObliquePhotography::QTInterface
 
 			this->setWindowFlag(Qt::WindowType::WindowContextHelpButtonHint, false);
 
+			m_pUi->ColorFeatureCheckBox->setChecked(m_ColorStatus);
+			m_pUi->PlanarFeatureCheckBox->setChecked(m_PlanarStatus);
+
 			QObject::connect(m_pUi->ColorFeatureCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onActionColorFeatureCheckBox()));
 			QObject::connect(m_pUi->PlanarFeatureCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onActionPlanarFeatureCheckBox()));
 			QObject::connect(m_pUi->OKButton, SIGNAL(clicked()), this, SLOT(onActionOK()));
 		}
 		
 	private:
+		static bool m_ColorStatus;
+		static bool m_PlanarStatus;
 
 	private slots:
 		void onActionColorFeatureCheckBox();
