@@ -66,6 +66,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_008 (undo)", "Uni
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_003(feature_visualization)", "IntergrationTests\Integration_Test_003\Integration_Test_003.vcxproj", "{F411F6D2-D151-4A89-A920-70E6419B1AEF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_002 (load_point_cloud_scene)", "UnitTests\Unit_Test_003\Unit_Test_003.vcxproj", "{56013926-43D6-4E9F-BE1B-ED74E1B9F847}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -248,6 +250,14 @@ Global
 		{F411F6D2-D151-4A89-A920-70E6419B1AEF}.Release|x64.ActiveCfg = Release|x64
 		{F411F6D2-D151-4A89-A920-70E6419B1AEF}.Release|x64.Build.0 = Release|x64
 		{F411F6D2-D151-4A89-A920-70E6419B1AEF}.Release|x86.ActiveCfg = Release|x64
+		{56013926-43D6-4E9F-BE1B-ED74E1B9F847}.Debug|x64.ActiveCfg = Debug|x64
+		{56013926-43D6-4E9F-BE1B-ED74E1B9F847}.Debug|x64.Build.0 = Debug|x64
+		{56013926-43D6-4E9F-BE1B-ED74E1B9F847}.Debug|x86.ActiveCfg = Debug|Win32
+		{56013926-43D6-4E9F-BE1B-ED74E1B9F847}.Debug|x86.Build.0 = Debug|Win32
+		{56013926-43D6-4E9F-BE1B-ED74E1B9F847}.Release|x64.ActiveCfg = Release|x64
+		{56013926-43D6-4E9F-BE1B-ED74E1B9F847}.Release|x64.Build.0 = Release|x64
+		{56013926-43D6-4E9F-BE1B-ED74E1B9F847}.Release|x86.ActiveCfg = Release|Win32
+		{56013926-43D6-4E9F-BE1B-ED74E1B9F847}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -271,6 +281,7 @@ Global
 		{3856D3BE-A34C-45FB-8DDE-2A37356FBA4C} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{0A18A5E2-DD92-4F65-ABF2-812393B4BC3D} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{F411F6D2-D151-4A89-A920-70E6419B1AEF} = {0ED66540-E913-4B7E-B88E-3A84508CCE63}
+		{56013926-43D6-4E9F-BE1B-ED74E1B9F847} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39CBE48C-AE02-4207-8AE0-74B21A939B18}

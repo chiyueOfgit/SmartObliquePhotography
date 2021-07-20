@@ -234,7 +234,8 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
                 ClusterIndices[int(TagAndColorSet[i].first - Ptr)].push_back(i);
             }
         }
-        
+
+    	
         if (CurrentK != 1)
         {
             float SumFactor = 0.0f;
