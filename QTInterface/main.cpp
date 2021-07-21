@@ -8,6 +8,8 @@ int main(int argc, char *argv[])
     vtkOutputWindow::SetGlobalWarningDisplay(0);
     QApplication Application(argc, argv);
     hiveObliquePhotography::QTInterface::CQTInterface Window;
+    Window.setWindowTitle("SmartObliquePhotography");
+    Window.setWindowState(Qt::WindowMaximized);
     Window.init();
     Window.show();
     return Application.exec();
