@@ -216,13 +216,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				return 1;
 		};
 
-		std::ofstream File("PickedIndices.txt");
-		boost::archive::text_oarchive oa(File);
-		oa << BOOST_SERIALIZATION_NVP(PickedIndices);
-		File.close();
-
-		m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera.txt");
-
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
