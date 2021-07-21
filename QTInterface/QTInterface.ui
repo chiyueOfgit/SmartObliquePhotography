@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>960</width>
-     <height>22</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -89,7 +89,8 @@
    <addaction name="actionOutlierDetection"/>
    <addaction name="actionUpdate"/>
    <addaction name="separator"/>
-   <addaction name="actionDelete"/>
+   <addaction name="actionDeleteLitter"/>
+   <addaction name="actionDeleteBackGround"/>
    <addaction name="separator"/>
    <addaction name="actionPrecompute"/>
    <addaction name="actionSetting"/>
@@ -223,7 +224,7 @@ background-color: rgb(255, 255, 255);</string>
     <string>AreaPicking</string>
    </property>
   </action>
-  <action name="actionDelete">
+  <action name="actionDeleteLitter">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -371,6 +372,18 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="toolTip">
     <string>Precompute</string>
+   </property>
+  </action>
+  <action name="actionDeleteBackGround">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/delete_bg.png</normaloff>:/QTInterface/Icon/delete_bg.png</iconset>
+   </property>
+   <property name="text">
+    <string>DeleteBackGround</string>
    </property>
   </action>
  </widget>

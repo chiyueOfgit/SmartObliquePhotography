@@ -14,5 +14,6 @@
         <file>Icon/pointPicking.png</file>
         <file>Icon/instructions.png</file>
         <file>Icon/Outlier.png</file>
+        <file>Icon/delete_bg.png</file>
     </qresource>
 </RCC>
