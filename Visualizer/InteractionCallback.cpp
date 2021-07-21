@@ -201,7 +201,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - RadiusOnWindow, PosY - RadiusOnWindow, PosX + RadiusOnWindow, PosY + RadiusOnWindow, PickedIndices);	//rectangle
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
-		hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
+		//hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
 
 		if (PickedIndices.empty())
 			return;
@@ -215,13 +215,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			else
 				return 1;
 		};
-
-		std::ofstream File("PickedIndices.txt");
-		boost::archive::text_oarchive oa(File);
-		oa << BOOST_SERIALIZATION_NVP(PickedIndices);
-		File.close();
-
-		m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera.txt");
 
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
