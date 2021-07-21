@@ -51,7 +51,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Color Feature</string>
+        <string>Additional Mode</string>
        </property>
       </widget>
       <widget class="QCheckBox" name="NormalFeatureCheckBox">
@@ -64,7 +64,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Normal Feature</string>
+        <string>Standard Mode</string>
        </property>
       </widget>
      </widget>
