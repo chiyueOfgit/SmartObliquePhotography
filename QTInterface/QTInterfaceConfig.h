@@ -27,9 +27,9 @@ namespace hiveObliquePhotography
 #ifdef _UNIT_TEST
 				RelativePath = "../../";
 #endif // _UNIT_TEST
-				const std::string ConfigPath = "Configs/QTInterfaceConfig.xml";
+				const std::string ConfigPath = "Config/QTInterfaceConfig.xml";
 
-				if (hiveConfig::hiveParseConfig(RelativePath + ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
+				if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
 				{
 					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 					return;
