@@ -1,10 +1,63 @@
-# 功能键介绍
-## 打开文件
+# 点云操作颜色说明
+* 红色
+需要去除的点
+
+*蓝色
+需要保留的点（背景点）
+
+
+# 功能键指南
+* 打开文件
+<img src='InstructionImages/open.png'>    
 支持打开pcd、ply格式的点云文件
-## 保存文件
-支持保存pcd、ply格式的点云文件
-## 点选
-进入点选状态，点击鼠标右键标记前景或背景，按空格切换标记类型
-## 橡皮擦
-<img src='Icon/rubber.png'>
-// 图片大小得自己调
+
+* 保存文件
+<img src='InstructionImages/save.png'>    
+支持保存pcd、ply格式的点云文件，保存时自动去除标记为红色的点
+
+* 点选
+<img src='InstructionImages/pointPicking.png'>    
+进入点选状态，点击鼠标右键标记点云
+按空格切换标记类型（红色/蓝色）
+可以通过调节笔刷的半径与硬度影响标记自动生长的范围
+<img src='InstructionImages/pointPickingSlider.png'>
+
+* 橡皮檫
+<img src='InstructionImages/rubber.png'>    
+进入点选状态后才能使用，用于擦除不需要的标记
+
+* 离群点
+<img src='InstructionImages/Outlier.png'>    
+选取空间中离群的点，标记为红色
+
+* 更新
+<img src='InstructionImages/update.png'>    
+隐藏/显示红色点
+
+* 删除
+<img src='InstructionImages/delete_litter.png'>    
+删除所有标红的操作（注意：并不是删除所有红色的点！！！）
+<img src='InstructionImages/delete_bg.png'>    
+删除所有标蓝的操作（注意：并不是删除所有蓝色的点！！！）
+
+* 预处理
+<img src='InstructionImages/blend.png'>    
+预先进行场景的计算，计算中无法操作场景，计算完成后可以提高操作场景的速度
+预处理用时测试：使用AMD 5800X对100MB的300W级别点云模型进行预处理，用时<1min
+
+
+# 鼠标使用指南
+* 左键
+旋转
+
+*中键
+平移
+
+*右键
+在点选状态下可执行点选
+
+
+# 键盘指南
+* 空格
+切换标记类型（红色/蓝色）
+
