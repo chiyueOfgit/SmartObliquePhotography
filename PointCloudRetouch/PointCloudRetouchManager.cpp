@@ -325,6 +325,20 @@ void CPointCloudRetouchManager::dumpIndicesByLabel(std::vector<pcl::index_t>& vi
 
 //*****************************************************************
 //FUNCTION: 
+void CPointCloudRetouchManager::recoverMarkedPoints2Undetermined(EPointLabel vLabel)
+{
+	_ASSERTE(vLabel == EPointLabel::UNWANTED || vLabel == EPointLabel::KEPT);
+	std::vector<int> Indices;
+	dumpIndicesByLabel(Indices, vLabel);
+	for (auto Index : Indices)
+		tagPointLabel(Index, EPointLabel::UNDETERMINED, 0, 0);
+	m_pNeighborhoodBuilder->reset();
+	m_PointClusterSet.removeClustersByLabel(vLabel);
+	recordCurrentStatus();
+}
+
+//*****************************************************************
+//FUNCTION: 
 bool CPointCloudRetouchManager::executeOutlierDetector(EPointLabel vTo)
 {
 	std::vector<pcl::index_t> Indices;

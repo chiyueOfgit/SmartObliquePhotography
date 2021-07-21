@@ -67,7 +67,8 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
     QObject::connect(m_UI.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
     QObject::connect(m_UI.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
-    QObject::connect(m_UI.actionDelete, SIGNAL(triggered()), this, SLOT(onActionDelete()));
+    QObject::connect(m_UI.actionDeleteLitter , SIGNAL(triggered()), this, SLOT(onActionDeleteLitter()));
+    QObject::connect(m_UI.actionDeleteBackground, SIGNAL(triggered()), this, SLOT(onActionDeleteBackground()));
     QObject::connect(m_UI.actionPrecompute, SIGNAL(triggered()), this, SLOT(onActionPrecompute()));
     QObject::connect(m_UI.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
     QObject::connect(m_UI.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
@@ -342,9 +343,19 @@ void CQTInterface::onActionDiscardAndRecover()
     Visualization::hiveRefreshVisualizer(PointLabel);
 }
 
-void CQTInterface::onActionDelete()
+void CQTInterface::onActionDeleteLitter()
 {
-    PointCloudRetouch::hiveClearMark();
+    PointCloudRetouch::hiveRecoverLitterMark();
+    Visualization::hiveRemoveAllShapes();
+    Visualization::hiveCancelAllHighlighting();
+    std::vector<std::size_t> PointLabel;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+    Visualization::hiveRefreshVisualizer(PointLabel);
+}
+
+void CQTInterface::onActionDeleteBackground()
+{
+    PointCloudRetouch::hiveRecoverBackgroundMark();
     Visualization::hiveRemoveAllShapes();
     Visualization::hiveCancelAllHighlighting();
     std::vector<std::size_t> PointLabel;

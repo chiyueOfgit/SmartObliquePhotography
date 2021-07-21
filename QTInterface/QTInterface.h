@@ -69,7 +69,8 @@ namespace hiveObliquePhotography
             void onActionOpen();
             void onActionSave();
             void onActionDiscardAndRecover();
-            void onActionDelete();
+            void onActionDeleteLitter();
+            void onActionDeleteBackground();
             void onActionPrecompute();
             void onActionRubber();
             void onActionBrush();

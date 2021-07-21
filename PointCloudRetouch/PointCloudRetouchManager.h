@@ -39,6 +39,7 @@ namespace hiveObliquePhotography
 			bool executeOutlierDetector(EPointLabel vTo);
 			void recordCurrentStatus();
 			bool undo();
+			void recoverMarkedPoints2Undetermined(EPointLabel vLabel);
 			
 			std::size_t   getNumCluster() const { return m_PointClusterSet.getNumCluster(); }
 			std::uint32_t addAndGetTimestamp() { m_Timestamp++; return m_Timestamp; }
