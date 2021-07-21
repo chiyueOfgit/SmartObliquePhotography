@@ -7,11 +7,15 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
-		const std::string SWITCH_UNWANTED_DISCARD = "SWITCH_UNWANTED_DISCARD";
 		const std::string SWITCH_UNWANTED_KEPT_MODE = "SWITCH_UNWANTED_KEPT_MODE";
-		const std::string CLUSTER_EXPANDER_MODE = "CLUSTER_EXPANDER_MODE";
+		const std::string RECOVER_BACKGROUND_POINTS = "RECOVER_BACKGROUND_POINTS";
+		const std::string SWITCH_UNWANTED_DISCARD = "SWITCH_UNWANTED_DISCARD";
 		const std::string REMOVE_OUTLIER = "REMOVE_OUTLIER";
 		const std::string UNDO = "UNDO";
+		const std::string RADIUS_UP = "RADIUS_UP";
+		const std::string RADIUS_DOWN = "RADIUS_DOWN";
+		const std::string POINT_SIZE_UP = "POINT_SIZE_UP";
+		const std::string POINT_SIZE_DOWN = "POINT_SIZE_DOWN";
 
 		const std::string POINT_SHOW_SIZE = "POINT_SHOW_SIZE";
 		const std::string SCREEN_CIRCLE_RADIUS = "SCREEN_CIRCLE_RADIUS";
@@ -46,11 +50,16 @@ namespace hiveObliquePhotography
 
 			void __defineAttributesV() override
 			{
-				_defineAttribute(SWITCH_UNWANTED_DISCARD, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(SWITCH_UNWANTED_KEPT_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
-				_defineAttribute(CLUSTER_EXPANDER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(RECOVER_BACKGROUND_POINTS, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(SWITCH_UNWANTED_DISCARD, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+
 				_defineAttribute(REMOVE_OUTLIER, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 				_defineAttribute(UNDO, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(RADIUS_UP, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(RADIUS_DOWN, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(POINT_SIZE_DOWN, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(POINT_SIZE_UP, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 
 				_defineAttribute(CIRCLE_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(RUBBER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
