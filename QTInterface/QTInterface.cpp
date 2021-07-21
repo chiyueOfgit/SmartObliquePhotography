@@ -374,6 +374,7 @@ void CQTInterface::onActionPrecompute()
 void CQTInterface::onActionInstructions()
 {
     m_pInstructionsDialog = new CInstructionsDialog(this);
+    m_pInstructionsDialog->init();
     m_pInstructionsDialog->exec();
 }
 

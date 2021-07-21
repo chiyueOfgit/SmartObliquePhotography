@@ -5,6 +5,13 @@
 
 using namespace hiveObliquePhotography::QTInterface;
 
+void CInstructionsDialog::init()
+{
+	__loadTxt();
+	__setLabelText();
+	__connectSignals();
+}
+
 void CInstructionsDialog::__connectSignals()
 {
 	QObject::connect(m_pUi->ButtonOK, SIGNAL(clicked()), this, SLOT(onButtonOKClicked()));
@@ -23,15 +30,17 @@ void CInstructionsDialog::__loadTxt()
 	{
 		if (Line.size() > 0)
 		{
-			m_LabelText += Line;
-			m_LabelText += "\n";
+			m_LabelText.push_back(Line);
 		}
 	}
 }
 
 void CInstructionsDialog::__setLabelText()
 {
-	m_pUi->labelText->setText(QString(m_LabelText.c_str()));
+	for (auto Line : m_LabelText)
+	{
+		m_pUi->RichText->append(QString(Line.c_str()));
+	}
 }
 
 void CInstructionsDialog::onButtonOKClicked()
