@@ -35,6 +35,11 @@ void CInstructionsDialog::__loadTxt()
 		{
 			if (Line[0] == '#' && LineNumber > 1)
 				m_LabelText.push_back("\n");
+			if (Line.size() == 2 && Line[0] == '\\' && Line[1] == 'n')
+			{
+				m_LabelText.push_back("\n");
+				continue;
+			}
 			m_LabelText.push_back(Line);
 		}
 	}

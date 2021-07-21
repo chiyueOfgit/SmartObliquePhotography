@@ -39,7 +39,7 @@ namespace hiveObliquePhotography
 			{
 				CVisualizationConfig::__defineAttributesV();
 
-				const std::string ConfigPath = "VisualizationConfig.xml";
+				const std::string ConfigPath = "Config/VisualizationConfig.xml";
 
 				if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
 				{

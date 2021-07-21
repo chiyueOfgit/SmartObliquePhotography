@@ -93,13 +93,6 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
 		}
-		
-		//if (KeyString == "t")
-		//{
-		//	pcl::visualization::Camera Camera;
-		//	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-		//	m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("TestCameraInfo.txt");
-		//}
 
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(RECOVER_BACKGROUND_POINTS).value())
 		{

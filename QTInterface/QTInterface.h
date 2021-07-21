@@ -28,7 +28,7 @@ namespace hiveObliquePhotography
             void closeEvent(QCloseEvent* vEvent) override;
 
         protected:
-            virtual void keyPressEvent(QKeyEvent* vEvent);
+            virtual void keyPressEvent(QKeyEvent* vEvent) override;
 
         private:
             Ui::CQTInterfaceClass m_UI;
