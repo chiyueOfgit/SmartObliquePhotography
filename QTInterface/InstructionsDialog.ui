@@ -47,15 +47,9 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="labelText">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::MarkdownText</enum>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     <widget class="QTextEdit" name="RichText">
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>

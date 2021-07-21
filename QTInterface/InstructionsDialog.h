@@ -19,15 +19,13 @@ namespace hiveObliquePhotography
 				m_pUi(std::make_shared<Ui::CInstructionsDialog>())
 			{
 				m_pUi->setupUi(this);
-
-				__loadTxt();
-				__setLabelText();
-				__connectSignals();
 			}
+
+			void init();
 
 		private:
 			std::shared_ptr<Ui::CInstructionsDialog> m_pUi = nullptr;
-			std::string m_LabelText = "";
+			std::vector<std::string> m_LabelText;
 
 			void __loadTxt();
 			void __connectSignals();
