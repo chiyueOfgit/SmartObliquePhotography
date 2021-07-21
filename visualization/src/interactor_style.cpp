@@ -1175,7 +1175,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
   }
   else
   {
-      Superclass::OnKeyDown();
+      //Superclass::OnKeyDown();
   }
 
   KeyboardEvent event (true, Interactor->GetKeySym (), Interactor->GetKeyCode (), Interactor->GetAltKey (), Interactor->GetControlKey (), Interactor->GetShiftKey ());
