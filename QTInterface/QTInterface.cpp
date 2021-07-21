@@ -274,7 +274,8 @@ void CQTInterface::onActionOpen()
             m_UI.actionPointPicking->setEnabled(true);
             m_UI.actionSave->setEnabled(true);
             m_UI.actionUpdate->setEnabled(true);
-            m_UI.actionDelete->setEnabled(true);
+            m_UI.actionDeleteLitter->setEnabled(true);
+            m_UI.actionDeleteBackground->setEnabled(true);
             m_UI.actionPrecompute->setEnabled(true);
             m_UI.actionRubber->setEnabled(true);
             m_UI.actionBrush->setEnabled(true);

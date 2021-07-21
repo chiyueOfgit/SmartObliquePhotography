@@ -90,7 +90,7 @@
    <addaction name="actionUpdate"/>
    <addaction name="separator"/>
    <addaction name="actionDeleteLitter"/>
-   <addaction name="actionDeleteBackGround"/>
+   <addaction name="actionDeleteBackground"/>
    <addaction name="separator"/>
    <addaction name="actionPrecompute"/>
    <addaction name="actionSetting"/>
@@ -374,7 +374,7 @@ background-color: rgb(255, 255, 255);</string>
     <string>Precompute</string>
    </property>
   </action>
-  <action name="actionDeleteBackGround">
+  <action name="actionDeleteBackground">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -383,7 +383,7 @@ background-color: rgb(255, 255, 255);</string>
      <normaloff>:/QTInterface/Icon/delete_bg.png</normaloff>:/QTInterface/Icon/delete_bg.png</iconset>
    </property>
    <property name="text">
-    <string>DeleteBackGround</string>
+    <string>DeleteBackground</string>
    </property>
   </action>
  </widget>
