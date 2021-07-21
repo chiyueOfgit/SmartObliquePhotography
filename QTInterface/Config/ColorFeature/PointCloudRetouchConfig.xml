@@ -22,6 +22,11 @@
         <NUM_MAIN_COLORS> 5 </NUM_MAIN_COLORS>
         <MIN_REDUCE_RATIO> 0.8 </MIN_REDUCE_RATIO>
       </FEATURE>
+      <FEATURE>
+	      NormalComplexityFeature
+	      <SIG> NORMAL_COMPLEXITY </SIG>
+	      <LARGE_SCALE_RADIUS> 1.5 </LARGE_SCALE_RADIUS>
+      </FEATURE>
     </CLUSTER>
     <CLASSIFIER>
       ClusterExpander
