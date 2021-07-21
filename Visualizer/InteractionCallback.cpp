@@ -33,9 +33,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	std::string KeyString = vEvent.getKeySym();
 
 	if (KeyAscii != 0 && KeyAscii < 256)
-	{
 		m_KeyPressStatus[vEvent.getKeyCode()] = vEvent.keyDown() ? true : false;
-	}
 
 	if (vEvent.keyDown())
 	{
@@ -114,6 +112,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		//draw point picking hint circle
 		if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
 			__drawHintCircle();
+
 	}
 }
 
@@ -325,9 +324,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	//draw point picking hint circle
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
-	{
 		__drawHintCircle();
-	}
 }
 
 //*****************************************************************
