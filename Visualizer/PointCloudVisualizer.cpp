@@ -3,6 +3,7 @@
 #include "InteractionCallback.h"
 #include "PointCloudRetouchInterface.h"
 #include "VisualizationConfig.h"
+#include <tuple>
 #include <omp.h>
 
 #define RECORD_TIME_BEGIN clock_t StartTime, FinishTime;\
@@ -66,6 +67,14 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	pCloud2Show->resize(m_pSceneCloud->size());
 	std::memcpy(pCloud2Show->data(), m_pSceneCloud->data(), m_pSceneCloud->size() * sizeof(PointCloud_t::PointType));
 	
+	auto OptionLitterColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(LITTER_HIGHLIGHT_COLOR);
+	auto OptionBackgroundColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(BACKGROUND_HIGHLIGHT_COLOR);
+	if (OptionLitterColor.has_value() && OptionBackgroundColor.has_value())
+	{
+		m_LitterColor = OptionLitterColor.value();
+		m_BackgroundColor = OptionBackgroundColor.value();
+	}
+
 	#pragma omp parallel for
 	for (int i = 0; i < m_pSceneCloud->size(); i++)
 	{
@@ -78,14 +87,14 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 		}
 		case 1:
 		{
-			unsigned char StandardBlue[4] = { 100, 0, 0, 255 };
-			std::memcpy(&pCloud2Show->points[i].rgba, StandardBlue, sizeof(StandardBlue));
+			unsigned char KeptHighlightColor[4] = { std::get<2>(m_BackgroundColor), std::get<1>(m_BackgroundColor), std::get<0>(m_BackgroundColor), 255 };
+			std::memcpy(&pCloud2Show->points[i].rgba, KeptHighlightColor, sizeof(KeptHighlightColor));
 			break;
 		}
 		case 2:
 		{
-			unsigned char StandardRed[4] = { 0, 0, 200, 255 };	//gbr
-			std::memcpy(&pCloud2Show->points[i].rgba, StandardRed, sizeof(StandardRed));
+			unsigned char UnwantedHighlightColor[4] = { std::get<2>(m_LitterColor), std::get<1>(m_LitterColor), std::get<0>(m_LitterColor), 255 };	//gbr
+			std::memcpy(&pCloud2Show->points[i].rgba, UnwantedHighlightColor, sizeof(UnwantedHighlightColor));
 			break;
 		}
 		case 3:
