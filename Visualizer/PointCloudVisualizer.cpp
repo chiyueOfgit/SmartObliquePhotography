@@ -78,13 +78,13 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 		}
 		case 1:
 		{
-			unsigned char StandardBlue[4] = { 255, 0, 0, 255 };
+			unsigned char StandardBlue[4] = { 100, 0, 0, 255 };
 			std::memcpy(&pCloud2Show->points[i].rgba, StandardBlue, sizeof(StandardBlue));
 			break;
 		}
 		case 2:
 		{
-			unsigned char StandardRed[4] = { 0, 0, 255, 255 };	//gbr
+			unsigned char StandardRed[4] = { 0, 0, 200, 255 };	//gbr
 			std::memcpy(&pCloud2Show->points[i].rgba, StandardRed, sizeof(StandardRed));
 			break;
 		}
