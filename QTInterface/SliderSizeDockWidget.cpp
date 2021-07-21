@@ -17,8 +17,8 @@ void CSliderSizeDockWidget::__setPosition(QWidget* vParent)
 
 void CSliderSizeDockWidget::__initialSliderRadius()
 {
-	m_pUi->SliderRadius->setMinimum(10.0);
-	m_pUi->SliderRadius->setMaximum(100.0);
+	m_pUi->SliderRadius->setMinimum(5.0);
+	m_pUi->SliderRadius->setMaximum(50.0);
 	m_pUi->SliderRadius->setValue(static_cast<float>(m_pVisualizationConfig->getAttribute<double>("SCREEN_CIRCLE_RADIUS").value()));
 }
 

@@ -37,7 +37,7 @@ namespace hiveObliquePhotography
 			int m_PosX = 0;
 			int m_PosY = 0;
 
-			double m_Radius = 40.0;
+			double m_Radius = 25.0;
 			double m_Hardness = 0.8;
 
 			bool m_UnwantedMode = true;

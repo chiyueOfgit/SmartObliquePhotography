@@ -33,23 +33,14 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	std::string KeyString = vEvent.getKeySym();
 
 	if (KeyAscii != 0 && KeyAscii < 256)
-	{
 		m_KeyPressStatus[vEvent.getKeyCode()] = vEvent.keyDown() ? true : false;
-	}
 
 	if (vEvent.keyDown())
 	{
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_KEPT_MODE).value())
 		{
 			m_pVisualizationConfig->overwriteAttribute(UNWANTED_MODE, !m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE).value());
-
-			//draw point picking hint circle
-			if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
-				__drawHintCircle();
 		}
-
-		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(CLUSTER_EXPANDER_MODE).value())
-			m_pVisualizationConfig->overwriteAttribute(CIRCLE_MODE, !m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value());
 
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
 		{
@@ -81,20 +72,46 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->refresh(PointLabel);
 		}
 
-		if (KeyString == "t")
-		{
-			pcl::visualization::Camera Camera;
-			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-			m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("TestCameraInfo.txt");
-		}
+		const double RadiusStep = 5.0;
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(RADIUS_UP).value())
+			m_pVisualizationConfig->overwriteAttribute(SCREEN_CIRCLE_RADIUS, m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value() + RadiusStep);
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(RADIUS_DOWN).value())
+			m_pVisualizationConfig->overwriteAttribute(SCREEN_CIRCLE_RADIUS, m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value() - RadiusStep);
 
-		if (KeyString == "Delete")
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(POINT_SIZE_UP).value())
 		{
-			hiveObliquePhotography::PointCloudRetouch::hiveClearMark();
+			m_pVisualizationConfig->overwriteAttribute(POINT_SHOW_SIZE, m_pVisualizationConfig->getAttribute<double>(POINT_SHOW_SIZE).value() + 1);
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
 		}
+
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(POINT_SIZE_DOWN).value())
+		{
+			m_pVisualizationConfig->overwriteAttribute(POINT_SHOW_SIZE, m_pVisualizationConfig->getAttribute<double>(POINT_SHOW_SIZE).value() - 1);
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+		
+		//if (KeyString == "t")
+		//{
+		//	pcl::visualization::Camera Camera;
+		//	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+		//	m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("TestCameraInfo.txt");
+		//}
+
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(RECOVER_BACKGROUND_POINTS).value())
+		{
+			hiveObliquePhotography::PointCloudRetouch::hiveRecoverBackgroundMark();
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+
+		//draw point picking hint circle
+		if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
+			__drawHintCircle();
 
 	}
 }
@@ -307,9 +324,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	//draw point picking hint circle
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
-	{
 		__drawHintCircle();
-	}
 }
 
 //*****************************************************************
