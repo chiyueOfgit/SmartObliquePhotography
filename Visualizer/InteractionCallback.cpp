@@ -140,10 +140,37 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				m_Radius = ScreenCircleRadius.value();
 		}
 
+		pcl::visualization::Camera Camera;
+		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+		Eigen::Matrix4d Proj, View;
+		Camera.computeProjectionMatrix(Proj);
+		Camera.computeViewMatrix(View);
+		Eigen::Matrix4d PV = Proj * View;
+		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+
+		m_Radius = static_cast<int>(m_Radius);
+		double RadiusOnWindow = m_Radius * Camera.window_size[1] / m_pVisualizer->m_WindowSize.y();
+		Eigen::Vector2d CircleCenterOnWindow = { PosX, PosY };
+
 		std::vector<pcl::index_t> PickedIndices;
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
+
+		if (PickedIndices.empty())
+			return;
+
+		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
+		{
+			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+
+			if ((PosOnWindow - CircleCenterOnWindow).norm() <= RadiusOnWindow)
+				return -1;
+			else
+				return 1;
+		};
+
+		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 
 		PointCloudRetouch::hiveEraseMark(PickedIndices);
 
