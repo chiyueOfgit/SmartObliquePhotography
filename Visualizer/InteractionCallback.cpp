@@ -40,7 +40,13 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 	if (vEvent.keyDown())
 	{
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_KEPT_MODE).value())
+		{
 			m_pVisualizationConfig->overwriteAttribute(UNWANTED_MODE, !m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE).value());
+
+			//draw point picking hint circle
+			if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
+				__drawHintCircle();
+		}
 
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(CLUSTER_EXPANDER_MODE).value())
 			m_pVisualizationConfig->overwriteAttribute(CIRCLE_MODE, !m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value());
@@ -114,11 +120,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_MousePressStatus[2] = PressStatus;
 	}
 
-	static int DeltaX, PosX, DeltaY, PosY;
-	DeltaX = vEvent.getX() - PosX;
-	DeltaY = vEvent.getY() - PosY;
-	PosX = vEvent.getX();
-	PosY = vEvent.getY();
+	int DeltaX, DeltaY;
+	DeltaX = vEvent.getX() - m_PosX;
+	DeltaY = vEvent.getY() - m_PosY;
+	m_PosX = vEvent.getX();
+	m_PosY = vEvent.getY();
 
 	if (m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value())
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
@@ -150,11 +156,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		m_Radius = static_cast<int>(m_Radius);
 		double RadiusOnWindow = m_Radius * Camera.window_size[1] / m_pVisualizer->m_WindowSize.y();
-		Eigen::Vector2d CircleCenterOnWindow = { PosX, PosY };
+		Eigen::Vector2d CircleCenterOnWindow = { m_PosX, m_PosY };
 
 		std::vector<pcl::index_t> PickedIndices;
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - m_Radius, PosY - m_Radius, PosX + m_Radius, PosY + m_Radius, PickedIndices);
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(m_PosX - m_Radius, m_PosY - m_Radius, m_PosX + m_Radius, m_PosY + m_Radius, PickedIndices);
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 
 		if (PickedIndices.empty())
@@ -222,13 +228,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		m_Radius = static_cast<int>(m_Radius);
 		double RadiusOnWindow = m_Radius * Camera.window_size[1] / m_pVisualizer->m_WindowSize.y();
-		Eigen::Vector2d CircleCenterOnWindow = { PosX, PosY };
+		Eigen::Vector2d CircleCenterOnWindow = { m_PosX, m_PosY };
 
 		std::vector<pcl::index_t> PickedIndices;
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(PosX - RadiusOnWindow, PosY - RadiusOnWindow, PosX + RadiusOnWindow, PosY + RadiusOnWindow, PickedIndices);	//rectangle
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(m_PosX - RadiusOnWindow, m_PosY - RadiusOnWindow, m_PosX + RadiusOnWindow, m_PosY + RadiusOnWindow, PickedIndices);	//rectangle
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
-		//hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Successfully pick %1% points.", PickedIndices.size()));
 
 		if (PickedIndices.empty())
 			return;
@@ -269,17 +274,18 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		else
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
 
-		std::vector<pcl::index_t> NearestPoints;
-		if (PointCloudRetouch::hiveDumpColorFeatureNearestPoints(NearestPoints))
-		{
-			for (auto Index : NearestPoints)
-			{
-				auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
-				Eigen::Vector3f CameraPos2Point = { float(Camera.pos[0] - Point.x), float(Camera.pos[1] - Point.y), float(Camera.pos[2] - Point.z) };
-				Eigen::Vector3i Color{ Point.r, Point.g, Point.b };
-				m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 0.01f * CameraPos2Point, 30.0);
-			}
-		}
+		//show points
+		//std::vector<pcl::index_t> NearestPoints;
+		//if (PointCloudRetouch::hiveDumpColorFeatureNearestPoints(NearestPoints))
+		//{
+		//	for (auto Index : NearestPoints)
+		//	{
+		//		auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
+		//		Eigen::Vector3f CameraPos2Point = { float(Camera.pos[0] - Point.x), float(Camera.pos[1] - Point.y), float(Camera.pos[2] - Point.z) };
+		//		Eigen::Vector3i Color{ Point.r, Point.g, Point.b };
+		//		m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 0.01f * CameraPos2Point, 30.0);
+		//	}
+		//}
 
 		if (m_IsRefreshImmediately)
 		{
@@ -291,85 +297,18 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
 	}
 
+	auto OptionLitterColor = m_pVisualizationConfig->getAttribute<std::tuple<int, int, int>>(LITTER_HIGHLIGHT_COLOR);
+	auto OptionBackgroundColor = m_pVisualizationConfig->getAttribute<std::tuple<int, int, int>>(BACKGROUND_HIGHLIGHT_COLOR);
+	if (OptionLitterColor.has_value() && OptionBackgroundColor.has_value())
+	{
+		m_pVisualizer->m_LitterColor = OptionLitterColor.value();
+		m_pVisualizer->m_BackgroundColor = OptionBackgroundColor.value();
+	}
+
 	//draw point picking hint circle
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
 	{
-		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
-
-		//colors
-		PointCloudRetouch::hiveDumpColorFeatureMainColors(m_pVisualizer->m_MainColors);
-
-		pcl::visualization::Camera Camera;
-		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-
-		Eigen::Matrix4d Proj, View;
-		Camera.computeProjectionMatrix(Proj);
-		Camera.computeViewMatrix(View);
-
-		if (m_pVisualizer->m_MainColors.size())
-		{
-			pcl::visualization::Camera Camera;
-			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-
-			float CircleY = 0.7, DistanceX = 0.2;
-			std::vector<Eigen::Vector2f> CirclesNDCPos;
-
-			float DeltaX = float(m_pVisualizer->m_MainColors.size() - 1) * 0.5f;
-
-			for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
-			{
-				CirclesNDCPos.push_back({ (i - DeltaX) * DistanceX, CircleY });
-			}
-
-			for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
-			{
-				Eigen::Vector4d PixelPosition = { CirclesNDCPos[i].x(), CirclesNDCPos[i].y(), -0.5f, 1.0f };
-
-				PixelPosition = (Proj * View).inverse() * PixelPosition;
-				PixelPosition /= PixelPosition.w();
-
-				pcl::PointXYZ Circle;
-
-				Circle.x = PixelPosition.x();
-				Circle.y = PixelPosition.y();
-				Circle.z = PixelPosition.z();
-
-				Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-				Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
-
-				auto Length = (CameraPos - PixelPos).norm();
-
-				std::string CircleName = "Circle" + std::to_string(i);
-				if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
-				{
-					m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * 40.0, float(m_pVisualizer->m_MainColors[i].x()) / 255, float(m_pVisualizer->m_MainColors[i].y()) / 255, float(m_pVisualizer->m_MainColors[i].z()) / 255, CircleName);
-				}
-			}
-		}
-
-		Eigen::Vector4d PixelPosition = { PosX / Camera.window_size[0] * 2 - 1, PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
-
-		PixelPosition = (Proj * View).inverse() * PixelPosition;
-		PixelPosition /= PixelPosition.w();
-
-		pcl::PointXYZ Circle;
-
-		Circle.x = PixelPosition.x();
-		Circle.y = PixelPosition.y();
-		Circle.z = PixelPosition.z();
-
-		Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-		Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
-
-		auto Length = (CameraPos - PixelPos).norm();
-
-		if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
-		{
-			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.5555 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), 255, 255, 0, "Circle");
-			m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");
-			m_pVisualizer->m_pPCLVisualizer->updateCamera();
-		}
-
+		__drawHintCircle();
 	}
 }
 
@@ -385,4 +324,91 @@ void CInteractionCallback::pointPicking(const pcl::visualization::PointPickingEv
 void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEvent& vEvent)
 {
 
+}
+
+void CInteractionCallback::__drawHintCircle()
+{
+	std::optional<bool> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
+	if (UnwantedMode.has_value())
+		m_UnwantedMode = UnwantedMode.value();
+
+	m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
+
+	pcl::visualization::Camera Camera;
+	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+
+	Eigen::Matrix4d Proj, View;
+	Camera.computeProjectionMatrix(Proj);
+	Camera.computeViewMatrix(View);
+
+	//colors
+	//PointCloudRetouch::hiveDumpColorFeatureMainColors(m_pVisualizer->m_MainColors);
+
+	//if (m_pVisualizer->m_MainColors.size())
+	//{
+
+	//	float CircleY = 0.7, DistanceX = 0.2;
+	//	std::vector<Eigen::Vector2f> CirclesNDCPos;
+
+	//	float DeltaX = float(m_pVisualizer->m_MainColors.size() - 1) * 0.5f;
+
+	//	for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
+	//	{
+	//		CirclesNDCPos.push_back({ (i - DeltaX) * DistanceX, CircleY });
+	//	}
+
+	//	for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
+	//	{
+	//		Eigen::Vector4d PixelPosition = { CirclesNDCPos[i].x(), CirclesNDCPos[i].y(), -0.5f, 1.0f };
+
+	//		PixelPosition = (Proj * View).inverse() * PixelPosition;
+	//		PixelPosition /= PixelPosition.w();
+
+	//		pcl::PointXYZ Circle;
+
+	//		Circle.x = PixelPosition.x();
+	//		Circle.y = PixelPosition.y();
+	//		Circle.z = PixelPosition.z();
+
+	//		Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+	//		Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
+
+	//		auto Length = (CameraPos - PixelPos).norm();
+
+	//		std::string CircleName = "Circle" + std::to_string(i);
+	//		if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
+	//		{
+	//			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * 40.0, float(m_pVisualizer->m_MainColors[i].x()) / 255, float(m_pVisualizer->m_MainColors[i].y()) / 255, float(m_pVisualizer->m_MainColors[i].z()) / 255, CircleName);
+	//		}
+	//	}
+	//}
+
+	Eigen::Vector4d PixelPosition = { m_PosX / Camera.window_size[0] * 2 - 1, m_PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
+
+	PixelPosition = (Proj * View).inverse() * PixelPosition;
+	PixelPosition /= PixelPosition.w();
+
+	pcl::PointXYZ Circle;
+
+	Circle.x = PixelPosition.x();
+	Circle.y = PixelPosition.y();
+	Circle.z = PixelPosition.z();
+
+	Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+	Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
+
+	auto Length = (CameraPos - PixelPos).norm();
+
+	if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
+	{
+		Eigen::Vector3i CircleColor;
+		if (m_UnwantedMode)
+			CircleColor = { std::get<0>(m_pVisualizer->m_LitterColor), std::get<1>(m_pVisualizer->m_LitterColor), std::get<2>(m_pVisualizer->m_LitterColor) };
+		else
+			CircleColor = { std::get<0>(m_pVisualizer->m_BackgroundColor), std::get<1>(m_pVisualizer->m_BackgroundColor), std::get<2>(m_pVisualizer->m_BackgroundColor) };
+
+		m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.5555 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), CircleColor.x(), CircleColor.y(), CircleColor.z(), "Circle");
+		m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");
+		m_pVisualizer->m_pPCLVisualizer->updateCamera();
+	}
 }

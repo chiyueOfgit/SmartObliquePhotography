@@ -15,7 +15,6 @@ void CDisplayOptionsSettingDialog::onActionColorFeatureCheckBox()
 	m_ColorStatus = m_pUi->ColorFeatureCheckBox->isChecked();
 }
 
-
 void CDisplayOptionsSettingDialog::onActionNormalFeatureCheckBox()
 {
 	if (m_pUi->NormalFeatureCheckBox->isChecked())

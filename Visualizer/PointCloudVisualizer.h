@@ -48,6 +48,9 @@ namespace hiveObliquePhotography
 
 			std::vector<Eigen::Vector3i> m_MainColors;
 
+			std::tuple<int, int, int> m_LitterColor = { 255, 0, 0 };
+			std::tuple<int, int, int> m_BackgroundColor = { 0, 0, 255 };
+
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
 			friend class CInteractionCallback;
 			friend pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();

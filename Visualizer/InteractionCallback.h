@@ -29,8 +29,13 @@ namespace hiveObliquePhotography
 			~CInteractionCallback() = default;
 
 		private:
+			void __drawHintCircle();
+
 			bool m_KeyPressStatus[256] = { false };
 			bool m_MousePressStatus[3] = { false };
+
+			int m_PosX = 0;
+			int m_PosY = 0;
 
 			double m_Radius = 40.0;
 			double m_Hardness = 0.8;

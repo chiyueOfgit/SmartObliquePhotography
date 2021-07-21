@@ -22,6 +22,9 @@ namespace hiveObliquePhotography
 		const std::string UNWANTED_MODE = "UNWANTED_MODE";
 		const std::string REFRESH_IMMEDIATELY = "REFRESH_IMMEDIATELY";
 
+		const std::string LITTER_HIGHLIGHT_COLOR = "LITTER_HIGHLIGHT_COLOR";
+		const std::string BACKGROUND_HIGHLIGHT_COLOR = "BACKGROUND_HIGHLIGHT_COLOR";
+
 		class CVisualizationConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CVisualizationConfig>
 		{
 		public:
@@ -31,15 +34,10 @@ namespace hiveObliquePhotography
 			CVisualizationConfig()
 			{
 				CVisualizationConfig::__defineAttributesV();
-			
-				//std::string RelativePath = "../Configs/";
-//#ifdef _UNIT_TEST
-//				RelativePath = "";
-//#endif // _UNIT_TEST
 
 				const std::string ConfigPath = "VisualizationConfig.xml";
 
-				if (hiveConfig::hiveParseConfig(/*RelativePath + */ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
+				if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
 				{
 					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 					return;
@@ -62,6 +60,9 @@ namespace hiveObliquePhotography
 				_defineAttribute(SCREEN_CIRCLE_RADIUS, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 				_defineAttribute(SCREEN_CIRCLE_HARDNESS, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 				_defineAttribute(POINT_SHOW_SIZE, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
+
+				_defineAttribute(LITTER_HIGHLIGHT_COLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC3I);
+				_defineAttribute(BACKGROUND_HIGHLIGHT_COLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC3I);
 
 			}
 
