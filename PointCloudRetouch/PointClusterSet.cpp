@@ -22,6 +22,19 @@ void CPointClusterSet::removeLastCluster()
 
 //*****************************************************************
 //FUNCTION: 
+void CPointClusterSet::removeClustersByLabel(EPointLabel vLabel)
+{
+	for (auto Iter = m_ClusterSet.begin(); Iter != m_ClusterSet.end();)
+	{
+		if ((*Iter)->getLabel() == vLabel)
+			Iter = m_ClusterSet.erase(Iter);
+		else
+			Iter++;
+	}
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CPointClusterSet::reset()
 {
 	for (auto pCluster : m_ClusterSet)

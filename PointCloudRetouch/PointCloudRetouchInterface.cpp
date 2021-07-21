@@ -96,6 +96,16 @@ void hiveObliquePhotography::PointCloudRetouch::hiveClearMark()
 	CPointCloudRetouchManager::getInstance()->clearMark();
 }
 
+void hiveObliquePhotography::PointCloudRetouch::hiveRecoverLitterMark()
+{
+	CPointCloudRetouchManager::getInstance()->recoverMarkedPoints2Undetermined(EPointLabel::UNWANTED);
+}
+
+void hiveObliquePhotography::PointCloudRetouch::hiveRecoverBackgroundMark()
+{
+	CPointCloudRetouchManager::getInstance()->recoverMarkedPoints2Undetermined(EPointLabel::KEPT);
+}
+
 void hiveObliquePhotography::PointCloudRetouch::hiveEraseMark(const std::vector<pcl::index_t>& vPoints)
 {
 	CPointCloudRetouchManager::getInstance()->setLabel(vPoints, EPointLabel::UNDETERMINED);
