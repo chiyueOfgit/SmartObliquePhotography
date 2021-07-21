@@ -12,10 +12,11 @@ namespace hiveObliquePhotography::QTInterface
 	public:
 		CDisplayOptionsSettingDialog(QWidget* vParent)
 			: QDialog(vParent),
-			m_pUi(std::make_shared<Ui::CDisplayOptionsSettingDialog>())
+			m_pUi(new Ui::CDisplayOptionsSettingDialog)
 		{
-			m_pUi->setupUi(this);
+			this->setAttribute(Qt::WA_DeleteOnClose);
 
+			m_pUi->setupUi(this);
 			this->setWindowFlag(Qt::WindowType::WindowContextHelpButtonHint, false);
 
 			m_pUi->ColorFeatureCheckBox->setChecked(m_ColorStatus);
@@ -37,6 +38,10 @@ namespace hiveObliquePhotography::QTInterface
 			QObject::connect(m_pUi->OKButton, SIGNAL(clicked()), this, SLOT(onActionOK()));
 		}
 		
+		~CDisplayOptionsSettingDialog()
+		{
+		}
+
 	private:
 		static bool m_ColorStatus;
 		static bool m_NormalStatus;
@@ -47,7 +52,7 @@ namespace hiveObliquePhotography::QTInterface
 		void onActionOK();
 
 	private:
-		std::shared_ptr<Ui::CDisplayOptionsSettingDialog> m_pUi = nullptr;
+		Ui::CDisplayOptionsSettingDialog* m_pUi = nullptr;
 
 	};
 }

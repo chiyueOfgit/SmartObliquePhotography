@@ -16,6 +16,8 @@ namespace hiveObliquePhotography
 
     namespace QTInterface
     {
+        class CDisplayOptionsSettingDialog;
+
         class CQTInterface : public QMainWindow
         {
             Q_OBJECT
@@ -46,6 +48,7 @@ namespace hiveObliquePhotography
             QDockWidget* m_pBrushSizeDockWidget = nullptr;
             QDockWidget* m_pPointPickingDockWidget = nullptr;
             CInstructionsDialog* m_pInstructionsDialog = nullptr;
+            CDisplayOptionsSettingDialog* m_pDisplayOptionsSettingDialog = nullptr;
 
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
             hiveConfig::CHiveConfig* m_pPointCloudRetouchConfig = nullptr;
