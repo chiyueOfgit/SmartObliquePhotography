@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "InstructionsDialog.h"
+#include "QTInterfaceConfig.h"
 #include <fstream>
 #include <iostream>
 
@@ -41,7 +42,8 @@ void CInstructionsDialog::__loadTxt()
 
 void CInstructionsDialog::__setLabelText()
 {
-	m_pUi->RichText->setFont(QFont("Microsoft YaHei", 10, QFont::Light));
+	auto RichTextFont = CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int>>("INSTRUCTIONS_FONT_STYLE").value();
+	m_pUi->RichText->setFont(QFont("Microsoft YaHe", std::get<0>(RichTextFont), std::get<1>(RichTextFont)));
 	for (auto Line : m_LabelText)
 	{
 		m_pUi->RichText->append(QString(Line.c_str()));
