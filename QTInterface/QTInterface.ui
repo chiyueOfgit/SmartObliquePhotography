@@ -52,14 +52,7 @@
     <property name="title">
      <string>Tools</string>
     </property>
-    <widget class="QMenu" name="menu">
-     <property name="title">
-      <string>在这里输入</string>
-     </property>
-    </widget>
-    <addaction name="actionAreaPicking"/>
     <addaction name="actionSetting"/>
-    <addaction name="menu"/>
    </widget>
    <widget class="QMenu" name="menuDisplay">
     <property name="title">
