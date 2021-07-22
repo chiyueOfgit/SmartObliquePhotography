@@ -103,6 +103,9 @@
     <ClInclude Include="QTInterfaceConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Configs\AutoRetouchConfig.xml">
@@ -120,5 +123,18 @@
     <Text Include="Instructions.txt">
       <Filter>Resource Files</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="QTInterface.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Icon\delete.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icon\icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

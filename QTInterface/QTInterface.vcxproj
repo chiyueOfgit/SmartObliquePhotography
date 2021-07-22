@@ -141,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="resource.h" />
     <QtMoc Include="InstructionsDialog.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="QTInterfaceConfig.h" />
@@ -168,6 +169,13 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Instructions.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="QTInterface.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Icon\delete.png" />
+    <Image Include="Icon\icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
