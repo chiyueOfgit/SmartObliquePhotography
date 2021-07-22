@@ -18,7 +18,7 @@ Report
 
 | Test | LoadScene | DeathTest_LoadDuplicatedFile1 | DeathTest_LoadDuplicatedFile2 | DeathTest_LoadPartiallyIncorrectFileSet | DeathTest_LoadIncorrectFileSet |
 | :----: | :----: | :----: | :----: | :----: | :----: |
-| <font color=#7E858B>Result</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#F0645A>Fail</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> |
+| <font color=#7E858B>Result</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> |
 
 
 #### Unit_Test_003 (save_point_cloud_scene)
@@ -81,7 +81,7 @@ Report
 
 | Test | Color_Feature_BaseTest_1 | Color_Feature_BaseTest_2 | Color_Feature_BaseTest_3 | Color_Feature_BaseTest_4 | Color_Feature_BaseTest_5 | Plane_Feature_BaseTest_1 | Plane_Feature_BaseTest_2 | Normal_Feature_BaseTest_1 | Normal_Feature_BaseTest_2 | Normal_Feature_BaseTest_3 |
 | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |
-| <font color=#7E858B>Result</font> | <font color=#F0645A>Fail</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#F0645A>Fail</font> | <font color=#F0645A>Fail</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> |  <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> |
+| <font color=#7E858B>Result</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> |  <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> | <font color=#3CC8B4>Pass</font> |
 
 
 #### Unit_Test_016 (neighborhood_builder)
