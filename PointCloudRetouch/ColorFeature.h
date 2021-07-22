@@ -12,6 +12,12 @@ namespace hiveObliquePhotography
             float b;
         };
 
+		struct SCluster
+		{
+			Eigen::Vector3i Centroid{ 0,0,0 };
+			std::vector<pcl::index_t> Indices;
+		};
+
 		class CColorFeature : public IFeature
 		{
 		public:
@@ -27,10 +33,11 @@ namespace hiveObliquePhotography
 			const auto& getMainColorsNearestPoints() const { return m_NearestPoints; }
 
 #ifdef _UNIT_TEST
-			std::vector<Eigen::Vector3i> adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __adjustKMeansCluster(vColorSet, vK); };
+			std::vector<Eigen::Vector3i> adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __adjustColorClustering(vColorSet, vK); };
 #endif
 		private:
-			std::vector<Eigen::Vector3i> __adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const;
+			std::vector<Eigen::Vector3i> __adjustColorClustering(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxNumCluster) const;
+			void __kMeansClustering(std::vector<SCluster>& voClusters, const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK, std::size_t vIterCount) const;
 
 			float __calcColorDifferences(const Eigen::Vector3i& vLColor, const Eigen::Vector3i& vRColor) const;
 			float __calculateCIEDE2000(const LAB& lab1, const LAB& lab2) const;

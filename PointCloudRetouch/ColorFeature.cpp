@@ -45,7 +45,7 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
     for (auto Index : vDeterminantPointSet)
         PointCloudColors.push_back(CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index));
 
-    m_MainBaseColors = __adjustKMeansCluster(PointCloudColors, m_MaxNumMainColors);
+    m_MainBaseColors = __adjustColorClustering(PointCloudColors, m_MaxNumMainColors);
 
     m_NearestPoints.resize(m_MainBaseColors.size());
 
@@ -141,199 +141,176 @@ std::string CColorFeature::outputDebugInfosV(pcl::index_t vIndex) const
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxK) const
+std::vector<Eigen::Vector3i> CColorFeature::__adjustColorClustering(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxNumCluster) const
 {
     _ASSERTE(!vColorSet.empty());
-    _ASSERTE(vMaxK != 0);
+    _ASSERTE(vMaxNumCluster != 0);
 
     std::vector<std::vector<Eigen::Vector3i>> ClusterResults;
 
-    std::vector<std::size_t> NumResultPoints(vMaxK, 0);
+    std::vector<float> Factors(vMaxNumCluster, -FLT_MAX);
 
-    std::vector<float> Factors(vMaxK, -FLT_MAX);
-
-    for (int CurrentK = 1; CurrentK <= vMaxK; CurrentK++)
+    const int IterCount = 30;
+    for (int CurrentK = 1; CurrentK <= vMaxNumCluster; CurrentK++)
     {
-        std::vector<std::pair<Eigen::Vector3i*, Eigen::Vector3i>> TagAndColorSet(vColorSet.size(), { nullptr, Eigen::Vector3i() });
-        for (size_t i = 0; i < TagAndColorSet.size(); i++)
-        {
-            auto& [Tag, Color] = TagAndColorSet[i];
-            Color = vColorSet[i];
-        }
+        std::vector<SCluster> Clusters;
+        __kMeansClustering(Clusters, vColorSet, CurrentK, IterCount);
 
-        std::vector<Eigen::Vector3i> ClusterCentroids;
-        for (int i = 0; i < CurrentK; i++)
-        {
-            Eigen::Vector3i SeedColor;
-            int Num = 0;
-            float MinColorDifference = FLT_MAX;
-            const int MaxAttemptNum = 30;
-
-            do
-            {
-                MinColorDifference = FLT_MAX;
-                SeedColor = TagAndColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), TagAndColorSet.size() - 1)].second;
-                for (int k = 0; k < i; k++)
-                {
-                    float TempDifference = __calcColorDifferences(SeedColor, ClusterCentroids[k]);
-                    if (TempDifference < MinColorDifference)
-                        MinColorDifference = TempDifference;
-                }
-                Num++;
-
-            } while (MinColorDifference < 2 * m_ColorThreshold && Num < MaxAttemptNum);
-            
-            ClusterCentroids.push_back(SeedColor);
-        }
-
-        const int NumIteration = 30;
-
-        for (std::size_t i = 0; i < NumIteration; i++)
-        {
-            for (auto& [Tag, Color] : TagAndColorSet)
-            {
-                std::pair<float, Eigen::Vector3i*> MinPair(FLT_MAX, nullptr);
-                for (auto& Centroid : ClusterCentroids)
-                {
-                    float ColorDifference = __calcColorDifferences(Color, Centroid);
-
-                    if (ColorDifference < 0.5 * m_ColorThreshold)
-                        MinPair = std::min(MinPair, std::make_pair(ColorDifference, &Centroid));
-                }
-                Tag = MinPair.second;
-            }
-
-            auto calcentroid = [](const std::vector<Eigen::Vector3i>& vClusterColorSet) -> Eigen::Vector3i
-            {
-                Eigen::Vector3i Centroid(0, 0, 0);
-                if (vClusterColorSet.empty())
-                    return Centroid;
-
-                for (auto& Color : vClusterColorSet)
-                    Centroid += Color;
-                Centroid /= vClusterColorSet.size();
-                return Centroid;
-            };
-
-            for (auto& Centroid : ClusterCentroids)
-            {
-                std::vector<Eigen::Vector3i> ClusterPointsData;
-                for (auto& [Tag, Color] : TagAndColorSet)
-                    if (Tag == &Centroid)
-                        ClusterPointsData.push_back(Color);
-                Centroid = calcentroid(ClusterPointsData);
-            }
-        }
-
-        std::vector<std::vector<pcl::index_t>> ClusterIndices(CurrentK);
-        auto Ptr = ClusterCentroids.data();
-        for (int i = 0; i < TagAndColorSet.size(); i++)
-        {
-            if (TagAndColorSet[i].first)
-            {
-                ClusterIndices[int(TagAndColorSet[i].first - Ptr)].push_back(i);
-            }
-        }
-
+        //计算factor来自适应决定K为多少
         if (CurrentK != 1)
         {
             float SumFactor = 0.0f;
             std::size_t NumClusterPoints = 0;
-            for (int i = 0; i < ClusterIndices.size(); i++)
+            for (int i = 0; i < Clusters.size(); i++)
             {
-                auto& Cluster = ClusterIndices[i];
-                
-                NumClusterPoints += Cluster.size();
+                auto& ClusterIndices = Clusters[i].Indices;
+                NumClusterPoints += ClusterIndices.size();
 
-                if (!Cluster.empty())
+                if (!ClusterIndices.empty())
                 {
-                    float Difference = 0.0f;
-                    for (auto Index : Cluster)
+                    auto calClusterFactor = [&]() -> float
                     {
-                        Difference += __calcColorDifferences(ClusterCentroids[i], TagAndColorSet[Index].second);
-                    }
-                    Difference /= Cluster.size();
+                        //轮廓系数算cluster内部色差
+                        float Difference = 0.0f;
+                        for (auto Index : ClusterIndices)
+                            Difference += __calcColorDifferences(Clusters[i].Centroid, vColorSet[Index]);
+                        Difference /= ClusterIndices.size();
 
-                    float MinDifference = FLT_MAX;
-                    int MinCluster = -1;
-                    for (int k = 0; k < ClusterIndices.size(); k++)
-                    {
-                        if (k != i)
+                        //轮廓系数找最近的cluster
+                        float MinDifference = FLT_MAX;
+                        int MinCluster = -1;
+                        for (int k = 0; k < Clusters.size(); k++)
                         {
-                            auto Temp = __calcColorDifferences(ClusterCentroids[i], ClusterCentroids[k]);
-                            if (Temp < MinDifference && !ClusterIndices[k].empty())
+                            if (k != i)
                             {
-                                MinDifference = Temp;
-                                MinCluster = k;
+                                auto Temp = __calcColorDifferences(Clusters[i].Centroid, Clusters[k].Centroid);
+                                if (Temp < MinDifference && !Clusters[k].Indices.empty())
+                                {
+                                    MinDifference = Temp;
+                                    MinCluster = k;
+                                }
                             }
                         }
-                    }
 
-                    auto& NearestCluster = ClusterIndices[MinCluster];
-                    float NearestDifference = 0.0f;
-                    for (auto Index : NearestCluster)
-                    {
-                        NearestDifference += __calcColorDifferences(ClusterCentroids[i], TagAndColorSet[Index].second);
-                    }
-                    NearestDifference /= NearestCluster.size();
+                        //轮廓系数算最近的cluster的色差
+                        auto& NearestCluster = Clusters[MinCluster].Indices;
+                        float NearestDifference = 0.0f;
+                        for (auto Index : NearestCluster)
+                        {
+                            NearestDifference += __calcColorDifferences(Clusters[i].Centroid, vColorSet[Index]);
+                        }
+                        NearestDifference /= NearestCluster.size();
 
-                    SumFactor += (NearestDifference - Difference) / std::max(NearestDifference, Difference);
+                        return (NearestDifference - Difference) / std::max(NearestDifference, Difference);
+                    };
+
+                    SumFactor += calClusterFactor();
                 }
-
             }
 
             //用聚成类的点数加权
-            Factors[CurrentK - 1] = SumFactor / CurrentK * ((float)NumClusterPoints / vColorSet.size());
+            Factors[CurrentK - 1] = (SumFactor / CurrentK) * ((float)NumClusterPoints / vColorSet.size());
         }
-        else if (ClusterIndices[0].size() >= 0.9f * vColorSet.size()) //如果聚成的簇里有绝大多数点
-            return ClusterCentroids;
+        else if (Clusters[0].Indices.size() >= 0.9f * vColorSet.size()) //如果聚成的簇里有绝大多数点
+            return { Clusters[0].Centroid };
 
-        ClusterResults.push_back(ClusterCentroids);
+        std::vector<Eigen::Vector3i> Centroids;
+        for (auto& Cluster : Clusters)
+            Centroids.push_back(Cluster.Centroid);
+        ClusterResults.push_back(Centroids);
     }
 
- /*   std::pair<float, std::size_t> AverageDifferenceAndIndex(FLT_MAX, -1);
-
-    for (int i = 0; i < ClusterResults.size(); i++)
-    {
-        auto& ClusterCentroids = ClusterResults[i];
-        float SumDifference = 0.0f;
-
-        for (auto& Color : vColorSet)
-        {
-            float MinDifference = FLT_MAX;
-            for (auto& Centroid : ClusterCentroids)
-            {
-                float TempDifference = __calcColorDifferences(Color, Centroid);
-                if (TempDifference < MinDifference)
-                    MinDifference = TempDifference;
-            }
-            
-            SumDifference += MinDifference;
-        }
-        
-        float AverageDifference = SumDifference / vColorSet.size();
-        if (AverageDifference < AverageDifferenceAndIndex.first && AverageDifference / AverageDifferenceAndIndex.first < m_MinReduceRatio)
-            AverageDifferenceAndIndex = { AverageDifference, i };
-        else
-            break;
-    }
-	
+    //返回自适应决定的K种主颜色
     int MaxIndex = 0;
-    for (int i = 0; i < vMaxK; i++)
-    {
-        if (NumResultPoints[i] > NumResultPoints[MaxIndex])
-            MaxIndex = i;
-    }*/
-
-    int MaxIndex = 0;
-    for (int i = 0; i < vMaxK; i++)
-    {
+    for (int i = 0; i < vMaxNumCluster; i++)
         if (Factors[i] > Factors[MaxIndex])
             MaxIndex = i;
+    return ClusterResults[MaxIndex];
+}
+
+void CColorFeature::__kMeansClustering(std::vector<SCluster>& voClusters, const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK, std::size_t vIterCount) const
+{
+    //初始化
+    voClusters.resize(vK);
+    std::vector<std::pair<Eigen::Vector3i*, Eigen::Vector3i>> TagAndColorSet(vColorSet.size(), { nullptr, Eigen::Vector3i() });
+    for (size_t i = 0; i < TagAndColorSet.size(); i++)
+    {
+        auto& [Tag, Color] = TagAndColorSet[i];
+        Color = vColorSet[i];
     }
 
-    return ClusterResults[MaxIndex];
-	//return ClusterResults[AverageDifferenceAndIndex.second];
+    //生成初始主颜色
+    std::vector<Eigen::Vector3i> ClusterCentroids;
+    for (int i = 0; i < vK; i++)
+    {
+        Eigen::Vector3i SeedColor;
+        int Num = 0;
+        float MinColorDifference = FLT_MAX;
+        const int MaxAttemptNum = 30;
+
+        do
+        {
+            MinColorDifference = FLT_MAX;
+            SeedColor = TagAndColorSet[hiveMath::hiveGenerateRandomInteger(std::size_t(0), TagAndColorSet.size() - 1)].second;
+            for (int k = 0; k < i; k++)
+            {
+                float TempDifference = __calcColorDifferences(SeedColor, ClusterCentroids[k]);
+                if (TempDifference < MinColorDifference)
+                    MinColorDifference = TempDifference;
+            }
+            Num++;
+
+        } while (MinColorDifference < 2 * m_ColorThreshold && Num < MaxAttemptNum);
+
+        ClusterCentroids.push_back(SeedColor);
+    }
+
+    //聚类迭代
+    for (std::size_t i = 0; i < vIterCount; i++)
+    {
+        for (auto& [Tag, Color] : TagAndColorSet)
+        {
+            std::pair<float, Eigen::Vector3i*> MinPair(FLT_MAX, nullptr);
+            for (auto& Centroid : ClusterCentroids)
+            {
+                float ColorDifference = __calcColorDifferences(Color, Centroid);
+
+                if (ColorDifference < 0.5 * m_ColorThreshold)
+                    MinPair = std::min(MinPair, std::make_pair(ColorDifference, &Centroid));
+            }
+            Tag = MinPair.second;
+        }
+
+        auto calCentroid = [](const std::vector<Eigen::Vector3i>& vClusterColorSet) -> Eigen::Vector3i
+        {
+            Eigen::Vector3i Centroid(0, 0, 0);
+            if (vClusterColorSet.empty())
+                return Centroid;
+
+            for (auto& Color : vClusterColorSet)
+                Centroid += Color;
+            Centroid /= vClusterColorSet.size();
+            return Centroid;
+        };
+
+        for (auto& Centroid : ClusterCentroids)
+        {
+            std::vector<Eigen::Vector3i> ClusterPointsData;
+            for (auto& [Tag, Color] : TagAndColorSet)
+                if (Tag == &Centroid)
+                    ClusterPointsData.push_back(Color);
+            Centroid = calCentroid(ClusterPointsData);
+        }
+    }
+
+    //统计各cluster主颜色及索引
+    for (int i = 0; i < ClusterCentroids.size(); i++)
+        voClusters[i].Centroid = ClusterCentroids[i];
+
+    auto Ptr = ClusterCentroids.data();
+    for (int i = 0; i < TagAndColorSet.size(); i++)
+        if (TagAndColorSet[i].first)
+            voClusters[int(TagAndColorSet[i].first - Ptr)].Indices.push_back(i);
 }
 
 //*****************************************************************
