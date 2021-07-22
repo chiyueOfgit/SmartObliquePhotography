@@ -104,10 +104,10 @@ protected:
 
 	void TearDown() override
 	{
-		while (!m_pVisualizer->wasStopped())
-		{
-			m_pVisualizer->spinOnce(16);
-		}
+		//while (!m_pVisualizer->wasStopped())
+		//{
+		//	m_pVisualizer->spinOnce(16);
+		//}
 
 		delete m_pConfig;
 	}
