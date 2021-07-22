@@ -536,7 +536,7 @@ TEST(Normal_Feature_BaseTest_2, Test_9)
 	double Diff = GTNormal.dot(OutNormal);
 
 	auto GT = sqrt(1 - Diff * Diff);
-	GTEST_ASSERT_LT(abs(Res - GT), 0.2);
+	GTEST_ASSERT_LT(abs(Res - GT), 0.3);
 	
 }
 
