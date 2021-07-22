@@ -26,7 +26,9 @@
     <ClInclude Include="..\ObliquePhotographyData\pch.h" />
     <ClInclude Include="..\ObliquePhotographyData\PointCloudLoader.h" />
     <ClInclude Include="..\ObliquePhotographyData\PointCloudPCDLoader.h" />
+    <ClInclude Include="..\ObliquePhotographyData\PointCloudPCDSaver.h" />
     <ClInclude Include="..\ObliquePhotographyData\PointCloudPLYLoader.h" />
+    <ClInclude Include="..\ObliquePhotographyData\PointCloudPLYSaver.h" />
     <ClInclude Include="..\ObliquePhotographyData\PointCloudScene.h" />
   </ItemGroup>
   <ItemGroup>
@@ -36,7 +38,9 @@
     </ClCompile>
     <ClCompile Include="..\ObliquePhotographyData\PointCloudLoader.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\PointCloudPCDLoader.cpp" />
+    <ClCompile Include="..\ObliquePhotographyData\PointCloudPCDSaver.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\PointCloudPLYLoader.cpp" />
+    <ClCompile Include="..\ObliquePhotographyData\PointCloudPLYSaver.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\PointCloudScene.cpp" />
   </ItemGroup>
   <ItemGroup>

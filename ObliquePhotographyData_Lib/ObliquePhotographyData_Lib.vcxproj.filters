@@ -42,6 +42,12 @@
     <ClInclude Include="..\ObliquePhotographyData\PointCloudPCDLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\PointCloudPCDSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\PointCloudPLYSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.cpp">
@@ -60,6 +66,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\ObliquePhotographyData\PointCloudPCDLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ObliquePhotographyData\PointCloudPCDSaver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ObliquePhotographyData\PointCloudPLYSaver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
