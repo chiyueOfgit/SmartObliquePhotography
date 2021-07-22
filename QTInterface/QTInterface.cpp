@@ -53,7 +53,7 @@ void CQTInterface::init()
     {
         Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
     }
-    m_pDisplayOptionsSettingDialog = new CDisplayOptionsSettingDialog(this);
+    m_pDisplayOptionsSettingDialog = new CDisplayOptionsSettingDialog(this, m_pDisplayOptionsSettingDialog);
     _SAFE_DELETE(m_pDisplayOptionsSettingDialog);
 
     __connectSignals();
@@ -384,7 +384,7 @@ void CQTInterface::onActionSetting()
 {
     if (m_pDisplayOptionsSettingDialog == nullptr)
     {
-        m_pDisplayOptionsSettingDialog = new CDisplayOptionsSettingDialog(this);
+        m_pDisplayOptionsSettingDialog = new CDisplayOptionsSettingDialog(this, m_pDisplayOptionsSettingDialog);
         m_pDisplayOptionsSettingDialog->show();
         m_pDisplayOptionsSettingDialog->exec();
 

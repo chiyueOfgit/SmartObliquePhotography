@@ -10,8 +10,8 @@ namespace hiveObliquePhotography::QTInterface
 		Q_OBJECT
 
 	public:
-		CDisplayOptionsSettingDialog(QWidget* vParent)
-			: QDialog(vParent),
+		CDisplayOptionsSettingDialog(QWidget* vParent, CDisplayOptionsSettingDialog*& vThisInParent)
+			: QDialog(vParent), m_ThisInParent(vThisInParent),
 			m_pUi(new Ui::CDisplayOptionsSettingDialog)
 		{
 			this->setAttribute(Qt::WA_DeleteOnClose);
@@ -40,6 +40,8 @@ namespace hiveObliquePhotography::QTInterface
 		
 		~CDisplayOptionsSettingDialog()
 		{
+			//通知主窗口该窗口已经关闭
+			m_ThisInParent = nullptr;
 		}
 
 	private:
@@ -52,6 +54,7 @@ namespace hiveObliquePhotography::QTInterface
 		void onActionOK();
 
 	private:
+		CDisplayOptionsSettingDialog*& m_ThisInParent;
 		Ui::CDisplayOptionsSettingDialog* m_pUi = nullptr;
 
 	};
