@@ -382,6 +382,7 @@ void CQTInterface::onActionInstructions()
 
 void CQTInterface::onActionSetting()
 {
+    if (m_pDisplayOptionsSettingDialog == nullptr)
     {
         m_pDisplayOptionsSettingDialog = new CDisplayOptionsSettingDialog(this);
         m_pDisplayOptionsSettingDialog->show();
@@ -397,6 +398,8 @@ void CQTInterface::onActionSetting()
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel);
     }
+    else
+        _SAFE_DELETE(m_pDisplayOptionsSettingDialog);
 }
 
 void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
