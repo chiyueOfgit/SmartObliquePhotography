@@ -104,7 +104,7 @@ double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
     std::vector<float> Distances;
 
     //K search
-    const int NumK = 50;
+    const int NumK = 20;
     m_pTree->nearestKSearch(vInputPoint, NumK, Neighbors, Distances);
     Neighbors.push_back(vInputPoint);
     int NumPassed = 0;
@@ -235,49 +235,58 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustKMeansCluster(const std::vec
             }
         }
 
-    	
         if (CurrentK != 1)
         {
             float SumFactor = 0.0f;
+            std::size_t NumClusterPoints = 0;
             for (int i = 0; i < ClusterIndices.size(); i++)
             {
                 auto& Cluster = ClusterIndices[i];
+                
+                NumClusterPoints += Cluster.size();
 
-                float Difference = 0.0f;
-                for (auto Index : Cluster)
+                if (!Cluster.empty())
                 {
-                    Difference += __calcColorDifferences(ClusterCentroids[i], TagAndColorSet[Index].second);
-                }
-                Difference /= Cluster.size();
-
-                float MinDifference = FLT_MAX;
-                int MinCluster = -1;
-                for (int k = 0; k < ClusterIndices.size(); k++)
-                {
-                    if (k != i)
+                    float Difference = 0.0f;
+                    for (auto Index : Cluster)
                     {
-                        auto Temp = __calcColorDifferences(ClusterCentroids[i], ClusterCentroids[k]);
-                        if (Temp < MinDifference)
+                        Difference += __calcColorDifferences(ClusterCentroids[i], TagAndColorSet[Index].second);
+                    }
+                    Difference /= Cluster.size();
+
+                    float MinDifference = FLT_MAX;
+                    int MinCluster = -1;
+                    for (int k = 0; k < ClusterIndices.size(); k++)
+                    {
+                        if (k != i)
                         {
-                            MinDifference = Temp;
-                            MinCluster = k;
+                            auto Temp = __calcColorDifferences(ClusterCentroids[i], ClusterCentroids[k]);
+                            if (Temp < MinDifference && !ClusterIndices[k].empty())
+                            {
+                                MinDifference = Temp;
+                                MinCluster = k;
+                            }
                         }
                     }
+
+                    auto& NearestCluster = ClusterIndices[MinCluster];
+                    float NearestDifference = 0.0f;
+                    for (auto Index : NearestCluster)
+                    {
+                        NearestDifference += __calcColorDifferences(ClusterCentroids[i], TagAndColorSet[Index].second);
+                    }
+                    NearestDifference /= NearestCluster.size();
+
+                    SumFactor += (NearestDifference - Difference) / std::max(NearestDifference, Difference);
                 }
 
-                auto& NearestCluster = ClusterIndices[MinCluster];
-                float NearestDifference = 0.0f;
-                for (auto Index : NearestCluster)
-                {
-                    NearestDifference += __calcColorDifferences(ClusterCentroids[i], TagAndColorSet[Index].second);
-                }
-                NearestDifference /= NearestCluster.size();
-
-                SumFactor += (NearestDifference - Difference) / std::max(NearestDifference, Difference);
             }
 
-            Factors[CurrentK - 1] = SumFactor / CurrentK;
+            //用聚成类的点数加权
+            Factors[CurrentK - 1] = SumFactor / CurrentK * ((float)NumClusterPoints / vColorSet.size());
         }
+        else if (ClusterIndices[0].size() >= 0.9f * vColorSet.size()) //如果聚成的簇里有绝大多数点
+            return ClusterCentroids;
 
         ClusterResults.push_back(ClusterCentroids);
     }
