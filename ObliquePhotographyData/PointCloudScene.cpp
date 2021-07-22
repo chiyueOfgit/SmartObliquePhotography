@@ -1,7 +1,11 @@
 #include "pch.h"
 #include "PointCloudScene.h"
+
+#include <common/FileSystem.h>
+#include <string>
 #include "PointCloudLoader.h"
 #include "PointCloudSaver.h"
+#include <filesystem>
 
 using namespace hiveObliquePhotography;
 
@@ -25,7 +29,15 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 	
 	for (const auto& FileName : vFileNameSet)
 	{
-		if (find(LoadedFileSet.begin(), LoadedFileSet.end(), FileName) != LoadedFileSet.end())
+		std::string LowerFileName = hiveUtility::hiveLocateFile(FileName);
+		if(LowerFileName.empty())
+		{
+			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load file [%1%] because it does not exist.", FileName));
+			continue;
+		}
+		transform(LowerFileName.begin(), LowerFileName.end(), LowerFileName.begin(), ::tolower);
+
+		if (find(LoadedFileSet.begin(), LoadedFileSet.end(), LowerFileName) != LoadedFileSet.end())
 		{
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("[%1%] has already been loaded.", FileName));
 			continue;
@@ -44,7 +56,7 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 			if(!pTile) continue;
 			m_PointCloudTileMap.emplace(FileName, pTile);
 			*m_pPointCloudScene += *pTile;
-			LoadedFileSet.emplace_back(FileName);
+			LoadedFileSet.emplace_back(LowerFileName);
 		}
 		else
 		{
