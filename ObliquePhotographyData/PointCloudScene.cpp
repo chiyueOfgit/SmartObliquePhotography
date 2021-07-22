@@ -61,7 +61,7 @@ bool CPointCloudScene::saveScene(PointCloud_t& vPointCloud, std::string vFileNam
 	auto* pSceneSaver = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudSaver>(hiveUtility::hiveGetFileSuffix(vFileName) + "_Save");
 	if (pSceneSaver)
 	{
-		pSceneSaver->saveDataToFile(vPointCloud, vFileName);
+		pSceneSaver->saveDataToFileV(vPointCloud, vFileName);
 	}
 	else
 	{

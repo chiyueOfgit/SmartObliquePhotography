@@ -53,6 +53,8 @@ void CQTInterface::init()
     {
         Visualization::hiveGetVisualizationConfig(m_pVisualizationConfig);
     }
+    m_pDisplayOptionsSettingDialog = new CDisplayOptionsSettingDialog(this, m_pDisplayOptionsSettingDialog);
+    _SAFE_DELETE(m_pDisplayOptionsSettingDialog);
 
     __connectSignals();
     __initialResourceSpaceDockWidget();
@@ -380,19 +382,24 @@ void CQTInterface::onActionInstructions()
 
 void CQTInterface::onActionSetting()
 {
-    std::shared_ptr<CDisplayOptionsSettingDialog> pDisplayOptionsSettingDialog = std::make_shared<CDisplayOptionsSettingDialog>(this);
-    pDisplayOptionsSettingDialog->show();
-    pDisplayOptionsSettingDialog->exec();
+    if (m_pDisplayOptionsSettingDialog == nullptr)
+    {
+        m_pDisplayOptionsSettingDialog = new CDisplayOptionsSettingDialog(this, m_pDisplayOptionsSettingDialog);
+        m_pDisplayOptionsSettingDialog->show();
+        m_pDisplayOptionsSettingDialog->exec();
 
-    __parseConfigFile();
-    PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
+        __parseConfigFile();
+        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
 
-    Visualization::hiveRemoveAllShapes();
-    Visualization::hiveCancelAllHighlighting();
+        Visualization::hiveRemoveAllShapes();
+        Visualization::hiveCancelAllHighlighting();
 
-    std::vector<std::size_t> PointLabel;
-    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-    Visualization::hiveRefreshVisualizer(PointLabel);
+        std::vector<std::size_t> PointLabel;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+        Visualization::hiveRefreshVisualizer(PointLabel);
+    }
+    else
+        _SAFE_DELETE(m_pDisplayOptionsSettingDialog);
 }
 
 void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
