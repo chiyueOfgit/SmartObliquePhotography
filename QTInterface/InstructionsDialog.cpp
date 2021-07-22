@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "InstructionsDialog.h"
 #include "QTInterfaceConfig.h"
+#include <qscrollbar.h>
 #include <fstream>
 #include <iostream>
 
@@ -53,6 +54,7 @@ void CInstructionsDialog::__setLabelText()
 	{
 		m_pUi->RichText->append(QString(Line.c_str()));
 	}
+	m_pUi->RichText->moveCursor(QTextCursor::Start);
 }
 
 void CInstructionsDialog::onButtonOKClicked()
