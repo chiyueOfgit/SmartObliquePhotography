@@ -67,7 +67,7 @@ TEST_F(TestOutlierDetector, DeathTest_InvalidInput)
 	initTest(TESTMODEL_DIR + std::string("Test009_Model/test1.pcd"));
 	pcl::Indices InputIndices;
 	InputIndices.push_back(INT_MAX);
-	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
+	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
 	EXPECT_ANY_THROW(pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig()));
 	
 }
@@ -78,7 +78,7 @@ TEST_F(TestOutlierDetector, FunctionTest_Test1)
 	pcl::Indices InputIndices;
 	for (int i = 0; i < pManager->getRetouchScene().getNumPoint(); i++)
 		InputIndices.push_back(i);
-	auto pOutlierDetector = hiveDesignPattern::hiveCreateProduct<COutlierDetector>(KEYWORD::OUTLIER_DETECTOR);
+	auto pOutlierDetector = hiveDesignPattern::hiveGetOrCreateProduct<COutlierDetector>(KEYWORD::OUTLIER_DETECTOR);
     pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
 	
 	pcl::Indices OutlierIndices;
@@ -101,7 +101,7 @@ TEST_F(TestOutlierDetector, FunctionTest_Test2)
 	pcl::Indices InputIndices;
 	for (int i = 0; i < pManager->getRetouchScene().getNumPoint(); i++)
 		InputIndices.push_back(i);
-	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>(KEYWORD::OUTLIER_DETECTOR));
+	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(KEYWORD::OUTLIER_DETECTOR));
 	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
 
 	pcl::Indices OutlierIndices;
@@ -124,7 +124,7 @@ TEST_F(TestOutlierDetector, FunctionTest_Test3)
 	pcl::Indices InputIndices;
 	for (int i = 0; i < pManager->getRetouchScene().getNumPoint(); i++)
 		InputIndices.push_back(i);
-	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>(KEYWORD::OUTLIER_DETECTOR));
+	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(KEYWORD::OUTLIER_DETECTOR));
 	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
 
 	pcl::Indices OutlierIndices;
