@@ -29,14 +29,15 @@ protected:
 	{
 		m_pCloud.reset(new PointCloud_t);	
 		float AngleStep = 10.0f, RadiusStep = 0.05f, Epsilon = 0.0005f;
-		for (float Radius = RadiusStep; Radius - m_CircleRadius <= Epsilon; Radius += RadiusStep)
+		for (float Angle = 0.0f; Angle < 360.0f; Angle += AngleStep)
 		{
-			for (float Angle = 0.0f; Angle < 360.0f; Angle += AngleStep)
+
+			for (float Radius = RadiusStep; Radius - m_CircleRadius <= Epsilon; Radius += RadiusStep)
 			{
 				pcl::PointSurfel Point;
 				Point.x = Radius * cos(radians(Angle));
 				Point.y = Radius * sin(radians(Angle));
-				Point.z = -3.0f;
+				Point.z = 0.0f;
 				Point.curvature = Radius;
 				Point.rgba = -1;
 				m_pCloud->push_back(Point);
@@ -57,8 +58,7 @@ protected:
 		m_pVisualizer.reset(new pcl::visualization::PCLVisualizer);
 		m_pVisualizer->addPointCloud<pcl::PointSurfel>(m_pCloud, "Cloud2Show");
 		m_pVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "Cloud2Show");
-		//m_pVisualizer->loadCameraParameters(CameraPath);
-		m_pVisualizer->resetCamera();
+		m_pVisualizer->loadCameraParameters(CameraPath);
 		m_pVisualizer->updateCamera();
 
 		pcl::visualization::Camera Camera;
@@ -69,11 +69,11 @@ protected:
 		m_PV = Proj * View;
 		m_WindowSize = { Camera.window_size[0], Camera.window_size[1] };
 
-		Eigen::Vector4d Pos = { 0.0, m_CircleRadius, 0.0, 1.0 };
-		Pos = Proj * View * Pos;
+		Eigen::Vector4d Pos = { 0.0, m_CircleRadius, 0.0f, 1.0 };
+		Pos = m_PV * Pos;
 		Pos /= Pos.eval().w();
 
-		m_RadiusInWindow = Pos.y() * m_WindowSize.y();
+		m_RadiusInWindow = Pos.y() * m_WindowSize.y() * 0.5f;
 
 		int i = 0;
 		m_pHardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
