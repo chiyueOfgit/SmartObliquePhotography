@@ -18,6 +18,7 @@
 
 #include "PointCloudRetouchManager.h"
 #include "PointClusterExpander.h"
+#include "PointCluster.h";
 
 constexpr float EPSILON = 1e-4f;
 constexpr float SPACE_SIZE = 100.0f;
@@ -28,6 +29,7 @@ constexpr float SPACE_SIZE = 100.0f;
 //  * Color_Feature_BaseTest_2:随机生成二种主颜色；
 //  * Color_Feature_BaseTest_3:随机生成三种主颜色；
 //  * Color_Feature_BaseTest_4:随机生成四种主颜色；
+//  * Color_Feature_BaseTest_5:主颜色越多生长范围越大；
 //ColorFeatureSpecialTest特定情况下的特殊结果正确
 //  * Color_Feature_SpecialTest_1: ；
 
@@ -270,7 +272,6 @@ TEST(Color_Feature_BaseTest_4, Test_4)
 	pTileLoader->initV(pConfig);
 	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
 	
-	
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
 		if ((Color - MainColor).norm() < 8 || (Color - OtherColor).norm() < 8 || (Color - AnotherColor).norm() < 8 || (Color - ForthColor).norm() < 8)
@@ -291,8 +292,8 @@ TEST(Color_Feature_BaseTest_5, Test_5)
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(PointCloudPath, *pCloud);
 
-	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
-	if (hiveConfig::hiveParseConfig(CompleteConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	hiveConfig::CHiveConfig* pCompleteConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(CompleteConfigPath, hiveConfig::EConfigType::XML, pCompleteConfig) != hiveConfig::EParseResult::SUCCEED)
 	{
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", CompleteConfigPath));
 		return;
@@ -306,7 +307,7 @@ TEST(Color_Feature_BaseTest_5, Test_5)
 	Camera.computeViewMatrix(ViewMatrix);
 	Camera.computeProjectionMatrix(ProjectionMatrix);
 
-	double Hardness = 0.7;
+	double Hardness = 0.4;
 	double RadiusOnWindow = 55.321;
 	Eigen::Vector2d CircleCenterOnWindow = { 534, 228 };
 
@@ -330,15 +331,45 @@ TEST(Color_Feature_BaseTest_5, Test_5)
 	};
 
 	auto pManager = CPointCloudRetouchManager::getInstance();
-	pManager->init(pCloud, pConfig);
+	pManager->init(pCloud, pCompleteConfig);
+
+	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
+		return;
+	}
+
+	int SmallHardnessColorNum = 0, LargeHardnessColorNum = 0;
+
+	auto pFunc = [&](int& vNum)
+	{
+		auto pCluster = pManager->generateInitialCluster(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::UNWANTED);
+		auto& Indices = pCluster->getCoreRegion();
+		std::vector<Eigen::Vector3i> ColorSet;
+		for (auto Index : Indices)
+			ColorSet.push_back({ pCloud->points[Index].r, pCloud->points[Index].g, pCloud->points[Index].b });
+
+		auto* pColorFeature = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
+		pColorFeature->initV(pConfig);
+		const auto& MainColorSet = pColorFeature->adjustKMeansCluster(ColorSet, 5);
+		vNum = MainColorSet.size();
+	};
+	
+	pFunc(SmallHardnessColorNum);
 	pManager->executeMarker(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::UNWANTED);
 	auto SmallHardnessExpandPointsNumber = pManager->getLitterMarker().getExpander()->getExpandPoints().size();
 
-	Hardness = 0.8;
+	Hardness = 0.7;
+	pFunc(LargeHardnessColorNum);
 	pManager->executeMarker(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::UNWANTED);
 	auto LargeHardnessExpandPointsNumber = pManager->getLitterMarker().getExpander()->getExpandPoints().size();
 
-	EXPECT_GE(LargeHardnessExpandPointsNumber, SmallHardnessExpandPointsNumber);
+	//生长范围只和主颜色数量相关，与硬度非直接关系	fixme: 实现更大区域(可能更平缓)找出更多主颜色
+	if (SmallHardnessColorNum < LargeHardnessColorNum)
+		EXPECT_GE(LargeHardnessExpandPointsNumber, SmallHardnessExpandPointsNumber);
+	else
+		EXPECT_LE(LargeHardnessExpandPointsNumber, SmallHardnessExpandPointsNumber);
 }
 
 TEST(Plane_Feature_BaseTest_1, Test_6)
@@ -505,7 +536,7 @@ TEST(Normal_Feature_BaseTest_2, Test_9)
 	double Diff = GTNormal.dot(OutNormal);
 
 	auto GT = sqrt(1 - Diff * Diff);
-	GTEST_ASSERT_LT(abs(Res - GT), 0.2);
+	GTEST_ASSERT_LT(abs(Res - GT), 0.3);
 	
 }
 

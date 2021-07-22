@@ -4,8 +4,13 @@
 #include "VisualizationConfig.h"
 #include "PointCloudRetouchInterface.h"
 #include <common/ConfigInterface.h>
-#include <omp.h>
-#include <mutex>
+
+#include <fstream>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/utility.hpp>
+
 #include <pcl/sample_consensus/impl/sac_model_plane.hpp>
 #include <pcl/sample_consensus/impl/ransac.hpp>
 #include "PlanarityFeature.h"
@@ -334,11 +339,31 @@ void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEven
 
 }
 
+//*****************************************************************
+//FUNCTION: 
+void CInteractionCallback::__saveIndices(const std::string& vPath, const std::vector<int>& vIndices) const
+{
+	std::ofstream file(vPath.c_str());
+	boost::archive::text_oarchive oa(file);
+	oa& BOOST_SERIALIZATION_NVP(vIndices);
+	file.close();
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CInteractionCallback::__loadIndices(const std::string& vPath, std::vector<int>& voIndices) const
+{
+	std::ifstream file(vPath.c_str());
+	boost::archive::text_iarchive ia(file);
+	ia >> BOOST_SERIALIZATION_NVP(voIndices);  //不需要指定范围/大小
+	file.close();
+}
+
 void CInteractionCallback::__drawHintCircle()
 {
 	std::optional<bool> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
 	if (UnwantedMode.has_value())
-		m_UnwantedMode = UnwantedMode.value();
+		m_UnwantedMode = UnwantedMode.value();  
 
 	m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
 

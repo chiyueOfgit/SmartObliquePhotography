@@ -31,6 +31,9 @@ namespace hiveObliquePhotography
 		private:
 			void __drawHintCircle();
 
+			void __saveIndices(const std::string& vPath, const std::vector<int>& vIndices) const ;
+			void __loadIndices(const std::string& vPath, std::vector<int>& voIndices) const;
+
 			bool m_KeyPressStatus[256] = { false };
 			bool m_MousePressStatus[3] = { false };
 
