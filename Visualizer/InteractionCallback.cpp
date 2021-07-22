@@ -197,7 +197,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		}
 	}
 
-	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && m_MousePressStatus[1])
+	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && Button == pcl::visualization::MouseEvent::RightButton && PressStatus)
 	{
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
 
