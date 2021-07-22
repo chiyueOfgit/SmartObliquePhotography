@@ -15,7 +15,7 @@
 * Debug模式下的PCLVisualization项目与QTInterface项目的运行库选项错误使用默认的"多线程DLL"而非“多线程调试DLL”。
   * 解决方式：运行库选项改为“多线程调试DLL”即可。
 * 这两个项目Debug模式的默认运行库选项为“多线程DLL”的原因未知。
-![](pics/运行库选项位置.png)
+![](pic/运行库选项位置.png)
 
 # NuGet包制作不当
 * PCL与VTK的nuget包未区分Debug模式与Release模式，导致Debug模式下接触到Release模式的库文件。
@@ -28,4 +28,4 @@
 <br/>
 * 通过多添加一份Debug模式dll文件，解决了当前问题，但导致了文件冗余。
 <font color="#dd0000">想要真正解决这个问题可能需要重新编译PCL，更改其对Debug模式dll的需求。</font>
-![](pics/冗余dll文件示意图.png)
+![](pic/冗余dll文件示意图.png)
