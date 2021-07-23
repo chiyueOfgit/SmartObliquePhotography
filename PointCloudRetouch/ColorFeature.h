@@ -12,10 +12,11 @@ namespace hiveObliquePhotography
             float b;
         };
 
-		struct SCluster
+		struct SColorCluster
 		{
 			Eigen::Vector3i Centroid{ 0,0,0 };
 			std::vector<pcl::index_t> Indices;
+			float Coefficient = -FLT_MAX;
 		};
 
 		class CColorFeature : public IFeature
@@ -37,7 +38,8 @@ namespace hiveObliquePhotography
 #endif
 		private:
 			std::vector<Eigen::Vector3i> __adjustColorClustering(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxNumCluster) const;
-			void __kMeansClustering(std::vector<SCluster>& voClusters, const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK, std::size_t vIterCount) const;
+			void __kMeansClustering(std::vector<SColorCluster>& voClusters, const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK, std::size_t vIterCount) const;
+			void __fillClusterCoefficient(std::vector<SColorCluster>& vioClusters, const std::vector<Eigen::Vector3i>& vColorSet) const;
 
 			float __calcColorDifferences(const Eigen::Vector3i& vLColor, const Eigen::Vector3i& vRColor) const;
 			float __calculateCIEDE2000(const LAB& lab1, const LAB& lab2) const;
