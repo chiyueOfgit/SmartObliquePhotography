@@ -11,7 +11,7 @@ using namespace hiveObliquePhotography;
 
 //测试用例列表：
 //  * SaveScene4PLY: 能够正常的保存(覆盖)为PLY点云文件,且数据正确
-//  * SaveScene4PLY：能够正常的保存(覆盖)为PCD点云文件,且数据正确
+//  * SaveScene4PCD：能够正常的保存(覆盖)为PCD点云文件,且数据正确
 //  * Save4NonexistentPath: 能够保存场景为不存在的文件名
 
 const std::string g_InputPath = TESTMODEL_DIR + std::string("General/slice 1.pcd");
@@ -24,8 +24,8 @@ TEST(Test_SavePointCloudScene, SaveScene4PLY)
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(g_InputPath, *pCloud);
 	int InputSize = pCloud->size();
-	auto RandomIdex = hiveMath::hiveGenerateRandomInteger(0, InputSize);
-	auto RandomPoint = pCloud->points[RandomIdex];
+	auto RandomIndex = hiveMath::hiveGenerateRandomInteger(0, InputSize);
+	auto RandomPoint = pCloud->points[RandomIndex];
 	Eigen::Vector3f RandomPointPos= RandomPoint.getVector3fMap();
 	
 	EXPECT_NO_THROW(CPointCloudScene::getInstance()->saveScene(*pCloud, g_ValidPLYFilePath));
@@ -34,7 +34,7 @@ TEST(Test_SavePointCloudScene, SaveScene4PLY)
 	pcl::io::loadPLYFile(g_ValidPLYFilePath, *pSavedCloud);
 	int SavedSize = pSavedCloud->size();
 	ASSERT_NE(SavedSize, 0);
-	auto RandomSavedPoint = pSavedCloud->points[RandomIdex];
+	auto RandomSavedPoint = pSavedCloud->points[RandomIndex];
 	Eigen::Vector3f RandomSavedPointPos = RandomSavedPoint.getVector3fMap();
 	
 	EXPECT_EQ(InputSize, SavedSize);
