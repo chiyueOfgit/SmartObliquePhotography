@@ -22,6 +22,8 @@ namespace hiveObliquePhotography
 		const std::string SCREEN_CIRCLE_HARDNESS = "SCREEN_CIRCLE_HARDNESS";
 
 		const std::string CIRCLE_MODE = "CIRCLE_MODE";
+		const std::string AREA_MODE = "AREA_MODE";
+		const std::string AREA_PICK_CULLING = "AREA_PICK_CULLING";
 		const std::string RUBBER_MODE = "RUBBER_MODE";
 		const std::string UNWANTED_MODE = "UNWANTED_MODE";
 		const std::string REFRESH_IMMEDIATELY = "REFRESH_IMMEDIATELY";
@@ -62,6 +64,8 @@ namespace hiveObliquePhotography
 				_defineAttribute(POINT_SIZE_UP, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 
 				_defineAttribute(CIRCLE_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(AREA_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(AREA_PICK_CULLING, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(RUBBER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(UNWANTED_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(REFRESH_IMMEDIATELY, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);

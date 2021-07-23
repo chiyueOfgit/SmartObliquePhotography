@@ -68,6 +68,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionOpen, SIGNAL(triggered()), this, SLOT(onActionOpen()));
     QObject::connect(m_UI.actionSave, SIGNAL(triggered()), this, SLOT(onActionSave()));
     QObject::connect(m_UI.actionPointPicking, SIGNAL(triggered()), this, SLOT(onActionPointPicking()));
+    QObject::connect(m_UI.actionAreaPicking, SIGNAL(triggered()), this, SLOT(onActionAreaPicking()));
     QObject::connect(m_UI.actionUpdate, SIGNAL(triggered()), this, SLOT(onActionDiscardAndRecover()));
     QObject::connect(m_UI.actionDeleteLitter , SIGNAL(triggered()), this, SLOT(onActionDeleteLitter()));
     QObject::connect(m_UI.actionDeleteBackground, SIGNAL(triggered()), this, SLOT(onActionDeleteBackground()));
@@ -210,10 +211,13 @@ void CQTInterface::onActionPointPicking()
     {
         if (m_UI.actionPointPicking->isChecked())
         {
+            m_UI.actionAreaPicking->setChecked(false);
+            if (m_pVisualizationConfig)
+                m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_MODE, false);
             m_pPointPickingDockWidget = new CSliderSizeDockWidget(m_UI.VTKWidget, m_pVisualizationConfig);
             m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
             m_pPointPickingDockWidget->show();
-            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to select mode."));
+            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking mode."));
         }
         else
         {
@@ -230,6 +234,29 @@ void CQTInterface::onActionPointPicking()
             m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, m_UI.actionPointPicking->isChecked());
     }
 
+}
+
+void CQTInterface::onActionAreaPicking()
+{
+    if (m_pCloud)
+    {
+        if (m_UI.actionAreaPicking->isChecked())
+        {
+            m_UI.actionPointPicking->setChecked(false);
+            if (m_pVisualizationConfig)
+                m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, false);
+
+            std::vector<std::size_t> PointLabel;
+            PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+            Visualization::hiveRefreshVisualizer(PointLabel);
+            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to area picking mode."));
+        }
+        else
+            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
+
+        if (m_pVisualizationConfig)
+            m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_MODE, m_UI.actionAreaPicking->isChecked());
+    }
 }
 
 void CQTInterface::onActionOpen()
@@ -274,6 +301,7 @@ void CQTInterface::onActionOpen()
         //enable ui icons
         {
             m_UI.actionPointPicking->setEnabled(true);
+            m_UI.actionAreaPicking->setEnabled(true);
             m_UI.actionSave->setEnabled(true);
             m_UI.actionUpdate->setEnabled(true);
             m_UI.actionDeleteLitter->setEnabled(true);
