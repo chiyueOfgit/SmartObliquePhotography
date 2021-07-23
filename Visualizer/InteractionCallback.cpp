@@ -123,17 +123,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	bool ScrollStatus = (vEvent.getType() == pcl::visualization::MouseEvent::MouseScrollDown || vEvent.getType() == pcl::visualization::MouseEvent::MouseScrollUp) ? true : false;
 
 	if (Button == pcl::visualization::MouseEvent::LeftButton)
-	{
 		m_MousePressStatus[0] = PressStatus;
-	}
 	else if (Button == pcl::visualization::MouseEvent::RightButton)
-	{
 		m_MousePressStatus[1] = PressStatus;
-	}
 	else if (Button == pcl::visualization::MouseEvent::MiddleButton)
-	{
 		m_MousePressStatus[2] = PressStatus;
-	}
 
 	int DeltaX, DeltaY;
 	DeltaX = vEvent.getX() - m_PosX;
@@ -310,6 +304,59 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		}
 
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
+	}
+
+	else if (m_pVisualizationConfig->getAttribute<bool>(AREA_MODE).value())
+	{
+		static bool isPicking = false;
+		static Eigen::Vector2i LeftUp;
+
+		if (isPicking && Button == pcl::visualization::MouseEvent::RightButton && !PressStatus)
+		{
+			isPicking = false;
+
+			std::vector<pcl::index_t> PickedIndices;
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(LeftUp.x(), LeftUp.y(), m_PosX, m_PosY, PickedIndices);	//rectangle
+			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
+
+			if (PickedIndices.empty())
+				return;
+
+			pcl::visualization::Camera Camera;
+			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+			Eigen::Matrix4d Proj, View;
+			Camera.computeProjectionMatrix(Proj);
+			Camera.computeViewMatrix(View);
+			Eigen::Matrix4d PV = Proj * View;
+			Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+
+			if (m_pVisualizationConfig->getAttribute<bool>(AREA_PICK_CULLING).value())
+				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double {return -1; }, ViewPos);
+			m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
+
+			auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
+			{
+				static int i = 0;
+				return i++ % 2 ? 1.0 : 0.0;
+			};
+
+			if (m_UnwantedMode)
+				PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, pRandomHardness);
+			else
+				PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, pRandomHardness);
+
+			{
+				std::vector<std::size_t> PointLabel;
+				PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+				m_pVisualizer->refresh(PointLabel);
+			}
+		}
+		if (Button == pcl::visualization::MouseEvent::RightButton && PressStatus)
+		{
+			isPicking = true;
+			LeftUp = { m_PosX, m_PosY };
+		}
 	}
 
 	auto OptionLitterColor = m_pVisualizationConfig->getAttribute<std::tuple<int, int, int>>(LITTER_HIGHLIGHT_COLOR);

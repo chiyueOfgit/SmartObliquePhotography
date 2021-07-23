@@ -199,7 +199,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\QTInterface\VisualizationConfig.xml" />
+    <Xml Include="..\QTInterface\Config\VisualizationConfig.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
