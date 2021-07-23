@@ -67,9 +67,8 @@ bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster) const
 	_ASSERTE(vUserSpecifiedCluster && m_pPointClusterExpander);
 
 	m_pPointClusterExpander->execute<CPointClusterExpander>(vUserSpecifiedCluster);
-	auto num = m_pPointClusterExpander->getExpandPoints().size();
 
-	return true;
+	return m_pPointClusterExpander->getExpandPoints().size();
 }
 
 //*****************************************************************
