@@ -144,75 +144,29 @@ std::string CColorFeature::outputDebugInfosV(pcl::index_t vIndex) const
 std::vector<Eigen::Vector3i> CColorFeature::__adjustColorClustering(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxNumCluster) const
 {
     _ASSERTE(!vColorSet.empty());
-    _ASSERTE(vMaxNumCluster != 0);
+    _ASSERTE(vMaxNumCluster != 0 && vMaxNumCluster != -1);
 
     std::vector<std::vector<Eigen::Vector3i>> ClusterResults;
-
-    std::vector<float> Factors(vMaxNumCluster, -FLT_MAX);
+    std::vector<float> CoefficientsConsideredNum;
 
     const int IterCount = 30;
     for (int CurrentK = 1; CurrentK <= vMaxNumCluster; CurrentK++)
     {
-        std::vector<SCluster> Clusters;
+        std::vector<SColorCluster> Clusters;
         __kMeansClustering(Clusters, vColorSet, CurrentK, IterCount);
 
-        //计算factor来自适应决定K为多少
-        if (CurrentK != 1)
+        __fillClusterCoefficient(Clusters, vColorSet);
+
+        float SumCoefficient = 0.0f;
+        std::size_t NumClusterPoints = 0;
+        for (auto& Cluster : Clusters)
         {
-            float SumFactor = 0.0f;
-            std::size_t NumClusterPoints = 0;
-            for (int i = 0; i < Clusters.size(); i++)
-            {
-                auto& ClusterIndices = Clusters[i].Indices;
-                NumClusterPoints += ClusterIndices.size();
-
-                if (!ClusterIndices.empty())
-                {
-                    auto calClusterFactor = [&]() -> float
-                    {
-                        //轮廓系数算cluster内部色差
-                        float Difference = 0.0f;
-                        for (auto Index : ClusterIndices)
-                            Difference += __calcColorDifferences(Clusters[i].Centroid, vColorSet[Index]);
-                        Difference /= ClusterIndices.size();
-
-                        //轮廓系数找最近的cluster
-                        float MinDifference = FLT_MAX;
-                        int MinCluster = -1;
-                        for (int k = 0; k < Clusters.size(); k++)
-                        {
-                            if (k != i)
-                            {
-                                auto Temp = __calcColorDifferences(Clusters[i].Centroid, Clusters[k].Centroid);
-                                if (Temp < MinDifference && !Clusters[k].Indices.empty())
-                                {
-                                    MinDifference = Temp;
-                                    MinCluster = k;
-                                }
-                            }
-                        }
-
-                        //轮廓系数算最近的cluster的色差
-                        auto& NearestCluster = Clusters[MinCluster].Indices;
-                        float NearestDifference = 0.0f;
-                        for (auto Index : NearestCluster)
-                        {
-                            NearestDifference += __calcColorDifferences(Clusters[i].Centroid, vColorSet[Index]);
-                        }
-                        NearestDifference /= NearestCluster.size();
-
-                        return (NearestDifference - Difference) / std::max(NearestDifference, Difference);
-                    };
-
-                    SumFactor += calClusterFactor();
-                }
-            }
-
-            //用聚成类的点数加权
-            Factors[CurrentK - 1] = (SumFactor / CurrentK) * ((float)NumClusterPoints / vColorSet.size());
+            SumCoefficient += Cluster.Coefficient;
+            NumClusterPoints += Cluster.Indices.size();
         }
-        else if (Clusters[0].Indices.size() >= 0.9f * vColorSet.size()) //如果聚成的簇里有绝大多数点
-            return { Clusters[0].Centroid };
+
+        //用聚成类的点数加权
+        CoefficientsConsideredNum.push_back((SumCoefficient / CurrentK) * ((float)NumClusterPoints / vColorSet.size()));
 
         std::vector<Eigen::Vector3i> Centroids;
         for (auto& Cluster : Clusters)
@@ -222,13 +176,15 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustColorClustering(const std::v
 
     //返回自适应决定的K种主颜色
     int MaxIndex = 0;
-    for (int i = 0; i < vMaxNumCluster; i++)
-        if (Factors[i] > Factors[MaxIndex])
+    for (int i = 1; i < vMaxNumCluster; i++)
+        if (CoefficientsConsideredNum[i] > CoefficientsConsideredNum[MaxIndex])
             MaxIndex = i;
     return ClusterResults[MaxIndex];
 }
 
-void CColorFeature::__kMeansClustering(std::vector<SCluster>& voClusters, const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK, std::size_t vIterCount) const
+//*****************************************************************
+//FUNCTION: 
+void CColorFeature::__kMeansClustering(std::vector<SColorCluster>& voClusters, const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK, std::size_t vIterCount) const
 {
     //初始化
     voClusters.resize(vK);
@@ -311,6 +267,68 @@ void CColorFeature::__kMeansClustering(std::vector<SCluster>& voClusters, const 
     for (int i = 0; i < TagAndColorSet.size(); i++)
         if (TagAndColorSet[i].first)
             voClusters[int(TagAndColorSet[i].first - Ptr)].Indices.push_back(i);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CColorFeature::__fillClusterCoefficient(std::vector<SColorCluster>& vioClusters, const std::vector<Eigen::Vector3i>& vColorSet) const
+{
+    //计算Silhouette Coefficient，1时为特例
+    if (vioClusters.size() == 1)
+    {
+        if (vioClusters[0].Indices.size() >= 0.9f * vColorSet.size()) //如果聚成的簇里有绝大多数点
+            vioClusters[0].Coefficient = 1.0f;
+        else
+            vioClusters[0].Coefficient = 0.0f;
+    }
+    else
+    {
+        for (int i = 0; i < vioClusters.size(); i++)
+        {
+            auto& ClusterIndices = vioClusters[i].Indices;
+
+            if (!ClusterIndices.empty())
+            {
+                auto calSilhouetteCoefficient = [&]() -> float
+                {
+                    //轮廓系数算cluster内部色差
+                    float Difference = 0.0f;
+                    for (auto Index : ClusterIndices)
+                        Difference += __calcColorDifferences(vioClusters[i].Centroid, vColorSet[Index]);
+                    Difference /= ClusterIndices.size();
+
+                    //轮廓系数找最近的cluster
+                    float MinDifference = FLT_MAX;
+                    int MinCluster = -1;
+                    for (int k = 0; k < vioClusters.size(); k++)
+                    {
+                        if (k != i)
+                        {
+                            auto Temp = __calcColorDifferences(vioClusters[i].Centroid, vioClusters[k].Centroid);
+                            if (Temp < MinDifference && !vioClusters[k].Indices.empty())
+                            {
+                                MinDifference = Temp;
+                                MinCluster = k;
+                            }
+                        }
+                    }
+
+                    //轮廓系数算最近的cluster的色差
+                    auto& NearestCluster = vioClusters[MinCluster].Indices;
+                    float NearestDifference = 0.0f;
+                    for (auto Index : NearestCluster)
+                    {
+                        NearestDifference += __calcColorDifferences(vioClusters[i].Centroid, vColorSet[Index]);
+                    }
+                    NearestDifference /= NearestCluster.size();
+
+                    return (NearestDifference - Difference) / std::max(NearestDifference, Difference);
+                };
+
+                vioClusters[i].Coefficient = calSilhouetteCoefficient();
+            }
+        }
+    }
 }
 
 //*****************************************************************
