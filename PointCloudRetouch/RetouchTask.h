@@ -4,7 +4,7 @@ namespace hiveObliquePhotography
 {
 	namespace PointCloudRetouch
 	{
-		class CPointClusterExpander;
+		class CPointClusterExpanderMultithread;
 		class CPointCluster;
 
 		class CRetouchTask
@@ -26,7 +26,7 @@ namespace hiveObliquePhotography
 #endif
 
 		private:
-			CPointClusterExpander *m_pPointClusterExpander = nullptr;
+			CPointClusterExpanderMultithread *m_pPointClusterExpander = nullptr;
 			const hiveConfig::CHiveConfig *m_pConfig = nullptr;
 			const hiveConfig::CHiveConfig* m_pClusterConfig = nullptr;
 		};

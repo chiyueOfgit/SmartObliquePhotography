@@ -17,7 +17,6 @@ bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vCon
 	m_pPointCloudScene = vPointCloudScene;
 	m_pPointLabelSet = vPointLabelSet;
 
-	m_ClusterTag.resize(vPointCloudScene->size());
 	reset();
 
 	__extraInitV(vConfig);
@@ -26,7 +25,7 @@ bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vCon
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex)
+std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex) const
 {
 	if (!m_pPointCloudScene)
 		_THROW_RUNTIME_ERROR("PointCloud pointer is uninitialized");
@@ -38,11 +37,7 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 
 	for (auto e : __buildNeighborhoodV(vSeed))
 	{
-		if (std::find(m_ClusterTag[e].begin(), m_ClusterTag[e].end(), vSeedClusterIndex) == m_ClusterTag[e].end() && e != vSeed)
-		{
-			Neighborhood.push_back(e);
-			m_ClusterTag[e].push_back(vSeedClusterIndex);
-		}
+		Neighborhood.push_back(e);
 	}
 	//发生NRVO
 	return Neighborhood;
@@ -52,8 +47,4 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 //FUNCTION: 
 void INeighborhoodBuilder::reset()
 {
-	//清空 哪些Cluster访问过这个点
-	if (m_pPointCloudScene)
-		for (auto i = 0; i < m_pPointCloudScene->size(); i++)
-			m_ClusterTag[i].clear();
 }
