@@ -20,7 +20,7 @@ void CEuclideanNeighborhoodBuilder::__extraInitV(const hiveConfig::CHiveConfig* 
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed)
+std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed) const
 {
 	std::vector<pcl::index_t> Neighborhood;
 	std::vector<float> Distance;
