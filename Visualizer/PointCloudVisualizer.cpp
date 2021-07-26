@@ -4,7 +4,6 @@
 #include "PointCloudRetouchInterface.h"
 #include "VisualizationConfig.h"
 #include <tuple>
-#include <omp.h>
 
 #define RECORD_TIME_BEGIN clock_t StartTime, FinishTime;\
 StartTime = clock();
@@ -75,7 +74,6 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 		m_BackgroundColor = OptionBackgroundColor.value();
 	}
 
-	#pragma omp parallel for
 	for (int i = 0; i < m_pSceneCloud->size(); i++)
 	{
 		switch (vPointLabel[i])
@@ -172,6 +170,8 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	RECORD_TIME_END(ÏÔÊ¾)
 }
 
+//*****************************************************************
+//FUNCTION: 
 void CPointCloudVisualizer::run()
 {
 	while (!m_pPCLVisualizer->wasStopped())
@@ -180,6 +180,8 @@ void CPointCloudVisualizer::run()
 	}
 }
 
+//*****************************************************************
+//FUNCTION: 
 int CPointCloudVisualizer::addUserColoredPoints(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor)
 {
 	static int HighlightId = -1;
@@ -188,6 +190,8 @@ int CPointCloudVisualizer::addUserColoredPoints(const std::vector<pcl::index_t>&
 	return HighlightId;
 }
 
+//*****************************************************************
+//FUNCTION: 
 int CPointCloudVisualizer::addUserColoredPointsAsNewCloud(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, const Eigen::Vector3f& vDeltaPos, double vPointSize)
 {
 	static int HighlightId = -1;
@@ -196,6 +200,8 @@ int CPointCloudVisualizer::addUserColoredPointsAsNewCloud(const std::vector<pcl:
 	return HighlightId;
 }
 
+//*****************************************************************
+//FUNCTION: 
 void CPointCloudVisualizer::removeUserColoredPoints(int vId)
 {
 	for (auto Iter = m_UserColoredPoints.begin(); Iter != m_UserColoredPoints.end(); Iter++)
