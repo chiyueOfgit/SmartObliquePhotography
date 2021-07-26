@@ -122,7 +122,6 @@ std::vector<double> CInitialClusterCreator::__generateHardness4EveryPoint(const 
 	std::vector<double> HardnessSet;
 	HardnessSet.resize(vUserMarkedRegion.size());
 	
-#pragma omp parallel for
 	for (int i = 0; i < vUserMarkedRegion.size(); i++)
 	{
 		Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegion[i]);
