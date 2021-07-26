@@ -30,7 +30,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 
 	auto num = vConfig->getNumSubconfig();
 
-	for (auto i = 0; i < vConfig->getNumSubconfig(); i++)
+	for (int i = 0; i < num; i++)
 	{
 		const hiveConfig::CHiveConfig* pConfig = vConfig->getSubconfigAt(i);
 		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("TASK")))
@@ -38,9 +38,9 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("LitterMarker")))
 			{
 				//for precompute
-				for (auto i = 0; i < pConfig->getNumSubconfig(); i++)
+				for (auto k = 0; k < pConfig->getNumSubconfig(); k++)
 				{
-					const hiveConfig::CHiveConfig* pClusterConfig = pConfig->getSubconfigAt(i);
+					const hiveConfig::CHiveConfig* pClusterConfig = pConfig->getSubconfigAt(k);
 					if (_IS_STR_IDENTICAL(pClusterConfig->getSubconfigType(), std::string("CLUSTER")))
 					{
 						m_pPrecomputeManager = new CPrecomputeManager;
@@ -67,7 +67,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 			std::optional<std::string> NeighborhoodBuilderSig = pConfig->getAttribute<std::string>("SIG");
 			_ASSERTE(NeighborhoodBuilderSig.has_value());
 			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), pConfig, vPointCloud, &m_PointLabelSet);
-			_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating  neighborhood builder [%1%].", NeighborhoodBuilderSig.value()), false);
+			_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating neighborhood builder [%1%].", NeighborhoodBuilderSig.value()), false);
 			continue;
 		}
 		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("OUTLIER")))

@@ -4,7 +4,7 @@
 #include "PointCloudRetouchInterface.h"
 #include "PointCloudRetouchManager.h"
 #include "PointCluster.h"
-#include "PointClusterExpander.h"
+#include "PointClusterExpanderMultithread.h"
 #include "VisualizationInterface.h"
 #include "PointCloudVisualizer.h"
 
