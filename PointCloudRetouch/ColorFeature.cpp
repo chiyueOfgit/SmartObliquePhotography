@@ -31,7 +31,7 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
         m_NumCurrentScenePoints = Scene.getNumPoint();
         pcl::PointCloud<pcl::PointXYZ>::Ptr pCloud(new pcl::PointCloud<pcl::PointXYZ>);
         pCloud->resize(m_NumCurrentScenePoints);
-#pragma omp parallel for
+
         for (int i = 0; i < m_NumCurrentScenePoints; i++)
         {
             auto Pos = Scene.getPositionAt(i);
@@ -49,23 +49,38 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 
     m_NearestPoints.resize(m_MainBaseColors.size());
 
-    std::mutex Mutex;
+    const std::size_t NumThread = std::thread::hardware_concurrency();
+
     for (int i = 0; i < m_NearestPoints.size(); i++)
     {
         float MinColorDifference = FLT_MAX;
         int NearestIndex = -1;
-#pragma omp parallel for
+
+        std::vector<std::pair<float, std::size_t>> ThreadResults(NumThread, { FLT_MAX, -1 });
+
+#pragma omp parallel for num_threads(NumThread)
         for (int k = 0; k < PointCloudColors.size(); k++)
         {
+            auto ThreadId = omp_get_thread_num();
+
             float TempColorDifference = __calcColorDifferences(m_MainBaseColors[i], PointCloudColors[k]);
-            Mutex.lock();
+            if (TempColorDifference < ThreadResults[ThreadId].first)
+            {
+                ThreadResults[ThreadId].first = TempColorDifference;
+                ThreadResults[ThreadId].second = vDeterminantPointSet[k];
+            }
+        }
+
+        for (int k = 0; k < ThreadResults.size(); k++)
+        {
+            float TempColorDifference = ThreadResults[k].first;
             if (TempColorDifference < MinColorDifference)
             {
                 MinColorDifference = TempColorDifference;
-                NearestIndex = vDeterminantPointSet[k];
+                NearestIndex = ThreadResults[k].second;
             }
-            Mutex.unlock();
         }
+
         m_NearestPoints[i] = NearestIndex;
     }
 
@@ -147,7 +162,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustColorClustering(const std::v
     _ASSERTE(vMaxNumCluster != 0 && vMaxNumCluster != -1);
 
     std::vector<std::vector<Eigen::Vector3i>> ClusterResults;
-    std::vector<float> CoefficientsConsideredNum;
+    std::vector<float> AdjustCoefficients;
 
     const int IterCount = 30;
     for (int CurrentK = 1; CurrentK <= vMaxNumCluster; CurrentK++)
@@ -166,7 +181,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustColorClustering(const std::v
         }
 
         //用聚成类的点数加权
-        CoefficientsConsideredNum.push_back((SumCoefficient / CurrentK) * ((float)NumClusterPoints / vColorSet.size()));
+        AdjustCoefficients.push_back((SumCoefficient / CurrentK) * ((float)NumClusterPoints / vColorSet.size()));
 
         std::vector<Eigen::Vector3i> Centroids;
         for (auto& Cluster : Clusters)
@@ -177,7 +192,7 @@ std::vector<Eigen::Vector3i> CColorFeature::__adjustColorClustering(const std::v
     //返回自适应决定的K种主颜色
     int MaxIndex = 0;
     for (int i = 1; i < vMaxNumCluster; i++)
-        if (CoefficientsConsideredNum[i] > CoefficientsConsideredNum[MaxIndex])
+        if (AdjustCoefficients[i] > AdjustCoefficients[MaxIndex])
             MaxIndex = i;
     return ClusterResults[MaxIndex];
 }

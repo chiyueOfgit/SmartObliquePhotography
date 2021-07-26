@@ -247,9 +247,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		if (PickedIndices.empty())
 			return;
 
-		__saveIndices("PickedPoints.txt", PickedIndices);
-		m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera.txt");
-
 		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
@@ -263,8 +260,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 
 		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-
-		__saveIndices("TestIndices.txt", PickedIndices);
 
 		auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 		{
@@ -411,7 +406,7 @@ void CInteractionCallback::__loadIndices(const std::string& vPath, std::vector<i
 {
 	std::ifstream file(vPath.c_str());
 	boost::archive::text_iarchive ia(file);
-	ia >> BOOST_SERIALIZATION_NVP(voIndices);  //不需要指定范围/大小
+	ia >> BOOST_SERIALIZATION_NVP(voIndices);
 	file.close();
 }
 
