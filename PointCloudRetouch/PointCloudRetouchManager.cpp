@@ -38,9 +38,9 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("LitterMarker")))
 			{
 				//for precompute
-				for (auto i = 0; i < pConfig->getNumSubconfig(); i++)
+				for (auto k = 0; k < pConfig->getNumSubconfig(); k++)
 				{
-					const hiveConfig::CHiveConfig* pClusterConfig = pConfig->getSubconfigAt(i);
+					const hiveConfig::CHiveConfig* pClusterConfig = pConfig->getSubconfigAt(k);
 					if (_IS_STR_IDENTICAL(pClusterConfig->getSubconfigType(), std::string("CLUSTER")))
 					{
 						m_pPrecomputeManager = new CPrecomputeManager;

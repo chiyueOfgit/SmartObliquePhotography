@@ -16,6 +16,7 @@ namespace hiveObliquePhotography
 			const std::string EUCLIDEAN_NEIGHBOR_BUILDER = "EUCLIDEAN_NEIGHBOR_BUILDER";
 
 			const std::string CLUSTER_EXPANDER = "CLUSTER_EXPANDER";
+			const std::string CLUSTER_EXPANDER_MULTITHREAD = "CLUSTER_EXPANDER_MULTITHREAD";
 			const std::string OUTLIER_DETECTOR = "OUTLIER_DETECTOR";
 			const std::string BOUNDARY_DETECTOR = "BOUNDARY_DETECTOR";
 

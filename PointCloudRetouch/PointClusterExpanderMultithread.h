@@ -18,7 +18,7 @@ namespace hiveObliquePhotography
 			const std::vector<pcl::index_t>& getExpandPoints() const { return m_ExpandPoints; }
 
 #ifdef _UNIT_TEST
-			std::queue<pcl::index_t> initExpandingCandidateQueue(const CPointCluster* vCluster) { return __initExpandingCandidateQueue(vCluster); }
+			std::vector<pcl::index_t> initExpandingCandidateQueue(const CPointCluster* vCluster) { return __initExpandingCandidateQueue(vCluster); }
 #endif // _UNIT_TEST
 
 		private:
