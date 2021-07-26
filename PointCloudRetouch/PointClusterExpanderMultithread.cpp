@@ -2,6 +2,7 @@
 #include "PointCluster.h"
 #include "PointClusterExpanderMultithread.h"
 #include "PointCloudRetouchManager.h"
+#include "common/CpuTimer.h"
 #include <tbb/parallel_for_each.h>
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
@@ -18,8 +19,11 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 	m_ExpandPoints.clear();
 	CPointCloudRetouchManager* pManager = CPointCloudRetouchManager::getInstance();
 	auto ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
-	
 	std::vector<std::atomic_flag> TraversedFlag(pManager->getRetouchScene().getNumPoint());
+
+	hiveCommon::CCPUTimer Timer;
+	Timer.start();
+
 	std::deque ExpandedFlag(pManager->getRetouchScene().getNumPoint(), false);
 	tbb::parallel_for_each(ExpandingCandidateQueue.begin(), ExpandingCandidateQueue.end(),
 		[&](pcl::index_t vCandidate, tbb::feeder<pcl::index_t>& vFeeder)
@@ -61,7 +65,11 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 	{
 		if (ExpandedFlag.at(i))
 			m_ExpandPoints.push_back(i);
-	}	
+	}
+	
+	Timer.stop();
+	m_RunTime = Timer.getElapsedTimeInMS();
+
 	pManager->recordCurrentStatus();
 }
 

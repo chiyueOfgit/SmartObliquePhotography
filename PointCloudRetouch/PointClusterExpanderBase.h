@@ -15,10 +15,15 @@ namespace hiveObliquePhotography
 
 			virtual void runV(const CPointCluster* vCluster) { _ASSERTE(vCluster); };
 
-			virtual std::vector<pcl::index_t>& getExpandPoints() { return m_ExpandPoints; };
+			virtual const std::vector<pcl::index_t>& getExpandPoints() { return m_ExpandPoints; };
 
-		private:
+#ifdef _UNIT_TEST
+			virtual double getRunTime() { return m_RunTime; };
+#endif // _UNIT_TEST
+
+		protected:
 			std::vector<pcl::index_t> m_ExpandPoints;
+			double m_RunTime = 0;
 		};
 	}
 }

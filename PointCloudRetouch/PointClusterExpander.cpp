@@ -2,6 +2,7 @@
 #include "PointCluster.h"
 #include "PointClusterExpander.h"
 #include "PointCloudRetouchManager.h"
+#include "common/CpuTimer.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -17,9 +18,12 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 	m_ExpandPoints.clear();
 
 	CPointCloudRetouchManager *pManager = CPointCloudRetouchManager::getInstance();
-
 	std::queue<pcl::index_t> ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
 	std::deque TraversedFlag(pManager->getRetouchScene().getNumPoint(), false);
+	
+	hiveCommon::CCPUTimer Timer;
+	Timer.start();
+	
 	while (!ExpandingCandidateQueue.empty())
 	{
 		pcl::index_t Candidate = ExpandingCandidateQueue.front();
@@ -61,6 +65,10 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 		//	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Point: %1% is left in expander, its probability is %2%, below are infos:\n", Candidate, CurrentProbability) + vCluster->getDebugInfos(Candidate));
 		}
 	}
+
+	Timer.stop();
+	m_RunTime = Timer.getElapsedTimeInMS();
+
 	pManager->recordCurrentStatus();
 }
 

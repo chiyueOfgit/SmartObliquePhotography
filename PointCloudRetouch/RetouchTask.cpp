@@ -88,4 +88,3 @@ void CRetouchTask::dumpTaskMarkedPoints(std::vector<pcl::index_t>& voMarkedPoint
 {
 	voMarkedPoints = m_pPointClusterExpander->getExpandPoints();
 }
-
