@@ -82,6 +82,9 @@
     <ClInclude Include="PrecomputeManager.h">
       <Filter>Precompute</Filter>
     </ClInclude>
+    <ClInclude Include="BoundaryDetector.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -136,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="PrecomputeManager.cpp">
       <Filter>Precompute</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundaryDetector.cpp">
+      <Filter>Operation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

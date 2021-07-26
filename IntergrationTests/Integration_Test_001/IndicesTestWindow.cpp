@@ -105,7 +105,7 @@ std::string CSingleStepWindow::__getDirectory(const std::string& vFilePath)
 
 void CSingleStepWindow::__onActionOpen()
 {
-    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_CloudPath), tr("Open PointCloud files(*.pcd)"));
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_CloudPath), tr("PointCloud Files(*.pcd *.ply)"));
     std::vector<std::string> FilePathSet;
 
     if (FilePathList.empty())
