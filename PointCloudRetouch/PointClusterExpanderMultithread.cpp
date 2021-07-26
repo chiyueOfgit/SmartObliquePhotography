@@ -44,7 +44,7 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 					pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 					ExpandedFlag.at(vCandidate) = true;
 
-					for (auto e : pManager->buildNeighborhood(vCandidate, vCluster->getClusterIndex()))
+					for (auto e : pManager->buildNeighborhood(vCandidate))
 						vFeeder.add(e);
 				}
 			}
@@ -70,12 +70,9 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 std::vector<pcl::index_t> CPointClusterExpanderMultithread::__initExpandingCandidateQueue(const CPointCluster* vCluster)
 {
 	std::vector<pcl::index_t> CandidateQueue;
-	const auto SeedClusterIndex = vCluster->getClusterIndex();
 	for (auto Index : vCluster->getCoreRegion())
-	{
-		for (auto Neighbor : CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index, SeedClusterIndex))
+		for (auto Neighbor : CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index))
 			CandidateQueue.push_back(Neighbor);
-	}
 	//·¢ÉúNRVO
 	return CandidateQueue;
 }
