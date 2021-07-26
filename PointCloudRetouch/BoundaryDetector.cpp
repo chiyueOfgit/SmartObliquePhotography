@@ -4,7 +4,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_EXCLUSIVE_PRODUCT(CBoundaryDetector, KEYWORD::OUTLIER_DETECTOR)
+_REGISTER_EXCLUSIVE_PRODUCT(CBoundaryDetector, KEYWORD::BOUNDARY_DETECTOR)
 
 //*****************************************************************
 //FUNCTION: 
