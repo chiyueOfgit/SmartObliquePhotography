@@ -179,6 +179,7 @@
     <ClInclude Include="PointCloudRetouchScene.h" />
     <ClInclude Include="PointCluster.h" />
     <ClInclude Include="PointClusterExpander.h" />
+    <ClInclude Include="PointClusterExpanderMultithread.h" />
     <ClInclude Include="PointClusterSet.h" />
     <ClInclude Include="PointLabelSet.h" />
     <ClInclude Include="PointSetPreprocessor.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="PointCloudRetouchScene.cpp" />
     <ClCompile Include="PointCluster.cpp" />
     <ClCompile Include="PointClusterExpander.cpp" />
+    <ClCompile Include="PointClusterExpanderMultithread.cpp" />
     <ClCompile Include="PointClusterSet.cpp" />
     <ClCompile Include="PointLabelSet.cpp" />
     <ClCompile Include="PointSetPreprocessor.cpp" />

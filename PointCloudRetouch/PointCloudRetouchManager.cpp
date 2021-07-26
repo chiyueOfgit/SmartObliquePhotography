@@ -320,7 +320,7 @@ void CPointCloudRetouchManager::dumpIndicesByLabel(std::vector<pcl::index_t>& vi
 {
 	for (size_t i = 0; i < m_PointLabelSet.getSize(); i++)
 		if (m_PointLabelSet.getLabelAt(i) == vLabel)
-				vioIndices.push_back(i);
+			vioIndices.push_back(i);
 }
 
 //*****************************************************************

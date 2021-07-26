@@ -36,6 +36,7 @@ constexpr float SPACE_SIZE = 100.0f;
 //PlaneFeatureBaseTest给定平面，随机生成带噪点的点云，要求以该点云拟合的平面与原平面差距在规定范围内；
 //  * Plane_Feature_BaseTest_1: 随机模拟平面20%干扰点，期望平面夹角小于10°；
 //  * Plane_Feature_BaseTest_2: 随机模拟平面50%干扰点，期望平面夹角小于30°；
+//  * Plane_Feature_BaseTest_3: 平面特征生长时不会加入法线夹角余弦值＞0.6的点
 //PlaneFeatureSpecialTest特定情况下的特殊结果正确
 //  * Plane_Feature_SpecialTest_1: ；
 
@@ -63,7 +64,7 @@ PointCloud_t::PointType generateRandomPointByPlane(const Eigen::Vector4f& vPlane
 	auto RandomSet = hiveMath::hiveGenerateRandomRealSet(-SPACE_SIZE, SPACE_SIZE, 3);
 	Eigen::Vector4f Point(RandomSet[0], RandomSet[1], RandomSet[2], 1.0f);
 
-	if (!vOnThePlane)
+	if (vOnThePlane)
 	{
 		float SignedDistance = Plane.dot(Point);
 		if (abs(vNoise) > EPSILON)
@@ -179,9 +180,9 @@ TEST(Color_Feature_BaseTest_1, Test_1)
 	std::vector<Eigen::Vector3i> MainColorSet;
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
 	pTileLoader->initV(pConfig);
-	
+
 	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
-	
+
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
 		if ((Color - MainColor).norm() > 10)
@@ -398,9 +399,9 @@ TEST(Plane_Feature_BaseTest_1, Test_6)
 	pcl::copyPointCloud(*pCloud, *pPositionCloud);
 	auto FittingPlane = pTileLoader->fitPlane(pPositionCloud, 1.0, {0, 0, 1});
 
-	Eigen::Vector3f PlaneNormal{ Plane[0],Plane[1],Plane[2]};
+	Eigen::Vector3f PlaneNormal{ Plane[0], Plane[1], Plane[2] };
 	PlaneNormal /= PlaneNormal.norm();
-	Eigen::Vector3f FittingPlaneNormal{ FittingPlane[0],FittingPlane[1],FittingPlane[2] };
+	Eigen::Vector3f FittingPlaneNormal{ FittingPlane[0], FittingPlane[1], FittingPlane[2] };
 	
 	GTEST_ASSERT_GE(abs(PlaneNormal.dot(FittingPlaneNormal)), 0.8);
 }
@@ -423,7 +424,7 @@ TEST(Plane_Feature_BaseTest_2, Test_7)
 	constexpr float OutlierFactor = 0.4f;
 	for (size_t k = 0; k < OutlierFactor * 100; k++)
 		pCloud->push_back(generateRandomPointByPlane(Plane, false));
-		//pCloud->push_back(generateNoisePoint());
+	//pCloud->push_back(generateNoisePoint());
 
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CPlanarityFeature>(KEYWORD::PLANARITY_FEATURE);
 	pTileLoader->initV(pConfig);
@@ -434,11 +435,83 @@ TEST(Plane_Feature_BaseTest_2, Test_7)
 	Eigen::Vector3f PlaneNormal{ Plane[0],Plane[1],Plane[2] };
 	PlaneNormal /= PlaneNormal.norm();
 	Eigen::Vector3f FittingPlaneNormal{ FittingPlane[0],FittingPlane[1],FittingPlane[2] };
-	
+
 	GTEST_ASSERT_GE(abs(PlaneNormal.dot(FittingPlaneNormal)), 0.8);
 }
 
-TEST(Normal_Feature_BaseTest_1, Test_8)
+TEST(Plane_Feature_BaseTest_3, Test_8)
+{
+	// load PickedIndices
+	pcl::Indices PickedIndices;
+	loadIndices(TESTMODEL_DIR + std::string("Test015_Model/PickedIndices_Slice2.txt"), PickedIndices);
+	
+	// load Camera
+	pcl::visualization::Camera Camera;
+	auto pVisualizer = new pcl::visualization::PCLVisualizer("Viewer", true);
+	pVisualizer->loadCameraParameters(TESTMODEL_DIR + std::string("Test015_Model/Camera_Slice2.txt"));
+	pVisualizer->getCameraParameters(Camera);
+	Eigen::Matrix4d ViewMatrix, ProjectionMatrix;
+	Camera.computeViewMatrix(ViewMatrix);
+	Camera.computeProjectionMatrix(ProjectionMatrix);
+
+	// load PointCloud
+	PointCloud_t::Ptr pCloud(new PointCloud_t);
+	pcl::io::loadPCDFile(TESTMODEL_DIR + std::string("General/slice 2.pcd"), *pCloud);
+
+	// load Config
+	hiveConfig::CHiveConfig* pPlaneFeatureConfig = new CPointCloudRetouchConfig;
+	if (hiveConfig::hiveParseConfig(TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig_Planar.xml"), hiveConfig::EConfigType::XML, pPlaneFeatureConfig) != hiveConfig::EParseResult::SUCCEED)
+	{
+		//_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", TESTMODEL_DIR + std::string("Config/Test015_PointCloudRetouchConfig_Planar.xml")));
+		return;
+	}
+
+	// init pManager
+	auto pManager = CPointCloudRetouchManager::getInstance();
+	pManager->init(pCloud, pPlaneFeatureConfig);
+
+	// init HardnessFunc
+	double Hardness = 0.8;
+	double RadiusOnWindow = 38;
+	Eigen::Vector2d CircleCenterOnWindow = { 519, 427 };
+	auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
+	{
+		Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+		double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
+		if (X <= 1.0)
+		{
+			X -= Hardness;
+			if (X < 0)
+				return 1.0;
+			X /= (1 - Hardness);
+			X *= X;
+			return X * (X - 2) + 1;
+		}
+		else
+			return 0;
+	};
+
+	// execute Marker
+	pManager->executeMarker(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::KEPT);
+
+	// precompute Plane
+	Eigen::Vector4f Plane = { -0.0102827, 0.0147407, 0.999839, -462.04 };
+
+	// dump label KEPT Points
+	std::vector<pcl::index_t> KEPTIndices;
+	pManager->dumpIndicesByLabel(KEPTIndices, EPointLabel::KEPT);
+
+	// get Point
+	for (auto PointIndice : KEPTIndices)
+	{
+		auto& Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+		auto PointNormal4f = Scene.getNormalAt(PointIndice);
+		auto COSAngle = std::abs(Plane.dot(PointNormal4f));
+		EXPECT_GT(COSAngle, 0.6);
+	}
+}
+
+TEST(Normal_Feature_BaseTest_1, Test_9)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
@@ -482,7 +555,7 @@ TEST(Normal_Feature_BaseTest_1, Test_8)
 	GTEST_ASSERT_EQ(Res, 0.0);
 }
 
-TEST(Normal_Feature_BaseTest_2, Test_9)
+TEST(Normal_Feature_BaseTest_2, Test_10)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
@@ -540,7 +613,7 @@ TEST(Normal_Feature_BaseTest_2, Test_9)
 	
 }
 
-TEST(Normal_Feature_BaseTest_3, Test_10)
+TEST(Normal_Feature_BaseTest_3, Test_11)
 {
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 	if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)

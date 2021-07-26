@@ -19,12 +19,17 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 	CPointCloudRetouchManager *pManager = CPointCloudRetouchManager::getInstance();
 
 	std::queue<pcl::index_t> ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
-
+	std::deque TraversedFlag(pManager->getRetouchScene().getNumPoint(), false);
 	while (!ExpandingCandidateQueue.empty())
 	{
 		pcl::index_t Candidate = ExpandingCandidateQueue.front();
 		ExpandingCandidateQueue.pop();
 
+		if (TraversedFlag.at(Candidate))
+			continue;
+		else
+			TraversedFlag.at(Candidate) = true;
+		
 		std::size_t CandidateLabel;
 		pManager->dumpPointLabelAt(CandidateLabel, Candidate);
 		if (vCluster->getLabel() == EPointLabel::UNWANTED && static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
@@ -51,7 +56,7 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 		{
 		//	//WARNING!
 		//	pManager->tagPointLabel(Candidate, EPointLabel::FILLED, pManager->getClusterIndexAt(Candidate), pManager->getClusterBelongingProbabilityAt(Candidate));
-			pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
+			//pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 		//	//WARNING!
 		//	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Point: %1% is left in expander, its probability is %2%, below are infos:\n", Candidate, CurrentProbability) + vCluster->getDebugInfos(Candidate));
 		}

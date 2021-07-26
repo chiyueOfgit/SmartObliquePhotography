@@ -247,6 +247,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		if (PickedIndices.empty())
 			return;
 
+		__saveIndices("PickedPoints.txt", PickedIndices);
+		m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera.txt");
+
 		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
@@ -284,7 +287,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		if (m_UnwantedMode)
 			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
 		else
+		{
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
+		}
+
 
 		//show points
 		//std::vector<pcl::index_t> NearestPoints;
@@ -409,6 +415,8 @@ void CInteractionCallback::__loadIndices(const std::string& vPath, std::vector<i
 	file.close();
 }
 
+//*****************************************************************
+//FUNCTION: 
 void CInteractionCallback::__drawHintCircle()
 {
 	std::optional<bool> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);

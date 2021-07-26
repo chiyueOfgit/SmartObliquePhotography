@@ -82,6 +82,9 @@
     <ClInclude Include="PrecomputeManager.h">
       <Filter>Precompute</Filter>
     </ClInclude>
+    <ClInclude Include="PointClusterExpanderMultithread.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
     <ClInclude Include="BoundaryDetector.h">
       <Filter>Operation</Filter>
     </ClInclude>
@@ -139,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="PrecomputeManager.cpp">
       <Filter>Precompute</Filter>
+    </ClCompile>
+    <ClCompile Include="PointClusterExpanderMultithread.cpp">
+      <Filter>Operation</Filter>
     </ClCompile>
     <ClCompile Include="BoundaryDetector.cpp">
       <Filter>Operation</Filter>
