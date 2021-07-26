@@ -6,7 +6,7 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_NORMAL_PRODUCT(CPointClusterExpanderMultithread, KEYWORD::CLUSTER_EXPANDER)
+_REGISTER_NORMAL_PRODUCT(CPointClusterExpanderMultithread, KEYWORD::CLUSTER_EXPANDER_MULTITHREAD)
 
 //*****************************************************************
 //FUNCTION: 
