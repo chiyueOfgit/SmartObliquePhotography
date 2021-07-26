@@ -88,6 +88,9 @@
     <ClInclude Include="BoundaryDetector.h">
       <Filter>Operation</Filter>
     </ClInclude>
+    <ClInclude Include="PointClusterExpanderBase.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">

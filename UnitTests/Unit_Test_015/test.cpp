@@ -17,7 +17,7 @@
 #include <pcl/features/normal_3d.h>
 
 #include "PointCloudRetouchManager.h"
-#include "PointClusterExpander.h"
+#include "PointClusterExpanderMultithread.h"
 #include "PointCluster.h";
 
 constexpr float EPSILON = 1e-4f;
@@ -507,7 +507,7 @@ TEST(Plane_Feature_BaseTest_3, Test_8)
 		auto& Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 		auto PointNormal4f = Scene.getNormalAt(PointIndice);
 		auto COSAngle = std::abs(Plane.dot(PointNormal4f));
-		EXPECT_GT(COSAngle, 0.6);
+		EXPECT_GT(COSAngle, 0.6); // 这个阈值本身没有数学意义
 	}
 }
 

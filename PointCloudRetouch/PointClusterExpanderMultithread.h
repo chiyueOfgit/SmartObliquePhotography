@@ -1,5 +1,5 @@
 #pragma once
-#include "PointClassifier.h"
+#include "PointClusterExpanderBase.h"
 
 namespace hiveObliquePhotography
 {
@@ -7,7 +7,7 @@ namespace hiveObliquePhotography
 	{
 		class CPointCluster;
 
-		class CPointClusterExpanderMultithread : public IPointClassifier
+		class CPointClusterExpanderMultithread : public IPointClusterExpanderBase
 		{
 		public:
 			CPointClusterExpanderMultithread() = default;
@@ -15,10 +15,10 @@ namespace hiveObliquePhotography
 
 			virtual void runV(const CPointCluster* vCluster);
 
-			const std::vector<pcl::index_t>& getExpandPoints() const { return m_ExpandPoints; }
+			virtual const std::vector<pcl::index_t>& getExpandPoints() const { return m_ExpandPoints; }
 
 #ifdef _UNIT_TEST
-			std::queue<pcl::index_t> initExpandingCandidateQueue(const CPointCluster* vCluster) { return __initExpandingCandidateQueue(vCluster); }
+			std::vector<pcl::index_t> initExpandingCandidateQueue(const CPointCluster* vCluster) { return __initExpandingCandidateQueue(vCluster); }
 #endif // _UNIT_TEST
 
 		private:

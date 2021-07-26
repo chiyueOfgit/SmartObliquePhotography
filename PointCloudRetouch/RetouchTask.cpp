@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "RetouchTask.h"
+#include "PointClassifier.h"
+#include "PointClusterExpanderBase.h"
+#include "PointClusterExpander.h"
 #include "PointClusterExpanderMultithread.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
@@ -42,7 +45,12 @@ bool CRetouchTask::init(const hiveConfig::CHiveConfig* vConfig)
 		{
 			std::optional<std::string> ClassifierSig = pConfig->getAttribute<std::string>("SIG");
 			_ASSERTE(ClassifierSig.has_value());
-			m_pPointClusterExpander = dynamic_cast<CPointClusterExpanderMultithread*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>(ClassifierSig.value()));
+
+			if (_IS_STR_IDENTICAL(ClassifierSig.value(), std::string("CLUSTER_EXPANDER_MULTITHREAD")))
+				m_pPointClusterExpander = dynamic_cast<CPointClusterExpanderMultithread*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>(ClassifierSig.value()));
+			else if (_IS_STR_IDENTICAL(ClassifierSig.value(), std::string("CLUSTER_EXPANDER")))
+				m_pPointClusterExpander = dynamic_cast<CPointClusterExpander*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>(ClassifierSig.value()));
+
 			_HIVE_EARLY_RETURN(!m_pPointClusterExpander, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating point classifier [%1%].", ClassifierSig.value()), false);
 			continue;
 		}
@@ -66,7 +74,10 @@ bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster) const
 {
 	_ASSERTE(vUserSpecifiedCluster && m_pPointClusterExpander);
 
-	m_pPointClusterExpander->execute<CPointClusterExpanderMultithread>(vUserSpecifiedCluster);
+	if (_IS_STR_IDENTICAL(m_pPointClusterExpander->getProductSig(), std::string("CLUSTER_EXPANDER_MULTITHREAD")))
+		m_pPointClusterExpander->execute<CPointClusterExpanderMultithread>(vUserSpecifiedCluster);
+	else if (_IS_STR_IDENTICAL(m_pPointClusterExpander->getProductSig(), std::string("CLUSTER_EXPANDER")))
+		m_pPointClusterExpander->execute<CPointClusterExpander>(vUserSpecifiedCluster);
 
 	return m_pPointClusterExpander->getExpandPoints().size();
 }

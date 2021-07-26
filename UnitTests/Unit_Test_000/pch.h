@@ -16,6 +16,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/search/kdtree.h>
+#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/segmentation/impl/extract_clusters.hpp>
 
 #include <boost/algorithm/string.hpp>
@@ -29,6 +30,7 @@
 #include "common/DesignPatternInterface.h"
 #include "common/HiveConfig.h"
 #include "common/ConfigInterface.h"
+#include "common/UtilityInterface.h"
 
 #include "PointCloudRetouchCommon.h"
 

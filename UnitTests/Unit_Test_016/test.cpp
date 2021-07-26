@@ -54,18 +54,18 @@ TEST_F(CTestNeighborhoodBuilder, Radius_Illegal_Input_Test)
 {
 	auto pManagerRadius = generateRandomTestee(1000, -100, 100, NearestConfigFilePath);
 
-	ASSERT_NO_THROW(pManagerRadius->buildNeighborhood(50, 1));
-	ASSERT_ANY_THROW(pManagerRadius->buildNeighborhood(-1, 1));
-	ASSERT_ANY_THROW(pManagerRadius->buildNeighborhood(1000000, 1));
+	ASSERT_NO_THROW(pManagerRadius->buildNeighborhood(50));
+	ASSERT_ANY_THROW(pManagerRadius->buildNeighborhood(-1));
+	ASSERT_ANY_THROW(pManagerRadius->buildNeighborhood(1000000));
 }
 
 TEST_F(CTestNeighborhoodBuilder, Nearest_Illegal_Input_Test)
 {
 	auto pManagerNearest = generateRandomTestee(1000, -100, 100, NearestConfigFilePath);
 
-	ASSERT_NO_THROW(pManagerNearest->buildNeighborhood(50, 1));
-	ASSERT_ANY_THROW(pManagerNearest->buildNeighborhood(-1, 1));
-	ASSERT_ANY_THROW(pManagerNearest->buildNeighborhood(1000000, 1));
+	ASSERT_NO_THROW(pManagerNearest->buildNeighborhood(50));
+	ASSERT_ANY_THROW(pManagerNearest->buildNeighborhood(-1));
+	ASSERT_ANY_THROW(pManagerNearest->buildNeighborhood(1000000));
 }
 
 TEST_F(CTestNeighborhoodBuilder, Radius_Symmetry_Test)
@@ -77,13 +77,13 @@ TEST_F(CTestNeighborhoodBuilder, Radius_Symmetry_Test)
 	{
 		auto TestIndex = hiveMath::hiveGenerateRandomInteger(0, 999);
 		
-		auto TestIndexNeighborhood = pManager->buildNeighborhood(TestIndex, ++SeedClusterIndex);
+		auto TestIndexNeighborhood = pManager->buildNeighborhood(TestIndex);
 		if (TestIndexNeighborhood.size() == 0)
 			continue;
 
 		auto Neighbor = TestIndexNeighborhood.back();
 		
-		auto Neighborhood = pManager->buildNeighborhood(Neighbor, ++SeedClusterIndex);
+		auto Neighborhood = pManager->buildNeighborhood(Neighbor);
 		auto k = Neighborhood.begin();
 		for (; k != Neighborhood.end(); ++k)
 			if (*k == TestIndex)
