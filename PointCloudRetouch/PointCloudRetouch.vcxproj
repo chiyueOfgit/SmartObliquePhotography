@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BoundaryDetector.h" />
     <ClInclude Include="ColorFeature.h" />
     <ClInclude Include="EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="Feature.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="VfhFeature.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BoundaryDetector.cpp" />
     <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EuclideanNeighborhoodBuilder.cpp" />
