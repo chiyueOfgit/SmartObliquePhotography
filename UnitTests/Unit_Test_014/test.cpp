@@ -5,6 +5,7 @@
 #include "PointCloudRetouchManager.h"
 #include "PointCluster.h"
 #include "PointClusterExpanderMultithread.h"
+#include "PointClusterExpander.h"
 #include "VisualizationInterface.h"
 #include "PointCloudVisualizer.h"
 
@@ -66,17 +67,15 @@ protected:
 
 TEST_F(TestExpander, NoRepeatIndex)
 {
-	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
+	CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
 
 	std::vector<pcl::index_t> UserMarkedRegion{ 1,2,3,4 };
 	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, PV, [](auto) { return 1; }, EPointLabel::KEPT);
 
-	std::queue<pcl::index_t> CandidateQueue = pPointClusterExpander->initExpandingCandidateQueue(UserSpecifiedCluster);
+	std::vector<pcl::index_t> CandidateQueue = pPointClusterExpanderMultithread->initExpandingCandidateQueue(UserSpecifiedCluster);
 	int Sum = 0;
-	while (!CandidateQueue.empty())
+	for (auto Index : CandidateQueue)
 	{
-		pcl::index_t Index = CandidateQueue.front();
-		CandidateQueue.pop();
 		if (std::find(UserSpecifiedCluster->getCoreRegion().begin(), UserSpecifiedCluster->getCoreRegion().end(), Index) != UserSpecifiedCluster->getCoreRegion().end())
 			Sum++;
 	}
@@ -85,18 +84,18 @@ TEST_F(TestExpander, NoRepeatIndex)
 
 TEST_F(TestExpander, EmptyInput)
 {
-	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
+	CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
 
 	std::vector<pcl::index_t> UserMarkedRegion{};
 	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, PV, [](auto) { return 1; }, EPointLabel::KEPT);
 	
-	EXPECT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
+	EXPECT_ANY_THROW(pPointClusterExpanderMultithread->execute<CPointClusterExpanderMultithread>(UserSpecifiedCluster));
 }
 
 TEST_F(TestExpander, NullptrInput)
 {
-	CPointClusterExpander* pPointClusterExpander = new CPointClusterExpander;
+	CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
 	CPointCluster* UserSpecifiedCluster = nullptr;
 
-	EXPECT_ANY_THROW(pPointClusterExpander->execute<CPointClusterExpander>(UserSpecifiedCluster));
+	EXPECT_ANY_THROW(pPointClusterExpanderMultithread->execute<CPointClusterExpanderMultithread>(UserSpecifiedCluster));
 }
