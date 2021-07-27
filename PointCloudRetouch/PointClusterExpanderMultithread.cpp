@@ -61,6 +61,15 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 				//	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Point: %1% is left in expander, its probability is %2%, below are infos:\n", Candidate, CurrentProbability) + vCluster->getDebugInfos(Candidate));
 			}
 		});
+
+	//Timer.stop();
+	//m_RunTime = Timer.getElapsedTime();
+	//double Temp = m_RunTime;
+
+	//hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("MultiThreadRunTime: %1% \n", m_RunTime));
+
+	//Timer.start();
+
 	for (size_t i = 0; i < ExpandedFlag.size(); i++)
 	{
 		if (ExpandedFlag.at(i))
@@ -69,6 +78,10 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 	
 	Timer.stop();
 	m_RunTime = Timer.getElapsedTimeInMS();
+
+	//hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("ExpandPointsTime: %1% \n", m_RunTime));
+	//m_RunTime += Temp;
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("MultiThread Total RunTime: %1% \n", m_RunTime));
 
 	pManager->recordCurrentStatus();
 }
