@@ -79,6 +79,7 @@ std::queue<pcl::index_t> CPointClusterExpander::__initExpandingCandidateQueue(co
 	std::queue<pcl::index_t> CandidateQueue;
 	for(auto Index : vCluster->getCoreRegion())
 		for (auto Neighbor : CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index))
+			if (find(vCluster->getCoreRegion().begin(), vCluster->getCoreRegion().end(), Neighbor) == vCluster->getCoreRegion().end())
 			CandidateQueue.push(Neighbor);
 	//·¢ÉúNRVO
 	return CandidateQueue;
