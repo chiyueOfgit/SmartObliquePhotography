@@ -93,6 +93,7 @@ std::vector<pcl::index_t> CPointClusterExpanderMultithread::__initExpandingCandi
 	std::vector<pcl::index_t> CandidateQueue;
 	for (auto Index : vCluster->getCoreRegion())
 		for (auto Neighbor : CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index))
+			if(find(vCluster->getCoreRegion().begin(), vCluster->getCoreRegion().end(), Neighbor) == vCluster->getCoreRegion().end())
 			CandidateQueue.push_back(Neighbor);
 	//·¢ÉúNRVO
 	return CandidateQueue;
