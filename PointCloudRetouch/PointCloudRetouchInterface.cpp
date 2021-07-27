@@ -138,3 +138,8 @@ void hiveObliquePhotography::PointCloudRetouch::hiveRunPrecompute(const std::str
 
 	pPrecomputeManager->precompute();
 }
+
+void hiveObliquePhotography::PointCloudRetouch::hiveMarkBoundary()
+{
+	CPointCloudRetouchManager::getInstance()->executeMarkBoundary();
+}

@@ -107,6 +107,14 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->refresh(PointLabel);
 		}
 
+		if (KeyString == "p")
+		{
+			hiveObliquePhotography::PointCloudRetouch::hiveMarkBoundary();
+			std::vector<std::size_t> PointLabel;
+			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+			m_pVisualizer->refresh(PointLabel);
+		}
+		
 		//draw point picking hint circle
 		if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
 			__drawHintCircle();
