@@ -32,7 +32,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 
 	auto num = vConfig->getNumSubconfig();
 
-	for (auto i = 0; i < vConfig->getNumSubconfig(); i++)
+	for (int i = 0; i < num; i++)
 	{
 		const hiveConfig::CHiveConfig* pConfig = vConfig->getSubconfigAt(i);
 		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("TASK")))
@@ -69,7 +69,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 			std::optional<std::string> NeighborhoodBuilderSig = pConfig->getAttribute<std::string>("SIG");
 			_ASSERTE(NeighborhoodBuilderSig.has_value());
 			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), pConfig, vPointCloud, &m_PointLabelSet);
-			_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating  neighborhood builder [%1%].", NeighborhoodBuilderSig.value()), false);
+			_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating neighborhood builder [%1%].", NeighborhoodBuilderSig.value()), false);
 			continue;
 		}
 		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("OUTLIER")))
@@ -310,10 +310,10 @@ void CPointCloudRetouchManager::setLabel(const std::vector<pcl::index_t>& vPoint
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed, std::uint32_t vSeedClusterIndex)
+std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed)
 {
 	//·¢ÉúNRVO
-	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vSeedClusterIndex);
+	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed);
 }
 
 //*****************************************************************

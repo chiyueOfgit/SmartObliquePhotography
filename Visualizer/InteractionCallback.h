@@ -45,6 +45,7 @@ namespace hiveObliquePhotography
 
 			bool m_UnwantedMode = true;
 			bool m_IsRefreshImmediately = true;	//点选是否立即刷新
+			bool m_IsEnableColorInfos = false;
 
 			CPointCloudVisualizer* m_pVisualizer = nullptr;
 

@@ -36,7 +36,7 @@
     </CLUSTER>
     <CLASSIFIER>
       ClusterExpander
-      <SIG> CLUSTER_EXPANDER </SIG>
+      <SIG> CLUSTER_EXPANDER_MULTITHREAD </SIG>
     </CLASSIFIER>
   </TASK>
   <TASK>
@@ -68,7 +68,7 @@
     </CLUSTER>
     <CLASSIFIER>
       ClusterExpander
-      <SIG> CLUSTER_EXPANDER </SIG>
+      <SIG> CLUSTER_EXPANDER_MULTITHREAD </SIG>
     </CLASSIFIER>
   </TASK>
 </POINT_CLOUD_RETOUCN_CONFIG>

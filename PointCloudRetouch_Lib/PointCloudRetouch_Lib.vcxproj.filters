@@ -93,6 +93,9 @@
     <ClInclude Include="..\PointCloudRetouch\PointClusterExpanderMultithread.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\PointCloudRetouch\BoundaryDetector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp">
@@ -159,6 +162,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\PointCloudRetouch\PointClusterExpanderMultithread.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\BoundaryDetector.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

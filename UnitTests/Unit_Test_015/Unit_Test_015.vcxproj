@@ -55,9 +55,6 @@
     <ProjectReference Include="..\..\visualization\pcl_visualization.vcxproj">
       <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\Visualizer\Visualization.vcxproj">
-      <Project>{6673a1f9-724d-47a0-8159-6ca26b818506}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

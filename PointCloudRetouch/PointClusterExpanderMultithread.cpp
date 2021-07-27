@@ -2,6 +2,7 @@
 #include "PointCluster.h"
 #include "PointClusterExpanderMultithread.h"
 #include "PointCloudRetouchManager.h"
+#include "common/CpuTimer.h"
 #include <tbb/parallel_for_each.h>
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
@@ -18,8 +19,11 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 	m_ExpandPoints.clear();
 	CPointCloudRetouchManager* pManager = CPointCloudRetouchManager::getInstance();
 	auto ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
-	
 	std::vector<std::atomic_flag> TraversedFlag(pManager->getRetouchScene().getNumPoint());
+
+	hiveCommon::CCPUTimer Timer;
+	Timer.start();
+
 	std::deque ExpandedFlag(pManager->getRetouchScene().getNumPoint(), false);
 	tbb::parallel_for_each(ExpandingCandidateQueue.begin(), ExpandingCandidateQueue.end(),
 		[&](pcl::index_t vCandidate, tbb::feeder<pcl::index_t>& vFeeder)
@@ -44,7 +48,7 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 					pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 					ExpandedFlag.at(vCandidate) = true;
 
-					for (auto e : pManager->buildNeighborhood(vCandidate, vCluster->getClusterIndex()))
+					for (auto e : pManager->buildNeighborhood(vCandidate))
 						vFeeder.add(e);
 				}
 			}
@@ -61,7 +65,11 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 	{
 		if (ExpandedFlag.at(i))
 			m_ExpandPoints.push_back(i);
-	}	
+	}
+	
+	Timer.stop();
+	m_RunTime = Timer.getElapsedTimeInMS();
+
 	pManager->recordCurrentStatus();
 }
 
@@ -70,12 +78,10 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 std::vector<pcl::index_t> CPointClusterExpanderMultithread::__initExpandingCandidateQueue(const CPointCluster* vCluster)
 {
 	std::vector<pcl::index_t> CandidateQueue;
-	const auto SeedClusterIndex = vCluster->getClusterIndex();
 	for (auto Index : vCluster->getCoreRegion())
-	{
-		for (auto Neighbor : CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index, SeedClusterIndex))
+		for (auto Neighbor : CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index))
+			if(find(vCluster->getCoreRegion().begin(), vCluster->getCoreRegion().end(), Neighbor) == vCluster->getCoreRegion().end())
 			CandidateQueue.push_back(Neighbor);
-	}
 	//·¢ÉúNRVO
 	return CandidateQueue;
 }

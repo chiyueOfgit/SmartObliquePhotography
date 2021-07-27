@@ -23,7 +23,7 @@
     </CLUSTER>
     <CLASSIFIER>
       ClusterExpander
-      <SIG> CLUSTER_EXPANDER_MULTITHREAD </SIG>
+      <SIG> CLUSTER_EXPANDER </SIG>
     </CLASSIFIER>
   </TASK>
   <TASK>
@@ -40,10 +40,15 @@
         <DISTANCE_THRESHOLD> 2.0 </DISTANCE_THRESHOLD>
         <DISTANCE_TOLERANCE> 0.2 </DISTANCE_TOLERANCE>
       </FEATURE>
+      <FEATURE>
+        NormalComplexityFeature
+        <SIG> NORMAL_COMPLEXITY </SIG>
+        <LARGE_SCALE_RADIUS> 1.5 </LARGE_SCALE_RADIUS>
+      </FEATURE>
     </CLUSTER>
     <CLASSIFIER>
       ClusterExpander
-      <SIG> CLUSTER_EXPANDER_MULTITHREAD </SIG>
+      <SIG> CLUSTER_EXPANDER </SIG>
     </CLASSIFIER>
   </TASK>
   <OUTLIER> 

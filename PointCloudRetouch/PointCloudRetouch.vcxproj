@@ -179,6 +179,7 @@
     <ClInclude Include="PointCloudRetouchScene.h" />
     <ClInclude Include="PointCluster.h" />
     <ClInclude Include="PointClusterExpander.h" />
+    <ClInclude Include="PointClusterExpanderBase.h" />
     <ClInclude Include="PointClusterExpanderMultithread.h" />
     <ClInclude Include="PointClusterSet.h" />
     <ClInclude Include="PointLabelSet.h" />

@@ -118,7 +118,6 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		//draw point picking hint circle
 		if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value())
 			__drawHintCircle();
-
 	}
 }
 
@@ -255,9 +254,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		if (PickedIndices.empty())
 			return;
 
-		__saveIndices("PickedPoints.txt", PickedIndices);
-		m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera.txt");
-
 		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
@@ -271,8 +267,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 
 		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-
-		__saveIndices("TestIndices.txt", PickedIndices);
 
 		auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 		{
@@ -295,23 +289,20 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		if (m_UnwantedMode)
 			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
 		else
-		{
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
-		}
-
 
 		//show points
-		//std::vector<pcl::index_t> NearestPoints;
-		//if (PointCloudRetouch::hiveDumpColorFeatureNearestPoints(NearestPoints))
-		//{
-		//	for (auto Index : NearestPoints)
-		//	{
-		//		auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
-		//		Eigen::Vector3f CameraPos2Point = { float(Camera.pos[0] - Point.x), float(Camera.pos[1] - Point.y), float(Camera.pos[2] - Point.z) };
-		//		Eigen::Vector3i Color{ Point.r, Point.g, Point.b };
-		//		m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 0.01f * CameraPos2Point, 30.0);
-		//	}
-		//}
+		std::vector<pcl::index_t> NearestPoints;
+		if (m_IsEnableColorInfos && PointCloudRetouch::hiveDumpColorFeatureNearestPoints(NearestPoints))
+		{
+			for (auto Index : NearestPoints)
+			{
+				auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
+				Eigen::Vector3f CameraPos2Point = { float(Camera.pos[0] - Point.x), float(Camera.pos[1] - Point.y), float(Camera.pos[2] - Point.z) };
+				Eigen::Vector3i Color{ Point.r, Point.g, Point.b };
+				m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 0.01f * CameraPos2Point, 30.0);
+			}
+		}
 
 		if (m_IsRefreshImmediately)
 		{
@@ -419,7 +410,7 @@ void CInteractionCallback::__loadIndices(const std::string& vPath, std::vector<i
 {
 	std::ifstream file(vPath.c_str());
 	boost::archive::text_iarchive ia(file);
-	ia >> BOOST_SERIALIZATION_NVP(voIndices);  //不需要指定范围/大小
+	ia >> BOOST_SERIALIZATION_NVP(voIndices);
 	file.close();
 }
 
@@ -441,46 +432,45 @@ void CInteractionCallback::__drawHintCircle()
 	Camera.computeViewMatrix(View);
 
 	//colors
-	//PointCloudRetouch::hiveDumpColorFeatureMainColors(m_pVisualizer->m_MainColors);
+	PointCloudRetouch::hiveDumpColorFeatureMainColors(m_pVisualizer->m_MainColors);
 
-	//if (m_pVisualizer->m_MainColors.size())
-	//{
+	if (m_pVisualizer->m_MainColors.size() && m_IsEnableColorInfos)
+	{
+		float CircleY = 0.7, DistanceX = 0.2;
+		std::vector<Eigen::Vector2f> CirclesNDCPos;
 
-	//	float CircleY = 0.7, DistanceX = 0.2;
-	//	std::vector<Eigen::Vector2f> CirclesNDCPos;
+		float DeltaX = float(m_pVisualizer->m_MainColors.size() - 1) * 0.5f;
 
-	//	float DeltaX = float(m_pVisualizer->m_MainColors.size() - 1) * 0.5f;
+		for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
+		{
+			CirclesNDCPos.push_back({ (i - DeltaX) * DistanceX, CircleY });
+		}
 
-	//	for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
-	//	{
-	//		CirclesNDCPos.push_back({ (i - DeltaX) * DistanceX, CircleY });
-	//	}
+		for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
+		{
+			Eigen::Vector4d PixelPosition = { CirclesNDCPos[i].x(), CirclesNDCPos[i].y(), -0.5f, 1.0f };
 
-	//	for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
-	//	{
-	//		Eigen::Vector4d PixelPosition = { CirclesNDCPos[i].x(), CirclesNDCPos[i].y(), -0.5f, 1.0f };
+			PixelPosition = (Proj * View).inverse() * PixelPosition;
+			PixelPosition /= PixelPosition.w();
 
-	//		PixelPosition = (Proj * View).inverse() * PixelPosition;
-	//		PixelPosition /= PixelPosition.w();
+			pcl::PointXYZ Circle;
 
-	//		pcl::PointXYZ Circle;
+			Circle.x = PixelPosition.x();
+			Circle.y = PixelPosition.y();
+			Circle.z = PixelPosition.z();
 
-	//		Circle.x = PixelPosition.x();
-	//		Circle.y = PixelPosition.y();
-	//		Circle.z = PixelPosition.z();
+			Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+			Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
 
-	//		Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-	//		Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
+			auto Length = (CameraPos - PixelPos).norm();
 
-	//		auto Length = (CameraPos - PixelPos).norm();
-
-	//		std::string CircleName = "Circle" + std::to_string(i);
-	//		if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
-	//		{
-	//			m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * 40.0, float(m_pVisualizer->m_MainColors[i].x()) / 255, float(m_pVisualizer->m_MainColors[i].y()) / 255, float(m_pVisualizer->m_MainColors[i].z()) / 255, CircleName);
-	//		}
-	//	}
-	//}
+			std::string CircleName = "Circle" + std::to_string(i);
+			if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
+			{
+				m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * 40.0, float(m_pVisualizer->m_MainColors[i].x()) / 255, float(m_pVisualizer->m_MainColors[i].y()) / 255, float(m_pVisualizer->m_MainColors[i].z()) / 255, CircleName);
+			}
+		}
+	}
 
 	Eigen::Vector4d PixelPosition = { m_PosX / Camera.window_size[0] * 2 - 1, m_PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
 

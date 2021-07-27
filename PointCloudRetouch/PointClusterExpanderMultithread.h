@@ -1,5 +1,5 @@
 #pragma once
-#include "PointClassifier.h"
+#include "PointClusterExpanderBase.h"
 
 namespace hiveObliquePhotography
 {
@@ -7,7 +7,7 @@ namespace hiveObliquePhotography
 	{
 		class CPointCluster;
 
-		class CPointClusterExpanderMultithread : public IPointClassifier
+		class CPointClusterExpanderMultithread : public IPointClusterExpanderBase
 		{
 		public:
 			CPointClusterExpanderMultithread() = default;
@@ -15,10 +15,11 @@ namespace hiveObliquePhotography
 
 			virtual void runV(const CPointCluster* vCluster);
 
-			const std::vector<pcl::index_t>& getExpandPoints() const { return m_ExpandPoints; }
+			//virtual const std::vector<pcl::index_t>& getExpandPoints() override { return m_ExpandPoints; }
 
 #ifdef _UNIT_TEST
 			std::vector<pcl::index_t> initExpandingCandidateQueue(const CPointCluster* vCluster) { return __initExpandingCandidateQueue(vCluster); }
+			//virtual double getRunTime() override { return m_RunTime; };
 #endif // _UNIT_TEST
 
 		private:
@@ -26,7 +27,9 @@ namespace hiveObliquePhotography
 
 			bool __isReassigned2CurrentCluster(double vCurrentProbability, std::uint32_t vCurrentTimestamp, double vOldProbability, std::uint32_t vOldTimestamp);
 
-			std::vector<pcl::index_t> m_ExpandPoints;
+			//std::vector<pcl::index_t> m_ExpandPoints;
+
+			//double m_RunTime = 0;
 		};
 	}
 }

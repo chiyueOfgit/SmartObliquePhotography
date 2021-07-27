@@ -3,7 +3,6 @@
 #include "pcl/features/normal_3d_omp.h"
 #include "pcl/features/don.h"
 #include "EuclideanNeighborhoodBuilder.h"
-#include <omp.h>
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -67,7 +66,6 @@ bool CNormalComplexity::precomputeSceneCloudNormalComplexity()
 
 	std::mutex Mutex;
 
-#pragma omp parallel for
 	for (int i = 0; i < NumPoints; i++)
 	{
 		double NormalComplexity = __calcSinglePointNormalComplexity(i);
