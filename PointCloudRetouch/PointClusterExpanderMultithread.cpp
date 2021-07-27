@@ -62,14 +62,6 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 			}
 		});
 
-	//Timer.stop();
-	//m_RunTime = Timer.getElapsedTime();
-	//double Temp = m_RunTime;
-
-	//hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("MultiThreadRunTime: %1% \n", m_RunTime));
-
-	//Timer.start();
-
 	for (size_t i = 0; i < ExpandedFlag.size(); i++)
 	{
 		if (ExpandedFlag.at(i))
@@ -78,10 +70,6 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 	
 	Timer.stop();
 	m_RunTime = Timer.getElapsedTimeInMS();
-
-	//hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("ExpandPointsTime: %1% \n", m_RunTime));
-	//m_RunTime += Temp;
-	hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("MultiThread Total RunTime: %1% \n", m_RunTime));
 
 	pManager->recordCurrentStatus();
 }
