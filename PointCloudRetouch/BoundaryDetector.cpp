@@ -57,6 +57,7 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, const hi
 			pManager->tagPointLabel(Index, EPointLabel::UNWANTED, 0, 0);
 		}
 	}
+	vioBoundarySet.swap(BoundarySet);
 }
 
 Eigen::Vector3f CBoundaryDetector::__calcProjectivePoint(Eigen::Vector3f& vCenterPosition, Eigen::Vector3f& vCenterNormal, Eigen::Vector3f& vProjectPosition)

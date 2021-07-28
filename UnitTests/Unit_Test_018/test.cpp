@@ -90,7 +90,7 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, m_pDetectorConfig);
 	ASSERT_TRUE(!BoundaryPoints.empty());
 
-	const float ExpectCorrectRate = 60.0f, ExpectErrorRate = 60.0f;
+	const float ExpectCorrectRate = 80.0f, ExpectErrorRate = 60.0f;
 
 	for (auto& Groundtruth : m_BoundaryIndices)
 	{
@@ -98,13 +98,13 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 		std::set_intersection(BoundaryPoints.begin(), BoundaryPoints.end(), 
 			Groundtruth.begin(), Groundtruth.end(), 
 			std::inserter(Intersection, Intersection.begin()));
-		EXPECT_GE((float)Intersection.size() / Groundtruth.size(), ExpectCorrectRate);
+		EXPECT_GE((float)Intersection.size() / Groundtruth.size() * 100.0f, ExpectCorrectRate);
 
 		std::vector<pcl::index_t> Difference;
 		std::set_difference(BoundaryPoints.begin(), BoundaryPoints.end(),
 			Groundtruth.begin(), Groundtruth.end(),
 			std::inserter(Difference, Difference.begin()));
-		EXPECT_LE((float)Difference.size() / BoundaryPoints.size(), ExpectErrorRate);
+		EXPECT_LE((float)Difference.size() / BoundaryPoints.size() * 100.0f, ExpectErrorRate);
 	}
 
 }
@@ -120,7 +120,7 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_2)
 	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, m_pDetectorConfig);
 	ASSERT_TRUE(!BoundaryPoints.empty());
 
-	const float ExpectCorrectRate = 60.0f;
+	const float ExpectCorrectRate = 90.0f;
 
 	for (auto& Groundtruth : m_BoundaryIndices)
 	{
@@ -128,6 +128,6 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_2)
 		std::set_intersection(BoundaryPoints.begin(), BoundaryPoints.end(),
 			Groundtruth.begin(), Groundtruth.end(),
 			std::inserter(Intersection, Intersection.begin()));
-		EXPECT_GE((float)Intersection.size() / Groundtruth.size(), ExpectCorrectRate);
+		EXPECT_GE((float)Intersection.size() / Groundtruth.size() * 100.0f, ExpectCorrectRate);
 	}
 }
