@@ -21,8 +21,10 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 	std::queue<pcl::index_t> ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
 	std::deque TraversedFlag(pManager->getRetouchScene().getNumPoint(), false);
 	
+#ifdef _UNIT_TEST
 	hiveCommon::CCPUTimer Timer;
 	Timer.start();
+#endif // _UNIT_TEST
 	
 	while (!ExpandingCandidateQueue.empty())
 	{
@@ -68,8 +70,11 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 		}
 	}
 
+#ifdef _UNIT_TEST
 	Timer.stop();
 	m_RunTime = Timer.getElapsedTimeInMS();
+#endif // _UNIT_TEST
+
 
 	pManager->recordCurrentStatus();
 }
