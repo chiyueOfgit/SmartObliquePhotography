@@ -64,8 +64,7 @@ bool CNormalComplexity::precomputeSceneCloudNormalComplexity()
 	auto NumPoints = CloudScene.getNumPoint();
 	std::vector<double> Temp(NumPoints);
 
-	std::mutex Mutex;
-
+#pragma omp parallel for
 	for (int i = 0; i < NumPoints; i++)
 	{
 		double NormalComplexity = __calcSinglePointNormalComplexity(i);
