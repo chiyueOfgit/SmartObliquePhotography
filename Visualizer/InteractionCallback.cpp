@@ -134,6 +134,16 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	m_PosX = vEvent.getX();
 	m_PosY = vEvent.getY();
 
+	pcl::visualization::Camera Camera;
+	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+	Eigen::Matrix4d Proj, View;
+	Camera.computeProjectionMatrix(Proj);
+	Camera.computeViewMatrix(View);
+	Eigen::Matrix4d PV = Proj * View;
+	Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+
+	m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
+
 	if (m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value())
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
 	else
@@ -323,14 +333,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			if (PickedIndices.empty())
 				return;
 
-			pcl::visualization::Camera Camera;
-			m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-			Eigen::Matrix4d Proj, View;
-			Camera.computeProjectionMatrix(Proj);
-			Camera.computeViewMatrix(View);
-			Eigen::Matrix4d PV = Proj * View;
-			Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-
 			if (m_pVisualizationConfig->getAttribute<bool>(AREA_PICK_CULLING).value())
 				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double {return -1; }, ViewPos);
 			m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
@@ -356,6 +358,39 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		{
 			isPicking = true;
 			LeftUp = { m_PosX, m_PosY };
+		}
+
+		if (isPicking)
+		{
+			std::vector<pcl::PointXYZ> LineEndPoints;
+
+			auto fromWindow2World = [&](const Eigen::Vector2i& vCoord) -> pcl::PointXYZ
+			{
+				Eigen::Vector4d PixelPosition = { vCoord.x() / Camera.window_size[0] * 2 - 1, vCoord.y() / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
+				PixelPosition = (Proj * View).inverse() * PixelPosition;
+				PixelPosition /= PixelPosition.w();
+
+				pcl::PointXYZ TempPoint;
+				TempPoint.x = PixelPosition.x();
+				TempPoint.y = PixelPosition.y();
+				TempPoint.z = PixelPosition.z();
+				return TempPoint;
+			};
+
+			LineEndPoints.push_back(fromWindow2World(LeftUp));
+			LineEndPoints.push_back(fromWindow2World({ m_PosX, LeftUp.y() }));
+			LineEndPoints.push_back(fromWindow2World({ m_PosX, m_PosY }));
+			LineEndPoints.push_back(fromWindow2World({ LeftUp.x(), m_PosY }));
+
+			for (int i = 0; i < LineEndPoints.size(); i++)
+			{
+				auto& LineStartPoint = LineEndPoints[i];
+				auto& LineEndPoint = LineEndPoints[(i + 1) % LineEndPoints.size()];
+				m_pVisualizer->m_pPCLVisualizer->addLine(LineStartPoint, LineEndPoint, "Line" + std::to_string(i));
+				m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2, "Line" + std::to_string(i));
+			}
+
+			m_pVisualizer->m_pPCLVisualizer->updateCamera();
 		}
 	}
 
@@ -413,8 +448,6 @@ void CInteractionCallback::__drawHintCircle()
 	std::optional<bool> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
 	if (UnwantedMode.has_value())
 		m_UnwantedMode = UnwantedMode.value();  
-
-	m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
 
 	pcl::visualization::Camera Camera;
 	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);

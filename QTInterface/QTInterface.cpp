@@ -214,7 +214,10 @@ void CQTInterface::onActionPointPicking()
             m_UI.actionAreaPicking->setChecked(false);
             if (m_pVisualizationConfig)
                 m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_MODE, false);
-            m_pPointPickingDockWidget = new CSliderSizeDockWidget(m_UI.VTKWidget, m_pVisualizationConfig);
+            if (m_pAreaPickingSetting)
+                _SAFE_DELETE(m_pAreaPickingSetting);
+
+            m_pPointPickingDockWidget = new CSliderSizeDockWidget(m_UI.VTKWidget, m_pPointPickingDockWidget, m_pVisualizationConfig);
             m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
             m_pPointPickingDockWidget->show();
             CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking mode."));
@@ -222,7 +225,6 @@ void CQTInterface::onActionPointPicking()
         else
         {
             m_pPointPickingDockWidget->close();
-            delete m_pPointPickingDockWidget;
 
             std::vector<std::size_t> PointLabel;
             PointCloudRetouch::hiveDumpPointLabel(PointLabel);
@@ -242,17 +244,47 @@ void CQTInterface::onActionAreaPicking()
     {
         if (m_UI.actionAreaPicking->isChecked())
         {
+            if (!m_pAreaPickingSetting)
+            {
+                m_pAreaPickingSetting = new QMdiSubWindow(m_UI.VTKWidget);
+                m_pAreaPickingSetting->resize({ 200, 50 });
+                QPoint ParentPoint = m_UI.VTKWidget->pos();
+                QPoint p1 = m_UI.VTKWidget->mapToGlobal(ParentPoint);
+                m_pAreaPickingSetting->move(m_UI.VTKWidget->width() - m_pAreaPickingSetting->width(), 0);
+                m_pAreaPickingCullingBox = new QCheckBox;
+                m_pAreaPickingCullingBox->setChecked(m_pVisualizationConfig->getAttribute<bool>(Visualization::AREA_PICK_CULLING).value());
+                m_pAreaPickingCullingBox->setText(QString::fromStdString("Area picking enable culling"));
+                m_pAreaPickingCullingBox->setGeometry(150, 30, 10, 0);
+                m_pAreaPickingSetting->setWidget(m_pAreaPickingCullingBox);
+                m_pAreaPickingSetting->setWindowFlag(Qt::FramelessWindowHint);
+                m_pAreaPickingSetting->show();
+
+                connect(m_pAreaPickingCullingBox, &QCheckBox::stateChanged, [&]()
+                    {
+                        m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_PICK_CULLING, m_pAreaPickingCullingBox->isChecked());
+                    }
+                );
+            }
+
+
             m_UI.actionPointPicking->setChecked(false);
             if (m_pVisualizationConfig)
                 m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, false);
+            if (m_pPointPickingDockWidget)
+                m_pPointPickingDockWidget->close();
 
             std::vector<std::size_t> PointLabel;
             PointCloudRetouch::hiveDumpPointLabel(PointLabel);
             Visualization::hiveRefreshVisualizer(PointLabel);
             CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to area picking mode."));
+
         }
         else
+        {
+            if (m_pAreaPickingSetting)
+                _SAFE_DELETE(m_pAreaPickingSetting);
             CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
+        }
 
         if (m_pVisualizationConfig)
             m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_MODE, m_UI.actionAreaPicking->isChecked());
