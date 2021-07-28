@@ -23,7 +23,9 @@ namespace hiveObliquePhotography
 
 		protected:
 			std::vector<pcl::index_t> m_ExpandPoints;
+#ifdef _UNIT_TEST
 			double m_RunTime = 0;
+#endif // _UNIT_TEST
 		};
 	}
 }
