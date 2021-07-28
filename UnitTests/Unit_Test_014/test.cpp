@@ -27,6 +27,7 @@ const std::string ModelPath = TESTMODEL_DIR + std::string("General/slice 16.pcd"
 const std::string CameraPath = TESTMODEL_DIR + std::string("Test014_Model/CompleteBuildingCameraInfo.txt");
 const std::string PickedIndicesPath = TESTMODEL_DIR + std::string("Test014_Model/PickedIndices.txt");
 const std::string Slice2CameraPath = TESTMODEL_DIR + std::string("Test014_Model/Camera.txt");
+const std::string Slice2WindowInfo = TESTMODEL_DIR + std::string("Test014_Model/WindowInfo.txt");
 const std::string Slice2ModelPath = TESTMODEL_DIR + std::string("General/Tile_1_L19_M3.ply");
 
 class TestExpander : public testing::Test
@@ -76,6 +77,14 @@ void loadIndices(const std::string& vPath, pcl::Indices& voIndices)
 	std::ifstream File(vPath);
 	boost::archive::text_iarchive ia(File);
 	ia >> BOOST_SERIALIZATION_NVP(voIndices);
+	File.close();
+}
+
+void loadWindowInfo(const std::string& vPath, std::vector<double>& voWindowInfos)
+{
+	std::ifstream File(vPath);
+	boost::archive::text_iarchive ia(File);
+	ia >> BOOST_SERIALIZATION_NVP(voWindowInfos);
 	File.close();
 }
 
@@ -148,9 +157,11 @@ TEST(TestExpander_2, MultithreadvsSinglethread)
 	}
 
 	// init HardnessFunc
-	double Hardness = 0.8;
-	double RadiusOnWindow = 28;
-	Eigen::Vector2d CircleCenterOnWindow = { 817, 195 };
+	std::vector<double> WindowInfo;
+	loadWindowInfo(Slice2WindowInfo, WindowInfo);
+	double Hardness = WindowInfo[0];
+	double RadiusOnWindow = WindowInfo[1];
+	Eigen::Vector2d CircleCenterOnWindow = { WindowInfo[2], WindowInfo[3] };
 	auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 	{
 		Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
