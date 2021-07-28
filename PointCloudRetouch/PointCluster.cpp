@@ -131,7 +131,7 @@ void CPointCluster::__createFeatureObjectSet()
 //FUNCTION: 
 bool CPointCluster::isBelongingTo(double vProbability) const
 {
-	return vProbability >= m_ExpectProbability ? true : false;
+	return vProbability >= m_ExpectProbability;
 }
 
 //*****************************************************************
