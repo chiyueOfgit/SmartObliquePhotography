@@ -27,7 +27,7 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, const hi
 		Eigen::Vector3f CenterNormal{ HomoCenterNormal.x(), HomoCenterNormal.y(), HomoCenterNormal.z() };
 		CenterNormal /= CenterNormal.norm();
 		
-		auto NeighborSet = pManager->buildNeighborhood(Index, 0);
+		auto NeighborSet = pManager->buildNeighborhood(Index);
 		
 		auto HomoStandardPos = pManager->getRetouchScene().getPositionAt(NeighborSet[1]);
 		Eigen::Vector3f StandardPos{ HomoStandardPos.x(), HomoStandardPos.y(), HomoStandardPos.z() };
