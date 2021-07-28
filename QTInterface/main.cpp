@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     hiveObliquePhotography::QTInterface::CQTInterface Window;
     Window.setWindowTitle("SmartObliquePhotography");
     Window.setWindowState(Qt::WindowMaximized);
-    Window.setWindowIcon(QIcon("Icon/delete.png"));
+    Window.setWindowIcon(QIcon("Icon/tree.png"));
     Window.init();
     Window.show();
     return Application.exec();
