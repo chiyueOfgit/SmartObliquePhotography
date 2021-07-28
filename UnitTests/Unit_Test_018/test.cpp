@@ -80,12 +80,13 @@ int TestBoundaryDetection::m_TestNumber = -1;
 
 TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 {
-    std::vector<pcl::index_t> BoundaryPoints;
+	std::vector<pcl::index_t> BoundaryPoints;
 	int Size = m_pManager->getRetouchScene().getNumPoint();
 	for (int i = 0; i < Size; i++)
 	{
 		BoundaryPoints.push_back(i);
 	}
+	
 	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, m_pDetectorConfig);
 	ASSERT_TRUE(!BoundaryPoints.empty());
 
@@ -116,7 +117,6 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_2)
 	{
 		BoundaryPoints.push_back(i);
 	}
-	
 	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, m_pDetectorConfig);
 	ASSERT_TRUE(!BoundaryPoints.empty());
 
