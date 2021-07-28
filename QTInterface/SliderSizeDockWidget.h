@@ -15,8 +15,9 @@ namespace hiveObliquePhotography
 			Q_OBJECT
 
 		public:
-			CSliderSizeDockWidget(QWidget* vParent, hiveConfig::CHiveConfig* vPointCloudRetouchConfig)
+			CSliderSizeDockWidget(QWidget* vParent, QDockWidget*& vThisInParent, hiveConfig::CHiveConfig* vPointCloudRetouchConfig)
 				: QDockWidget(vParent),
+				m_ThisInParent(vThisInParent),
 				m_pVisualizationConfig(vPointCloudRetouchConfig),
 				m_pUi(std::make_shared<Ui::CSliderSizeDockWidget>())
 			{
@@ -30,9 +31,17 @@ namespace hiveObliquePhotography
 				QObject::connect(m_pUi->SliderHardness, SIGNAL(valueChanged(int)), this, SLOT(onActionSliderHardnessChange()));
 			}
 
+			~CSliderSizeDockWidget()
+			{
+				//通知主窗口该窗口已经关闭
+				m_ThisInParent = nullptr;
+			}
+
+
 		private:
 			std::shared_ptr<Ui::CSliderSizeDockWidget> m_pUi = nullptr;
 			hiveConfig::CHiveConfig* m_pVisualizationConfig = nullptr;
+			QDockWidget*& m_ThisInParent;
 
 			void __setSize();
 			void __setPosition(QWidget* vParent);

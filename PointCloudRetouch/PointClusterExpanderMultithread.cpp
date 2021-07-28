@@ -31,10 +31,10 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 			if (TraversedFlag.at(vCandidate).test_and_set())
 				return;
 
-			//std::size_t CandidateLabel;
-			//pManager->dumpPointLabelAt(CandidateLabel, Candidate);
-			//if (vCluster->getLabel() == EPointLabel::UNWANTED && static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
-			//	continue;
+			std::size_t CandidateLabel;
+			pManager->dumpPointLabelAt(CandidateLabel, vCandidate);
+			if (vCluster->getLabel() == EPointLabel::UNWANTED && static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
+				return;
 
 			std::uint32_t OldClusterIndex = pManager->getClusterIndexAt(vCandidate);
 			//_ASSERTE(OldClusterIndex != vCluster->getClusterIndex());
@@ -45,7 +45,8 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 				if (OldClusterIndex == 0 ||
 					__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(vCandidate), OldClusterIndex))
 				{
-					pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
+					if (static_cast<EPointLabel>(CandidateLabel) != EPointLabel::DISCARDED)
+					    pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 					ExpandedFlag.at(vCandidate) = true;
 
 					for (auto e : pManager->buildNeighborhood(vCandidate))
