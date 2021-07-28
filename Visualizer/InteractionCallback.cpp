@@ -278,6 +278,15 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			else
 				return 0;
 		};
+
+		//__saveIndices("PickedIndices.txt", PickedIndices);
+		//m_pVisualizer->m_pPCLVisualizer->saveCameraParameters("Camera.txt");
+		//std::vector<double> RadiusAndCircleCenter = { m_Hardness, RadiusOnWindow, CircleCenterOnWindow[0], CircleCenterOnWindow[1] };
+		//std::ofstream file("WindowInfo.txt");
+		//boost::archive::text_oarchive oa(file);
+		//oa& BOOST_SERIALIZATION_NVP(RadiusAndCircleCenter);
+		//file.close();
+
 		if (m_UnwantedMode)
 			PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, HardnessFunc);
 		else

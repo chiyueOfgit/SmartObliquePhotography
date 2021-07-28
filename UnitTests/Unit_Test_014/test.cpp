@@ -10,6 +10,7 @@
 #include "PointCloudVisualizer.h"
 
 #include "pcl/io/pcd_io.h"
+#include "pcl/io/ply_io.h"
 
 
 //²âÊÔÓÃÀýÁÐ±í£º
@@ -24,9 +25,9 @@ const std::string SinglethreadConfigPath = TESTMODEL_DIR + std::string("Config/T
 const std::string MultithreadConfigPath = TESTMODEL_DIR + std::string("Config/Test014_PointCloudRetouchConfig_Multithread.xml");
 const std::string ModelPath = TESTMODEL_DIR + std::string("General/slice 16.pcd");
 const std::string CameraPath = TESTMODEL_DIR + std::string("Test014_Model/CompleteBuildingCameraInfo.txt");
-const std::string PickedIndicesPath = TESTMODEL_DIR + std::string("Test014_Model/PickedIndices_Slice2.txt");
-const std::string Slice2CameraPath = TESTMODEL_DIR + std::string("Test014_Model/Camera_Slice2.txt");
-const std::string Slice2ModelPath = TESTMODEL_DIR + std::string("General/slice 2.pcd");
+const std::string PickedIndicesPath = TESTMODEL_DIR + std::string("Test014_Model/PickedIndices.txt");
+const std::string Slice2CameraPath = TESTMODEL_DIR + std::string("Test014_Model/Camera.txt");
+const std::string Slice2ModelPath = TESTMODEL_DIR + std::string("General/Tile_1_L19_M3.ply");
 
 class TestExpander : public testing::Test
 {
@@ -130,7 +131,7 @@ TEST(TestExpander_2, MultithreadvsSinglethread)
 
 	// load PointCloud
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
-	pcl::io::loadPCDFile(Slice2ModelPath, *pCloud);
+	pcl::io::loadPLYFile(Slice2ModelPath, *pCloud);
 
 	// load Config
 	hiveConfig::CHiveConfig* pSinglethreadConfig = new CPointCloudRetouchConfig;
@@ -148,8 +149,8 @@ TEST(TestExpander_2, MultithreadvsSinglethread)
 
 	// init HardnessFunc
 	double Hardness = 0.8;
-	double RadiusOnWindow = 38;
-	Eigen::Vector2d CircleCenterOnWindow = { 519, 427 };
+	double RadiusOnWindow = 28;
+	Eigen::Vector2d CircleCenterOnWindow = { 817, 195 };
 	auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 	{
 		Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
@@ -190,7 +191,7 @@ TEST(TestExpander_2, MultithreadvsSinglethread)
 	GetSystemInfo(&SystemInfo);
 	int CPUNumber = SystemInfo.dwNumberOfProcessors;
 
-	hiveEventLogger::hiveOutputEvent(_FORMAT_STR3("SingleThreadRunTime: %1% \n  MultiThreadRunTime: %2% \n  CPU Number: %3% \n", SinglethreadRunTime, MultithreadRunTime, CPUNumber));
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR3("SingleThreadRunTime: %1%ms \n  MultiThreadRunTime: %2%ms \n  CPU Number: %3% \n", SinglethreadRunTime, MultithreadRunTime, CPUNumber));
 
 	std::sort(MultithreadExpander.begin(), MultithreadExpander.end());
 	std::sort(SinglethreadExpander.begin(), SinglethreadExpander.end());
