@@ -9,6 +9,17 @@ _REGISTER_EXCLUSIVE_PRODUCT(CPlanarityFeature, KEYWORD::PLANARITY_FEATURE)
 
 //*****************************************************************
 //FUNCTION: 
+void  CPlanarityFeature::initV(const hiveConfig::CHiveConfig* vFeatureConfig)
+{
+	_ASSERTE(vFeatureConfig);
+	m_pConfig = vFeatureConfig;
+
+	m_DistanceThreshold = m_pConfig->getAttribute<float>("DISTANCE_THRESHOLD").value();
+	m_Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
+}
+
+//*****************************************************************
+//FUNCTION: 
 double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
 	if (vDeterminantPointSet.empty() || vValidationSet.empty())
@@ -19,7 +30,6 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	const pcl::PointCloud<pcl::PointXYZ>::Ptr pDeterminantCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	CloudScene.dumpPointCloud(vDeterminantPointSet, *pDeterminantCloud);
 
-	m_DistanceThreshold = m_pConfig->getAttribute<float>("DISTANCE_THRESHOLD").value();
 	m_Plane = fitPlane(pDeterminantCloud, m_DistanceThreshold, { 0.0f, 0.0f, 1.0f });
 	if (m_Plane.squaredNorm() < 0.5f)
 		return 0.0;
@@ -45,16 +55,14 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	if (m_Plane.squaredNorm() < 0.5f)
 		return 0.0;
 	
-	const auto Tolerance = m_pConfig->getAttribute<float>("DISTANCE_TOLERANCE").value();
-	
 	const auto& Point = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	const auto Distance = abs(m_Plane.dot(Point.getPositionAt(vInputPoint)));
 	const auto NormalDot = abs(m_Plane.dot(Point.getNormalAt(vInputPoint)));
 
 	if (Distance >= m_DistanceThreshold)
 		return 0;
-	else if (Distance >= m_DistanceThreshold * Tolerance)
-		return NormalDot * smoothAttenuation(m_DistanceThreshold * Tolerance, m_DistanceThreshold, Distance);
+	else if (Distance >= m_DistanceThreshold * m_Tolerance)
+		return NormalDot * smoothAttenuation(m_DistanceThreshold * m_Tolerance, m_DistanceThreshold, Distance);
 	else
 		return NormalDot;
 }
