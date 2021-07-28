@@ -186,7 +186,11 @@ TEST(TestExpander_2, MultithreadvsSinglethread)
 	double MultithreadRunTime = pManager->getBackgroundMarker().getExpander()->getRunTime();
 	auto MultithreadExpander = pManager->getBackgroundMarker().getExpander()->getExpandPoints();
 
-	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("SingleThreadRunTime: %1% \nMultiThreadRunTime: %2% \n", SinglethreadRunTime, MultithreadRunTime));
+	SYSTEM_INFO SystemInfo;
+	GetSystemInfo(&SystemInfo);
+	int CPUNumber = SystemInfo.dwNumberOfProcessors;
+
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR3("SingleThreadRunTime: %1% \n  MultiThreadRunTime: %2% \n  CPU Number: %3% \n", SinglethreadRunTime, MultithreadRunTime, CPUNumber));
 
 	std::sort(MultithreadExpander.begin(), MultithreadExpander.end());
 	std::sort(SinglethreadExpander.begin(), SinglethreadExpander.end());
@@ -194,6 +198,9 @@ TEST(TestExpander_2, MultithreadvsSinglethread)
 	std::set_symmetric_difference(MultithreadExpander.begin(), MultithreadExpander.end(),
 		SinglethreadExpander.begin(), SinglethreadExpander.end(),
 		std::inserter(SymmetricDifference, SymmetricDifference.begin()));
+
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("SingleThread Expander Size: %1% \n  MultiThread Expander Size: %2% \n", SinglethreadExpander.size(), MultithreadExpander.size()));
+	hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Number of different Points between SingleThread Expander and MultiThread Expander: %1% \n", SymmetricDifference.size()));
 
 	EXPECT_EQ(SymmetricDifference.size(), 0);
 	EXPECT_LT(MultithreadRunTime, SinglethreadRunTime);

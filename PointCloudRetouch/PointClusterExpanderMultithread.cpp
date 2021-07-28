@@ -31,10 +31,10 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 			if (TraversedFlag.at(vCandidate).test_and_set())
 				return;
 
-			//std::size_t CandidateLabel;
-			//pManager->dumpPointLabelAt(CandidateLabel, Candidate);
-			//if (vCluster->getLabel() == EPointLabel::UNWANTED && static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
-			//	continue;
+			std::size_t CandidateLabel;
+			pManager->dumpPointLabelAt(CandidateLabel, vCandidate);
+			if (vCluster->getLabel() == EPointLabel::UNWANTED && static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
+				return;
 
 			std::uint32_t OldClusterIndex = pManager->getClusterIndexAt(vCandidate);
 			//_ASSERTE(OldClusterIndex != vCluster->getClusterIndex());
@@ -45,7 +45,8 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 				if (OldClusterIndex == 0 ||
 					__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(vCandidate), OldClusterIndex))
 				{
-					pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
+					if (static_cast<EPointLabel>(CandidateLabel) != EPointLabel::DISCARDED)
+					    pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 					ExpandedFlag.at(vCandidate) = true;
 
 					for (auto e : pManager->buildNeighborhood(vCandidate))
@@ -61,6 +62,7 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 				//	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Point: %1% is left in expander, its probability is %2%, below are infos:\n", Candidate, CurrentProbability) + vCluster->getDebugInfos(Candidate));
 			}
 		});
+
 	for (size_t i = 0; i < ExpandedFlag.size(); i++)
 	{
 		if (ExpandedFlag.at(i))
@@ -80,6 +82,7 @@ std::vector<pcl::index_t> CPointClusterExpanderMultithread::__initExpandingCandi
 	std::vector<pcl::index_t> CandidateQueue;
 	for (auto Index : vCluster->getCoreRegion())
 		for (auto Neighbor : CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index))
+			if(find(vCluster->getCoreRegion().begin(), vCluster->getCoreRegion().end(), Neighbor) == vCluster->getCoreRegion().end())
 			CandidateQueue.push_back(Neighbor);
 	//·¢ÉúNRVO
 	return CandidateQueue;

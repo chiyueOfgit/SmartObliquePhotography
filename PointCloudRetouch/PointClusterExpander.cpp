@@ -48,7 +48,9 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 			if (OldClusterIndex == 0 ||
 				__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(Candidate), OldClusterIndex))
 			{
-				pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
+
+				if(static_cast<EPointLabel>(CandidateLabel) != EPointLabel::DISCARDED)
+				    pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 				m_ExpandPoints.push_back(Candidate);
 
 				for (auto e : pManager->buildNeighborhood(Candidate))
@@ -79,6 +81,7 @@ std::queue<pcl::index_t> CPointClusterExpander::__initExpandingCandidateQueue(co
 	std::queue<pcl::index_t> CandidateQueue;
 	for(auto Index : vCluster->getCoreRegion())
 		for (auto Neighbor : CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index))
+			if (find(vCluster->getCoreRegion().begin(), vCluster->getCoreRegion().end(), Neighbor) == vCluster->getCoreRegion().end())
 			CandidateQueue.push(Neighbor);
 	//·¢ÉúNRVO
 	return CandidateQueue;
