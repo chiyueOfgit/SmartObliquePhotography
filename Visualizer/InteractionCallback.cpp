@@ -335,7 +335,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 			if (m_pVisualizationConfig->getAttribute<bool>(AREA_PICK_CULLING).value())
 				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double {return -1; }, ViewPos);
-			m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
+			//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
 			auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
 			{
