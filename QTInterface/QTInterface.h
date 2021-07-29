@@ -6,6 +6,8 @@
 class QStandardItem;
 class QStandardItemModel;
 class QSlider;
+class QMdiSubWindow;
+class QCheckBox;
 
 namespace hiveObliquePhotography
 {
@@ -38,6 +40,7 @@ namespace hiveObliquePhotography
             QStandardItemModel* m_pResourceSpaceStandardItemModels = nullptr;
             QStandardItemModel* m_pWorkSpaceStandardItemModels = nullptr;
             QSlider* m_pPointSizeSlider = nullptr;
+            QCheckBox* m_pAreaPickingCullingBox = nullptr;
             std::string m_CurrentCloud = "";
             std::string m_DirectoryOpenPath = "../Models";
             size_t m_SceneIndex = -1;
@@ -47,6 +50,7 @@ namespace hiveObliquePhotography
             QDockWidget* m_pRubberSizeDockWidget = nullptr;
             QDockWidget* m_pBrushSizeDockWidget = nullptr;
             QDockWidget* m_pPointPickingDockWidget = nullptr;
+            QMdiSubWindow* m_pAreaPickingSetting = nullptr;
             CInstructionsDialog* m_pInstructionsDialog = nullptr;
             CDisplayOptionsSettingDialog* m_pDisplayOptionsSettingDialog = nullptr;
 

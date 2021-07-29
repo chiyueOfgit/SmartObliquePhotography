@@ -11,11 +11,10 @@ namespace hiveObliquePhotography
 			CNormalComplexity() = default;
 			~CNormalComplexity() override = default;
 
-			void initV(const hiveConfig::CHiveConfig* vFeatureConfig);
-			
+			void initV(const hiveConfig::CHiveConfig* vFeatureConfig) override;
 			double generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter) override;
 			double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
-			virtual std::string outputDebugInfosV(pcl::index_t vIndex) const override;
+			std::string outputDebugInfosV(pcl::index_t vIndex) const override;
 
 			bool precomputeSceneCloudNormalComplexity();
 
@@ -25,6 +24,7 @@ namespace hiveObliquePhotography
 			double calcSinglePointNormalComplexity(pcl::index_t vInputPoint) const { return __calcSinglePointNormalComplexity(vInputPoint); }
 #endif
 		private:
+			double m_Radius;
 			double m_AverageDon;
 			std::vector<double> m_NormalComplexity;
 			pcl::search::Search<pcl::PointXYZ>::Ptr m_pTree;

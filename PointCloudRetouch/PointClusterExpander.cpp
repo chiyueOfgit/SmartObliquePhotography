@@ -21,8 +21,10 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 	std::queue<pcl::index_t> ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
 	std::deque TraversedFlag(pManager->getRetouchScene().getNumPoint(), false);
 	
+#ifdef _UNIT_TEST
 	hiveCommon::CCPUTimer Timer;
 	Timer.start();
+#endif // _UNIT_TEST
 	
 	while (!ExpandingCandidateQueue.empty())
 	{
@@ -48,7 +50,9 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 			if (OldClusterIndex == 0 ||
 				__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(Candidate), OldClusterIndex))
 			{
-				pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
+
+				if(static_cast<EPointLabel>(CandidateLabel) != EPointLabel::DISCARDED)
+				    pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 				m_ExpandPoints.push_back(Candidate);
 
 				for (auto e : pManager->buildNeighborhood(Candidate))
@@ -66,8 +70,11 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 		}
 	}
 
+#ifdef _UNIT_TEST
 	Timer.stop();
 	m_RunTime = Timer.getElapsedTimeInMS();
+#endif // _UNIT_TEST
+
 
 	pManager->recordCurrentStatus();
 }

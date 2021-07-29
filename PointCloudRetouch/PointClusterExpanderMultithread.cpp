@@ -18,23 +18,25 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 
 	m_ExpandPoints.clear();
 	CPointCloudRetouchManager* pManager = CPointCloudRetouchManager::getInstance();
-	auto ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
+	const auto ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
 	std::vector<std::atomic_flag> TraversedFlag(pManager->getRetouchScene().getNumPoint());
+	std::deque ExpandedFlag(pManager->getRetouchScene().getNumPoint(), false);
 
+#ifdef _UNIT_TEST
 	hiveCommon::CCPUTimer Timer;
 	Timer.start();
+#endif // _UNIT_TEST
 
-	std::deque ExpandedFlag(pManager->getRetouchScene().getNumPoint(), false);
 	tbb::parallel_for_each(ExpandingCandidateQueue.begin(), ExpandingCandidateQueue.end(),
 		[&](pcl::index_t vCandidate, tbb::feeder<pcl::index_t>& vFeeder)
 		{
 			if (TraversedFlag.at(vCandidate).test_and_set())
 				return;
 
-			//std::size_t CandidateLabel;
-			//pManager->dumpPointLabelAt(CandidateLabel, Candidate);
-			//if (vCluster->getLabel() == EPointLabel::UNWANTED && static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
-			//	continue;
+			std::size_t CandidateLabel;
+			pManager->dumpPointLabelAt(CandidateLabel, vCandidate);
+			if (vCluster->getLabel() == EPointLabel::UNWANTED && static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
+				return;
 
 			std::uint32_t OldClusterIndex = pManager->getClusterIndexAt(vCandidate);
 			//_ASSERTE(OldClusterIndex != vCluster->getClusterIndex());
@@ -45,7 +47,8 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 				if (OldClusterIndex == 0 ||
 					__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(vCandidate), OldClusterIndex))
 				{
-					pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
+					if (static_cast<EPointLabel>(CandidateLabel) != EPointLabel::DISCARDED)
+					    pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 					ExpandedFlag.at(vCandidate) = true;
 
 					for (auto e : pManager->buildNeighborhood(vCandidate))
@@ -61,14 +64,18 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 				//	hiveEventLogger::hiveOutputEvent(_FORMAT_STR2("Point: %1% is left in expander, its probability is %2%, below are infos:\n", Candidate, CurrentProbability) + vCluster->getDebugInfos(Candidate));
 			}
 		});
+
 	for (size_t i = 0; i < ExpandedFlag.size(); i++)
 	{
 		if (ExpandedFlag.at(i))
 			m_ExpandPoints.push_back(i);
 	}
 	
+#ifdef _UNIT_TEST
 	Timer.stop();
 	m_RunTime = Timer.getElapsedTimeInMS();
+#endif // _UNIT_TEST
+
 
 	pManager->recordCurrentStatus();
 }

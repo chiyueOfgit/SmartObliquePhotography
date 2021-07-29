@@ -16,6 +16,8 @@ void  CNormalComplexity::initV(const hiveConfig::CHiveConfig* vFeatureConfig)
 	m_pConfig = vFeatureConfig;
 	if (m_NormalComplexity.empty())
 		__buildSearchTree();
+
+	m_Radius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
 }
 
 //*****************************************************************
@@ -64,8 +66,7 @@ bool CNormalComplexity::precomputeSceneCloudNormalComplexity()
 	auto NumPoints = CloudScene.getNumPoint();
 	std::vector<double> Temp(NumPoints);
 
-	std::mutex Mutex;
-
+#pragma omp parallel for
 	for (int i = 0; i < NumPoints; i++)
 	{
 		double NormalComplexity = __calcSinglePointNormalComplexity(i);
@@ -97,11 +98,10 @@ double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputP
 	else
 	{
 		const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-		const double Radius = *m_pConfig->getAttribute<double>("LARGE_SCALE_RADIUS");
 
 		pcl::Indices Neighborhood;
 		std::vector<float> DistanceSet;
-		m_pTree->radiusSearch(vInputPoint, Radius, Neighborhood, DistanceSet);
+		m_pTree->radiusSearch(vInputPoint, m_Radius, Neighborhood, DistanceSet);
 
 		double MinD = DBL_MAX;
 		double MaxD = -DBL_MAX;
@@ -122,7 +122,7 @@ double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputP
 		double Complexity = std::min(abs(MinD - MeanD), abs(MaxD - MeanD));
 
 		//double Complexity = (MaxD - MinD) / 2;
-		Complexity /= Radius;
+		Complexity /= m_Radius;
 
 		if (Complexity > 1)
 			return 1;

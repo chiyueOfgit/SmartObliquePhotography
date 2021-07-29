@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PointSetPreprocessor.h"
 #include "PointCloudRetouchManager.h"
+#include "PointCloudRetouchManager.h"
 #include <omp.h>
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
@@ -12,6 +13,17 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 	if (vioPointSet.empty())
 		return;
 
+	auto *pManager = CPointCloudRetouchManager::getInstance();
+	for(auto Iter = vioPointSet.begin(); Iter != vioPointSet.end(); )
+	{
+		std::size_t TempLabel;
+		pManager->dumpPointLabelAt(TempLabel, *Iter);
+		if (static_cast<EPointLabel>(TempLabel) == EPointLabel::DISCARDED)
+			Iter = vioPointSet.erase(Iter);
+		else
+			++Iter;
+	}
+	
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
 	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdc(vioPointSet, vPvMatrix);
