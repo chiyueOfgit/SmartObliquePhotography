@@ -103,8 +103,8 @@ double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputP
 		std::vector<float> DistanceSet;
 		m_pTree->radiusSearch(vInputPoint, m_Radius, Neighborhood, DistanceSet);
 
-		float MinD = DBL_MAX;
-		float MaxD = -DBL_MAX;
+		float MinD = FLT_MAX;
+		float MaxD = -FLT_MAX;
 		double MeanD = 0.0;
 		const auto& Normal = CloudScene.getNormalAt(vInputPoint);
 		//Normal.normalize();
