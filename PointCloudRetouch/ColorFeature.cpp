@@ -28,28 +28,8 @@ void  CColorFeature::initV(const hiveConfig::CHiveConfig* vFeatureConfig)
 double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
 	_ASSERTE(m_pConfig);
-	
 	if (vDeterminantPointSet.empty() || vValidationSet.empty())
 		return 0.0;
-
-    if (m_pTree == nullptr)
-        m_pTree.reset(new pcl::search::KdTree<pcl::PointXYZ>);
-
-    if (CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint() != m_NumCurrentScenePoints)
-    {
-        auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-        m_NumCurrentScenePoints = Scene.getNumPoint();
-        pcl::PointCloud<pcl::PointXYZ>::Ptr pCloud(new pcl::PointCloud<pcl::PointXYZ>);
-        pCloud->resize(m_NumCurrentScenePoints);
-
-        for (int i = 0; i < m_NumCurrentScenePoints; i++)
-        {
-            auto Pos = Scene.getPositionAt(i);
-            pcl::PointXYZ TempPoint{ Pos.x(), Pos.y(), Pos.z() };
-            pCloud->points[i] = TempPoint;
-        }
-        m_pTree->setInputCloud(pCloud);
-    }
 
     std::vector<Eigen::Vector3i> PointCloudColors;
     for (auto Index : vDeterminantPointSet)
@@ -96,9 +76,7 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 
 	double Score = 0.0;
 	for (auto ValidationIndex : vValidationSet)
-	{
 		Score += evaluateFeatureMatchFactorV(ValidationIndex);
-	}
 
 	return Score / vValidationSet.size();
 }
@@ -107,31 +85,8 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 //FUNCTION: 
 double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-    //float MinColorDifference = FLT_MAX;
-    //auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(vInputPoint);
-    //for (const auto& MainColor : m_MainBaseColors)
-    //{
-    //    float TempColorDifference = __calcColorDifferences(Color, MainColor);
-    //    if (TempColorDifference < MinColorDifference)
-    //        MinColorDifference = TempColorDifference;
-    //}
-
-    //if (MinColorDifference < m_ColorThreshold)
-    //    return 1.0;
-    //else if (MinColorDifference < 2.0 * m_ColorThreshold)
-    //{
-    //    return (2.0 * m_ColorThreshold - MinColorDifference) / m_ColorThreshold;
-    //}
-    //else
-    //    return 0.0f;
-
-    pcl::Indices Neighbors;
-    std::vector<float> Distances;
-
-    //K search
-    const int NumK = 20;
-    m_pTree->nearestKSearch(vInputPoint, NumK, Neighbors, Distances);
-    Neighbors.push_back(vInputPoint);
+    auto Neighbors = CPointCloudRetouchManager::getInstance()->buildNeighborhood(vInputPoint);
+    _ASSERTE(!Neighbors.empty());
     int NumPassed = 0;
     for (auto Index : Neighbors)
     {

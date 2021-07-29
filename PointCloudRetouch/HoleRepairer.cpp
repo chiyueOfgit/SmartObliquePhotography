@@ -145,17 +145,8 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector4f& vPlan
 Eigen::Vector4f CHoleRepairer::__calculatePlaneByIndices(const std::vector<pcl::index_t>& vIndices)
 {
 	_ASSERTE(!vIndices.empty());
-	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr BoundaryCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for (auto Index : vIndices)
-	{
-		pcl::PointXYZ TempPoint;
-		auto Pos = Scene.getPositionAt(Index);
-		TempPoint.x = Pos.x();
-		TempPoint.y = Pos.y();
-		TempPoint.z = Pos.z();
-		BoundaryCloud->push_back(TempPoint);
-	}
+	CPointCloudRetouchManager::getInstance()->getRetouchScene().dumpPointCloud<pcl::PointXYZ>(vIndices, *BoundaryCloud);
 
 	return CPlanarityFeature::fitPlane(BoundaryCloud, 0.2f, { 0.0f, 0.0f, 1.0f });
 }
@@ -163,20 +154,5 @@ Eigen::Vector4f CHoleRepairer::__calculatePlaneByIndices(const std::vector<pcl::
 std::pair<Eigen::Vector3f, Eigen::Vector3f> CHoleRepairer::__calculateBoundingBoxByIndices(const std::vector<pcl::index_t>& vIndices)
 {
 	_ASSERTE(!vIndices.empty());
-	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
-	Eigen::Vector3f Min{ FLT_MAX, FLT_MAX, FLT_MAX };
-	Eigen::Vector3f Max{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
-
-	for (auto Index : vIndices)
-	{
-		auto Pos = Scene.getPositionAt(Index);
-		for (int i = 0; i < 3; i++)
-		{
-			if (Pos.data()[i] < Min.data()[i])
-				Min.data()[i] = Pos.data()[i];
-			if (Pos.data()[i] > Max.data()[i])
-				Max.data()[i] = Pos.data()[i];
-		}
-	}
-	return { Min, Max };
+	return CPointCloudRetouchManager::getInstance()->getRetouchScene().getBoundingBox(vIndices);
 }

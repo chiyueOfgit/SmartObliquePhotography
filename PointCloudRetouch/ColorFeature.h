@@ -49,7 +49,6 @@ namespace hiveObliquePhotography
 			std::vector<Eigen::Vector3i> m_MainBaseColors;
 			std::vector<pcl::index_t> m_NearestPoints;
 
-			pcl::search::KdTree<pcl::PointXYZ>::Ptr m_pTree = nullptr;
 			std::size_t m_NumCurrentScenePoints = 0;
 
 			float m_ColorThreshold = 10.0f;

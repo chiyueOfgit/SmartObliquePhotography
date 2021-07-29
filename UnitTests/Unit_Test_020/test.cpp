@@ -20,7 +20,7 @@ const auto DataPath = TESTMODEL_DIR + std::string("Test018_Model/");
 
 const std::vector<std::string> ModelNames{ "one_hole", "five_holes" };
 
-class TestPlaneAndProject : public testing::Test
+class TestPlaneAndProjection : public testing::Test
 {
 protected:
 	void SetUp() override
@@ -84,9 +84,9 @@ protected:
 	static int m_TestNumber;
 private:
 };
-int TestPlaneAndProject::m_TestNumber = -1;
+int TestPlaneAndProjection::m_TestNumber = -1;
 
-TEST_F(TestPlaneAndProject, Boundary_Detection_BaseTest_1)
+TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_1)
 {
 	auto pVisualizer = hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance();
 	pVisualizer->init(m_pCloud, false);
@@ -150,7 +150,7 @@ TEST_F(TestPlaneAndProject, Boundary_Detection_BaseTest_1)
 	pVisualizer->run();
 }
 
-TEST_F(TestPlaneAndProject, Boundary_Detection_BaseTest_2)
+TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_2)
 {
 	auto pVisualizer = hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance();
 	pVisualizer->init(m_pCloud, false);
