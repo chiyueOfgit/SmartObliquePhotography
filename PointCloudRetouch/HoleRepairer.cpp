@@ -22,15 +22,15 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	//Input
 	auto InputPlane = __calculatePlaneByIndices(vInputIndices);
 	auto InputBox = __calculateBoundingBoxByIndices(vInputIndices);
-	SPlaneInfos InputPlaneInfos;
+	SPlaneInfos InputPlaneInfos;  
 	std::vector<std::vector<SLattice>> InputPlaneLattices;
 	__generatePlaneLattices(InputPlane, InputBox, Resolution, InputPlaneInfos, InputPlaneLattices);
 	__projectPoints2PlaneLattices(vInputIndices, InputPlaneInfos, InputPlaneLattices);
 
 	//生成颜色
-	auto ColorLattices = __extractItemFromLattices<Eigen::Vector3f>(InputPlaneLattices, offsetof(SLattice, Color));
+	auto ColorLattices = __extractItemFromLattices<Eigen::Vector3i>(InputPlaneLattices, offsetof(SLattice, Color));
 	//auto OutputColorLattices = CTextureGenerator::generateTexture<Eigen::Vector3f>(ColorLattices, Resolution);
-	//__fillLatticesByItems<Eigen::Vector3f>(OutputColorLattices, BoundaryPlaneLattices, offsetof(SLattice, Color));
+	//__fillLatticesByItems<Eigen::Vector3i>(OutputColorLattices, BoundaryPlaneLattices, offsetof(SLattice, Color));
 
 	//生成高度
 	auto HeightLattices = __extractItemFromLattices<float>(InputPlaneLattices, offsetof(SLattice, Height));
