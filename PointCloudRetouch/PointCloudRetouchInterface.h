@@ -16,7 +16,7 @@ namespace hiveObliquePhotography
 		RETOUCH_DECLSPEC void hiveRecoverBackgroundMark();
 		RETOUCH_DECLSPEC void hiveHideLitter();
 		RETOUCH_DECLSPEC void hiveDisplayLitter();
-		RETOUCH_DECLSPEC void hiveMarkBoundary();
+		RETOUCH_DECLSPEC void hiveMarkBoundary(std::vector<pcl::index_t>& vBoundarySet);
 
 		RETOUCH_DECLSPEC bool hiveDumpPointCloudtoSave(PointCloud_t::Ptr voPointCloud);
 		RETOUCH_DECLSPEC bool hiveDumpPointLabel(std::vector<std::size_t>& voPointLabel);
