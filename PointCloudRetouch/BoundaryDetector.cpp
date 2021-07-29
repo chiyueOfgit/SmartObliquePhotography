@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "BoundaryDetector.h"
-
+#include "map"
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
-
 #include "PointCloudRetouchManager.h"
 
 #define PI 3.1415926
@@ -13,17 +12,18 @@ _REGISTER_EXCLUSIVE_PRODUCT(CBoundaryDetector, KEYWORD::BOUNDARY_DETECTOR)
 
 //*****************************************************************
 //FUNCTION: 
-void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, const hiveConfig::CHiveConfig* vConfig)
+void CBoundaryDetector::runV(std::vector<pcl::index_t>& vBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet, const hiveConfig::CHiveConfig* vConfig)
 {
-	if (vioBoundarySet.empty())
+	if (vBoundarySet.empty())
 		return;
 	auto pManager = CPointCloudRetouchManager::getInstance();
-	for (auto CurrentIndex : vioBoundarySet)
+	for (auto CurrentIndex : vBoundarySet)
 		if (CurrentIndex < 0 || CurrentIndex >= pManager->getRetouchScene().getNumPoint())
 			_THROW_RUNTIME_ERROR("Index is out of range");
 
 	std::vector<pcl::index_t> BoundarySet;
-	for(auto Index: vioBoundarySet)
+	
+	for(auto Index: vBoundarySet)
 	{
 		auto HomoCenterPosition = pManager->getRetouchScene().getPositionAt(Index);
 		auto HomoCenterNormal = pManager->getRetouchScene().getNormalAt(Index);
@@ -32,23 +32,13 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, const hi
 		CenterNormal /= CenterNormal.norm();
 
 		auto NeighborSet = pManager->buildNeighborhood(Index);
-		
-		//std::vector<Eigen::Vector3f> NormalSet;
 		Eigen::Vector3f FitNormal = CenterNormal;
-		//for(auto NeighborIndex: NeighborSet)
-		//{
-		//	auto NeighborNormal = pManager->getRetouchScene().getNormalAt(NeighborIndex);
-		//	Eigen::Vector3f TempNormal{ NeighborNormal.x(), NeighborNormal.y(), NeighborNormal.z() };
-		//	NormalSet.push_back(TempNormal);
-		//}
-		////__calcFitPlane(FitNormal, NormalSet);
-		//FitNormal = fitPlane(NormalSet, 1.5, CenterNormal);
-		//FitNormal /= FitNormal.norm();
 		
 		auto HomoStandardPos = pManager->getRetouchScene().getPositionAt(NeighborSet[1]);
 		Eigen::Vector3f StandardPos{ HomoStandardPos.x(), HomoStandardPos.y(), HomoStandardPos.z() };
 		auto StandardProjectivePos = __calcProjectivePoint(CenterPosition, FitNormal, StandardPos);
-		Eigen::Vector3f StandardVector = (StandardProjectivePos - CenterPosition) / (StandardProjectivePos - CenterPosition).norm();
+		Eigen::Vector3f StandardVector = StandardProjectivePos - CenterPosition;
+		StandardVector.normalize();
 		
 		std::vector<float> Quadrant;
 		int Sum = 0;
@@ -57,32 +47,43 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, const hi
 			auto HomoNeighborPos = pManager->getRetouchScene().getPositionAt(NeighborSet[i]);
 			Eigen::Vector3f NeighborPos{ HomoNeighborPos.x(), HomoNeighborPos.y(), HomoNeighborPos.z() };
 			auto ProjectivePos = __calcProjectivePoint(CenterPosition, FitNormal, NeighborPos);
-			Eigen::Vector3f TempVector = (ProjectivePos - CenterPosition) / (ProjectivePos - CenterPosition).norm();
+			Eigen::Vector3f TempVector = ProjectivePos - CenterPosition;
+			TempVector.normalize();
 			auto Angle = __calcAngle(StandardVector, TempVector, FitNormal);
 			Quadrant.push_back(Angle);
 		}
+		
 		sort(Quadrant.begin(), Quadrant.end());
-		for(int k = 1;k< Quadrant.size();k++)
-			if (Quadrant[k] - Quadrant[k-1] > PI / 2)
-				Sum++;
 		if (2 * PI - Quadrant[Quadrant.size() - 1] > PI / 2 && 2 * PI - Quadrant[Quadrant.size() - 1] < PI)
 			Sum++;
-		if (Sum == 1)
+		else if(2 * PI - Quadrant[Quadrant.size() - 1] > PI)
+			continue;
+		for (int k = 1; k < Quadrant.size(); k++)
 		{
-			BoundarySet.push_back(Index);
-			pManager->tagPointLabel(Index, EPointLabel::UNWANTED, 0, 0);
+			if (Quadrant[k] - Quadrant[k - 1] > PI / 2)
+				Sum++;
+			else if(Quadrant[k] - Quadrant[k - 1] > PI )
+			{
+				Sum = 0;
+				break;
+			}
 		}
+		if (Sum == 1)
+			BoundarySet.push_back(Index);
 	}
-	vioBoundarySet.swap(BoundarySet);
+	
+	__divideBoundary(BoundarySet, voHoleSet);
+	for(auto& Hole: voHoleSet)
+		for(auto Index: Hole)
+			pManager->tagPointLabel(Index, EPointLabel::KEPT, 0, 0);
 }
 
 Eigen::Vector3f CBoundaryDetector::__calcProjectivePoint(Eigen::Vector3f& vCenterPosition, Eigen::Vector3f& vCenterNormal, Eigen::Vector3f& vProjectPosition)
 {
 	Eigen::Vector3f DiffVector = vProjectPosition - vCenterPosition;
-	float Distance = DiffVector.norm();
-	float CosAngle = DiffVector.dot(vCenterNormal);
+	float Distance = DiffVector.dot(vCenterNormal);
 	
-	return vProjectPosition -  vCenterNormal * CosAngle;
+	return vProjectPosition -  vCenterNormal * Distance;
 }
 
 float CBoundaryDetector::__calcAngle(Eigen::Vector3f& vStandardVector, Eigen::Vector3f& vOtherVector, Eigen::Vector3f& vCenterNormal)
@@ -93,14 +94,16 @@ float CBoundaryDetector::__calcAngle(Eigen::Vector3f& vStandardVector, Eigen::Ve
 	else if (Dot < -1.0f)
 		Dot = -1.0f;
 	float Angle = std::acos(Dot);
-	auto b = (vStandardVector.cross(vOtherVector)).dot(vCenterNormal);
-	if ((vStandardVector.cross(vOtherVector)).dot(vCenterNormal) >= 0)
+	auto VectorCross = vStandardVector.cross(vOtherVector);
+	VectorCross.normalize();
+	auto b = VectorCross.dot(vCenterNormal);
+	if (VectorCross.dot(vCenterNormal) >= 0)
 		return Angle;
 	else
 		return 2 * PI - Angle;
 }
 
-void CBoundaryDetector::__calcFitPlane(Eigen::Vector3f& voPlaneCoeff, const std::vector<Eigen::Vector3f>& vData)
+void CBoundaryDetector::__calcFitPlaneLeastSquares(Eigen::Vector3f& voPlaneCoeff, const std::vector<Eigen::Vector3f>& vData)
 {
 	int Size = voPlaneCoeff.size();
 	if (Size < 3)
@@ -173,7 +176,7 @@ void CBoundaryDetector::__calcFitPlane(Eigen::Vector3f& voPlaneCoeff, const std:
 	voPlaneCoeff.z() = C;
 }
 
-Eigen::Vector3f CBoundaryDetector::fitPlane(const std::vector<Eigen::Vector3f>& vData, double vDistanceThreshold, const Eigen::Vector3f& vUp)
+Eigen::Vector3f CBoundaryDetector::__calcFitPlaneRANSAC(const std::vector<Eigen::Vector3f>& vData, double vDistanceThreshold, const Eigen::Vector3f& vUp)
 {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	for(Eigen::Vector3f Normal: vData)
@@ -199,4 +202,68 @@ Eigen::Vector3f CBoundaryDetector::fitPlane(const std::vector<Eigen::Vector3f>& 
 	
 	Eigen::Vector3f TempCoeff{ Coeff.x(), Coeff.y(), Coeff.z()};
 	return TempCoeff;
+}
+
+void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPointSet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
+{
+    std::map<int, bool> TraversedFlag;
+	for (auto Index : vBoundaryPointSet)
+	{
+		TraversedFlag.insert(std::make_pair(Index, false));
+	}
+	std::queue<pcl::index_t> ExpandingCandidateQueue;
+	
+	while (!vBoundaryPointSet.empty())
+	{
+		ExpandingCandidateQueue.push(vBoundaryPointSet[0]);
+
+		std::vector<pcl::index_t> TempBoundary;
+		while (!ExpandingCandidateQueue.empty())
+		{
+			
+			pcl::index_t Candidate = ExpandingCandidateQueue.front();
+			ExpandingCandidateQueue.pop();
+			
+			TempBoundary.push_back(Candidate);
+			
+			std::vector<pcl::index_t> NeighborSet;
+			__getNearestNeighbor(Candidate, vBoundaryPointSet, NeighborSet);
+			if(NeighborSet.empty())
+				continue;
+			
+			for(auto Index:NeighborSet)
+			{
+				if (TraversedFlag[Index] == true)
+				    continue;
+			    else
+			    {
+				    TraversedFlag[Index] = true;
+				    ExpandingCandidateQueue.push(Index);
+			    }
+			}
+		}
+		if (TempBoundary.size() > 20)
+			voHoleSet.push_back(TempBoundary);
+		
+		for (auto Iter = vBoundaryPointSet.begin(); Iter != vBoundaryPointSet.end(); )
+		{
+			if (TraversedFlag[*Iter] == true)
+				Iter = vBoundaryPointSet.erase(Iter);
+			else
+				++Iter;
+		}
+		
+	}
+}
+
+void CBoundaryDetector::__getNearestNeighbor(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet)
+{
+	auto pManager = CPointCloudRetouchManager::getInstance();
+	auto SeedPos = pManager->getRetouchScene().getPositionAt(vSeed);
+	for(auto Index: vTotalSet)
+	{
+		auto TempPos = pManager->getRetouchScene().getPositionAt(Index);
+		if ((SeedPos - TempPos).norm() < 0.5)
+			voNeighborSet.push_back(Index);
+	}
 }

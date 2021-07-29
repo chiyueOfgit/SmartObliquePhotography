@@ -101,7 +101,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(RECOVER_BACKGROUND_POINTS).value())
 		{
-			hiveObliquePhotography::PointCloudRetouch::hiveRecoverBackgroundMark();
+			//hiveObliquePhotography::PointCloudRetouch::hiveRecoverBackgroundMark();
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
@@ -109,6 +109,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 
 		if (KeyString == "p")
 		{
+
 			//hiveObliquePhotography::PointCloudRetouch::hiveMarkBoundary();
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
@@ -354,7 +355,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double {return -1; }, ViewPos);
 			//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
-			auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
+			/*auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
 			{
 				static int i = 0;
 				return i++ % 2 ? 1.0 : 0.0;

@@ -378,12 +378,7 @@ void CPointCloudRetouchManager::recordCurrentStatus()
 
 void CPointCloudRetouchManager::executeMarkBoundary(std::vector<pcl::index_t>& vBoundarySet)
 {
-	/*int Size = m_Scene.getNumPoint();
-	std::vector<pcl::index_t> Input;
-	for(int i=0;i<Size;i++)
-	{
-		Input.push_back(i);
-	}*/
+	std::vector<std::vector<pcl::index_t>> HoleSet;
 	auto pBoundaryDetector = dynamic_cast<CBoundaryDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>("BOUNDARY_DETECTOR"));
-	pBoundaryDetector->execute<CBoundaryDetector>(vBoundarySet, m_pConfig);
+	pBoundaryDetector->execute<CBoundaryDetector>(vBoundarySet, HoleSet, m_pConfig);
 }
