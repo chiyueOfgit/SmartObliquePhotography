@@ -103,14 +103,14 @@ double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputP
 		std::vector<float> DistanceSet;
 		m_pTree->radiusSearch(vInputPoint, m_Radius, Neighborhood, DistanceSet);
 
-		double MinD = DBL_MAX;
-		double MaxD = -DBL_MAX;
+		float MinD = DBL_MAX;
+		float MaxD = -DBL_MAX;
 		double MeanD = 0.0;
 		const auto& Normal = CloudScene.getNormalAt(vInputPoint);
 		//Normal.normalize();
 		for (auto& NeighborIndex : Neighborhood)
 		{
-			const double D = CloudScene.getPositionAt(NeighborIndex).dot(Normal);
+			const auto D = CloudScene.getPositionAt(NeighborIndex).dot(Normal);
 			MeanD += D;
 			if (MinD > D)
 				MinD = D;
@@ -137,12 +137,8 @@ void CNormalComplexity::__buildSearchTree()
 {
 	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for (size_t i = 0; i < CloudScene.getNumPoint(); i++)
-	{
-		const auto& Position = CloudScene.getPositionAt(i);
-		pPointCloud->emplace_back(Position.x(), Position.y(), Position.z());
-	}
+	const pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
+	CloudScene.dumpPointCloud(*pPointCloud);
 
 	if (pPointCloud->isOrganized())
 		m_pTree.reset(new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
