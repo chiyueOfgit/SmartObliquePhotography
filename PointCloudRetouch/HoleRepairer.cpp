@@ -22,19 +22,19 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	//Input
 	auto InputPlane = __calculatePlaneByIndices(vInputIndices);
 	auto InputBox = __calculateBoundingBoxByIndices(vInputIndices);
-	SPlaneInfos InputPlaneInfos;  
+	SPlaneInfos InputPlaneInfos; 
 	std::vector<std::vector<SLattice>> InputPlaneLattices;
 	__generatePlaneLattices(InputPlane, InputBox, Resolution, InputPlaneInfos, InputPlaneLattices);
 	__projectPoints2PlaneLattices(vInputIndices, InputPlaneInfos, InputPlaneLattices);
 
 	//生成颜色
 	auto ColorLattices = __extractItemFromLattices<Eigen::Vector3i>(InputPlaneLattices, offsetof(SLattice, Color));
-	//auto OutputColorLattices = CTextureGenerator::generateTexture<Eigen::Vector3f>(ColorLattices, Resolution);
+	//auto OutputColorLattices = CTextureGenerator::generateTexture<Eigen::Vector3i>(ColorLattices, Resolution);
 	//__fillLatticesByItems<Eigen::Vector3i>(OutputColorLattices, BoundaryPlaneLattices, offsetof(SLattice, Color));
 
 	//生成高度
 	auto HeightLattices = __extractItemFromLattices<float>(InputPlaneLattices, offsetof(SLattice, Height));
-	//auto OutputHeightLattices = CTextureGenerator::generateTexture<Eigen::Vector3f>(HeightLattices, Resolution);
+	//auto OutputHeightLattices = CTextureGenerator::generateTexture<float>(HeightLattices, Resolution);
 	//__fillLatticesByItems<float>(OutputHeightLattices, BoundaryPlaneLattices, offsetof(SLattice, Height));
 
 	__generateNewPointsFromLattices(BoundaryPlane, BoundaryPlaneLattices, voNewPoints);
@@ -66,7 +66,7 @@ void CHoleRepairer::__generatePlaneLattices(const Eigen::Vector4f& vPlane, const
 	PlaneCenter.data()[Y] = 0.5f * (vBox.first.data()[Y] + vBox.second.data()[Y]);
 	PlaneCenter.data()[Z] = -(vPlane.w() + vPlane.data()[X] * PlaneCenter.data()[X] + vPlane.data()[Y] * PlaneCenter.data()[Y]) / vPlane.data()[Z];
 
-	for (int Id = 0; Id < PlaneLattices.size(); Id++)
+	for (int Id = 0; Id < vResolution.x() * vResolution.y(); Id++)
 	{
 		Eigen::Vector2i LatticeCoord = { Id % vResolution.x(), int(Id / vResolution.x()) };
 		Eigen::Vector3f LatticeWorldPos;
@@ -119,17 +119,22 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector4f& vPlan
 	Eigen::Vector2i Resolution{ vPlaneLattices.front().size(), vPlaneLattices.size() };
 	Eigen::Vector3f Normal = { vPlane.x(), vPlane.y(), vPlane.z() };
 
+	const float K = 1.0f, B = 0.0f;	//线性系数
+
 	std::vector<pcl::PointSurfel> NewPoints;
 	for (int X = 0; X < Resolution.x(); X++)
 	{
 		for (int Y = 0; Y < Resolution.y(); Y++)
 		{
-			auto& Lattice = vPlaneLattices[X][Y];
-			Eigen::Vector3f RealPos = Lattice.CenterPos + Lattice.Height * Normal;	//取出加偏移
+			auto& Lattice = vPlaneLattices[Y][X];
+			Eigen::Vector3f RealPos = Lattice.CenterPos + Normal * (K * Lattice.Height + B);	//取出加偏移
 			pcl::PointSurfel TempPoint;
 			TempPoint.x = RealPos.x();
 			TempPoint.y = RealPos.y();
 			TempPoint.z = RealPos.z();
+			TempPoint.r = Lattice.Color.x();
+			TempPoint.g = Lattice.Color.y();
+			TempPoint.b = Lattice.Color.z();
 			NewPoints.push_back(TempPoint);
 		}
 	}
@@ -139,6 +144,7 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector4f& vPlan
 
 Eigen::Vector4f CHoleRepairer::__calculatePlaneByIndices(const std::vector<pcl::index_t>& vIndices)
 {
+	_ASSERTE(!vIndices.empty());
 	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	pcl::PointCloud<pcl::PointXYZ>::Ptr BoundaryCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	for (auto Index : vIndices)
@@ -156,6 +162,7 @@ Eigen::Vector4f CHoleRepairer::__calculatePlaneByIndices(const std::vector<pcl::
 
 std::pair<Eigen::Vector3f, Eigen::Vector3f> CHoleRepairer::__calculateBoundingBoxByIndices(const std::vector<pcl::index_t>& vIndices)
 {
+	_ASSERTE(!vIndices.empty());
 	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	Eigen::Vector3f Min{ FLT_MAX, FLT_MAX, FLT_MAX };
 	Eigen::Vector3f Max{ -FLT_MAX, -FLT_MAX, -FLT_MAX };

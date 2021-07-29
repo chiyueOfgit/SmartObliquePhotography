@@ -142,8 +142,6 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	Eigen::Matrix4d PV = Proj * View;
 	Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
 
-	m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
-
 	if (m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value())
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
 	else
@@ -327,6 +325,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	else if (m_pVisualizationConfig->getAttribute<bool>(AREA_MODE).value())
 	{
+		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
+
+		std::optional<bool> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
+		if (UnwantedMode.has_value())
+			m_UnwantedMode = UnwantedMode.value();
+
 		static bool isPicking = false;
 		static Eigen::Vector2i LeftUp;
 
@@ -343,7 +347,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				return;
 
 			if (m_pVisualizationConfig->getAttribute<bool>(AREA_PICK_CULLING).value())
-				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double {return -1; }, ViewPos);
+				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double { return -1; }, ViewPos);
 			//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
 			auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
@@ -396,6 +400,14 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				auto& LineStartPoint = LineEndPoints[i];
 				auto& LineEndPoint = LineEndPoints[(i + 1) % LineEndPoints.size()];
 				m_pVisualizer->m_pPCLVisualizer->addLine(LineStartPoint, LineEndPoint, "Line" + std::to_string(i));
+
+				Eigen::Vector3i SquareColor;
+				if (m_UnwantedMode)
+					SquareColor = { std::get<0>(m_pVisualizer->m_LitterColor), std::get<1>(m_pVisualizer->m_LitterColor), std::get<2>(m_pVisualizer->m_LitterColor) };
+				else
+					SquareColor = { std::get<0>(m_pVisualizer->m_BackgroundColor), std::get<1>(m_pVisualizer->m_BackgroundColor), std::get<2>(m_pVisualizer->m_BackgroundColor) };
+
+				m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, SquareColor.x(), SquareColor.y(), SquareColor.z(), "Line" + std::to_string(i));
 				m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2, "Line" + std::to_string(i));
 			}
 
@@ -454,6 +466,8 @@ void CInteractionCallback::__loadIndices(const std::string& vPath, std::vector<i
 //FUNCTION: 
 void CInteractionCallback::__drawHintCircle()
 {
+	m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
+
 	std::optional<bool> UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE);
 	if (UnwantedMode.has_value())
 		m_UnwantedMode = UnwantedMode.value();  
