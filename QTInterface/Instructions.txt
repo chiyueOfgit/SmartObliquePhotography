@@ -20,15 +20,21 @@
 按空格切换标记类型（红色/蓝色）
 可以通过调节笔刷的半径与硬度影响标记自动生长的范围
 <img src='InstructionImages/pointPickingSlider.png'>
-
+\n
+* 框选
+<img src='InstructionImages/rectangleAreaPicking.png'>    
+进入框选状态，点击鼠标右键标记点云
+按空格切换标记类型（红色/蓝色）
+右上方可以勾选是否对选择点集进行剔除，推荐树木重叠遮挡较多时再去掉勾选
+\n
 * 橡皮檫
 <img src='InstructionImages/rubber.png'>    
 进入点选状态后才能使用，用于擦除不需要的标记
-
+\n
 * 离群点
 <img src='InstructionImages/Outlier.png'>    
 选取目前场景中所有离群点（若干孤立的小团），标记为红色
-
+\n
 * 更新
 <img src='InstructionImages/update.png'>    
 隐藏/显示红色点，用于预览去除后效果

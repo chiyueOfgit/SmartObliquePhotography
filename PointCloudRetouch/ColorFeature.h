@@ -25,9 +25,10 @@ namespace hiveObliquePhotography
 			CColorFeature() = default;
 			~CColorFeature() = default;
 
-			virtual double generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter) override;
-			virtual double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
-			virtual std::string outputDebugInfosV(pcl::index_t vIndex) const override;
+			void initV(const hiveConfig::CHiveConfig* vFeatureConfig) override;
+			double generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter) override;
+			double evaluateFeatureMatchFactorV(pcl::index_t vInputPoint) override;
+			std::string outputDebugInfosV(pcl::index_t vIndex) const override;
 
 			const auto& getMainBaseColors() const { return m_MainBaseColors; }
 

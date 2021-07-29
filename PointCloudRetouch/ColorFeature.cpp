@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ColorFeature.h"
 #include "PointCloudRetouchManager.h"
+#include <omp.h>
 
 #define gamma(x) (x > 0.04045 ? pow((x + 0.055f) / 1.055f, 2.4f) : x / 12.92)
 #define deg2Rad(deg) (deg * (M_PI / 180.0))
@@ -12,12 +13,21 @@ _REGISTER_EXCLUSIVE_PRODUCT(CColorFeature, KEYWORD::COLOR_FEATURE)
 
 //*****************************************************************
 //FUNCTION: 
+void  CColorFeature::initV(const hiveConfig::CHiveConfig* vFeatureConfig)
+{
+    _ASSERTE(vFeatureConfig);
+    m_pConfig = vFeatureConfig;
+
+    m_ColorThreshold = *m_pConfig->getAttribute<float>("COLOR_THRESHOLD");
+    m_MaxNumMainColors = *m_pConfig->getAttribute<int>("NUM_MAIN_COLORS");
+    m_MinReduceRatio = *m_pConfig->getAttribute<float>("MIN_REDUCE_RATIO");
+}
+
+//*****************************************************************
+//FUNCTION: 
 double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
 	_ASSERTE(m_pConfig);
-	m_ColorThreshold = *m_pConfig->getAttribute<float>("COLOR_THRESHOLD");
-	m_MaxNumMainColors = *m_pConfig->getAttribute<int>("NUM_MAIN_COLORS");
-    m_MinReduceRatio = *m_pConfig->getAttribute<float>("MIN_REDUCE_RATIO");
 	
 	if (vDeterminantPointSet.empty() || vValidationSet.empty())
 		return 0.0;
