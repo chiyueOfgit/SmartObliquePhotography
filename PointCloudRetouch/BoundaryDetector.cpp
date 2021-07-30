@@ -29,9 +29,10 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vBoundarySet, std::vecto
 		auto HomoCenterNormal = pManager->getRetouchScene().getNormalAt(Index);
 		Eigen::Vector3f CenterPosition{ HomoCenterPosition.x(), HomoCenterPosition.y(), HomoCenterPosition.z() };
 		Eigen::Vector3f CenterNormal{ HomoCenterNormal.x(), HomoCenterNormal.y(), HomoCenterNormal.z() };
-		CenterNormal /= CenterNormal.norm();
+		CenterNormal.normalize();
 
 		auto NeighborSet = pManager->buildNeighborhood(Index);
+		//FitNormalÔÝÊ±ÓÃCenterNormal´úÌæ
 		Eigen::Vector3f FitNormal = CenterNormal;
 		
 		auto HomoStandardPos = pManager->getRetouchScene().getPositionAt(NeighborSet[1]);
@@ -40,7 +41,7 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vBoundarySet, std::vecto
 		Eigen::Vector3f StandardVector = StandardProjectivePos - CenterPosition;
 		StandardVector.normalize();
 		
-		std::vector<float> Quadrant;
+		std::vector<float> AngleSet;
 		int Sum = 0;
 		for(int i = 1;i < NeighborSet.size();i++)
 		{
@@ -50,19 +51,20 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vBoundarySet, std::vecto
 			Eigen::Vector3f TempVector = ProjectivePos - CenterPosition;
 			TempVector.normalize();
 			auto Angle = __calcAngle(StandardVector, TempVector, FitNormal);
-			Quadrant.push_back(Angle);
+			AngleSet.push_back(Angle);
 		}
 		
-		sort(Quadrant.begin(), Quadrant.end());
-		if (2 * PI - Quadrant[Quadrant.size() - 1] > PI / 2 && 2 * PI - Quadrant[Quadrant.size() - 1] < PI)
+		sort(AngleSet.begin(), AngleSet.end());
+		int Size = AngleSet.size();
+		if (2 * PI - AngleSet[Size - 1] > PI / 2 && 2 * PI - AngleSet[Size - 1] < PI)
 			Sum++;
-		else if(2 * PI - Quadrant[Quadrant.size() - 1] > PI)
+		else if(2 * PI - AngleSet[Size - 1] > PI)
 			continue;
-		for (int k = 1; k < Quadrant.size(); k++)
+		for (int k = 1; k < Size; k++)
 		{
-			if (Quadrant[k] - Quadrant[k - 1] > PI / 2)
+			if (AngleSet[k] - AngleSet[k - 1] > PI / 2)
 				Sum++;
-			else if(Quadrant[k] - Quadrant[k - 1] > PI )
+			else if(AngleSet[k] - AngleSet[k - 1] > PI )
 			{
 				Sum = 0;
 				break;
@@ -96,7 +98,6 @@ float CBoundaryDetector::__calcAngle(Eigen::Vector3f& vStandardVector, Eigen::Ve
 	float Angle = std::acos(Dot);
 	auto VectorCross = vStandardVector.cross(vOtherVector);
 	VectorCross.normalize();
-	auto b = VectorCross.dot(vCenterNormal);
 	if (VectorCross.dot(vCenterNormal) >= 0)
 		return Angle;
 	else
