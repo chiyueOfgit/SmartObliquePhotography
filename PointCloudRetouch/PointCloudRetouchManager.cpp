@@ -310,10 +310,10 @@ void CPointCloudRetouchManager::setLabel(const std::vector<pcl::index_t>& vPoint
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed)
+std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara)
 {
 	//·¢ÉúNRVO
-	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed);
+	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vType, vPara);
 }
 
 //*****************************************************************

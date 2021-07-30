@@ -85,7 +85,8 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 //FUNCTION: 
 double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 {
-    auto Neighbors = CPointCloudRetouchManager::getInstance()->buildNeighborhood(vInputPoint);
+    std::string a = "NEAREST";
+    auto Neighbors = CPointCloudRetouchManager::getInstance()->buildNeighborhood(vInputPoint, a, 15);
     _ASSERTE(!Neighbors.empty());
     int NumPassed = 0;
     for (auto Index : Neighbors)

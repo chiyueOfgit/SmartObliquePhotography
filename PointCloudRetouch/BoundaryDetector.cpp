@@ -30,8 +30,8 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vBoundarySet, std::vecto
 		Eigen::Vector3f CenterPosition{ HomoCenterPosition.x(), HomoCenterPosition.y(), HomoCenterPosition.z() };
 		Eigen::Vector3f CenterNormal{ HomoCenterNormal.x(), HomoCenterNormal.y(), HomoCenterNormal.z() };
 		CenterNormal.normalize();
-
-		auto NeighborSet = pManager->buildNeighborhood(Index);
+		std::string a = "NEAREST";
+		auto NeighborSet = pManager->buildNeighborhood(Index, a, 45);
 		//FitNormalÔİÊ±ÓÃCenterNormal´úÌæ
 		Eigen::Vector3f FitNormal = CenterNormal;
 		

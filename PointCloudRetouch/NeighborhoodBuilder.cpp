@@ -25,7 +25,7 @@ bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vCon
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed) const
+std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara) const
 {
 	if (!m_pPointCloudScene)
 		_THROW_RUNTIME_ERROR("PointCloud pointer is uninitialized");
@@ -35,7 +35,7 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 
 	std::vector<pcl::index_t> Neighborhood;
 
-	for (auto e : __buildNeighborhoodV(vSeed))
+	for (auto e : __buildNeighborhoodV(vSeed, vType, vPara))
 	{
 		Neighborhood.push_back(e);
 	}
