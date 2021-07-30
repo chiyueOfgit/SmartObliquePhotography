@@ -1,13 +1,61 @@
 #include "pch.h"
 #include "HoleRepairer.h"
+#include "BoundaryDetector.h"
 #include "PlanarityFeature.h"
 #include "PointCloudRetouchManager.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
+bool CHoleRepairer::init(const hiveConfig::CHiveConfig* vConfig)
+{
+	_ASSERTE(vConfig);
+	m_pConfig = vConfig;
+
+	for (auto i = 0; i < vConfig->getNumSubconfig(); i++)
+	{
+		const hiveConfig::CHiveConfig* pConfig = vConfig->getSubconfigAt(i);
+		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("BOUNDARY_DETECTOR")))
+		{
+			m_pBoundaryDetector = hiveDesignPattern::hiveGetOrCreateProduct<CBoundaryDetector>("BOUNDARY_DETECTOR");
+			_ASSERTE(m_pBoundaryDetector);
+			m_pBoundaryDetector->init(pConfig);
+			continue;
+		}
+		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("TEXTURE_SYNTHESIZER")))
+		{
+
+			continue;
+		}
+	}
+	return true;
+}
+
+void CHoleRepairer::setHoleRegion(const std::vector<pcl::index_t>& vHoleRegion)
+{
+	m_pBoundaryDetector->execute<CBoundaryDetector>(vHoleRegion, m_BoundarySet);
+}
+
+void CHoleRepairer::repairHole(std::vector<pcl::PointSurfel>& voNewPoints)
+{
+	if (!m_BoundarySet.empty() && !m_Input.empty())
+	{
+		std::vector<pcl::PointSurfel> NewPoints;
+		for (auto& Boundary : m_BoundarySet)
+		{
+			std::vector<pcl::PointSurfel> TempPoints;
+			repairHoleByBoundaryAndInput(Boundary, m_Input, TempPoints);
+			NewPoints.insert(NewPoints.end(), TempPoints.begin(), TempPoints.end());
+		}
+
+		std::swap(voNewPoints, NewPoints);
+
+		__reset();
+	}
+}
+
 //*****************************************************************
 //FUNCTION: 
-void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints, const hiveConfig::CHiveConfig* vConfig)
+void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints)
 {
 	const Eigen::Vector2i Resolution{ 32, 32 };
 
@@ -110,12 +158,12 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 			vioPlaneLattices[LatticeCoord.y()][LatticeCoord.x()].Indices.push_back(Index);
 	}
 
-	__generateLatticesOriginInfos(vPlaneInfos.Normal, vioPlaneLattices);
+	__fillLatticesOriginInfos(vPlaneInfos.Normal, vioPlaneLattices);
 }
 
 //*****************************************************************
 //FUNCTION: 
-void CHoleRepairer::__generateLatticesOriginInfos(const Eigen::Vector3f& vNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices)
+void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices)
 {
 	_ASSERTE(!vioPlaneLattices.empty());
 	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
@@ -180,6 +228,8 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector4f& vPlan
 	std::swap(voNewPoints, NewPoints);
 }
 
+//*****************************************************************
+//FUNCTION: 
 Eigen::Vector4f CHoleRepairer::__calculatePlaneByIndices(const std::vector<pcl::index_t>& vIndices)
 {
 	_ASSERTE(!vIndices.empty());
@@ -189,8 +239,18 @@ Eigen::Vector4f CHoleRepairer::__calculatePlaneByIndices(const std::vector<pcl::
 	return CPlanarityFeature::fitPlane(BoundaryCloud, 0.2f, { 0.0f, 0.0f, 1.0f });
 }
 
+//*****************************************************************
+//FUNCTION: 
 std::pair<Eigen::Vector3f, Eigen::Vector3f> CHoleRepairer::__calculateBoundingBoxByIndices(const std::vector<pcl::index_t>& vIndices)
 {
 	_ASSERTE(!vIndices.empty());
 	return CPointCloudRetouchManager::getInstance()->getRetouchScene().getBoundingBox(vIndices);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CHoleRepairer::__reset()
+{
+	m_BoundarySet.clear();
+	m_Input.clear();
 }

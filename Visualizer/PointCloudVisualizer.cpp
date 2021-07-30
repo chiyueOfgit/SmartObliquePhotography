@@ -34,6 +34,14 @@ void CPointCloudVisualizer::init(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
 	m_pCallback = new CInteractionCallback(m_pPCLVisualizer);
 	m_pPCLVisualizer->setBackgroundColor(0.2, 0.2, 0.2);
 	m_pPCLVisualizer->setShowFPS(false);
+
+	auto OptionLitterColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(LITTER_HIGHLIGHT_COLOR);
+	auto OptionBackgroundColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(BACKGROUND_HIGHLIGHT_COLOR);
+	if (OptionLitterColor.has_value() && OptionBackgroundColor.has_value())
+	{
+		m_LitterColor = OptionLitterColor.value();
+		m_BackgroundColor = OptionBackgroundColor.value();
+	}
 }
 
 //*****************************************************************
@@ -65,14 +73,6 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	PointCloud_t::Ptr pCloud2Show(new PointCloud_t);
 	pCloud2Show->resize(m_pSceneCloud->size());
 	std::memcpy(pCloud2Show->data(), m_pSceneCloud->data(), m_pSceneCloud->size() * sizeof(PointCloud_t::PointType));
-	
-	auto OptionLitterColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(LITTER_HIGHLIGHT_COLOR);
-	auto OptionBackgroundColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(BACKGROUND_HIGHLIGHT_COLOR);
-	if (OptionLitterColor.has_value() && OptionBackgroundColor.has_value())
-	{
-		m_LitterColor = OptionLitterColor.value();
-		m_BackgroundColor = OptionBackgroundColor.value();
-	}
 
 	for (int i = 0; i < m_pSceneCloud->size(); i++)
 	{
@@ -133,12 +133,18 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	m_pPCLVisualizer->addPointCloud(pCloud2Show, RGBAColor, "Cloud2Show");
 	m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "Cloud2Show");
 
+	for (int i = 0; i < m_UserCloudSet.size(); i++)
+	{
+		m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(m_UserCloudSet[i], "UserCloud" + std::to_string(i));
+		m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "UserCloud" + std::to_string(i));
+	}
+
 	for (int i = 0; i < m_UserColoredPoints.size(); i++)
 	{
 		auto& Record = m_UserColoredPoints[i];
 		if (Record.IsNewCloud)
 		{
-			PointCloud_t::Ptr pUserCloud(new PointCloud_t);
+			PointCloud_t::Ptr pUserPoints(new PointCloud_t);
 
 			for (auto Index : Record.PointSet)
 			{
@@ -149,11 +155,11 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 				TempPoint.r = Record.Color.x();
 				TempPoint.g = Record.Color.y();
 				TempPoint.b = Record.Color.z();
-				pUserCloud->push_back(TempPoint);
+				pUserPoints->push_back(TempPoint);
 			}
 
-			m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(pUserCloud, "UserCloud" + std::to_string(i));
-			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, Record.PointSize, "UserCloud" + std::to_string(i));
+			m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(pUserPoints, "UserPoints" + std::to_string(i));
+			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, Record.PointSize, "UserPoints" + std::to_string(i));
 		}
 	}
 

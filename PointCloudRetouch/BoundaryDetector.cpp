@@ -10,9 +10,14 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_EXCLUSIVE_PRODUCT(CBoundaryDetector, KEYWORD::BOUNDARY_DETECTOR)
 
+bool CBoundaryDetector::init(const hiveConfig::CHiveConfig* vConfig)
+{
+	return true;
+}
+
 //*****************************************************************
 //FUNCTION: 
-void CBoundaryDetector::runV(std::vector<pcl::index_t>& vBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet, const hiveConfig::CHiveConfig* vConfig)
+void CBoundaryDetector::runV(const std::vector<pcl::index_t>& vBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
 {
 	if (vBoundarySet.empty())
 		return;
@@ -23,7 +28,7 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vBoundarySet, std::vecto
 
 	std::vector<pcl::index_t> BoundarySet;
 	
-	for(auto Index: vBoundarySet)
+	for(auto Index : vBoundarySet)
 	{
 		auto HomoCenterPosition = pManager->getRetouchScene().getPositionAt(Index);
 		auto HomoCenterNormal = pManager->getRetouchScene().getNormalAt(Index);
@@ -75,9 +80,9 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vBoundarySet, std::vecto
 	}
 	
 	__divideBoundary(BoundarySet, voHoleSet);
-	for(auto& Hole: voHoleSet)
-		for(auto Index: Hole)
-			pManager->tagPointLabel(Index, EPointLabel::KEPT, 0, 0);
+	//for(auto& Hole: voHoleSet)
+	//	for(auto Index: Hole)
+	//		pManager->tagPointLabel(Index, EPointLabel::KEPT, 0, 0);
 }
 
 Eigen::Vector3f CBoundaryDetector::__calcProjectivePoint(Eigen::Vector3f& vCenterPosition, Eigen::Vector3f& vCenterNormal, Eigen::Vector3f& vProjectPosition)

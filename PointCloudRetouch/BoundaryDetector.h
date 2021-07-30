@@ -11,7 +11,8 @@ namespace hiveObliquePhotography
 			CBoundaryDetector() = default;
 			~CBoundaryDetector() = default;
 
-			virtual void runV(std::vector<pcl::index_t>& vBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet, const hiveConfig::CHiveConfig* vConfig);
+			bool init(const hiveConfig::CHiveConfig* vConfig);
+			virtual void runV(const std::vector<pcl::index_t>& vBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet);
 
 		private:
 			Eigen::Vector3f __calcProjectivePoint(Eigen::Vector3f& vCenterPosition, Eigen::Vector3f& vCenterNormal, Eigen::Vector3f& vProjectPosition);

@@ -7,12 +7,15 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //FUNCTION: 
 void CPointCloudRetouchConfig::__defineAttributesV()
 {
-	_defineAttribute("NEIGHBOR_BUILDER", hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
-	_defineAttribute("TASK",			 hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
-	_defineAttribute("CLUSTER",		     hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
-	_defineAttribute("FEATURE",			 hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
-	_defineAttribute("CLASSIFIER",       hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
-	_defineAttribute("OUTLIER",			 hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("NEIGHBOR_BUILDER",	hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("TASK",				hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("CLUSTER",				hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("FEATURE",				hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("CLASSIFIER",			hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("OUTLIER",				hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("HOLE_REPAIRER",		hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("BOUNDARY_DETECTOR",	hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
+	_defineAttribute("TEXTURE_SYNTHESIZER", hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
 	_defineAttribute("POINT_CLOUD_RETOUCN_CONFIG", hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
 	_defineAttribute("UP", hiveConfig::EConfigDataType::ATTRIBUTE_VEC3F);
 	_defineAttribute("SIG", hiveConfig::EConfigDataType::ATTRIBUTE_STRING);

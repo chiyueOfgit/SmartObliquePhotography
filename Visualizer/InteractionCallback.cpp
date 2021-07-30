@@ -95,6 +95,17 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			RefreshFlag = true;
 		}
 
+		if (KeyString == "r")
+		{
+			std::vector<pcl::PointSurfel> NewPoints;
+			PointCloudRetouch::hiveRepairHole(NewPoints);
+			PointCloud_t::Ptr RepairCloud(new PointCloud_t);
+			for (auto& Point : NewPoints)
+				RepairCloud->push_back(Point);
+			m_pVisualizer->addUserPointCloud(RepairCloud);
+			RefreshFlag = true;
+		}
+
 		if (RefreshFlag)
 		{
 			std::vector<std::size_t> PointLabel;
@@ -318,13 +329,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			else
 				PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, pRandomHardness);*/
 
+			if (m_UnwantedMode)
+				PointCloudRetouch::hiveRepairHoleSetRepairRegion(PickedIndices);
+			else
+				PointCloudRetouch::hiveRepairHoleSetReferenceRegion(PickedIndices);
 
-			PointCloudRetouch::hiveMarkBoundary(PickedIndices);
-			{
-				std::vector<std::size_t> PointLabel;
-				PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-				m_pVisualizer->refresh(PointLabel);
-			}
 		}
 		if (Button == pcl::visualization::MouseEvent::RightButton && PressStatus)
 		{

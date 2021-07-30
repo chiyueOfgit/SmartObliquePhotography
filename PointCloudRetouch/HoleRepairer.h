@@ -1,15 +1,16 @@
 #pragma once
-#include "PointClassifier.h"
 
 namespace hiveObliquePhotography
 {
 	namespace PointCloudRetouch
 	{
+		class CBoundaryDetector;
+
 		struct SLattice
 		{
 			std::vector<int> Indices;
 			Eigen::Vector3f CenterPos{ 0.0f, 0.0f, 0.0f };
-			Eigen::Vector3i Color{0, 0, 0};
+			Eigen::Vector3i Color{255, 255, 255};
 			float Height = 0.0f;
 		};
 
@@ -28,14 +29,21 @@ namespace hiveObliquePhotography
 			CHoleRepairer() = default;
 			~CHoleRepairer() = default;
 
-			void repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints, const hiveConfig::CHiveConfig* vConfig);
+			bool init(const hiveConfig::CHiveConfig* vConfig);
+
+			void setHoleRegion(const std::vector<pcl::index_t>& vHoleRegion);
+			void setInput(const std::vector<pcl::index_t>& vInputIndices) { m_Input = vInputIndices; }
+
+			void repairHole(std::vector<pcl::PointSurfel>& voNewPoints);
+
+			void repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints);
 
 		private:
 			void __generatePlaneLattices(const Eigen::Vector4f& vPlane, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Vector2i& vResolution, SPlaneInfos& voPlaneInfos, std::vector<std::vector<SLattice>>& voPlaneLattices);
 			
 			void __projectPoints2PlaneLattices(const std::vector<pcl::index_t>& vIndices, const SPlaneInfos& vPlaneInfos, std::vector<std::vector<SLattice>>& vioPlaneLattices);
 
-			void __generateLatticesOriginInfos(const Eigen::Vector3f& vNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices);
+			void __fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices);
 
 			void __generateNewPointsFromLattices(const Eigen::Vector4f& vPlane, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints);
 			
@@ -82,6 +90,13 @@ namespace hiveObliquePhotography
 				}
 			}
 
+			void __reset();
+
+			CBoundaryDetector* m_pBoundaryDetector = nullptr;
+
+			std::vector<std::vector<pcl::index_t>> m_BoundarySet;
+			std::vector<pcl::index_t> m_Input;
+			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 		};
 	}
 }

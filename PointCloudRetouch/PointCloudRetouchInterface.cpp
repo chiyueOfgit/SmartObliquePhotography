@@ -139,7 +139,17 @@ void hiveObliquePhotography::PointCloudRetouch::hiveRunPrecompute(const std::str
 	pPrecomputeManager->precompute();
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveMarkBoundary(std::vector<pcl::index_t>& vBoundarySet)
+void hiveObliquePhotography::PointCloudRetouch::hiveRepairHoleSetRepairRegion(std::vector<pcl::index_t>& vRepairRegion)
 {
-	CPointCloudRetouchManager::getInstance()->executeMarkBoundary(vBoundarySet);
+	CPointCloudRetouchManager::getInstance()->executeHoleRepairerSetRegion(vRepairRegion);
+}
+
+void hiveObliquePhotography::PointCloudRetouch::hiveRepairHoleSetReferenceRegion(std::vector<pcl::index_t>& vReferenceRegion)
+{
+	CPointCloudRetouchManager::getInstance()->executeHoleRepairerSetInput(vReferenceRegion);
+}
+
+void hiveObliquePhotography::PointCloudRetouch::hiveRepairHole(std::vector<pcl::PointSurfel>& voNewPoints)
+{
+	CPointCloudRetouchManager::getInstance()->executeHoleRepairer(voNewPoints);
 }
