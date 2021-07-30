@@ -158,22 +158,27 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
 	for (auto Index : vIndices)
 	{
-		auto Pos4f = Scene.getPositionAt(Index);
-		Eigen::Vector3f PointPos{ Pos4f.x(), Pos4f.y(), Pos4f.z() };
-		Eigen::Vector3f VecCenter2Point = PointPos - vPlaneInfos.PlaneCenter;
-		Eigen::Vector3f VecProj2Point = VecCenter2Point.dot(vPlaneInfos.Normal) * vPlaneInfos.Normal;
-		Eigen::Vector3f ProjPoint = vPlaneInfos.PlaneCenter + (VecCenter2Point - VecProj2Point);
+		auto Neighbors = CPointCloudRetouchManager::getInstance()->buildNeighborhood(Index);
+		for (auto Neighbor : Neighbors)
+		{
+			auto Pos4f = Scene.getPositionAt(Neighbor);
+			Eigen::Vector3f PointPos{ Pos4f.x(), Pos4f.y(), Pos4f.z() };
+			Eigen::Vector3f VecCenter2Point = PointPos - vPlaneInfos.PlaneCenter;
+			Eigen::Vector3f VecProj2Point = VecCenter2Point.dot(vPlaneInfos.Normal) * vPlaneInfos.Normal;
+			Eigen::Vector3f ProjPoint = vPlaneInfos.PlaneCenter + (VecCenter2Point - VecProj2Point);
 
-		auto X = vPlaneInfos.AxisOrder[0], Y = vPlaneInfos.AxisOrder[1];
-		Eigen::Vector2i Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
-		Eigen::Vector2i LatticeCoord = { (ProjPoint.data()[X] - vPlaneInfos.BoundingBox.first.data()[X]) / vPlaneInfos.LatticeSize.x(), (ProjPoint.data()[Y] - vPlaneInfos.BoundingBox.first.data()[Y]) / vPlaneInfos.LatticeSize.y() };
-		if (LatticeCoord.x() == Resolution.x())
-			LatticeCoord.x() = Resolution.x() - 1;
-		if (LatticeCoord.y() == Resolution.y())
-			LatticeCoord.y() = Resolution.y() - 1;
+			auto X = vPlaneInfos.AxisOrder[0], Y = vPlaneInfos.AxisOrder[1];
+			Eigen::Vector2i Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
+			Eigen::Vector2i LatticeCoord = { (ProjPoint.data()[X] - vPlaneInfos.BoundingBox.first.data()[X]) / vPlaneInfos.LatticeSize.x(), (ProjPoint.data()[Y] - vPlaneInfos.BoundingBox.first.data()[Y]) / vPlaneInfos.LatticeSize.y() };
+			if (LatticeCoord.x() == Resolution.x())
+				LatticeCoord.x() = Resolution.x() - 1;
+			if (LatticeCoord.y() == Resolution.y())
+				LatticeCoord.y() = Resolution.y() - 1;
 
-		if (LatticeCoord.x() >= 0 && LatticeCoord.x() < Resolution.x() && LatticeCoord.y() >= 0 && LatticeCoord.y() < Resolution.y())
-			vioPlaneLattices[LatticeCoord.y()][LatticeCoord.x()].Indices.push_back(Index);
+			if (LatticeCoord.x() >= 0 && LatticeCoord.x() < Resolution.x() && LatticeCoord.y() >= 0 && LatticeCoord.y() < Resolution.y())
+				vioPlaneLattices[LatticeCoord.y()][LatticeCoord.x()].Indices.push_back(Index);
+		}
+
 	}
 
 	__fillLatticesOriginInfos(vPlaneInfos.Normal, vioPlaneLattices);
