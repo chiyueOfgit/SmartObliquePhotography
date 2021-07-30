@@ -228,7 +228,7 @@ void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPoi
 			TempBoundary.push_back(Candidate);
 			
 			std::vector<pcl::index_t> NeighborSet;
-			__getNearestNeighbor(Candidate, vBoundaryPointSet, NeighborSet);
+			__findNearestBoundaryPoint(Candidate, vBoundaryPointSet, NeighborSet);
 			if(NeighborSet.empty())
 				continue;
 			
@@ -257,7 +257,7 @@ void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPoi
 	}
 }
 
-void CBoundaryDetector::__getNearestNeighbor(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet)
+void CBoundaryDetector::__findNearestBoundaryPoint(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet)
 {
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	auto SeedPos = pManager->getRetouchScene().getPositionAt(vSeed);
