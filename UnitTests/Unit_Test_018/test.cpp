@@ -81,30 +81,39 @@ int TestBoundaryDetection::m_TestNumber = -1;
 TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 {
 	std::vector<pcl::index_t> BoundaryPoints;
+	std::vector<std::vector<pcl::index_t>> HoleSet;
 	int Size = m_pManager->getRetouchScene().getNumPoint();
 	for (int i = 0; i < Size; i++)
 	{
 		BoundaryPoints.push_back(i);
 	}
 	
-	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, m_pDetectorConfig);
-	ASSERT_TRUE(!BoundaryPoints.empty());
+	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, HoleSet, m_pDetectorConfig);
 
+	std::vector<pcl::index_t> Result;
+	for (auto& Hole : HoleSet)
+		for (auto Index : Hole)
+			Result.push_back(Index);
+
+	EXPECT_EQ(HoleSet.size(), 1);
+	ASSERT_TRUE(!Result.empty());
+
+	std::set<pcl::index_t> ResultSet(Result.begin(), Result.end());
 	const float ExpectCorrectRate = 80.0f, ExpectErrorRate = 60.0f;
 
 	for (auto& Groundtruth : m_BoundaryIndices)
 	{
 		std::vector<pcl::index_t> Intersection;
-		std::set_intersection(BoundaryPoints.begin(), BoundaryPoints.end(), 
+		std::set_intersection(ResultSet.begin(), ResultSet.end(),
 			Groundtruth.begin(), Groundtruth.end(), 
 			std::inserter(Intersection, Intersection.begin()));
 		EXPECT_GE((float)Intersection.size() / Groundtruth.size() * 100.0f, ExpectCorrectRate);
 
 		std::vector<pcl::index_t> Difference;
-		std::set_difference(BoundaryPoints.begin(), BoundaryPoints.end(),
+		std::set_difference(ResultSet.begin(), ResultSet.end(),
 			Groundtruth.begin(), Groundtruth.end(),
 			std::inserter(Difference, Difference.begin()));
-		EXPECT_LE((float)Difference.size() / BoundaryPoints.size() * 100.0f, ExpectErrorRate);
+		EXPECT_LE((float)Difference.size() / ResultSet.size() * 100.0f, ExpectErrorRate);
 	}
 
 }
@@ -112,20 +121,29 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_2)
 {
 	std::vector<pcl::index_t> BoundaryPoints;
+	std::vector<std::vector<pcl::index_t>> HoleSet;
 	int Size = m_pManager->getRetouchScene().getNumPoint();
 	for (int i = 0; i < Size; i++)
 	{
 		BoundaryPoints.push_back(i);
 	}
-	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, m_pDetectorConfig);
-	ASSERT_TRUE(!BoundaryPoints.empty());
+	
+	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, HoleSet, m_pDetectorConfig);
+	std::vector<pcl::index_t> Result;
+	for (auto& Hole : HoleSet)
+		for (auto Index : Hole)
+			Result.push_back(Index);
+	
+	EXPECT_EQ(HoleSet.size(), 5);
+	ASSERT_TRUE(!Result.empty());
+	std::set<pcl::index_t> ResultSet(Result.begin(), Result.end());
 
 	const float ExpectCorrectRate = 90.0f;
 
 	for (auto& Groundtruth : m_BoundaryIndices)
 	{
 		std::vector<pcl::index_t> Intersection;
-		std::set_intersection(BoundaryPoints.begin(), BoundaryPoints.end(),
+		std::set_intersection(ResultSet.begin(), ResultSet.end(),
 			Groundtruth.begin(), Groundtruth.end(),
 			std::inserter(Intersection, Intersection.begin()));
 		EXPECT_GE((float)Intersection.size() / Groundtruth.size() * 100.0f, ExpectCorrectRate);
