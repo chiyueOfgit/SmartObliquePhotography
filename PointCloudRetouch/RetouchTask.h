@@ -30,7 +30,7 @@ namespace hiveObliquePhotography
 
 		private:
 			IPointClusterExpanderBase* m_pPointClusterExpander = nullptr;
-			const hiveConfig::CHiveConfig *m_pConfig = nullptr;
+			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 			const hiveConfig::CHiveConfig* m_pClusterConfig = nullptr;
 		};
 	}

@@ -19,6 +19,9 @@
     <Filter Include="Precompute">
       <UniqueIdentifier>{db0fdec4-d856-4bde-aff7-fdd9f89879f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{b9410939-016c-44ff-8db3-2fa6e933b55f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PointCluster.h">
@@ -91,6 +94,9 @@
     <ClInclude Include="HoleRepairer.h">
       <Filter>Operation</Filter>
     </ClInclude>
+    <ClInclude Include="TextureSynthesizer.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -150,6 +156,9 @@
       <Filter>Operation</Filter>
     </ClCompile>
     <ClCompile Include="HoleRepairer.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureSynthesizer.cpp">
       <Filter>Operation</Filter>
     </ClCompile>
   </ItemGroup>

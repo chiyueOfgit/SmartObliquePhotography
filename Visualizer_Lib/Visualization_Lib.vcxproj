@@ -175,6 +175,7 @@
     <ClCompile Include="..\Visualizer\InteractionCallback.cpp" />
     <ClCompile Include="..\Visualizer\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Visualizer\PointCloudVisualizer.cpp" />
     <ClCompile Include="..\Visualizer\VisualizationInterface.cpp" />

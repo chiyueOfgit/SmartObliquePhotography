@@ -25,7 +25,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <ProjectName>Unit_Test_019 (texture_generation)</ProjectName>
+    <ProjectName>Unit_Test_019 (texture_Synthesizer)</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -35,6 +35,8 @@
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="toojpeg.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp" />
@@ -44,6 +46,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="toojpeg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

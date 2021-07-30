@@ -189,6 +189,7 @@
     <ClInclude Include="..\PointCloudRetouch\PointSetPreprocessor.h" />
     <ClInclude Include="..\PointCloudRetouch\PrecomputeManager.h" />
     <ClInclude Include="..\PointCloudRetouch\RetouchTask.h" />
+    <ClInclude Include="..\PointCloudRetouch\TextureSynthesizer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PointCloudRetouch\BoundaryDetector.cpp" />
@@ -219,6 +220,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\TextureSynthesizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PointCloudRetouch\packages.config" />

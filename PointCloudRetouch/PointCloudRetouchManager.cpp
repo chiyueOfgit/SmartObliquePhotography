@@ -80,6 +80,14 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 			}
 			continue;
 		}
+		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("HOLE_REPAIRER")))
+		{
+			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("HoleRepairer")))
+			{
+				m_HoleRepairer.init(pConfig);
+			}
+			continue;
+		}
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Unknown subconfiguration type [%1%].", pConfig->getSubconfigType()));
 	}
 	recordCurrentStatus();
@@ -376,9 +384,23 @@ void CPointCloudRetouchManager::recordCurrentStatus()
 		m_StatusQueue.pop_front();
 }
 
-void CPointCloudRetouchManager::executeMarkBoundary(std::vector<pcl::index_t>& vBoundarySet)
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::executeHoleRepairerSetRegion(const std::vector<pcl::index_t>& vHoleRegion)
 {
-	std::vector<std::vector<pcl::index_t>> HoleSet;
-	auto pBoundaryDetector = dynamic_cast<CBoundaryDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>("BOUNDARY_DETECTOR"));
-	pBoundaryDetector->execute<CBoundaryDetector>(vBoundarySet, HoleSet, m_pConfig);
+	m_HoleRepairer.setHoleRegion(vHoleRegion);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::executeHoleRepairerSetInput(const std::vector<pcl::index_t>& vInput)
+{
+	m_HoleRepairer.setInput(vInput);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::executeHoleRepairer(std::vector<pcl::PointSurfel>& voNewPoints)
+{
+	m_HoleRepairer.repairHole(voNewPoints);
 }
