@@ -307,7 +307,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double { return -1; }, ViewPos);
 			//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
-			auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
+			/*auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
 			{
 				static int i = 0;
 				return i++ % 2 ? 1.0 : 0.0;
@@ -316,8 +316,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			if (m_UnwantedMode)
 				PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, pRandomHardness);
 			else
-				PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, pRandomHardness);
+				PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, pRandomHardness);*/
 
+
+			PointCloudRetouch::hiveMarkBoundary(PickedIndices);
 			{
 				std::vector<std::size_t> PointLabel;
 				PointCloudRetouch::hiveDumpPointLabel(PointLabel);

@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "PointCloudRetouchManager.h"
+
+#include "BoundaryDetector.h"
 #include "PointCluster.h"
 #include "NeighborhoodBuilder.h"
 #include "OutlierDetector.h"
@@ -372,4 +374,11 @@ void CPointCloudRetouchManager::recordCurrentStatus()
 	m_StatusQueue.push_back(std::make_pair(m_PointLabelSet, m_Timestamp));
 	if (m_StatusQueue.size() > 10)
 		m_StatusQueue.pop_front();
+}
+
+void CPointCloudRetouchManager::executeMarkBoundary(std::vector<pcl::index_t>& vBoundarySet)
+{
+	std::vector<std::vector<pcl::index_t>> HoleSet;
+	auto pBoundaryDetector = dynamic_cast<CBoundaryDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>("BOUNDARY_DETECTOR"));
+	pBoundaryDetector->execute<CBoundaryDetector>(vBoundarySet, HoleSet, m_pConfig);
 }
