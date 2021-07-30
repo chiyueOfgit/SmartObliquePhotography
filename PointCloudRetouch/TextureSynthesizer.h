@@ -1,4 +1,5 @@
 #pragma once
+
 namespace hiveObliquePhotography::PointCloudRetouch
 {
 	template <typename Color_t>
@@ -11,11 +12,14 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		CTextureSynthesizer() = default;
 		~CTextureSynthesizer() = default;
 
+		bool init(const hiveConfig::CHiveConfig* vConfig);
 		void execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene);
 
 	private:
-		int m_KernelSize = 9;
+		int m_KernelSize = 7;
 		std::vector<std::pair<int, int>> m_NeighborOffset;
+
+		const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 		
 		std::vector<std::pair<int, int>> __generateNeighborOffset(int vKernelSize) const;
 		Feature_t __generateFeatureAt(const Texture_t& vTexture, size_t vRowId, size_t vColId) const;

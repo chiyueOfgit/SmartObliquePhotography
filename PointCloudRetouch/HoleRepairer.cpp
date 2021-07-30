@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "HoleRepairer.h"
 #include "BoundaryDetector.h"
+#include "TextureSynthesizer.h"
 #include "PlanarityFeature.h"
 #include "PointCloudRetouchManager.h"
 
@@ -23,7 +24,7 @@ bool CHoleRepairer::init(const hiveConfig::CHiveConfig* vConfig)
 		}
 		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("TEXTURE_SYNTHESIZER")))
 		{
-
+			m_pTextureConfig = pConfig;
 			continue;
 		}
 	}
@@ -46,7 +47,6 @@ void CHoleRepairer::repairHole(std::vector<pcl::PointSurfel>& voNewPoints)
 			repairHoleByBoundaryAndInput(Boundary, m_Input, TempPoints);
 			NewPoints.insert(NewPoints.end(), TempPoints.begin(), TempPoints.end());
 		}
-
 		std::swap(voNewPoints, NewPoints);
 
 		__reset();
@@ -57,14 +57,12 @@ void CHoleRepairer::repairHole(std::vector<pcl::PointSurfel>& voNewPoints)
 //FUNCTION: 
 void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints)
 {
-	const Eigen::Vector2i Resolution{ 32, 32 };
-
 	//Boundary
 	auto BoundaryPlane = __calculatePlaneByIndices(vBoundaryIndices);	//可以从别的地方给
 	auto BoundaryBox = __calculateBoundingBoxByIndices(vBoundaryIndices);	//可以和indices无关
 	SPlaneInfos BoundaryPlaneInfos;
 	std::vector<std::vector<SLattice>> BoundaryPlaneLattices;
-	__generatePlaneLattices(BoundaryPlane, BoundaryBox, Resolution, BoundaryPlaneInfos, BoundaryPlaneLattices);	//生成平面格子
+	__generatePlaneLattices(BoundaryPlane, BoundaryBox, m_Resolution, BoundaryPlaneInfos, BoundaryPlaneLattices);	//生成平面格子
 	__projectPoints2PlaneLattices(vBoundaryIndices, BoundaryPlaneInfos, BoundaryPlaneLattices);	//投点进格子，未在里面的投不上
 
 	//Input
@@ -72,18 +70,38 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	auto InputBox = __calculateBoundingBoxByIndices(vInputIndices);
 	SPlaneInfos InputPlaneInfos; 
 	std::vector<std::vector<SLattice>> InputPlaneLattices;
-	__generatePlaneLattices(InputPlane, InputBox, Resolution, InputPlaneInfos, InputPlaneLattices);
+	__generatePlaneLattices(InputPlane, InputBox, m_Resolution, InputPlaneInfos, InputPlaneLattices);
 	__projectPoints2PlaneLattices(vInputIndices, InputPlaneInfos, InputPlaneLattices);
 
 	//生成颜色
-	auto ColorLattices = __extractItemFromLattices<Eigen::Vector3i>(InputPlaneLattices, offsetof(SLattice, Color));
-	//auto OutputColorLattices = CTextureGenerator::generateTexture<Eigen::Vector3i>(ColorLattices, Resolution);
-	//__fillLatticesByItems<Eigen::Vector3i>(OutputColorLattices, BoundaryPlaneLattices, offsetof(SLattice, Color));
+	{
+		auto InputColorVector = __extractItemFromLattices<Eigen::Vector3i>(InputPlaneLattices, offsetof(SLattice, Color));
+		auto InputColorMatrix = __vector2Matrix<Eigen::Vector3i>(InputColorVector);
+
+		auto BoundaryColorVector = __extractItemFromLattices<Eigen::Vector3i>(BoundaryPlaneLattices, offsetof(SLattice, Color));
+		auto BoundaryColorMatrix = __vector2Matrix<Eigen::Vector3i>(BoundaryColorVector);
+
+		CTextureSynthesizer<Eigen::Vector3i> ColorSynthesizer;
+		ColorSynthesizer.init(m_pTextureConfig);
+		ColorSynthesizer.execute(InputColorMatrix, __genMask(), BoundaryColorMatrix);
+		auto ResultColorVector = __matrix2Vector(BoundaryColorMatrix);
+		__fillLatticesByItems<Eigen::Vector3i>(ResultColorVector, BoundaryPlaneLattices, offsetof(SLattice, Color));
+	}
 
 	//生成高度
-	auto HeightLattices = __extractItemFromLattices<float>(InputPlaneLattices, offsetof(SLattice, Height));
-	//auto OutputHeightLattices = CTextureGenerator::generateTexture<float>(HeightLattices, Resolution);
-	//__fillLatticesByItems<float>(OutputHeightLattices, BoundaryPlaneLattices, offsetof(SLattice, Height));
+	{
+		auto InputHeightVector = __extractItemFromLattices<Eigen::Matrix<float, 1, 1>>(InputPlaneLattices, offsetof(SLattice, Height));
+		auto InputHeightMatrix = __vector2Matrix<Eigen::Matrix<float, 1, 1>>(InputHeightVector);
+
+		auto BoundaryHeightVector = __extractItemFromLattices<Eigen::Matrix<float, 1, 1>>(BoundaryPlaneLattices, offsetof(SLattice, Height));
+		auto BoundaryHeightMatrix = __vector2Matrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightVector);
+
+		CTextureSynthesizer<Eigen::Matrix<float, 1, 1>> HeightSynthesizer;
+		HeightSynthesizer.init(m_pTextureConfig);
+		HeightSynthesizer.execute(InputHeightMatrix, __genMask(), BoundaryHeightMatrix);
+		auto ResultHeightVector = __matrix2Vector(BoundaryHeightMatrix);
+		__fillLatticesByItems<Eigen::Matrix<float, 1, 1>>(ResultHeightVector, BoundaryPlaneLattices, offsetof(SLattice, Height));
+	}
 
 	__generateNewPointsFromLattices(BoundaryPlane, BoundaryPlaneLattices, voNewPoints);
 }
@@ -191,7 +209,7 @@ void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, st
 				}
 
 				Lattice.Color = (SumWeightedColor.cast<float>() / SumOnePartDistance).cast<int>();
-				Lattice.Height = AverageHeight / Lattice.Indices.size();
+				Lattice.Height(0, 0) = AverageHeight / Lattice.Indices.size();
 			}
 		}
 	}
@@ -213,7 +231,7 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector4f& vPlan
 		for (int Y = 0; Y < Resolution.y(); Y++)
 		{
 			auto& Lattice = vPlaneLattices[Y][X];
-			Eigen::Vector3f RealPos = Lattice.CenterPos + Normal * (K * Lattice.Height + B);	//取出加偏移
+			Eigen::Vector3f RealPos = Lattice.CenterPos + Normal * (K * Lattice.Height(0, 0) + B);	//取出加偏移
 			pcl::PointSurfel TempPoint;
 			TempPoint.x = RealPos.x();
 			TempPoint.y = RealPos.y();

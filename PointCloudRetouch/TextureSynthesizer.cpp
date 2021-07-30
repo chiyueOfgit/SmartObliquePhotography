@@ -6,6 +6,17 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //*****************************************************************
 //FUNCTION: 
 template <typename Color_t>
+bool CTextureSynthesizer<Color_t>::init(const hiveConfig::CHiveConfig* vConfig)
+{
+	_ASSERTE(vConfig);
+	m_pConfig = vConfig;
+
+	return true;
+}
+
+//*****************************************************************
+//FUNCTION: 
+template <typename Color_t>
 void CTextureSynthesizer<Color_t>::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
 {
 	m_NeighborOffset = __generateNeighborOffset(m_KernelSize);

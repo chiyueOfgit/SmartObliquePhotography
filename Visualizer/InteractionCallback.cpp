@@ -101,7 +101,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			PointCloudRetouch::hiveRepairHole(NewPoints);
 			PointCloud_t::Ptr RepairCloud(new PointCloud_t);
 			for (auto& Point : NewPoints)
-				RepairCloud->push_back(Point);
+			{
+				if (Point.r != 0 && Point.g != 0 && Point.b != 0)	//不画出黑色的初始点
+					RepairCloud->push_back(Point);
+			}
+
 			m_pVisualizer->addUserPointCloud(RepairCloud);
 			RefreshFlag = true;
 		}
@@ -334,6 +338,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			else
 				PointCloudRetouch::hiveRepairHoleSetReferenceRegion(PickedIndices);
 
+			{
+				std::vector<std::size_t> PointLabel;
+				PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+				m_pVisualizer->refresh(PointLabel);
+			}
+
 		}
 		if (Button == pcl::visualization::MouseEvent::RightButton && PressStatus)
 		{
@@ -389,14 +399,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 //FUNCTION: 
 void CInteractionCallback::pointPicking(const pcl::visualization::PointPickingEvent& vEvent)
 {
-
 }
 
 //*****************************************************************
 //FUNCTION: 
 void CInteractionCallback::areaPicking(const pcl::visualization::AreaPickingEvent& vEvent)
 {
-
 }
 
 //*****************************************************************
