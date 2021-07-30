@@ -31,3 +31,15 @@ std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pc
 	//发生NRVO
 	return Neighborhood;
 }
+
+std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed) const
+{
+	std::vector<pcl::index_t> Neighborhood;
+	std::vector<float> Distance;
+	if (m_SearchMode == "NEAREST")
+		m_pTree->nearestKSearch(m_pPointCloudScene->points[vSeed], m_NearestN, Neighborhood, Distance);
+	else if (m_SearchMode == "RADIUS")
+		m_pTree->radiusSearch(m_pPointCloudScene->points[vSeed], m_Radius, Neighborhood, Distance);
+	//发生NRVO
+	return Neighborhood;
+}

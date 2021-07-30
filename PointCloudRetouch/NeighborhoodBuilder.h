@@ -16,6 +16,7 @@ namespace hiveObliquePhotography
 			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, PointCloud_t::Ptr vPointCloudScene, const CPointLabelSet* vPointLabelSet);
 
 			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara) const;
+			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed) const;
 			void reset();
 
 		protected:
@@ -26,6 +27,7 @@ namespace hiveObliquePhotography
 
 			virtual void __extraInitV(const hiveConfig::CHiveConfig* vConfig) {}
 			virtual std::vector<pcl::index_t> __buildNeighborhoodV(pcl::index_t vSeed, std::string& vType, float vPara) const = 0;
+			virtual std::vector<pcl::index_t> __buildNeighborhoodV(pcl::index_t vSeed) const = 0;
 		};
 	}
 }

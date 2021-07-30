@@ -36,8 +36,6 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("POINT_FILTER_CONDITION", hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 	_defineAttribute("SMALL_SCALE_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 	_defineAttribute("LARGE_SCALE_RADIUS", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
-	_defineAttribute("SEARCH_MODE_EXPANDER_MULTITHREAD", hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
-	_defineAttribute("NEAREST_N_EXPANDER_MULTITHREAD", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	_defineAttribute("SEARCH_MODE_BOUNDARY_DETECTOR", hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 	_defineAttribute("NEAREST_N_BOUNDARY_DETECTOR", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	_defineAttribute("BOUNDARY_DISTANCE_TOLERANCE", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);

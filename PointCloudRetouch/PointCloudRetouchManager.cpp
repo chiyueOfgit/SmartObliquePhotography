@@ -324,6 +324,11 @@ std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::inde
 	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vType, vPara);
 }
 
+std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed)
+{
+	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed);
+}
+
 //*****************************************************************
 //FUNCTION: 
 void CPointCloudRetouchManager::dumpIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel)
