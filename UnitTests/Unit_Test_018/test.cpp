@@ -100,7 +100,7 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 	ASSERT_TRUE(!Result.empty());
 
 	std::set<pcl::index_t> ResultSet(Result.begin(), Result.end());
-	const float ExpectCorrectRate = 80.0f, ExpectErrorRate = 60.0f;
+	const float ExpectCorrectRate = 100.0f, ExpectErrorRate = 60.0f;
 
 	for (auto& Groundtruth : m_BoundaryIndices)
 	{
