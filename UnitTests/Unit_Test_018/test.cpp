@@ -80,13 +80,14 @@ int TestBoundaryDetection::m_TestNumber = -1;
 
 TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 {
-	std::vector<pcl::index_t> BoundaryPoints;
+	std::vector<pcl::index_t> BoundaryPoints = _loadIndices(DataPath+"OneHoleInput.txt");
 	std::vector<std::vector<pcl::index_t>> HoleSet;
-	int Size = m_pManager->getRetouchScene().getNumPoint();
+	
+	/*int Size = m_pManager->getRetouchScene().getNumPoint();
 	for (int i = 0; i < Size; i++)
 	{
 		BoundaryPoints.push_back(i);
-	}
+	}*/
 	
 	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, HoleSet, m_pDetectorConfig);
 
@@ -120,13 +121,13 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 
 TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_2)
 {
-	std::vector<pcl::index_t> BoundaryPoints;
+	std::vector<pcl::index_t> BoundaryPoints = _loadIndices(DataPath + "FiveHolesInput.txt");
 	std::vector<std::vector<pcl::index_t>> HoleSet;
-	int Size = m_pManager->getRetouchScene().getNumPoint();
+	/*int Size = m_pManager->getRetouchScene().getNumPoint();
 	for (int i = 0; i < Size; i++)
 	{
 		BoundaryPoints.push_back(i);
-	}
+	}*/
 	
 	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, HoleSet, m_pDetectorConfig);
 	std::vector<pcl::index_t> Result;
