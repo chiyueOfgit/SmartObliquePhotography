@@ -13,6 +13,13 @@
 #include <boost/serialization/vector.hpp>
 #include <pcl/io/pcd_io.h>
 
+//测试用例列表：
+// LatticesProjectionBaseTest:通过不同空洞边界点正确生成对应栅格，并将边界点投影到正确栅格内；
+//	* Lattices_Projection_BaseTest_1:整个场景一个小空洞；
+//  * Lattices_Projection_BaseTest_2:场景有五个空洞；
+
+#define ENABLE_VISUALIZER true
+
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 const auto RetouchConfigFile = TESTMODEL_DIR + std::string("Config/Test018_PointCloudRetouchConfig.xml");
@@ -20,7 +27,7 @@ const auto DataPath = TESTMODEL_DIR + std::string("Test018_Model/");
 
 const std::vector<std::string> ModelNames{ "one_hole", "five_holes" };
 
-class TestPlaneAndProjection : public testing::Test
+class TestLatticesProjection : public testing::Test
 {
 protected:
 	void SetUp() override
@@ -38,10 +45,23 @@ protected:
 		for (int i = 1; hiveUtility::hiveLocateFile(DataPath + ModelNames[m_TestNumber] + std::to_string(i) + ".txt") != ""; i++)
 			m_BoundaryIndices.push_back(_loadIndices(DataPath + ModelNames[m_TestNumber] + std::to_string(i) + ".txt"));
 		ASSERT_TRUE(!m_BoundaryIndices.empty());
+
+		if (ENABLE_VISUALIZER)
+		{
+			m_pVisualizer = hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance();
+			m_pVisualizer->init(m_pCloud, false);
+			std::vector<std::size_t> Label;
+			hiveDumpPointLabel(Label);
+			m_pVisualizer->refresh(Label);
+			m_pPCLVisualizer = hiveObliquePhotography::Visualization::hiveGetPCLVisualizer();
+		}
 	}
 
 	void TearDown() override
 	{
+		if (ENABLE_VISUALIZER)
+			m_pVisualizer->run();
+
 		delete m_pRetouchConfig;
 	}
 
@@ -76,26 +96,66 @@ protected:
 		}
 		return { Min, Max };
 	}
+	
+	bool _isInBox(const pcl::PointSurfel& vPoint, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
+	{
+		Eigen::Vector3f Pos;
+		Pos.x() = vPoint.x;
+		Pos.y() = vPoint.y;
+		Pos.z() = vPoint.z;
+		for (int i = 0; i < 3; i++)
+		{
+			if (Pos.data()[i] < vBox.first.data()[i])
+				return false;
+			if (Pos.data()[i] > vBox.second.data()[i])
+				return false;
+		}
+		return true;
+	}
+
+	void _drawBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
+	{
+		static int Id = -1;
+		Id++;
+		std::vector<Eigen::Vector3f> Box;
+		Box.push_back(vBox.first);
+		Box.push_back(vBox.second);
+		std::vector<pcl::PointXYZ> BoxEndPoints;
+		for (int i = 0; i < 2; i++)
+			for (int k = 0; k < 2; k++)
+				for (int m = 0; m < 2; m++)
+				{
+					pcl::PointXYZ TempPoint;
+					TempPoint.x = Box[i].x();
+					TempPoint.y = Box[k].y();
+					TempPoint.z = Box[m].z();
+					BoxEndPoints.push_back(TempPoint);
+				}
+
+		static const std::vector<std::pair<int, int>> CubeIndex =
+		{
+			{0, 1},{2, 3},{4, 5},{6, 7},
+			{0, 2},{1, 3},{4, 6},{5, 7},
+			{0, 4},{1, 5},{7, 3},{2, 6}
+		};
+		for (auto Pair : CubeIndex)
+			m_pPCLVisualizer->addLine(BoxEndPoints[Pair.first], BoxEndPoints[Pair.second], "Line" + std::to_string(Id) + std::to_string(Pair.first) + std::to_string(Pair.second));
+	}
 
 	hiveConfig::CHiveConfig* m_pRetouchConfig = nullptr;
 	PointCloud_t::Ptr m_pCloud = nullptr;
+	hiveObliquePhotography::Visualization::CPointCloudVisualizer* m_pVisualizer = nullptr;
+	pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 
 	std::vector<std::vector<int>> m_BoundaryIndices;
 	static int m_TestNumber;
 private:
 };
-int TestPlaneAndProjection::m_TestNumber = -1;
+int TestLatticesProjection::m_TestNumber = -1;
 
-TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_1)
+TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_1)
 {
-	auto pVisualizer = hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance();
-	pVisualizer->init(m_pCloud, false);
-	std::vector<std::size_t> Label;
-	hiveDumpPointLabel(Label);
-	pVisualizer->refresh(Label);
-
 	CHoleRepairer Repairer;
-	auto pPCLVisualizer = hiveObliquePhotography::Visualization::hiveGetPCLVisualizer();
 	for (auto& Indices : m_BoundaryIndices)
 	{
 		std::vector<pcl::PointSurfel> TempPoints;
@@ -103,12 +163,19 @@ TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_1)
 		PointCloud_t::Ptr TempCloud(new PointCloud_t);
 		for (auto& Point : TempPoints)
 		{
-			Point.rgba = -1;
+			if (Point.r == 0 && Point.g == 0 && Point.b == 0)
+				Point.rgba = -1;
+			else
+			{
+				//注释取消高亮
+				Point.r = 255;
+				Point.g = 0;
+				Point.b = 0;
+			}
+
 			TempCloud->push_back(Point);
 		}
-		pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(Indices.size()));
 
-		//add box line
 		auto TempBox = _getBoundingBox(m_pCloud, Indices);
 		auto BoxLength = TempBox.second - TempBox.first;
 		Eigen::Vector3f PlaneNormal{ BoxLength.x(), BoxLength.y(), BoxLength.z() };
@@ -122,44 +189,27 @@ TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_1)
 			AxisOrder = { 0, 1, 2 };
 		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
 
-		const float BoxHeight = 0.5f;	//可视化包围盒的高度(原本太矮)
+		const float BoxHeight = 0.5f;	//包围盒的高度不会使用
 		TempBox.first.data()[Z] -= BoxHeight;
 		TempBox.second.data()[Z] += BoxHeight;
-		std::vector<Eigen::Vector3f> Box;
-		Box.push_back(TempBox.first);
-		Box.push_back(TempBox.second);
-		std::vector<pcl::PointXYZ> BoxEndPoints;
+		for (auto& Point : TempPoints)
+			ASSERT_TRUE(_isInBox(Point, TempBox));
 
-		for (int i = 0; i < 2; i++)
-			for (int k = 0; k < 2; k++)
-				for (int m = 0; m < 2; m++)
-				{
-					pcl::PointXYZ TempPoint;
-					TempPoint.x = Box[i].x();
-					TempPoint.y = Box[k].y();
-					TempPoint.z = Box[m].z();
-					BoxEndPoints.push_back(TempPoint);
-				}
-
-		for (int i = 0; i < BoxEndPoints.size(); i++)
-			for (int k = i; k < BoxEndPoints.size(); k++)
-				if (k != i)
-					pPCLVisualizer->addLine(BoxEndPoints[i], BoxEndPoints[k], "Line" + std::to_string(Indices.size()) + std::to_string(i) + std::to_string(k));
+		if (ENABLE_VISUALIZER)
+		{
+			//add lattices
+			const int PointSize = 3;
+			m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(Indices.size()));
+			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "TempCloud" + std::to_string(Indices.size()));
+			//add box line
+			_drawBox(TempBox);
+		}
 	}
-
-	pVisualizer->run();
 }
 
-TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_2)
+TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_2)
 {
-	auto pVisualizer = hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance();
-	pVisualizer->init(m_pCloud, false);
-	std::vector<std::size_t> Label;
-	hiveDumpPointLabel(Label);
-	pVisualizer->refresh(Label);
-
 	CHoleRepairer Repairer;
-	auto pPCLVisualizer = hiveObliquePhotography::Visualization::hiveGetPCLVisualizer();
 	for (auto& Indices : m_BoundaryIndices)
 	{
 		std::vector<pcl::PointSurfel> TempPoints;
@@ -167,12 +217,19 @@ TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_2)
 		PointCloud_t::Ptr TempCloud(new PointCloud_t);
 		for (auto& Point : TempPoints)
 		{
-			Point.rgba = -1;
+			if (Point.r == 0 && Point.g == 0 && Point.b == 0)
+				Point.rgba = -1;
+			else
+			{
+				//注释取消高亮
+				Point.r = 255;
+				Point.g = 0;
+				Point.b = 0;
+			}
+
 			TempCloud->push_back(Point);
 		}
-		pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(Indices.size()));
 
-		//add box line
 		auto TempBox = _getBoundingBox(m_pCloud, Indices);
 		auto BoxLength = TempBox.second - TempBox.first;
 		Eigen::Vector3f PlaneNormal{ BoxLength.x(), BoxLength.y(), BoxLength.z() };
@@ -186,31 +243,21 @@ TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_2)
 			AxisOrder = { 0, 1, 2 };
 		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
 
-		const float BoxHeight = 0.5f;	//可视化包围盒的高度(原本太矮)
+		const float BoxHeight = 0.5f;	//包围盒的高度不会使用
 		TempBox.first.data()[Z] -= BoxHeight;
 		TempBox.second.data()[Z] += BoxHeight;
-		std::vector<Eigen::Vector3f> Box;
-		Box.push_back(TempBox.first);
-		Box.push_back(TempBox.second);
-		std::vector<pcl::PointXYZ> BoxEndPoints;
+		for (auto& Point : TempPoints)
+			ASSERT_TRUE(_isInBox(Point, TempBox));
 
-		for (int i = 0; i < 2; i++)
-			for (int k = 0; k < 2; k++)
-				for (int m = 0; m < 2; m++)
-				{
-					pcl::PointXYZ TempPoint;
-					TempPoint.x = Box[i].x();
-					TempPoint.y = Box[k].y();
-					TempPoint.z = Box[m].z();
-					BoxEndPoints.push_back(TempPoint);
-				}
-
-		for (int i = 0; i < BoxEndPoints.size(); i++)
-			for (int k = i; k < BoxEndPoints.size(); k++)
-				if (k != i)
-					pPCLVisualizer->addLine(BoxEndPoints[i], BoxEndPoints[k], "Line" + std::to_string(Indices.size()) + std::to_string(i) + std::to_string(k));
+		if (ENABLE_VISUALIZER)
+		{
+			//add lattices
+			const int PointSize = 3;
+			m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(Indices.size()));
+			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "TempCloud" + std::to_string(Indices.size()));
+			//add box line
+			_drawBox(TempBox);
+		}
 	}
-
-	pVisualizer->run();
 }
 

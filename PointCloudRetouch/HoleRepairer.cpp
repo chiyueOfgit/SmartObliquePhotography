@@ -99,7 +99,7 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 		Eigen::Vector3f ProjPoint = vPlaneInfos.PlaneCenter + (VecCenter2Point - VecProj2Point);
 
 		auto X = vPlaneInfos.AxisOrder[0], Y = vPlaneInfos.AxisOrder[1];
-		Eigen::Vector2f Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
+		Eigen::Vector2i Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
 		Eigen::Vector2i LatticeCoord = { (ProjPoint.data()[X] - vPlaneInfos.BoundingBox.first.data()[X]) / vPlaneInfos.LatticeSize.x(), (ProjPoint.data()[Y] - vPlaneInfos.BoundingBox.first.data()[Y]) / vPlaneInfos.LatticeSize.y() };
 		if (LatticeCoord.x() == Resolution.x())
 			LatticeCoord.x() = Resolution.x() - 1;
@@ -108,6 +108,44 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 
 		if (LatticeCoord.x() >= 0 && LatticeCoord.x() < Resolution.x() && LatticeCoord.y() >= 0 && LatticeCoord.y() < Resolution.y())
 			vioPlaneLattices[LatticeCoord.y()][LatticeCoord.x()].Indices.push_back(Index);
+	}
+
+	__generateLatticesOriginInfos(vPlaneInfos.Normal, vioPlaneLattices);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CHoleRepairer::__generateLatticesOriginInfos(const Eigen::Vector3f& vNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices)
+{
+	_ASSERTE(!vioPlaneLattices.empty());
+	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+
+	Eigen::Vector2i Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
+	for (int Y = 0; Y < Resolution.y(); Y++)
+	{
+		for (int X = 0; X < Resolution.x(); X++)
+		{
+			auto& Lattice = vioPlaneLattices[Y][X];
+			if (!Lattice.Indices.empty())
+			{
+				Eigen::Vector3i SumWeightedColor{ 0, 0, 0 };
+				float SumOnePartDistance = 0.0f;
+				float AverageHeight = 0.0f;
+				for (auto Index : Lattice.Indices)
+				{
+					auto TempPos = Scene.getPositionAt(Index);
+					Eigen::Vector3f Pos{ TempPos.x(), TempPos.y(), TempPos.z() };
+					AverageHeight += (Pos - Lattice.CenterPos).dot(vNormal);
+					auto OnePartDistance = 1 / (Pos - Lattice.CenterPos).norm();
+					Eigen::Vector3i WeightedColor = (Scene.getColorAt(Index).cast<float>() * OnePartDistance).cast<int>();
+					SumWeightedColor += WeightedColor;
+					SumOnePartDistance += OnePartDistance;
+				}
+
+				Lattice.Color = (SumWeightedColor.cast<float>() / SumOnePartDistance).cast<int>();
+				Lattice.Height = AverageHeight / Lattice.Indices.size();
+			}
+		}
 	}
 }
 

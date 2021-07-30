@@ -119,7 +119,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;HIVE_STATIC_LIBRARY;_UNIT_TEST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>../Visualizer;../visualization/include;../PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
@@ -148,6 +148,8 @@
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <DisableSpecificWarnings>4819;</DisableSpecificWarnings>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -171,7 +173,9 @@
   <ItemGroup>
     <ClCompile Include="..\Visualizer\dllmain.cpp" />
     <ClCompile Include="..\Visualizer\InteractionCallback.cpp" />
-    <ClCompile Include="..\Visualizer\pch.cpp" />
+    <ClCompile Include="..\Visualizer\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Visualizer\PointCloudVisualizer.cpp" />
     <ClCompile Include="..\Visualizer\VisualizationInterface.cpp" />
   </ItemGroup>
