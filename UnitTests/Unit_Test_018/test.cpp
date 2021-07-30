@@ -24,7 +24,7 @@ const auto DataPath = TESTMODEL_DIR + std::string("Test018_Model/");
 
 const std::vector<std::string> ModelNames{ "one_hole", "five_holes" };
 
-class TestBoundaryDetection : public testing::Test
+class TestPlaneAndProjection : public testing::Test
 {
 protected:
 	void SetUp() override
@@ -76,9 +76,9 @@ protected:
 	static int m_TestNumber;
 private:
 };
-int TestBoundaryDetection::m_TestNumber = -1;
+int TestPlaneAndProjection::m_TestNumber = -1;
 
-TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
+TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_1)
 {
 	std::vector<pcl::index_t> BoundaryPoints = _loadIndices(DataPath+"OneHoleInput.txt");
 	std::vector<std::vector<pcl::index_t>> HoleSet;
@@ -119,7 +119,7 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 
 }
 
-TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_2)
+TEST_F(TestPlaneAndProjection, Boundary_Detection_BaseTest_2)
 {
 	std::vector<pcl::index_t> BoundaryPoints = _loadIndices(DataPath + "FiveHolesInput.txt");
 	std::vector<std::vector<pcl::index_t>> HoleSet;
