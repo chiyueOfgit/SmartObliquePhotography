@@ -20,7 +20,6 @@ void  CColorFeature::initV(const hiveConfig::CHiveConfig* vFeatureConfig)
 
     m_ColorThreshold = *m_pConfig->getAttribute<float>("COLOR_THRESHOLD");
     m_MaxNumMainColors = *m_pConfig->getAttribute<int>("NUM_MAIN_COLORS");
-    m_MinReduceRatio = *m_pConfig->getAttribute<float>("MIN_REDUCE_RATIO");
 }
 
 //*****************************************************************

@@ -53,7 +53,6 @@ namespace hiveObliquePhotography
 
 			float m_ColorThreshold = 10.0f;
 			std::size_t m_MaxNumMainColors = 5;
-			float m_MinReduceRatio = 0.8f;
 		};
 	}
 
