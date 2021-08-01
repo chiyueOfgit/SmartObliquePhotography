@@ -12,6 +12,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CBoundaryDetector, KEYWORD::BOUNDARY_DETECTOR)
 
 bool CBoundaryDetector::init(const hiveConfig::CHiveConfig* vConfig)
 {
+	m_pBoundaryDetectorConfig = vConfig;
 	return true;
 }
 
@@ -35,8 +36,10 @@ void CBoundaryDetector::runV(const std::vector<pcl::index_t>& vBoundarySet, std:
 		Eigen::Vector3f CenterPosition{ HomoCenterPosition.x(), HomoCenterPosition.y(), HomoCenterPosition.z() };
 		Eigen::Vector3f CenterNormal{ HomoCenterNormal.x(), HomoCenterNormal.y(), HomoCenterNormal.z() };
 		CenterNormal.normalize();
-
-		auto NeighborSet = pManager->buildNeighborhood(Index);
+		
+		std::string SearchMode = m_pBoundaryDetectorConfig->getAttribute<std::string>("SEARCH_MODE_BOUNDARY_DETECTOR").value();
+		int NearestK = m_pBoundaryDetectorConfig->getAttribute<int>("NEAREST_N_BOUNDARY_DETECTOR").value();;
+		auto NeighborSet = pManager->buildNeighborhood(Index, SearchMode, NearestK);
 		//FitNormalÔÝÊ±ÓÃCenterNormal´úÌæ
 		Eigen::Vector3f FitNormal = CenterNormal;
 		
@@ -248,7 +251,7 @@ void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPoi
 			    }
 			}
 		}
-		if (TempBoundary.size() > 20)
+		if (TempBoundary.size() > m_pBoundaryDetectorConfig->getAttribute<int>("BOUNDARY_SIZE_TOLERANCE").value())
 			voHoleSet.push_back(TempBoundary);
 		
 		for (auto Iter = vBoundaryPointSet.begin(); Iter != vBoundaryPointSet.end(); )
@@ -269,7 +272,7 @@ void CBoundaryDetector::__findNearestBoundaryPoint(pcl::index_t vSeed, std::vect
 	for(auto Index: vTotalSet)
 	{
 		auto TempPos = pManager->getRetouchScene().getPositionAt(Index);
-		if ((SeedPos - TempPos).norm() < 0.5)
+		if ((SeedPos - TempPos).norm() < m_pBoundaryDetectorConfig->getAttribute<float>("BOUNDARY_DISTANCE_TOLERANCE").value())
 			voNeighborSet.push_back(Index);
 	}
 }

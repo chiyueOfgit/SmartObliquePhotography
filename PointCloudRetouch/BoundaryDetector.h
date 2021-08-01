@@ -21,6 +21,7 @@ namespace hiveObliquePhotography
 			Eigen::Vector3f __calcFitPlaneRANSAC(const std::vector<Eigen::Vector3f>& vData, double vDistanceThreshold, const Eigen::Vector3f& vUp);
 			void __divideBoundary(std::vector<pcl::index_t>& vBoundaryPointSet, std::vector<std::vector<pcl::index_t>>& voHoleSet);
 			void __findNearestBoundaryPoint(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet);
+			const hiveConfig::CHiveConfig* m_pBoundaryDetectorConfig = nullptr;
 		};
 	}
 }

@@ -54,7 +54,6 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 				if(static_cast<EPointLabel>(CandidateLabel) != EPointLabel::DISCARDED)
 				    pManager->tagPointLabel(Candidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 				m_ExpandPoints.push_back(Candidate);
-
 				for (auto e : pManager->buildNeighborhood(Candidate))
 					ExpandingCandidateQueue.push(e);
 			}
