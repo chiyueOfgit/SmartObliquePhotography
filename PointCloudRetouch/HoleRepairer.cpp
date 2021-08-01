@@ -57,7 +57,7 @@ void CHoleRepairer::repairHole(std::vector<pcl::PointSurfel>& voNewPoints)
 //FUNCTION: 
 void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints)
 {
-	const Eigen::Vector2i Resolution{ 64, 64 };
+	const Eigen::Vector2i Resolution{ 32, 32 };
 
 	//Input
 	auto InputPlane = __calculatePlaneByIndices(vInputIndices);
@@ -90,7 +90,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 
 		CTextureSynthesizer<Eigen::Vector3i> ColorSynthesizer;
 		ColorSynthesizer.init(m_pTextureConfig);
-		ColorSynthesizer.execute(InputColorMatrix, __genMask({32, 32}, BoundaryPlaneLattices), BoundaryColorMatrix);	//Mask输出仍为Boundary的分辨率，只是以设定的进行计算
+		ColorSynthesizer.execute(InputColorMatrix, __genMask((0.5f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices), BoundaryColorMatrix);	//Mask输出仍为Boundary的分辨率，只是以设定的进行计算
 		__fillLatticesByMatrix<Eigen::Vector3i>(BoundaryColorMatrix, BoundaryPlaneLattices, offsetof(SLattice, Color));
 	}
 
@@ -101,7 +101,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 
 		CTextureSynthesizer<Eigen::Matrix<float, 1, 1>> HeightSynthesizer;
 		HeightSynthesizer.init(m_pTextureConfig);
-		HeightSynthesizer.execute(InputHeightMatrix, __genMask({32, 32}, BoundaryPlaneLattices), BoundaryHeightMatrix);
+		HeightSynthesizer.execute(InputHeightMatrix, __genMask((0.5f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices), BoundaryHeightMatrix);
 		__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
 	}
 
@@ -212,18 +212,22 @@ void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, st
 			auto& Lattice = vioPlaneLattices[Y][X];
 			if (!Lattice.Indices.empty())
 			{
-				Eigen::Vector3i SumColor{ 0, 0, 0 };
-				float SumOnePartHeight = 0.0f;
+				std::vector<std::pair<std::size_t, float>> ColorLengths;
 				float AverageHeight = 0.0f;
 				for (auto Index : Lattice.Indices)
 				{
 					auto TempPos = Scene.getPositionAt(Index);
 					Eigen::Vector3f Pos{ TempPos.x(), TempPos.y(), TempPos.z() };
+					ColorLengths.push_back({ Index, Scene.getPositionAt(Index).norm() });
 					AverageHeight += (Pos - Lattice.CenterPos).dot(vNormal);
-					SumColor += Scene.getColorAt(Index);
 				}
 
-				Lattice.Color = (SumColor.cast<float>() / Lattice.Indices.size()).cast<int>();
+				std::sort(ColorLengths.begin(), ColorLengths.end(), [](std::pair<std::size_t, float> vLeft, std::pair<std::size_t, float> vRight)
+					{
+						return vLeft.second < vRight.second;
+					});
+
+				Lattice.Color = Scene.getColorAt(ColorLengths[ColorLengths.size() * 0.5f].first);	//中位
 				Lattice.Height(0, 0) = AverageHeight / Lattice.Indices.size();
 			}
 		}
