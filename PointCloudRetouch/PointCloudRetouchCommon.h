@@ -19,6 +19,7 @@ namespace hiveObliquePhotography
 			const std::string CLUSTER_EXPANDER_MULTITHREAD = "CLUSTER_EXPANDER_MULTITHREAD";
 			const std::string OUTLIER_DETECTOR = "OUTLIER_DETECTOR";
 			const std::string BOUNDARY_DETECTOR = "BOUNDARY_DETECTOR";
+			const std::string HOLE_REPAIRER = "HOLE_REPAIRER";
 
 			const std::string PRECOMPUTE_FOLDER = "Temp/";
 

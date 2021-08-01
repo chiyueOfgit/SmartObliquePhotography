@@ -167,6 +167,7 @@
     <ClInclude Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="..\PointCloudRetouch\Feature.h" />
     <ClInclude Include="..\PointCloudRetouch\framework.h" />
+    <ClInclude Include="..\PointCloudRetouch\HoleRepairer.h" />
     <ClInclude Include="..\PointCloudRetouch\InitialClusterCreator.h" />
     <ClInclude Include="..\PointCloudRetouch\NeighborhoodBuilder.h" />
     <ClInclude Include="..\PointCloudRetouch\NormalComplexity.h" />
@@ -188,12 +189,14 @@
     <ClInclude Include="..\PointCloudRetouch\PointSetPreprocessor.h" />
     <ClInclude Include="..\PointCloudRetouch\PrecomputeManager.h" />
     <ClInclude Include="..\PointCloudRetouch\RetouchTask.h" />
+    <ClInclude Include="..\PointCloudRetouch\TextureSynthesizer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PointCloudRetouch\BoundaryDetector.cpp" />
     <ClCompile Include="..\PointCloudRetouch\ColorFeature.cpp" />
     <ClCompile Include="..\PointCloudRetouch\dllmain.cpp" />
     <ClCompile Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\HoleRepairer.cpp" />
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp" />
     <ClCompile Include="..\PointCloudRetouch\NeighborhoodBuilder.cpp" />
     <ClCompile Include="..\PointCloudRetouch\NormalComplexity.cpp" />
@@ -217,6 +220,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\TextureSynthesizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PointCloudRetouch\packages.config" />

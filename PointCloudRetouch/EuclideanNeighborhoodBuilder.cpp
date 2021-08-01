@@ -20,6 +20,18 @@ void CEuclideanNeighborhoodBuilder::__extraInitV(const hiveConfig::CHiveConfig* 
 
 //*****************************************************************
 //FUNCTION: 
+std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed, std::string& vType, float vPara) const
+{
+	std::vector<pcl::index_t> Neighborhood;
+	std::vector<float> Distance;
+	if (vType == "NEAREST")
+		m_pTree->nearestKSearch(m_pPointCloudScene->points[vSeed], static_cast<int>(vPara), Neighborhood, Distance);
+	else if (vType == "RADIUS")
+		m_pTree->radiusSearch(m_pPointCloudScene->points[vSeed], vPara, Neighborhood, Distance);
+	//·¢ÉúNRVO
+	return Neighborhood;
+}
+
 std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed) const
 {
 	std::vector<pcl::index_t> Neighborhood;

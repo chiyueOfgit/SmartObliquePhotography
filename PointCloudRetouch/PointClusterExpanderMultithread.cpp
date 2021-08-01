@@ -50,7 +50,6 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 					if (static_cast<EPointLabel>(CandidateLabel) != EPointLabel::DISCARDED)
 					    pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 					ExpandedFlag.at(vCandidate) = true;
-
 					for (auto e : pManager->buildNeighborhood(vCandidate))
 						vFeeder.add(e);
 				}

@@ -5,6 +5,7 @@
 #include "RetouchTask.h"
 #include "InitialClusterCreator.h"
 #include "PointSetPreprocessor.h"
+#include "HoleRepairer.h"
 #include "PrecomputeManager.h"
 
 namespace hiveObliquePhotography
@@ -19,6 +20,7 @@ namespace hiveObliquePhotography
 		public:
 			~CPointCloudRetouchManager() = default;
 
+			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara);
 			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed);
 			void tagPointLabel(pcl::index_t vPoint, EPointLabel vTargetLabel, std::uint32_t vClusterIndex, double vClusterBelongingProbability)
 			{
@@ -37,6 +39,9 @@ namespace hiveObliquePhotography
 			bool executePreprocessor(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc, const Eigen::Vector3d& vViewPos);
 			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel);
 			bool executeOutlierDetector(EPointLabel vTo);
+			void executeHoleRepairerSetRegion(const std::vector<pcl::index_t>& vHoleRegion);
+			void executeHoleRepairerSetInput(const std::vector<pcl::index_t>& vInput);
+			void executeHoleRepairer(std::vector<pcl::PointSurfel>& voNewPoints);
 			void recordCurrentStatus();
 			bool undo();
 			void recoverMarkedPoints2Undetermined(EPointLabel vLabel);
@@ -46,7 +51,6 @@ namespace hiveObliquePhotography
 			std::uint32_t getClusterIndexAt(std::size_t vIndex) const { return m_PointLabelSet.getClusterIndexAt(vIndex); }
 
 			double getClusterBelongingProbabilityAt(std::size_t vIndex) const { return m_PointLabelSet.getClusterBelongingProbabilityAt(vIndex); }
-			
 			
 			void switchLabel(EPointLabel vTo, EPointLabel vFrom);
 			void setLabel(const std::vector<pcl::index_t>& vPoints, EPointLabel vTarget);	//for perform
@@ -88,6 +92,7 @@ namespace hiveObliquePhotography
 			CRetouchTask             m_BackgroundMarker;
 			CInitialClusterCreator   m_InitialClusterCreator;
 			CPointSetPreprocessor    m_Preprocessor;
+			CHoleRepairer			 m_HoleRepairer;
 			CPrecomputeManager		*m_pPrecomputeManager = nullptr;
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;

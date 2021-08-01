@@ -20,7 +20,7 @@
       <UniqueIdentifier>{db0fdec4-d856-4bde-aff7-fdd9f89879f3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utility">
-      <UniqueIdentifier>{e7ca0977-01a8-45d1-99c9-62d96f38d801}</UniqueIdentifier>
+      <UniqueIdentifier>{b9410939-016c-44ff-8db3-2fa6e933b55f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -91,8 +91,11 @@
     <ClInclude Include="PointClusterExpanderBase.h">
       <Filter>Operation</Filter>
     </ClInclude>
+    <ClInclude Include="HoleRepairer.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
     <ClInclude Include="TextureSynthesizer.h">
-      <Filter>Utility</Filter>
+      <Filter>Operation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -152,8 +155,11 @@
     <ClCompile Include="BoundaryDetector.cpp">
       <Filter>Operation</Filter>
     </ClCompile>
+    <ClCompile Include="HoleRepairer.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
     <ClCompile Include="TextureSynthesizer.cpp">
-      <Filter>Utility</Filter>
+      <Filter>Operation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

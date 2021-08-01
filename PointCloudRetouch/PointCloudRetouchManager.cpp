@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "PointCloudRetouchManager.h"
+
+#include "BoundaryDetector.h"
 #include "PointCluster.h"
 #include "NeighborhoodBuilder.h"
 #include "OutlierDetector.h"
@@ -75,6 +77,14 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("Outlier")))
 			{
 				m_pOutlierConfig = pConfig;
+			}
+			continue;
+		}
+		if (_IS_STR_IDENTICAL(pConfig->getSubconfigType(), std::string("HOLE_REPAIRER")))
+		{
+			if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("HoleRepairer")))
+			{
+				m_HoleRepairer.init(pConfig);
 			}
 			continue;
 		}
@@ -308,9 +318,14 @@ void CPointCloudRetouchManager::setLabel(const std::vector<pcl::index_t>& vPoint
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed)
+std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara)
 {
 	//·¢ÉúNRVO
+	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vType, vPara);
+}
+
+std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed)
+{
 	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed);
 }
 
@@ -372,4 +387,25 @@ void CPointCloudRetouchManager::recordCurrentStatus()
 	m_StatusQueue.push_back(std::make_pair(m_PointLabelSet, m_Timestamp));
 	if (m_StatusQueue.size() > 10)
 		m_StatusQueue.pop_front();
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::executeHoleRepairerSetRegion(const std::vector<pcl::index_t>& vHoleRegion)
+{
+	m_HoleRepairer.setHoleRegion(vHoleRegion);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::executeHoleRepairerSetInput(const std::vector<pcl::index_t>& vInput)
+{
+	m_HoleRepairer.setInput(vInput);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::executeHoleRepairer(std::vector<pcl::PointSurfel>& voNewPoints)
+{
+	m_HoleRepairer.repairHole(voNewPoints);
 }
