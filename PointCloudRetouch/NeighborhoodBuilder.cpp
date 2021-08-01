@@ -25,12 +25,30 @@ bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vCon
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed) const
+std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara) const
 {
 	if (!m_pPointCloudScene)
 		_THROW_RUNTIME_ERROR("PointCloud pointer is uninitialized");
 
 	if (vSeed <0 || vSeed >= m_pPointCloudScene->size())
+		_THROW_RUNTIME_ERROR("Seed index is out of range");
+
+	std::vector<pcl::index_t> Neighborhood;
+
+	for (auto e : __buildNeighborhoodV(vSeed, vType, vPara))
+	{
+		Neighborhood.push_back(e);
+	}
+	//·¢ÉúNRVO
+	return Neighborhood;
+}
+
+std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed) const
+{
+	if (!m_pPointCloudScene)
+		_THROW_RUNTIME_ERROR("PointCloud pointer is uninitialized");
+
+	if (vSeed < 0 || vSeed >= m_pPointCloudScene->size())
 		_THROW_RUNTIME_ERROR("Seed index is out of range");
 
 	std::vector<pcl::index_t> Neighborhood;

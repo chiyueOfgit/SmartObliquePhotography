@@ -20,6 +20,7 @@ namespace hiveObliquePhotography
 		public:
 			~CPointCloudRetouchManager() = default;
 
+			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara);
 			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed);
 			void tagPointLabel(pcl::index_t vPoint, EPointLabel vTargetLabel, std::uint32_t vClusterIndex, double vClusterBelongingProbability)
 			{
