@@ -23,6 +23,7 @@ namespace hiveObliquePhotography
 			std::size_t getNumPoint() const { return m_pPointCloudScene ? m_pPointCloudScene->size() : 0; }
 
 			std::pair<Eigen::Vector3f, Eigen::Vector3f> getBoundingBox(const std::vector<pcl::index_t>& vIndices) const;
+			std::vector<pcl::index_t> getPointsInBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox) const;
 
 			template<typename Point_t>
 			void dumpPoint(pcl::index_t vIndex, Point_t& voPoint) const
