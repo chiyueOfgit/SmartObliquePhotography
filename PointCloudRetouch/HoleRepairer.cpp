@@ -4,6 +4,10 @@
 #include "TextureSynthesizer.h"
 #include "PlanarityFeature.h"
 #include "PointCloudRetouchManager.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -82,16 +86,22 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	std::vector<std::vector<SLattice>> BoundaryPlaneLattices;
 	__generatePlaneLattices(BoundaryPlane, BoundaryBox, HoleResolution, BoundaryPlaneInfos, BoundaryPlaneLattices);	//生成平面格子
 	__projectPoints2PlaneLattices({}, BoundaryPlaneInfos, BoundaryPlaneLattices);	//用包围盒里的点投点进格子
-
+	Eigen::MatrixXi Mask = __genMask((1.0f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices);
 	//生成颜色
 	{
 		auto InputColorMatrix = __extractMatrixFromLattices<Eigen::Vector3i>(InputPlaneLattices, offsetof(SLattice, Color));
 		auto BoundaryColorMatrix = __extractMatrixFromLattices<Eigen::Vector3i>(BoundaryPlaneLattices, offsetof(SLattice, Color));
 
+		__outputImage(InputColorMatrix, "Temp/input.png");
+		__outputImage(BoundaryColorMatrix, "Temp/output_before.png");
+		__outputImage(Mask, "Temp/mask.png");
+
 		CTextureSynthesizer<Eigen::Vector3i> ColorSynthesizer;
 		ColorSynthesizer.init(m_pTextureConfig);
-		ColorSynthesizer.execute(InputColorMatrix, __genMask((0.5f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices), BoundaryColorMatrix);	//Mask输出仍为Boundary的分辨率，只是以设定的进行计算
+		ColorSynthesizer.execute(InputColorMatrix, Mask, BoundaryColorMatrix);	//Mask输出仍为Boundary的分辨率，只是以设定的进行计算
 		__fillLatticesByMatrix<Eigen::Vector3i>(BoundaryColorMatrix, BoundaryPlaneLattices, offsetof(SLattice, Color));
+
+		__outputImage(BoundaryColorMatrix, "Temp/output_after.png");
 	}
 
 	//生成高度
@@ -101,11 +111,11 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 
 		CTextureSynthesizer<Eigen::Matrix<float, 1, 1>> HeightSynthesizer;
 		HeightSynthesizer.init(m_pTextureConfig);
-		HeightSynthesizer.execute(InputHeightMatrix, __genMask((0.5f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices), BoundaryHeightMatrix);
+		HeightSynthesizer.execute(InputHeightMatrix, Mask, BoundaryHeightMatrix);
 		__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
 	}
 
-	__generateNewPointsFromLattices(BoundaryPlane, BoundaryPlaneLattices, voNewPoints);
+	__generateNewPointsFromLattices(BoundaryPlane, Mask, BoundaryPlaneLattices, voNewPoints);
 }
 
 //*****************************************************************
@@ -232,11 +242,40 @@ void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, st
 			}
 		}
 	}
+
+	//post process
+	for (int Y = 0; Y < Resolution.y(); Y++)
+	{
+		for (int X = 0; X < Resolution.x(); X++)
+		{
+			auto& Lattice = vioPlaneLattices[Y][X];
+			if (Lattice.Indices.empty())
+			{
+				const int KernelSize = 5;	//中值填空
+				int Delta = KernelSize / 2;
+				std::vector<Eigen::Vector3i> Colors;
+				for (int i = Y - Delta; i <= Y + Delta; i++)
+					for (int k = X - Delta; k <= X + Delta; k++)
+						if (k >= 0 && k < Resolution.x() && i >= 0 && i < Resolution.y())
+						{
+							auto& Neighbor = vioPlaneLattices[i][k];
+							if (!Neighbor.Indices.empty())
+								Colors.push_back(Neighbor.Color);
+						}
+				std::sort(Colors.begin(), Colors.end(), [](Eigen::Vector3i vLeft, Eigen::Vector3i vRight)
+					{
+						return vLeft.norm() < vRight.norm();
+					});
+				if (!Colors.empty())
+					Lattice.Color = Colors[Colors.size() / 2];
+			}
+		}
+	}
 }
 
 //*****************************************************************
 //FUNCTION: 
-void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector4f& vPlane, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints)
+void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector4f& vPlane, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints)
 {
 	_ASSERTE(!vPlaneLattices.empty());
 	Eigen::Vector2i Resolution{ vPlaneLattices.front().size(), vPlaneLattices.size() };
@@ -250,7 +289,7 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector4f& vPlan
 		for (int Y = 0; Y < Resolution.y(); Y++)
 		{
 			auto& Lattice = vPlaneLattices[Y][X];
-			if (Lattice.Indices.empty())
+			if (Lattice.Indices.empty() && vMask(Y, X))
 			{
 				Eigen::Vector3f RealPos = Lattice.CenterPos + Normal * (K * Lattice.Height(0, 0) + B);	//取出加偏移
 				pcl::PointSurfel TempPoint;
@@ -345,7 +384,56 @@ Eigen::MatrixXi CHoleRepairer::__genMask(const Eigen::Vector2i& vResolution, con
 					for (float k = (int)BeginInLattices.x() + 0.5f; k <= EndInLattices.x(); k++)
 						Mask((int)(i - 0.5f), (int)(k - 0.5f)) = 0;
 		}
+
+	//for (int Y = 0; Y < Mask.rows(); Y++)
+	//	for (int X = 0; X < Mask.cols(); X++)
+	//	{
+	//		if (vPlaneLattices[Y][X].Color.norm())
+	//			Mask(Y, X) = 0;
+	//		else
+	//			Mask(Y, X) = 1;
+	//	}
+
 	return Mask;
+}
+
+void CHoleRepairer::__outputImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath)
+{
+	const auto Width = vTexture.cols();
+	const auto Height = vTexture.rows();
+	const auto BytesPerPixel = 3;
+	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+	for (auto i = 0; i < Height; i++)
+		for (auto k = 0; k < Width; k++)
+		{
+			auto Offset = (i * Width + k) * BytesPerPixel;
+			ResultImage[Offset] = vTexture.coeff(i, k)[0];
+			ResultImage[Offset + 1] = vTexture.coeff(i, k)[1];
+			ResultImage[Offset + 2] = vTexture.coeff(i, k)[2];
+		}
+
+	stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+	stbi_image_free(ResultImage);
+}
+
+void CHoleRepairer::__outputImage(const Eigen::MatrixXi& vTexture, const std::string& vOutputImagePath)
+{
+	const auto Width = vTexture.cols();
+	const auto Height = vTexture.rows();
+	const auto BytesPerPixel = 3;
+	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+	for (auto i = 0; i < Height; i++)
+		for (auto k = 0; k < Width; k++)
+		{
+			auto Offset = (i * Width + k) * BytesPerPixel;
+			auto Color = vTexture.coeff(i, k) == 0 ? 0 : 255;
+			ResultImage[Offset] = Color;
+			ResultImage[Offset + 1] = Color;
+			ResultImage[Offset + 2] = Color;
+		}
+
+	stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+	stbi_image_free(ResultImage);
 }
 
 //*****************************************************************
