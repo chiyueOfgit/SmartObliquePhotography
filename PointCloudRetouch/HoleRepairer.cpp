@@ -57,7 +57,7 @@ void CHoleRepairer::repairHole(std::vector<pcl::PointSurfel>& voNewPoints)
 //FUNCTION: 
 void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints)
 {
-	const Eigen::Vector2i Resolution{ 32, 32 };
+	const Eigen::Vector2i Resolution{ 64, 64 };
 
 	//Input
 	auto InputPlane = __calculatePlaneByIndices(vInputIndices);
@@ -75,10 +75,11 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	Eigen::Vector2f BoundaryPiece{ BoundaryBox.second.data()[InputPlaneInfos.AxisOrder[0]] - BoundaryBox.first.data()[InputPlaneInfos.AxisOrder[0]], BoundaryBox.second.data()[InputPlaneInfos.AxisOrder[1]] - BoundaryBox.first.data()[InputPlaneInfos.AxisOrder[1]] };
 	float BoundaryPieceArea = BoundaryPiece.x() * BoundaryPiece.y();
 
-	const Eigen::Vector2i HoleResolution = (__calcMeanPointsPerLattice(InputPlaneLattices) * BoundaryPieceArea / InputPieceArea * Resolution.cast<float>()).cast<int>();
+	auto MeanPointsPerLattice = __calcMeanPointsPerLattice(InputPlaneLattices);
+	const Eigen::Vector2i HoleResolution = (MeanPointsPerLattice * BoundaryPieceArea / InputPieceArea * Resolution.cast<float>()).cast<int>();
 	SPlaneInfos BoundaryPlaneInfos;
 	std::vector<std::vector<SLattice>> BoundaryPlaneLattices;
-	__generatePlaneLattices(BoundaryPlane, BoundaryBox, HoleResolution, BoundaryPlaneInfos, BoundaryPlaneLattices);	//生成平面格子
+	__generatePlaneLattices(BoundaryPlane, BoundaryBox, Resolution, BoundaryPlaneInfos, BoundaryPlaneLattices);	//生成平面格子
 	__projectPoints2PlaneLattices({}, BoundaryPlaneInfos, BoundaryPlaneLattices);	//用包围盒里的点投点进格子
 
 	//生成颜色
@@ -88,7 +89,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 
 		CTextureSynthesizer<Eigen::Vector3i> ColorSynthesizer;
 		ColorSynthesizer.init(m_pTextureConfig);
-		ColorSynthesizer.execute(InputColorMatrix, __genMask(HoleResolution), BoundaryColorMatrix);
+		ColorSynthesizer.execute(InputColorMatrix, __genMask(Resolution), BoundaryColorMatrix);
 		__fillLatticesByMatrix<Eigen::Vector3i>(BoundaryColorMatrix, BoundaryPlaneLattices, offsetof(SLattice, Color));
 	}
 
@@ -99,7 +100,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 
 		CTextureSynthesizer<Eigen::Matrix<float, 1, 1>> HeightSynthesizer;
 		HeightSynthesizer.init(m_pTextureConfig);
-		HeightSynthesizer.execute(InputHeightMatrix, __genMask(HoleResolution), BoundaryHeightMatrix);
+		HeightSynthesizer.execute(InputHeightMatrix, __genMask(Resolution), BoundaryHeightMatrix);
 		__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
 	}
 
