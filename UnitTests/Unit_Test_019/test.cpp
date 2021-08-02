@@ -1,42 +1,41 @@
 #include "pch.h"
 #include "TextureSynthesizer.h"
-#include "toojpeg.h"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/serialization/vector.hpp"
-#include <fstream>
-#include <ostream>
 
+#define  STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#define STB_IMAGE_WRITE_STATIC
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 //测试用例列表：
 //  * DeathTest_EmptyInput: 输入为空，期待抛出异常
 //  * DeathTest_DifferentSizesOfMaskAndScene: 输入大小不同的Mask和Scene，期待抛出异常
-//  * AreaNotHolesWontBeModified: 非洞的场景区域不会被修改
-//  * RandomMask: 随机Mask
-//  * RemainBoundaryMask: 保留边缘Mask
+//  * AllBlaskMask: Mask全为0，期望Output和Scene一样
+//  * SquareMask: 从图片中读取Mask，该图片的边缘值为255，即Mask为规则的正方形，边缘为0，输出保存为图片
+//  * RandomMask：从图片中读取Mask，该图片的白色区域不规则，输出保存为图片
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-const auto InputFilePath = TESTMODEL_DIR + std::string("Test019_Model/input.txt");
-const auto OutputFilePath = TESTMODEL_DIR + std::string("Test019_Model/output.txt");
-const auto ResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/ResultImage.png");
-std::ofstream ResultJPG(ResultImagePath, std::ios_base::out | std::ios_base::binary);
+const auto InputImagePath = TESTMODEL_DIR + std::string("Test019_Model/input.png");
+const auto SceneImagePath = TESTMODEL_DIR + std::string("Test019_Model/scene.png");
+const auto MaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/Mask.png");
+const auto RandomMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/RandomMask.png");
+const auto AllBlackMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/AllBlackMaskResultImage.png");
+const auto SquareMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/SquareMaskResultImage.png");
+const auto RandomMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/RandomMaskResultImage.png");
 
 class TestTextureSynthesizer : public testing::Test
 {
 public:
-	std::vector<std::vector<Eigen::Vector3i>> m_InputImage;
-	std::vector<std::vector<bool>> m_MaskImage;
-	std::vector<std::vector<Eigen::Vector3i>> m_OutputImage;
+
 
 protected:
 	void SetUp() override
 	{
-		LoadImageTxt(InputFilePath, m_InputImage);
-		GenerateMask(m_MaskImage, 192, 192);
-		LoadImageTxt(OutputFilePath, m_OutputImage);
 	}
 
 	void TearDown() override
@@ -44,135 +43,153 @@ protected:
 
 	}
 
-	void GenerateMask(std::vector<std::vector<bool>>& voMask, int vRow, int vCol)
+	void ReadImage(const std::string& vImagePath, Eigen::Matrix<Eigen::Vector3i, -1, -1>& voTexture)
 	{
-		for (int i = 0; i < vRow; i++)
-		{
-			std::vector<bool> TempRow;
-			for (int k = 0; k < vCol; k++)
-				TempRow.push_back(1);
-				//TempRow.push_back(hiveMath::hiveGenerateRandomInteger(0, 1));
-			voMask.push_back(TempRow);
-		}
+		const char* filepath = vImagePath.c_str();
+		int Width, Height, BytesPerPixel;
+		unsigned char* ImageData = stbi_load(filepath, &Width, &Height, &BytesPerPixel, 0);
+
+		voTexture.resize(Height, Width);
+		for (int i = 0; i < Height; i++)
+			for (int k = 0; k < Width; k++)
+				for (int Offset = 0; Offset < 3; Offset++)
+					voTexture(i, k)[Offset] = ImageData[(i * Width + k) * BytesPerPixel + Offset];
 	}
 
-	void LoadImageTxt(const std::string& vFilePath, std::vector<std::vector<Eigen::Vector3i>>& voImage)
+	void ReadMask(const std::string& vImagePath, Eigen::MatrixXi& voMask)
 	{
-		std::ifstream File(vFilePath);
-		std::vector<std::string> TextString;
-		std::string Line = "";
-		int LineCount = 1;
-		std::vector<Eigen::Vector3i> ImageCol;
-		Eigen::Vector3i Pixel;
+		const char* filepath = vImagePath.c_str();
+		int Width, Height, BytesPerPixel;
+		unsigned char* ImageData = stbi_load(filepath, &Width, &Height, &BytesPerPixel, 0);
 
-		if (!File.is_open())
-			return;
+		voMask.resize(Height, Width);
+		for (int i = 0; i < Height; i++)
+			for (int k = 0; k < Width; k++)
+				voMask(i, k) = ImageData[(i * Width + k) * BytesPerPixel] / 255;
+	}
 
-		while (std::getline(File, Line))
-		{
-			if (Line.size() > 0)
+	void GenerateMask(Eigen::MatrixXi& voMask, int vMode)
+	{
+		for (int i = 0; i < voMask.rows(); i++)
+			for (int k = 0; k < voMask.cols(); k++)
 			{
-				if (Line[0] != 'L')
-				{
-					if (LineCount == 1)
-					{
-						Pixel[0] = std::atoi(Line.c_str());
-						LineCount++;
-					}
-					else if (LineCount == 2)
-					{
-						Pixel[1] = std::atoi(Line.c_str());
-						LineCount++;
-					}
-					else if (LineCount == 3)
-					{
-						Pixel[2] = std::atoi(Line.c_str());
-						ImageCol.push_back(Pixel);
-						LineCount = 1;
-					}
-				}
+				if (vMode == -1)
+					voMask(i, k) = hiveMath::hiveGenerateRandomInteger(0, 1);
 				else
-				{
-					voImage.push_back(ImageCol);
-					ImageCol.clear();
-				}
+					voMask(i, k) = vMode;
 			}
-		}
 	}
 
-	void TransferVector2MatrixVec3i(const std::vector<std::vector<Eigen::Vector3i>>& vImage, Eigen::Matrix<Eigen::Vector3i, -1, -1>& voTexture)
+	void GenerateImage(Eigen::Matrix<Eigen::Vector3i, -1, -1>& voTexture, Eigen::Vector3i vMode)
 	{
-		for (int i = 0; i < vImage.size(); i++)
-			for (int k = 0; k < vImage[i].size(); k++)
-				for (int m = 0; m < 3; m++)
-					voTexture(i, k)[m] = vImage[i][k][m];
+		for (int i = 0; i < voTexture.rows(); i++)
+			for (int k = 0; k < voTexture.cols(); k++)
+			{
+				if (vMode.x() < 0 || vMode.y() < 0 || vMode.z() < 0)
+					voTexture(i, k) = { hiveMath::hiveGenerateRandomInteger(0, 255), hiveMath::hiveGenerateRandomInteger(0, 255), hiveMath::hiveGenerateRandomInteger(0, 255) };
+				else
+					voTexture(i, k) = vMode;
+			}
 	}
 
-	void TransferVector2MatrixXi(const std::vector<std::vector<bool>>& vImage, Eigen::MatrixXi& voTexture)
+	void GenerateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath)
 	{
-		for (int i = 0; i < vImage.size(); i++)
-			for (int k = 0; k < vImage[i].size(); k++)
-				voTexture(i, k) = vImage[i][k];
+		const auto Width = vTexture.cols();
+		const auto Height = vTexture.rows();
+		const auto BytesPerPixel = 3;
+		auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+		for (auto i = 0; i < Height; i++)
+			for (auto k = 0; k < Width; k++)
+			{
+				auto Offset = (i * Width + k) * BytesPerPixel;
+				ResultImage[Offset] = vTexture.coeff(i, k)[0];
+				ResultImage[Offset + 1] = vTexture.coeff(i, k)[1];
+				ResultImage[Offset + 2] = vTexture.coeff(i, k)[2];
+			}
+
+		stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+		stbi_image_free(ResultImage);
 	}
 
 };
 
-void OutputFunc(unsigned char byte)
+TEST_F(TestTextureSynthesizer, DeathTest_EmptyInput)
 {
-	ResultJPG << byte;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+	Eigen::MatrixXi MaskTexture;
+
+	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	EXPECT_ANY_THROW(TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture));
 }
 
-//TEST_F(TestTextureSynthesizer, RandomMask)
-//{
-//	EXPECT_EQ(m_InputImage.size(), 64);
-//	EXPECT_EQ(m_OutputImage.size(), 192);
-//
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture(m_InputImage.size(), m_InputImage[0].size());
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture(m_OutputImage.size(), m_OutputImage[0].size());
-//	Eigen::MatrixXi MaskTexture(m_MaskImage.size(), m_MaskImage[0].size());
-//
-//	TransferVector2MatrixVec3i(m_InputImage, InputTexture);
-//	TransferVector2MatrixVec3i(m_OutputImage, OutputTexture);
-//	TransferVector2MatrixXi(m_MaskImage, MaskTexture);
-//
-//	CTextureSynthesizer<Eigen::Vector3i> TextureSynthesizer;
-//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-//
-//	// Write PPM
-//	std::ofstream OutputPPM;
-//	OutputPPM.open("Result.ppm");
-//	OutputPPM << "P3\n" << m_OutputImage.size() << " " << m_OutputImage[0].size() << "\n255\n";
-//	for (int i = 0; i < m_OutputImage.size(); i++)
-//		for (int k = 0; k < m_OutputImage[0].size(); k++)
-//			OutputPPM << OutputTexture.coeff(i, k)[0] << " " << OutputTexture.coeff(i, k)[1] << " " << OutputTexture.coeff(i, k)[2] << "\n";
-//	OutputPPM.close();
-//
-//	const auto Width = m_OutputImage.size();
-//	const auto Height = m_OutputImage[0].size();
-//	const auto BytesPerPixel = 3;
-//	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
-//	for (auto i = 0; i < Height; i++)
-//		for (auto k = 0; k < Width; k++)
-//		{
-//			auto Offset = (i * Width + k) * BytesPerPixel;
-//			ResultImage[Offset] = OutputTexture.coeff(i, k)[2];
-//			ResultImage[Offset + 1] = OutputTexture.coeff(i, k)[1];
-//			ResultImage[Offset + 2] = OutputTexture.coeff(i, k)[0];
-//		}
-//	const bool IsRGB = true;
-//	const auto Quality = 90;
-//	const bool Downsample = false;
-//	const char* Comment = "Ramdom Mask Result Image";
-//	
-//	auto ok = TooJpeg::writeJpeg(OutputFunc, ResultImage, Width, Height, IsRGB, Quality, Downsample, Comment);
-//	delete[] ResultImage;
-//}
-
-TEST()
+TEST_F(TestTextureSynthesizer, DeathTest_DifferentSizesOfMaskAndScene)
 {
-	int w, h, n;
-	//unsigned char* data = stbi_load("output.png", &w, &h, &n, 0);
-	std::cout << ResultImagePath << std::endl;
-	unsigned char* data = stbi_load("D:\\GithubDeskTopProjects\\Texture\\SmartObliquePhotography_TextureSynthesis\\UnitTests\\TestData\\Test019_Model/ResultImage.png", &w, &h, &n, 0);
-	printf("%d, %d, %d\n", w, h, n);
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	ReadImage(InputImagePath, InputTexture);
+	ReadImage(SceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows() - 1, OutputTexture.cols() - 1);
+	GenerateMask(MaskTexture, 0);
+
+	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	EXPECT_ANY_THROW(TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture));
+}
+
+TEST_F(TestTextureSynthesizer, AllBlackMask)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	ReadImage(InputImagePath, InputTexture);
+	ReadImage(SceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	GenerateMask(MaskTexture, 0);
+
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> SceneTexture = OutputTexture;
+
+	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+
+	for (int i = 0; i < OutputTexture.rows(); i++)
+		for (int k = 0; k < OutputTexture.cols(); k++)
+			EXPECT_EQ(OutputTexture(i, k), SceneTexture(i, k));
+}
+
+TEST_F(TestTextureSynthesizer, SquareMask)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	ReadImage(InputImagePath, InputTexture);
+	ReadImage(SceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	/*GenerateMask(MaskTexture, -1);*/
+	ReadMask(MaskImagePath, MaskTexture);
+
+	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+
+	GenerateResultImage(OutputTexture, SquareMaskResultImagePath);
+}
+
+TEST_F(TestTextureSynthesizer, RandomMask)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	ReadImage(InputImagePath, InputTexture);
+	ReadImage(SceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	ReadMask(RandomMaskImagePath, MaskTexture);
+
+	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+
+	GenerateResultImage(OutputTexture, RandomMaskResultImagePath);
 }
