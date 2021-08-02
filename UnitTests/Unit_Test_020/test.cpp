@@ -49,6 +49,9 @@ protected:
 		for (int i = 1; hiveUtility::hiveLocateFile(DataPath + ModelNames[m_TestNumber] + std::to_string(i) + ".txt") != ""; i++)
 			m_BoundaryIndices.push_back(_loadIndices(DataPath + ModelNames[m_TestNumber] + std::to_string(i) + ".txt"));
 		ASSERT_TRUE(!m_BoundaryIndices.empty());
+		if (hiveUtility::hiveLocateFile(DataPath + ModelNames[m_TestNumber] + "_input.txt") != "")
+			m_InputIndices = _loadIndices(DataPath + ModelNames[m_TestNumber] + "_input.txt");
+		ASSERT_TRUE(!m_InputIndices.empty());
 
 		if (ENABLE_VISUALIZER)
 		{
@@ -64,7 +67,10 @@ protected:
 	void TearDown() override
 	{
 		if (ENABLE_VISUALIZER)
-			m_pVisualizer->run();
+		{
+			if (m_pVisualizer)
+				m_pVisualizer->run();
+		}
 
 		delete m_pRetouchConfig;
 		delete m_pHoleRepairerConfig;
@@ -154,6 +160,7 @@ protected:
 	pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 
 	std::vector<std::vector<int>> m_BoundaryIndices;
+	std::vector<int> m_InputIndices;
 	static int m_TestNumber;
 private:
 };
@@ -166,7 +173,7 @@ TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_1)
 	for (auto& Indices : m_BoundaryIndices)
 	{
 		std::vector<pcl::PointSurfel> TempPoints;
-		Repairer.repairHoleByBoundaryAndInput(Indices, Indices, TempPoints);
+		Repairer.repairHoleByBoundaryAndInput(Indices, m_InputIndices, TempPoints);
 		PointCloud_t::Ptr TempCloud(new PointCloud_t);
 		for (auto& Point : TempPoints)
 		{
@@ -221,7 +228,7 @@ TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_2)
 	for (auto& Indices : m_BoundaryIndices)
 	{
 		std::vector<pcl::PointSurfel> TempPoints;
-		Repairer.repairHoleByBoundaryAndInput(Indices, Indices, TempPoints);
+		Repairer.repairHoleByBoundaryAndInput(Indices, m_InputIndices, TempPoints);
 		PointCloud_t::Ptr TempCloud(new PointCloud_t);
 		for (auto& Point : TempPoints)
 		{
