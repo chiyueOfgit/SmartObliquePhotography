@@ -321,12 +321,13 @@ int CHoleRepairer::__fixTextureColorAndHeight(std::vector<std::vector<SLattice>>
 //FUNCTION: 
 void CHoleRepairer::__inputHeightCorrection(std::vector<std::vector<SLattice>>& vInput, const std::vector<std::vector<SLattice>>& vBoundary)
 {
-	const Eigen::Vector2i Resolution{ vInput.front().size(), vInput.size() };
+	const Eigen::Vector2i InputResolution{ vInput.front().size(), vInput.size() };
+	const Eigen::Vector2i BoundaryResolution{ vBoundary.front().size(), vBoundary.size() };
 	
 	float BoundaryAverageHeight = 0.0f;
 	std::size_t NumBoundaryItems = 0;
-	for (int Y = 0; Y < Resolution.y(); Y++)
-		for (int X = 0; X < Resolution.x(); X++)
+	for (int Y = 0; Y < BoundaryResolution.y(); Y++)
+		for (int X = 0; X < BoundaryResolution.x(); X++)
 		{
 			auto& Lattice = vBoundary[Y][X];
 			if (Lattice.Height(0, 0))
@@ -339,8 +340,8 @@ void CHoleRepairer::__inputHeightCorrection(std::vector<std::vector<SLattice>>& 
 
 	float InputAverageHeight = 0.0f;
 	std::size_t NumInputItems = 0;
-	for (int Y = 0; Y < Resolution.y(); Y++)
-		for (int X = 0; X < Resolution.x(); X++)
+	for (int Y = 0; Y < InputResolution.y(); Y++)
+		for (int X = 0; X < InputResolution.x(); X++)
 		{
 			auto& Lattice = vInput[Y][X];
 			if (Lattice.Height(0, 0))
@@ -352,11 +353,10 @@ void CHoleRepairer::__inputHeightCorrection(std::vector<std::vector<SLattice>>& 
 	InputAverageHeight /= NumInputItems;
 
 	auto DeltaAverageHeight = BoundaryAverageHeight - InputAverageHeight;
-	for (int Y = 0; Y < Resolution.y(); Y++)
-		for (int X = 0; X < Resolution.x(); X++)
+	for (int Y = 0; Y < InputResolution.y(); Y++)
+		for (int X = 0; X < InputResolution.x(); X++)
 			if (vInput[Y][X].Height(0, 0))
 				vInput[Y][X].Height(0, 0) += DeltaAverageHeight;
-
 }
 
 //*****************************************************************
