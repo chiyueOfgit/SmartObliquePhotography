@@ -189,6 +189,8 @@
     <ClInclude Include="..\PointCloudRetouch\PointSetPreprocessor.h" />
     <ClInclude Include="..\PointCloudRetouch\PrecomputeManager.h" />
     <ClInclude Include="..\PointCloudRetouch\RetouchTask.h" />
+    <ClInclude Include="..\PointCloudRetouch\stb_image.h" />
+    <ClInclude Include="..\PointCloudRetouch\stb_image_write.h" />
     <ClInclude Include="..\PointCloudRetouch\TextureSynthesizer.h" />
   </ItemGroup>
   <ItemGroup>
