@@ -109,10 +109,15 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		auto InputHeightMatrix = __extractMatrixFromLattices<Eigen::Matrix<float, 1, 1>>(InputPlaneLattices, offsetof(SLattice, Height));
 		auto BoundaryHeightMatrix = __extractMatrixFromLattices<Eigen::Matrix<float, 1, 1>>(BoundaryPlaneLattices, offsetof(SLattice, Height));
 
+		__outputImage(InputHeightMatrix, "Temp/inputH.png");
+		__outputImage(BoundaryHeightMatrix, "Temp/output_beforeH.png");
+
 		CTextureSynthesizer<Eigen::Matrix<float, 1, 1>> HeightSynthesizer;
 		HeightSynthesizer.init(m_pTextureConfig);
 		HeightSynthesizer.execute(InputHeightMatrix, Mask, BoundaryHeightMatrix);
 		__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
+
+		__outputImage(BoundaryHeightMatrix, "Temp/output_afterH.png");
 	}
 
 	__generateNewPointsFromLattices(BoundaryPlane, Mask, BoundaryPlaneLattices, voNewPoints);
@@ -244,6 +249,16 @@ void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, st
 	}
 
 	//post process
+	__fixTextureColorAndHeight(vioPlaneLattices, 5);
+	__fixTextureColorAndHeight(vioPlaneLattices, 3);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CHoleRepairer::__fixTextureColorAndHeight(std::vector<std::vector<SLattice>>& vioPlaneLattices, int vKernelSize)
+{
+	Eigen::Vector2i Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
+	const int Delta = vKernelSize / 2;
 	for (int Y = 0; Y < Resolution.y(); Y++)
 	{
 		for (int X = 0; X < Resolution.x(); X++)
@@ -251,23 +266,32 @@ void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, st
 			auto& Lattice = vioPlaneLattices[Y][X];
 			if (Lattice.Indices.empty())
 			{
-				const int KernelSize = 5;	//ÖÐÖµÌî¿Õ
-				int Delta = KernelSize / 2;
 				std::vector<Eigen::Vector3i> Colors;
+				float SumHeights = 0.0f;
+				std::size_t NumEmpty = 0;
 				for (int i = Y - Delta; i <= Y + Delta; i++)
 					for (int k = X - Delta; k <= X + Delta; k++)
 						if (k >= 0 && k < Resolution.x() && i >= 0 && i < Resolution.y())
 						{
 							auto& Neighbor = vioPlaneLattices[i][k];
 							if (!Neighbor.Indices.empty())
+							{
 								Colors.push_back(Neighbor.Color);
+								SumHeights += Neighbor.Height(0, 0);
+							}
+							else
+								NumEmpty++;
 						}
 				std::sort(Colors.begin(), Colors.end(), [](Eigen::Vector3i vLeft, Eigen::Vector3i vRight)
 					{
 						return vLeft.norm() < vRight.norm();
 					});
-				if (!Colors.empty())
+
+				if (!Colors.empty() && NumEmpty < pow(vKernelSize, 2) * 0.5f)
+				{
 					Lattice.Color = Colors[Colors.size() / 2];
+					Lattice.Height(0, 0) = SumHeights / (pow(vKernelSize, 2) - NumEmpty);
+				}
 			}
 		}
 	}
@@ -348,7 +372,6 @@ float CHoleRepairer::__calcMeanPointsPerLattice(const std::vector<std::vector<SL
 Eigen::MatrixXi CHoleRepairer::__genMask(const Eigen::Vector2i& vResolution, const std::vector<std::vector<SLattice>>& vPlaneLattices)
 {
 	Eigen::Vector2i LatticesResolution{ vPlaneLattices.front().size(), vPlaneLattices.size() };
-
 	Eigen::Vector2f ResampleRate{ (float)LatticesResolution.x() / vResolution.x(), (float)LatticesResolution.y() / vResolution.y() };
 
 	_ASSERTE(vResolution.x() <= LatticesResolution.x() && vResolution.y() <= LatticesResolution.y());
@@ -357,42 +380,40 @@ Eigen::MatrixXi CHoleRepairer::__genMask(const Eigen::Vector2i& vResolution, con
 		for (int X = 0; X < Mask.cols(); X++)
 			Mask(Y, X) = 1;
 
-	for (float Y = 0.5f; Y < vResolution.y(); Y++)
-		for (float X = 0.5f; X < vResolution.x(); X++)
-		{
-			Eigen::Vector2f BeginCoord{ X - 0.5f, Y - 0.5f };
-			Eigen::Vector2f EndCoord{ X + 0.5f, Y + 0.5f };
-
-			Eigen::Vector2f BeginInLattices = (ResampleRate.array() * BeginCoord.array());
-			Eigen::Vector2f EndInLattices = ResampleRate.array() * EndCoord.array();
-
-			bool bHasPoints = false;
-			for (float i = (int)BeginInLattices.y() + 0.5f; i <= EndInLattices.y() && !bHasPoints; i++)
-			{
-				for (float k = (int)BeginInLattices.x() + 0.5f; k <= EndInLattices.x(); k++)
-				{
-					if (!vPlaneLattices[int(i - 0.5f)][int(k - 0.5f)].Indices.empty())
-					{
-						bHasPoints = true;
-						break;
-					}
-				}
-			}
-
-			if (bHasPoints)
-				for (float i = (int)BeginInLattices.y() + 0.5f; i <= EndInLattices.y(); i++)
-					for (float k = (int)BeginInLattices.x() + 0.5f; k <= EndInLattices.x(); k++)
-						Mask((int)(i - 0.5f), (int)(k - 0.5f)) = 0;
-		}
-
-	//for (int Y = 0; Y < Mask.rows(); Y++)
-	//	for (int X = 0; X < Mask.cols(); X++)
+	//for (float Y = 0.5f; Y < vResolution.y(); Y++)
+	//	for (float X = 0.5f; X < vResolution.x(); X++)
 	//	{
-	//		if (vPlaneLattices[Y][X].Color.norm())
-	//			Mask(Y, X) = 0;
-	//		else
-	//			Mask(Y, X) = 1;
+	//		Eigen::Vector2f BeginCoord{ X - 0.5f, Y - 0.5f };
+	//		Eigen::Vector2f EndCoord{ X + 0.5f, Y + 0.5f };
+
+	//		Eigen::Vector2f BeginInLattices = (ResampleRate.array() * BeginCoord.array());
+	//		Eigen::Vector2f EndInLattices = ResampleRate.array() * EndCoord.array();
+
+	//		bool bHasPoints = false;
+	//		for (float i = (int)(BeginInLattices.y() + 0.5f) + 0.5f; i <= EndInLattices.y() && !bHasPoints; i++)
+	//		{
+	//			for (float k = (int)(BeginInLattices.x() + 0.5f) + 0.5f; k <= EndInLattices.x(); k++)
+	//			{
+	//				if (!vPlaneLattices[int(i - 0.5f)][int(k - 0.5f)].Indices.empty())
+	//				{
+	//					bHasPoints = true;
+	//					break;
+	//				}
+	//			}
+	//		}
+
+	//		if (bHasPoints)
+	//			for (float i = (int)BeginInLattices.y() + 0.5f; i <= EndInLattices.y(); i++)
+	//				for (float k = (int)BeginInLattices.x() + 0.5f; k <= EndInLattices.x(); k++)
+	//					Mask((int)(i - 0.5f), (int)(k - 0.5f)) = 0;
 	//	}
+
+	for (int Y = 0; Y < Mask.rows(); Y++)
+		for (int X = 0; X < Mask.cols(); X++)
+			if (vPlaneLattices[Y][X].Color.norm())
+				Mask(Y, X) = 0;
+			else
+				Mask(Y, X) = 1;
 
 	return Mask;
 }
@@ -430,6 +451,55 @@ void CHoleRepairer::__outputImage(const Eigen::MatrixXi& vTexture, const std::st
 			ResultImage[Offset] = Color;
 			ResultImage[Offset + 1] = Color;
 			ResultImage[Offset + 2] = Color;
+		}
+
+	stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+	stbi_image_free(ResultImage);
+}
+
+void CHoleRepairer::__outputImage(const Eigen::Matrix<Eigen::Matrix<float, 1, 1>, -1, -1>& vTexture, const std::string& vOutputImagePath)
+{
+	const auto Width = vTexture.cols();
+	const auto Height = vTexture.rows();
+	const auto BytesPerPixel = 3;
+	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+
+	float MinHeight = FLT_MAX, MaxHeight = -FLT_MAX;
+	for (auto i = 0; i < Height; i++)
+		for (auto k = 0; k < Width; k++)
+		{
+			auto Matrixf = vTexture(i, k);
+			auto Height = Matrixf(0, 0);
+			if (Height < MinHeight)
+				MinHeight = Height;
+			if (Height > MaxHeight)
+				MaxHeight = Height;
+		}
+
+	for (auto i = 0; i < Height; i++)
+		for (auto k = 0; k < Width; k++)
+		{
+			auto Offset = (i * Width + k) * BytesPerPixel;
+			auto Matrixf = vTexture(i, k);
+			auto Height = Matrixf(0, 0);
+			if (Height > 0)
+			{
+				ResultImage[Offset] = Height / MaxHeight * 255;
+				ResultImage[Offset + 1] = 0;
+				ResultImage[Offset + 2] = 0;
+			}
+			else if (Height < 0)
+			{
+				ResultImage[Offset] = 0;
+				ResultImage[Offset + 1] = Height / MinHeight * 255;
+				ResultImage[Offset + 2] = 0;
+			}
+			else
+			{
+				ResultImage[Offset] = 255;
+				ResultImage[Offset + 1] = 255;
+				ResultImage[Offset + 2] = 255;
+			}
 		}
 
 	stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
