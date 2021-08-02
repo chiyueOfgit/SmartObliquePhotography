@@ -96,8 +96,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		__outputImage(BoundaryColorMatrix, "Temp/output_before.png");
 		__outputImage(Mask, "Temp/mask.png");
 
-		CTextureSynthesizer<Eigen::Vector3i> ColorSynthesizer;
-		ColorSynthesizer.init(m_pTextureConfig);
+		CTextureSynthesizer<int, 3> ColorSynthesizer;
 		ColorSynthesizer.execute(InputColorMatrix, Mask, BoundaryColorMatrix);	//Mask输出仍为Boundary的分辨率，只是以设定的进行计算
 		__fillLatticesByMatrix<Eigen::Vector3i>(BoundaryColorMatrix, BoundaryPlaneLattices, offsetof(SLattice, Color));
 
@@ -112,8 +111,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		__outputImage(InputHeightMatrix, "Temp/inputH.png");
 		__outputImage(BoundaryHeightMatrix, "Temp/output_beforeH.png");
 
-		CTextureSynthesizer<Eigen::Matrix<float, 1, 1>> HeightSynthesizer;
-		HeightSynthesizer.init(m_pTextureConfig);
+		CTextureSynthesizer<float, 1> HeightSynthesizer;
 		HeightSynthesizer.execute(InputHeightMatrix, Mask, BoundaryHeightMatrix);
 		__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
 
