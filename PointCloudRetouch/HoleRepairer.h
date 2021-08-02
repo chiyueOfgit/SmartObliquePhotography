@@ -41,52 +41,21 @@ namespace hiveObliquePhotography
 			void __generatePlaneLattices(const Eigen::Vector4f& vPlane, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Vector2i& vResolution, SPlaneInfos& voPlaneInfos, std::vector<std::vector<SLattice>>& voPlaneLattices);
 			void __projectPoints2PlaneLattices(const std::vector<pcl::index_t>& vIndices, const SPlaneInfos& vPlaneInfos, std::vector<std::vector<SLattice>>& vioPlaneLattices);
 			void __fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices);
-			void __generateNewPointsFromLattices(const Eigen::Vector4f& vPlane, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints);
+			void __fixTextureColorAndHeight(std::vector<std::vector<SLattice>>& vioPlaneLattices, int vKernelSize);
+			void __generateNewPointsFromLattices(const Eigen::Vector4f& vPlane, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints);
 
 			Eigen::Vector4f __calculatePlaneByIndices(const std::vector<pcl::index_t>& vIndices);
 			std::pair<Eigen::Vector3f, Eigen::Vector3f> __calculateBoundingBoxByIndices(const std::vector<pcl::index_t>& vIndices);
-			Eigen::MatrixXi __genMask()
-			{
-				Eigen::MatrixXi Mask(m_Resolution.y(), m_Resolution.x());
-				for (int Y = 0; Y < Mask.rows(); Y++)
-					for (int X = 0; X < Mask.cols(); X++)
-						Mask(Y, X) = 1;
-				return Mask;
-			}
+			float __calcMeanPointsPerLattice(const std::vector<std::vector<SLattice>>& vPlaneLattices);
+			Eigen::MatrixXi __genMask(const Eigen::Vector2i& vResolution, const std::vector<std::vector<SLattice>>& vPlaneLattices);
 
 			template<class T>
-			std::vector<std::vector<T>> __matrix2Vector(const Eigen::Matrix<T, -1, -1>& vMatrix)
-			{
-				std::vector<std::vector<T>> TempVector(vMatrix.rows(), std::vector<T>(vMatrix.cols()));
-				for (int Y = 0; Y < vMatrix.rows(); Y++)
-				{
-					for (int X = 0; X < vMatrix.cols(); X++)
-					{
-						TempVector[Y][X] = vMatrix(Y, X);
-					}
-				}
-				return TempVector;
-			}
-			template<class T>
-			Eigen::Matrix<T, -1, -1> __vector2Matrix(const std::vector<std::vector<T>>& vVector)
-			{
-				Eigen::Matrix<T, -1, -1> TempMatrix;
-				TempMatrix.resize(vVector.size(), vVector.front().size());
-				for (int Y = 0; Y < TempMatrix.rows(); Y++)
-				{
-					for (int X = 0; X < TempMatrix.cols(); X++)
-					{
-						TempMatrix(Y, X) = vVector[Y][X];
-					}
-				}
-				return TempMatrix;
-			}
-			template<class T>
-			std::vector<std::vector<T>> __extractItemFromLattices(const std::vector<std::vector<SLattice>>& vLattices, int vOffset)
+			Eigen::Matrix<T, -1, -1> __extractMatrixFromLattices(const std::vector<std::vector<SLattice>>& vLattices, int vOffset)
 			{
 				_ASSERTE(!vLattices.empty());
 				Eigen::Vector2i Resolution{ vLattices.front().size(), vLattices.size() };
-				std::vector<std::vector<T>> Items(Resolution.y(), std::vector<T>(Resolution.x()));
+				Eigen::Matrix<T, -1, -1> Matrix;
+				Matrix.resize(Resolution.y(), Resolution.x());
 
 				for (int Y = 0; Y < Resolution.y(); Y++)
 				{
@@ -95,19 +64,17 @@ namespace hiveObliquePhotography
 						const SLattice& Lattice = vLattices[Y][X];
 						void* Ptr = (bool*)(&Lattice) + vOffset;
 						T* Item = static_cast<T*>(Ptr);
-						Items[Y][X] = *Item;
+						Matrix(Y, X) = *Item;
 					}
 				}
 
-				return Items;
+				return Matrix;
 			}
 			template<class T>
-			void __fillLatticesByItems(const std::vector<std::vector<T>>& vItems, std::vector<std::vector<SLattice>>& vLattices, int vOffset)
+			void __fillLatticesByMatrix(const Eigen::Matrix<T, -1, -1>& vMatrix, std::vector<std::vector<SLattice>>& vLattices, int vOffset)
 			{
-				_ASSERTE(!vItems.empty());
-
 				Eigen::Vector2i Resolution{ vLattices.front().size(), vLattices.size() };
-				_ASSERTE(vItems.front().size() == Resolution.x() && vItems.size() == Resolution.y());
+				_ASSERTE(vMatrix.cols() == Resolution.x() && vMatrix.rows() == Resolution.y());
 
 				for (int Y = 0; Y < Resolution.y(); Y++)
 				{
@@ -115,15 +82,16 @@ namespace hiveObliquePhotography
 					{
 						SLattice& Lattice = vLattices[Y][X];
 						void* LatticePtr = (bool*)(&Lattice) + vOffset;
-						T* ItemLattice = static_cast<T*>(LatticePtr);
-						*ItemLattice = vItems[Y][X];
+						T* ItemInLattice = static_cast<T*>(LatticePtr);
+						*ItemInLattice = vMatrix(Y, X);
 					}
 				}
 			}
 
+			void __outputImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath);
+			void __outputImage(const Eigen::MatrixXi& vTexture, const std::string& vOutputImagePath);
+			void __outputImage(const Eigen::Matrix<Eigen::Matrix<float, 1, 1>, -1, -1>& vTexture, const std::string& vOutputImagePath);
 			void __reset();
-
-			const Eigen::Vector2i m_Resolution{ 32, 32 };
 
 			std::vector<std::vector<pcl::index_t>> m_BoundarySet;
 			std::vector<pcl::index_t> m_Input;

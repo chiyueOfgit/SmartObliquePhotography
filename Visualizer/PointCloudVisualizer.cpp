@@ -28,6 +28,9 @@ CPointCloudVisualizer::~CPointCloudVisualizer()
 void CPointCloudVisualizer::init(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
 {
 	_ASSERTE(vPointCloud);
+	m_UserColoredPoints.clear();
+	m_UserCloudSet.clear();
+
 	m_pSceneCloud = vPointCloud;
 
 	m_pPCLVisualizer = new pcl::visualization::PCLVisualizer("Visualizer", !vIsInQt);
@@ -52,6 +55,7 @@ void CPointCloudVisualizer::reset(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
 	delete m_pPCLVisualizer;
 	delete m_pCallback;
 	m_UserColoredPoints.clear();
+	m_UserCloudSet.clear();
 	init(vPointCloud, vIsInQt);
 	if (vPointCloud != nullptr)
 		m_pSceneCloud = vPointCloud;

@@ -102,7 +102,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			PointCloud_t::Ptr RepairCloud(new PointCloud_t);
 			for (auto& Point : NewPoints)
 			{
-				if (Point.r != 0 && Point.g != 0 && Point.b != 0)	//不画出黑色的初始点
+				if (Point.r != 0 && Point.g != 0 && Point.b != 0)	//不画出初始点
 					RepairCloud->push_back(Point);
 			}
 
@@ -357,7 +357,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 			auto fromWindow2World = [&](const Eigen::Vector2i& vCoord) -> pcl::PointXYZ
 			{
-				Eigen::Vector4d PixelPosition = { vCoord.x() / Camera.window_size[0] * 2 - 1, vCoord.y() / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
+				Eigen::Vector4d PixelPosition = { vCoord.x() / Camera.window_size[0] * 2 - 1, vCoord.y() / Camera.window_size[1] * 2 - 1, -0.8f, 1.0f };
 				PixelPosition = (Proj * View).inverse() * PixelPosition;
 				PixelPosition /= PixelPosition.w();
 

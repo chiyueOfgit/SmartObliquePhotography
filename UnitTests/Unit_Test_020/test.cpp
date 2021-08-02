@@ -23,6 +23,7 @@
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 const auto RetouchConfigFile = TESTMODEL_DIR + std::string("Config/Test018_PointCloudRetouchConfig.xml");
+const auto HoleRepairerConfigFile = TESTMODEL_DIR + std::string("Config/Test020_HoleRepairerConfig.xml"); 
 const auto DataPath = TESTMODEL_DIR + std::string("Test018_Model/");
 
 const std::vector<std::string> ModelNames{ "one_hole", "five_holes" };
@@ -37,6 +38,9 @@ protected:
 		m_pRetouchConfig = new CPointCloudRetouchConfig;
 		ASSERT_EQ(hiveConfig::hiveParseConfig(RetouchConfigFile, hiveConfig::EConfigType::XML, m_pRetouchConfig), hiveConfig::EParseResult::SUCCEED);
 
+		m_pHoleRepairerConfig = new CPointCloudRetouchConfig;
+		ASSERT_EQ(hiveConfig::hiveParseConfig(HoleRepairerConfigFile, hiveConfig::EConfigType::XML, m_pHoleRepairerConfig), hiveConfig::EParseResult::SUCCEED);
+
 		m_pCloud.reset(new PointCloud_t);
 		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ DataPath + ModelNames[m_TestNumber] + ".ply" });
 		hiveInit(m_pCloud, m_pRetouchConfig);
@@ -45,6 +49,9 @@ protected:
 		for (int i = 1; hiveUtility::hiveLocateFile(DataPath + ModelNames[m_TestNumber] + std::to_string(i) + ".txt") != ""; i++)
 			m_BoundaryIndices.push_back(_loadIndices(DataPath + ModelNames[m_TestNumber] + std::to_string(i) + ".txt"));
 		ASSERT_TRUE(!m_BoundaryIndices.empty());
+		if (hiveUtility::hiveLocateFile(DataPath + ModelNames[m_TestNumber] + "_input.txt") != "")
+			m_InputIndices = _loadIndices(DataPath + ModelNames[m_TestNumber] + "_input.txt");
+		ASSERT_TRUE(!m_InputIndices.empty());
 
 		if (ENABLE_VISUALIZER)
 		{
@@ -60,9 +67,13 @@ protected:
 	void TearDown() override
 	{
 		if (ENABLE_VISUALIZER)
-			m_pVisualizer->run();
+		{
+			if (m_pVisualizer)
+				m_pVisualizer->run();
+		}
 
 		delete m_pRetouchConfig;
+		delete m_pHoleRepairerConfig;
 	}
 
 	std::vector<int> _loadIndices(const std::string& vPath)
@@ -143,11 +154,13 @@ protected:
 	}
 
 	hiveConfig::CHiveConfig* m_pRetouchConfig = nullptr;
+	hiveConfig::CHiveConfig* m_pHoleRepairerConfig = nullptr;
 	PointCloud_t::Ptr m_pCloud = nullptr;
 	hiveObliquePhotography::Visualization::CPointCloudVisualizer* m_pVisualizer = nullptr;
 	pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 
 	std::vector<std::vector<int>> m_BoundaryIndices;
+	std::vector<int> m_InputIndices;
 	static int m_TestNumber;
 private:
 };
@@ -156,10 +169,11 @@ int TestLatticesProjection::m_TestNumber = -1;
 TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_1)
 {
 	CHoleRepairer Repairer;
+	Repairer.init(m_pHoleRepairerConfig);
 	for (auto& Indices : m_BoundaryIndices)
 	{
 		std::vector<pcl::PointSurfel> TempPoints;
-		Repairer.repairHoleByBoundaryAndInput(Indices, {1}, TempPoints, nullptr);
+		Repairer.repairHoleByBoundaryAndInput(Indices, m_InputIndices, TempPoints);
 		PointCloud_t::Ptr TempCloud(new PointCloud_t);
 		for (auto& Point : TempPoints)
 		{
@@ -210,10 +224,11 @@ TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_1)
 TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_2)
 {
 	CHoleRepairer Repairer;
+	Repairer.init(m_pHoleRepairerConfig);
 	for (auto& Indices : m_BoundaryIndices)
 	{
 		std::vector<pcl::PointSurfel> TempPoints;
-		Repairer.repairHoleByBoundaryAndInput(Indices, { 1 }, TempPoints, nullptr);
+		Repairer.repairHoleByBoundaryAndInput(Indices, m_InputIndices, TempPoints);
 		PointCloud_t::Ptr TempCloud(new PointCloud_t);
 		for (auto& Point : TempPoints)
 		{

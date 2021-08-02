@@ -97,6 +97,8 @@
     <ClInclude Include="TextureSynthesizer.h">
       <Filter>Operation</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="stb_image_write.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">

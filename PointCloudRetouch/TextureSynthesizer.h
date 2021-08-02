@@ -1,32 +1,28 @@
 #pragma once
-
 namespace hiveObliquePhotography::PointCloudRetouch
 {
-	template <typename Color_t>
+	template <typename Scalar_t, unsigned Channel>
 	class CTextureSynthesizer
 	{
 	public:
-		using Texture_t = Eigen::Matrix<Color_t, -1, -1>;
-		using Feature_t = Eigen::Matrix<Color_t, -1, 1>;
-		
+		using Texture_t = Eigen::Matrix<Eigen::Matrix<Scalar_t, Channel, 1>, Eigen::Dynamic, Eigen::Dynamic>;
+		//Feature_t是一维数组，后续实装kd树可用
+		using Feature_t = Eigen::Matrix<Scalar_t, Eigen::Dynamic, 1>;
+		using NeighborMask_t = Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>;
+
 		CTextureSynthesizer() = default;
 		~CTextureSynthesizer() = default;
 
-		bool init(const hiveConfig::CHiveConfig* vConfig);
 		void execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene);
 
 	private:
-		int m_KernelSize = 7;
-		std::vector<std::pair<int, int>> m_NeighborOffset;
+		//TODO: magic number
+		int m_KernelSize = 9;
 
-		const hiveConfig::CHiveConfig* m_pConfig = nullptr;
-		
-		std::vector<std::pair<int, int>> __generateNeighborOffset(int vKernelSize) const;
-		Feature_t __generateFeatureAt(const Texture_t& vTexture, size_t vRowId, size_t vColId) const;
-		std::pair<Eigen::Index, Eigen::Index> __findNearestPos(const Texture_t& vTexture, const Feature_t& vFeature) const;
-		float __computeFeatureDistance(const Feature_t& vLhs, const Feature_t& vRhs) const;
+		Feature_t __flatFeature(const std::vector<typename Texture_t::value_type>& vFeature) const;
+		std::pair<Eigen::Index, Eigen::Index> __findNearestPos(const Texture_t& vTexture, const NeighborMask_t& vNeighborMask, const Feature_t& vFeature) const;
 	};
 
-	template class CTextureSynthesizer<Eigen::Vector3i>;
-	template class CTextureSynthesizer<Eigen::Matrix<float, 1, 1>>;
+	template class CTextureSynthesizer<int, 3>;
+	template class CTextureSynthesizer<float, 1>;
 }

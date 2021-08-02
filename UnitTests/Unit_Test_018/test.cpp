@@ -47,6 +47,7 @@ protected:
 		m_pDetectorConfig = new CPointCloudRetouchConfig;
 		ASSERT_EQ(hiveConfig::hiveParseConfig(DetectorConfigFile, hiveConfig::EConfigType::XML, m_pDetectorConfig), hiveConfig::EParseResult::SUCCEED);
 		m_pDetector = hiveDesignPattern::hiveGetOrCreateProduct<CBoundaryDetector>(KEYWORD::BOUNDARY_DETECTOR);
+		m_pDetector->init(m_pDetectorConfig);
 		ASSERT_NE(m_pDetector, nullptr);
 	}
 
@@ -83,7 +84,7 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_1)
 	std::vector<pcl::index_t> BoundaryPoints = _loadIndices(DataPath+"OneHoleInput.txt");
 	std::vector<std::vector<pcl::index_t>> HoleSet;
 	
-	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, HoleSet, m_pDetectorConfig);
+	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, HoleSet);
 
 	std::vector<pcl::index_t> Result;
 	for (auto& Hole : HoleSet)
@@ -118,7 +119,7 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_2)
 	std::vector<pcl::index_t> BoundaryPoints = _loadIndices(DataPath + "FiveHolesInput.txt");
 	std::vector<std::vector<pcl::index_t>> HoleSet;
 
-	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, HoleSet, m_pDetectorConfig);
+	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, HoleSet);
 	std::vector<pcl::index_t> Result;
 	for (auto& Hole : HoleSet)
 		for (auto Index : Hole)
