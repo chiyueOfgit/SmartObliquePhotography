@@ -14,10 +14,10 @@ void CTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, co
 		for (Eigen::Index ColId = 0; ColId < vMask.cols(); ++ColId)
 			if (vMask.coeff(RowId, ColId) != 0)
 			{
-				//生成邻居掩码
 				const int KernelOffset = m_KernelSize / 2;
 				const int KernelWidth = KernelOffset * 2 + 1;
 				NeighborMask_t NeighborMask(KernelWidth, KernelWidth);
+				NeighborMask.setConstant(0);
 				for (int i = -KernelOffset; i <= KernelOffset; ++i)
 					for (int k = -KernelOffset; k <= KernelOffset; ++k)
 					{
@@ -32,19 +32,10 @@ void CTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, co
 							{
 								NeighborMask(i + KernelOffset, k + KernelOffset) = 1;
 							}
-							else
-							{
-								NeighborMask(i + KernelOffset, k + KernelOffset) = 0;
-							}
-						}
-						else
-						{
-							NeighborMask(i + KernelOffset, k + KernelOffset) = 0;
 						}
 					}
 
 				auto Feature = __generateFeatureAt(vioScene, NeighborMask, RowId, ColId);
-				//根据邻居掩码和Feature __findNearestPos
 				auto [NearestRowId, NearestColId] = __findNearestPos(vInput, NeighborMask, Feature);
 				vioScene.coeffRef(RowId, ColId) = vInput.coeff(NearestRowId, NearestColId);
 			}
