@@ -30,7 +30,7 @@ namespace hiveObliquePhotography
 		private:
 			CColorVisualization();
 
-			std::vector<Eigen::Vector3i> __adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const;
+			std::vector<Eigen::Vector3i> __adaptiveKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) const;
 
 			float __calcColorDifferences(const Eigen::Vector3i& vLColor, const Eigen::Vector3i& vRColor) const;
 			float __calculateCIEDE2000(const LAB& lab1, const LAB& lab2) const;

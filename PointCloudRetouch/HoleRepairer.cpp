@@ -89,6 +89,10 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	__generatePlaneLattices(BoundaryPlane, BoundaryBox, HoleResolution, BoundaryPlaneInfos, BoundaryPlaneLattices);	//生成平面格子
 	__projectPoints2PlaneLattices({}, BoundaryPlaneInfos, BoundaryPlaneLattices);	//用包围盒里的点投点进格子
 	Eigen::MatrixXi Mask = __genMask((1.0f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices);
+
+	//input高度校正
+	__inputHeightCorrection(InputPlaneLattices, BoundaryPlaneLattices);
+
 	//生成颜色
 	{
 		auto InputColorMatrix = __extractMatrixFromLattices<Eigen::Vector3i>(InputPlaneLattices, offsetof(SLattice, Color));
@@ -180,7 +184,7 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 		const float DeltaBoxRate = 0.1f;
 		Eigen::Vector3f DeltaBox = (vPlaneInfos.BoundingBox.second - vPlaneInfos.BoundingBox.first) * DeltaBoxRate;
 		DeltaBox.data()[vPlaneInfos.AxisOrder[2]] *= 2.0f;
-		DeltaBox.data()[vPlaneInfos.AxisOrder[2]] += 0.5f;
+		DeltaBox.data()[vPlaneInfos.AxisOrder[2]] += 5.0f;
 
 		std::pair<Eigen::Vector3f, Eigen::Vector3f> Box = { vPlaneInfos.BoundingBox.first - DeltaBox, vPlaneInfos.BoundingBox.second + DeltaBox };
 		ProjectSet = Scene.getPointsInBox(Box);
@@ -249,52 +253,110 @@ void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, st
 	}
 
 	//post process
-	__fixTextureColorAndHeight(vioPlaneLattices, 5);
-	__fixTextureColorAndHeight(vioPlaneLattices, 3);
+	if (__fixTextureColorAndHeight(vioPlaneLattices, 5) > 0)
+		if (__fixTextureColorAndHeight(vioPlaneLattices, 3) > 0)
+			__fixTextureColorAndHeight(vioPlaneLattices, 3);
 }
 
 //*****************************************************************
 //FUNCTION: 
-void CHoleRepairer::__fixTextureColorAndHeight(std::vector<std::vector<SLattice>>& vioPlaneLattices, int vKernelSize)
+int CHoleRepairer::__fixTextureColorAndHeight(std::vector<std::vector<SLattice>>& vioPlaneLattices, int vKernelSize)
 {
 	Eigen::Vector2i Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
+	auto Lattices = vioPlaneLattices;
 	const int Delta = vKernelSize / 2;
 	for (int Y = 0; Y < Resolution.y(); Y++)
 	{
 		for (int X = 0; X < Resolution.x(); X++)
 		{
-			auto& Lattice = vioPlaneLattices[Y][X];
-			if (Lattice.Indices.empty())
+			auto& Lattice = Lattices[Y][X];
+			if (!Lattice.Color.norm() && !Lattice.Height(0, 0))
 			{
 				std::vector<Eigen::Vector3i> Colors;
 				float SumHeights = 0.0f;
-				std::size_t NumEmpty = 0;
+				std::size_t NumNoValue = 0;
+				//在原始信息里查找
 				for (int i = Y - Delta; i <= Y + Delta; i++)
 					for (int k = X - Delta; k <= X + Delta; k++)
 						if (k >= 0 && k < Resolution.x() && i >= 0 && i < Resolution.y())
 						{
 							auto& Neighbor = vioPlaneLattices[i][k];
-							if (!Neighbor.Indices.empty())
+							if (Neighbor.Color.norm() && Neighbor.Height(0, 0))
 							{
 								Colors.push_back(Neighbor.Color);
 								SumHeights += Neighbor.Height(0, 0);
 							}
 							else
-								NumEmpty++;
+								NumNoValue++;
 						}
 				std::sort(Colors.begin(), Colors.end(), [](Eigen::Vector3i vLeft, Eigen::Vector3i vRight)
 					{
 						return vLeft.norm() < vRight.norm();
 					});
 
-				if (!Colors.empty() && NumEmpty < pow(vKernelSize, 2) * 0.5f)
+				if (!Colors.empty() && NumNoValue < pow(vKernelSize, 2) * 0.5f)
 				{
 					Lattice.Color = Colors[Colors.size() / 2];
-					Lattice.Height(0, 0) = SumHeights / (pow(vKernelSize, 2) - NumEmpty);
+					Lattice.Height(0, 0) = SumHeights / (pow(vKernelSize, 2) - NumNoValue);
 				}
 			}
 		}
 	}
+
+	std::size_t NumNoValue = 0;
+	for (int Y = 0; Y < Resolution.y(); Y++)
+		for (int X = 0; X < Resolution.x(); X++)
+			if (Lattices[Y][X].Indices.empty() && Lattices[Y][X].Height(0, 0) != 0)	//不为初始值
+			{
+				vioPlaneLattices[Y][X].Color = Lattices[Y][X].Color;
+				vioPlaneLattices[Y][X].Height(0, 0) = Lattices[Y][X].Height(0, 0);
+			}
+			else
+				NumNoValue++;
+
+	return NumNoValue;
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CHoleRepairer::__inputHeightCorrection(std::vector<std::vector<SLattice>>& vInput, const std::vector<std::vector<SLattice>>& vBoundary)
+{
+	const Eigen::Vector2i InputResolution{ vInput.front().size(), vInput.size() };
+	const Eigen::Vector2i BoundaryResolution{ vBoundary.front().size(), vBoundary.size() };
+	
+	float BoundaryAverageHeight = 0.0f;
+	std::size_t NumBoundaryItems = 0;
+	for (int Y = 0; Y < BoundaryResolution.y(); Y++)
+		for (int X = 0; X < BoundaryResolution.x(); X++)
+		{
+			auto& Lattice = vBoundary[Y][X];
+			if (Lattice.Height(0, 0))
+			{
+				BoundaryAverageHeight += Lattice.Height(0, 0);
+				NumBoundaryItems++;
+			}
+		}
+	BoundaryAverageHeight /= NumBoundaryItems;
+
+	float InputAverageHeight = 0.0f;
+	std::size_t NumInputItems = 0;
+	for (int Y = 0; Y < InputResolution.y(); Y++)
+		for (int X = 0; X < InputResolution.x(); X++)
+		{
+			auto& Lattice = vInput[Y][X];
+			if (Lattice.Height(0, 0))
+			{
+				InputAverageHeight += Lattice.Height(0, 0);
+				NumInputItems++;
+			}
+		}
+	InputAverageHeight /= NumInputItems;
+
+	auto DeltaAverageHeight = BoundaryAverageHeight - InputAverageHeight;
+	for (int Y = 0; Y < InputResolution.y(); Y++)
+		for (int X = 0; X < InputResolution.x(); X++)
+			if (vInput[Y][X].Height(0, 0))
+				vInput[Y][X].Height(0, 0) += DeltaAverageHeight;
 }
 
 //*****************************************************************
