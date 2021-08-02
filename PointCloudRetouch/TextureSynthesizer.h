@@ -17,7 +17,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 	private:
 		//TODO: magic number
-		int m_KernelSize = 9;
+		int m_KernelSize = 5;
 
 		Feature_t __flatFeature(const std::vector<typename Texture_t::value_type>& vFeature) const;
 		std::pair<Eigen::Index, Eigen::Index> __findNearestPos(const Texture_t& vTexture, const NeighborMask_t& vNeighborMask, const Feature_t& vFeature) const;

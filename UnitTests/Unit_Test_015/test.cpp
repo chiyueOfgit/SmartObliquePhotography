@@ -181,7 +181,7 @@ TEST(Color_Feature_BaseTest_1, Test_1)
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
 	pTileLoader->initV(pConfig);
 
-	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
+	MainColorSet = pTileLoader->adaptiveKMeansCluster(Data, 6);
 
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
@@ -209,7 +209,7 @@ TEST(Color_Feature_BaseTest_2, Test_2)
 	std::vector<Eigen::Vector3i> MainColorSet;
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
 	pTileLoader->initV(pConfig);
-	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
+	MainColorSet = pTileLoader->adaptiveKMeansCluster(Data, 6);
 	
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
@@ -239,7 +239,7 @@ TEST(Color_Feature_BaseTest_3, Test_3)
 	std::vector<Eigen::Vector3i> MainColorSet;
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
 	pTileLoader->initV(pConfig);
-	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
+	MainColorSet = pTileLoader->adaptiveKMeansCluster(Data, 6);
 	
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
@@ -271,7 +271,7 @@ TEST(Color_Feature_BaseTest_4, Test_4)
 	std::vector<Eigen::Vector3i> MainColorSet;
 	auto* pTileLoader = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
 	pTileLoader->initV(pConfig);
-	MainColorSet = pTileLoader->adjustKMeansCluster(Data, 6);
+	MainColorSet = pTileLoader->adaptiveKMeansCluster(Data, 6);
 	
 	int Sum = 0;
 	for (auto& Color : MainColorSet)
@@ -353,7 +353,7 @@ TEST(Color_Feature_BaseTest_5, Test_5)
 
 		auto* pColorFeature = hiveDesignPattern::hiveGetOrCreateProduct<CColorFeature>(KEYWORD::COLOR_FEATURE);
 		pColorFeature->initV(pConfig);
-		const auto& MainColorSet = pColorFeature->adjustKMeansCluster(ColorSet, 5);
+		const auto& MainColorSet = pColorFeature->adaptiveKMeansCluster(ColorSet, 5);
 		vNum = MainColorSet.size();
 	};
 	

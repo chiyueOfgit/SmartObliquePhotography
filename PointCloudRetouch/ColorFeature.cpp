@@ -34,7 +34,7 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
     for (auto Index : vDeterminantPointSet)
         PointCloudColors.push_back(CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index));
 
-    m_MainBaseColors = __adjustColorClustering(PointCloudColors, m_MaxNumMainColors);
+    m_MainBaseColors = __adaptiveColorClustering(PointCloudColors, m_MaxNumMainColors);
 
     m_NearestPoints.resize(m_MainBaseColors.size());
 
@@ -121,7 +121,7 @@ std::string CColorFeature::outputDebugInfosV(pcl::index_t vIndex) const
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<Eigen::Vector3i> CColorFeature::__adjustColorClustering(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxNumCluster) const
+std::vector<Eigen::Vector3i> CColorFeature::__adaptiveColorClustering(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxNumCluster) const
 {
     _ASSERTE(!vColorSet.empty());
     _ASSERTE(vMaxNumCluster != 0 && vMaxNumCluster != -1);

@@ -35,10 +35,10 @@ namespace hiveObliquePhotography
 			const auto& getMainColorsNearestPoints() const { return m_NearestPoints; }
 
 #ifdef _UNIT_TEST
-			std::vector<Eigen::Vector3i> adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __adjustColorClustering(vColorSet, vK); };
+			std::vector<Eigen::Vector3i> adaptiveKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK) { return __adaptiveColorClustering(vColorSet, vK); };
 #endif
 		private:
-			std::vector<Eigen::Vector3i> __adjustColorClustering(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxNumCluster) const;
+			std::vector<Eigen::Vector3i> __adaptiveColorClustering(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxNumCluster) const;
 			void __kMeansClustering(std::vector<SColorCluster>& voClusters, const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vK, std::size_t vIterCount) const;
 			void __fillClusterCoefficient(std::vector<SColorCluster>& vioClusters, const std::vector<Eigen::Vector3i>& vColorSet) const;
 
