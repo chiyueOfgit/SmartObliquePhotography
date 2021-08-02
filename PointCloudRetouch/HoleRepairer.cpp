@@ -180,7 +180,7 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 		const float DeltaBoxRate = 0.1f;
 		Eigen::Vector3f DeltaBox = (vPlaneInfos.BoundingBox.second - vPlaneInfos.BoundingBox.first) * DeltaBoxRate;
 		DeltaBox.data()[vPlaneInfos.AxisOrder[2]] *= 2.0f;
-		DeltaBox.data()[vPlaneInfos.AxisOrder[2]] += 0.5f;
+		DeltaBox.data()[vPlaneInfos.AxisOrder[2]] += 5.0f;
 
 		std::pair<Eigen::Vector3f, Eigen::Vector3f> Box = { vPlaneInfos.BoundingBox.first - DeltaBox, vPlaneInfos.BoundingBox.second + DeltaBox };
 		ProjectSet = Scene.getPointsInBox(Box);
