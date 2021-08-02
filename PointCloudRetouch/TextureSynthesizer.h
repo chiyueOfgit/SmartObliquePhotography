@@ -16,7 +16,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		using Feature_t = std::vector<Eigen::Matrix<Scalar_t, Channel, 1>>;
 		using NeighborMask_t = Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>;
 		//TODO: magic number
-		int m_KernelSize = 5;
+		int m_KernelSize = 9;
 
 		Feature_t __generateFeatureAt(const Texture_t& vTexture, const NeighborMask_t& vNeighborMask, size_t vRowId, size_t vColId) const;
 		Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) const;

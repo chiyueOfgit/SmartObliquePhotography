@@ -79,6 +79,10 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	//Boundary
 	auto BoundaryPlane = __calculatePlaneByIndices(vBoundaryIndices);	//可以从别的地方给
 	auto BoundaryBox = __calculateBoundingBoxByIndices(vBoundaryIndices);	//可以和indices无关
+	auto BoundaryBoxLength = BoundaryBox.second - BoundaryBox.first;
+	const float Delta = 0.2f;
+	BoundaryBox.first = BoundaryBox.first - Delta * BoundaryBoxLength;
+	BoundaryBox.second = BoundaryBox.second + Delta * BoundaryBoxLength;
 	Eigen::Vector2f BoundaryPiece{ BoundaryBox.second.data()[InputPlaneInfos.AxisOrder[0]] - BoundaryBox.first.data()[InputPlaneInfos.AxisOrder[0]], BoundaryBox.second.data()[InputPlaneInfos.AxisOrder[1]] - BoundaryBox.first.data()[InputPlaneInfos.AxisOrder[1]] };
 	float BoundaryPieceArea = BoundaryPiece.x() * BoundaryPiece.y();
 
@@ -119,7 +123,8 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 
 		CTextureSynthesizer<float, 1> HeightSynthesizer;
 		HeightSynthesizer.execute(InputHeightMatrix, Mask, BoundaryHeightMatrix);
-		__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
+		//__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
+		__gaussBlurbyHeightMatrix(BoundaryHeightMatrix, BoundaryPlaneLattices);
 
 		__outputImage(BoundaryHeightMatrix, "Temp/output_afterH.png");
 	}
@@ -375,7 +380,7 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector4f& vPlan
 		for (int Y = 0; Y < Resolution.y(); Y++)
 		{
 			auto& Lattice = vPlaneLattices[Y][X];
-			if (Lattice.Indices.empty() && vMask(Y, X))
+			if (Lattice.Indices.empty())
 			{
 				Eigen::Vector3f RealPos = Lattice.CenterPos + Normal * (K * Lattice.Height(0, 0) + B);	//取出加偏移
 				pcl::PointSurfel TempPoint;
@@ -429,6 +434,43 @@ float CHoleRepairer::__calcMeanPointsPerLattice(const std::vector<std::vector<SL
 	}
 
 	return (float)NumPoints / (Resolution.x() * Resolution.y());
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CHoleRepairer::__gaussBlurbyHeightMatrix(const Eigen::Matrix<Eigen::Matrix<float, 1, 1>, -1, -1>& vHeightMatrix, std::vector<std::vector<SLattice>>& vPlaneLattices)
+{
+	Eigen::Vector2i Resolution = { vPlaneLattices.front().size(), vPlaneLattices.size() };
+	const int KernelSize = 3;
+	const int Delta = KernelSize / 2;
+	const float KernelRate[3] = { 0.0454f, 0.0566f, 0.0707f };
+	for (int Y = 0; Y < Resolution.y(); Y++)
+	{
+		for (int X = 0; X < Resolution.x(); X++)
+		{
+			auto& Lattice = vPlaneLattices[Y][X];
+			if (!Lattice.Height(0, 0))
+			{
+				float Sum = 0;
+				for (int i = - Delta; i <= Delta; i++)
+					for (int k = - Delta; k <= Delta; k++)
+						if (Y + i >= 0 && Y + i < Resolution.y() && X + k >= 0 && X + k < Resolution.x() && vHeightMatrix(Y + i, X + k)(0, 0))
+						{
+							float Rate;
+							if (i * k == 0)
+								if (i != k)
+									Rate = KernelRate[1];
+								else
+									Rate = KernelRate[2];
+							else
+								Rate = KernelRate[0];
+							Sum += Rate * vHeightMatrix(Y + i, X + k)(0, 0);
+						}
+
+				Lattice.Height(0, 0) = Sum / pow(KernelSize, 2);
+			}
+		}
+	}
 }
 
 Eigen::MatrixXi CHoleRepairer::__genMask(const Eigen::Vector2i& vResolution, const std::vector<std::vector<SLattice>>& vPlaneLattices)
