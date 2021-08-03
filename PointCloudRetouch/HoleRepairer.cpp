@@ -41,8 +41,9 @@ bool CHoleRepairer::init(const hiveConfig::CHiveConfig* vConfig)
 
 void CHoleRepairer::setHoleRegion(const std::vector<pcl::index_t>& vHoleRegion)
 {
+    auto TempSet = vHoleRegion;
 	std::vector<std::vector<pcl::index_t>> TempBoundarySet;
-	m_pBoundaryDetector->execute<CBoundaryDetector>(vHoleRegion, TempBoundarySet);
+	m_pBoundaryDetector->execute<CBoundaryDetector>(TempSet, TempBoundarySet);
 	m_BoundarySet = TempBoundarySet;
 }
 
