@@ -70,9 +70,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_003 (save_point_c
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_018 (boundary_detection)", "UnitTests\Unit_Test_018\Unit_Test_018.vcxproj", "{3920EE72-87AC-4663-87E6-FA643FE62D06}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_019 (texture_generation)", "UnitTests\Unit_Test_019\Unit_Test_019.vcxproj", "{C0C55708-D07D-4F31-86A9-9F72D3B6E2D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_019 (texture_Synthesizer)", "UnitTests\Unit_Test_019\Unit_Test_019.vcxproj", "{C0C55708-D07D-4F31-86A9-9F72D3B6E2D3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_020 (plane_and_project)", "UnitTests\Unit_Test_020\Unit_Test_020.vcxproj", "{9200ED28-B18E-48A4-AB30-4F42B15536A4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_020 (lattices_projection)", "UnitTests\Unit_Test_020\Unit_Test_020.vcxproj", "{9200ED28-B18E-48A4-AB30-4F42B15536A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
