@@ -31,7 +31,7 @@ void CColorVisualization::run(const std::vector<pcl::index_t>& vPoints)
     for (auto Index : vPoints)
         PointCloudColors.push_back({ m_pCloud->points[Index].r, m_pCloud->points[Index].g, m_pCloud->points[Index].b });
 
-    m_MainBaseColors = __adjustKMeansCluster(PointCloudColors, m_MaxNumMainColors);
+    m_MainBaseColors = __adaptiveKMeansCluster(PointCloudColors, m_MaxNumMainColors);
 
     std::map<pcl::index_t, Eigen::Vector3i> IndexAndColor;
 
@@ -76,7 +76,7 @@ void CColorVisualization::run(const std::vector<pcl::index_t>& vPoints)
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<Eigen::Vector3i> CColorVisualization::__adjustKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxK) const
+std::vector<Eigen::Vector3i> CColorVisualization::__adaptiveKMeansCluster(const std::vector<Eigen::Vector3i>& vColorSet, std::size_t vMaxK) const
 {
     _ASSERTE(!vColorSet.empty());
     _ASSERTE(vMaxK != 0);

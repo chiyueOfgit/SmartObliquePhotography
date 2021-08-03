@@ -207,7 +207,7 @@ TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_1)
 		TempBox.first.data()[Z] -= BoxHeight;
 		TempBox.second.data()[Z] += BoxHeight;
 		for (auto& Point : TempPoints)
-			ASSERT_TRUE(_isInBox(Point, TempBox));
+			EXPECT_TRUE(_isInBox(Point, TempBox));
 
 		if (ENABLE_VISUALIZER)
 		{
@@ -262,7 +262,7 @@ TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_2)
 		TempBox.first.data()[Z] -= BoxHeight;
 		TempBox.second.data()[Z] += BoxHeight;
 		for (auto& Point : TempPoints)
-			ASSERT_TRUE(_isInBox(Point, TempBox));
+			EXPECT_TRUE(_isInBox(Point, TempBox));
 
 		if (ENABLE_VISUALIZER)
 		{
