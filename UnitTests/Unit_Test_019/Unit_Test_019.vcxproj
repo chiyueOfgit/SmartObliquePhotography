@@ -140,7 +140,7 @@
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalOptions>/WHOLEARCHIVE:PointCloudRetouch_Lib.lib /WHOLEARCHIVE:ObliquePhotographyData_Lib.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/WHOLEARCHIVE:PointCloudRetouch_Lib.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

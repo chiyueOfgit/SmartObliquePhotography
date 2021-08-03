@@ -40,4 +40,5 @@ void CPointCloudRetouchConfig::__defineAttributesV()
 	_defineAttribute("NEAREST_N_BOUNDARY_DETECTOR", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 	_defineAttribute("BOUNDARY_DISTANCE_TOLERANCE", hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
 	_defineAttribute("BOUNDARY_SIZE_TOLERANCE", hiveConfig::EConfigDataType::ATTRIBUTE_INT);
+	_defineAttribute("MIN_REDUCE_RATIO", hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 }

@@ -4,7 +4,7 @@
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/serialization/vector.hpp"
 
-#define  STB_IMAGE_STATIC
+#define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_STATIC
@@ -27,6 +27,10 @@ const auto RandomMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/Rand
 const auto AllBlackMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/AllBlackMaskResultImage.png");
 const auto SquareMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/SquareMaskResultImage.png");
 const auto RandomMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/RandomMaskResultImage.png");
+const auto HeightInputImagePath = TESTMODEL_DIR + std::string("Test019_Model/inputH.png");
+const auto HeightMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/maskH.png");
+const auto HeightSceneImagePath = TESTMODEL_DIR + std::string("Test019_Model/sceneH.png");
+const auto HeightResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/ResultH.png");
 
 class TestTextureSynthesizer : public testing::Test
 {
@@ -192,4 +196,21 @@ TEST_F(TestTextureSynthesizer, RandomMask)
 	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 
 	GenerateResultImage(OutputTexture, RandomMaskResultImagePath);
+}
+
+TEST_F(TestTextureSynthesizer, Height)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	ReadImage(HeightInputImagePath, InputTexture);
+	ReadImage(HeightSceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	ReadMask(HeightMaskImagePath, MaskTexture);
+
+	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+
+	GenerateResultImage(OutputTexture, HeightResultImagePath);
 }
