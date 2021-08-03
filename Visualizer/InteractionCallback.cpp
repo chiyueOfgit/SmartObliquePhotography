@@ -99,15 +99,19 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		{
 			std::vector<pcl::PointSurfel> NewPoints;
 			PointCloudRetouch::hiveRepairHole(NewPoints);
-			PointCloud_t::Ptr RepairCloud(new PointCloud_t);
-			for (auto& Point : NewPoints)
+			if (!NewPoints.empty())
 			{
-				if (Point.r != 0 && Point.g != 0 && Point.b != 0)	//不画出初始点
+				PointCloud_t::Ptr RepairCloud(new PointCloud_t);
+				for (auto& Point : NewPoints)
+				{
+					if (Point.r == 0 && Point.g == 0 && Point.b == 0)
+						Point.rgba = -1;
 					RepairCloud->push_back(Point);
-			}
+				}
 
-			m_pVisualizer->addUserPointCloud(RepairCloud);
-			RefreshFlag = true;
+				m_pVisualizer->addUserPointCloud(RepairCloud);
+				RefreshFlag = true;
+			}
 		}
 
 		if (RefreshFlag)

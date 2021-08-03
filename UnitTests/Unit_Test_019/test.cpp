@@ -4,7 +4,7 @@
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/serialization/vector.hpp"
 
-#define  STB_IMAGE_STATIC
+#define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_STATIC
@@ -27,6 +27,10 @@ const auto RandomMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/Rand
 const auto AllBlackMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/AllBlackMaskResultImage.png");
 const auto SquareMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/SquareMaskResultImage.png");
 const auto RandomMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/RandomMaskResultImage.png");
+const auto HeightInputImagePath = TESTMODEL_DIR + std::string("Test019_Model/inputH.png");
+const auto HeightMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/maskH.png");
+const auto HeightSceneImagePath = TESTMODEL_DIR + std::string("Test019_Model/sceneH.png");
+const auto HeightResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/ResultH.png");
 
 class TestTextureSynthesizer : public testing::Test
 {
@@ -66,6 +70,25 @@ protected:
 		for (int i = 0; i < Height; i++)
 			for (int k = 0; k < Width; k++)
 				voMask(i, k) = ImageData[(i * Width + k) * BytesPerPixel] / 255;
+	}
+
+	void ChangeChannel(Eigen::Matrix<Eigen::Vector3i, -1, -1> &vioTexture, int vMode)
+	{
+		for (int i = 0; i < vioTexture.rows(); i++)
+			for (int k = 0; k < vioTexture.cols(); k++)
+			{
+				auto Pixel = vioTexture(i, k);
+				if (!Pixel[0] && Pixel[1] && vMode == 0)
+				{
+					Pixel[0] == -Pixel[1];
+					Pixel[1] = 0;
+				}
+				else if (Pixel[0] < 0 && vMode == 1)
+				{
+					Pixel[1] = -Pixel[0];
+					Pixel[0] = 0;
+				}
+			}
 	}
 
 	void GenerateMask(Eigen::MatrixXi& voMask, int vMode)
@@ -111,6 +134,7 @@ protected:
 		stbi_image_free(ResultImage);
 	}
 
+	//void GenerateMipMap(Eigen::Matrix<Eigen::Vector3i, -1, -1> &vInputTexture, Eigen::Matrix<Eigen::Vector3i, -1, -1> )
 };
 
 TEST_F(TestTextureSynthesizer, DeathTest_EmptyInput)
@@ -192,4 +216,26 @@ TEST_F(TestTextureSynthesizer, RandomMask)
 	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 
 	GenerateResultImage(OutputTexture, RandomMaskResultImagePath);
+}
+
+TEST_F(TestTextureSynthesizer, Height)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture; 
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	ReadImage(HeightInputImagePath, InputTexture);
+	ReadImage(HeightSceneImagePath, OutputTexture);
+
+	ChangeChannel(InputTexture, 0);
+	ChangeChannel(OutputTexture, 0);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	ReadMask(HeightMaskImagePath, MaskTexture);
+
+	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+
+	ChangeChannel(OutputTexture, 1);
+
+	GenerateResultImage(OutputTexture, HeightResultImagePath);
 }
