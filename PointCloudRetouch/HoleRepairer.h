@@ -39,7 +39,8 @@ namespace hiveObliquePhotography
 
 #ifdef _UNIT_TEST
 			Eigen::Vector4f calcPlane(const std::vector<pcl::index_t>& vIndices) { return __calculatePlaneByIndices(vIndices); }
-			void generatePlaneLattices(const Eigen::Vector4f& vPlane, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Vector2i& vResolution, SPlaneInfos& voPlaneInfos, std::vector<std::vector<SLattice>>& voPlaneLattices) { __generatePlaneLattices(vPlane, vBox, vResolution, voPlaneInfos, voPlaneLattices); }
+			void generateLattices(const Eigen::Vector4f& vPlane, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Vector2i& vResolution, SPlaneInfos& voPlaneInfos, std::vector<std::vector<SLattice>>& voPlaneLattices) { __generatePlaneLattices(vPlane, vBox, vResolution, voPlaneInfos, voPlaneLattices); }
+			void projectPoints(const std::vector<pcl::index_t>& vIndices, const SPlaneInfos& vPlaneInfos, std::vector<std::vector<SLattice>>& vioPlaneLattices) { __projectPoints2PlaneLattices(vIndices, vPlaneInfos, vioPlaneLattices); }
 #endif // _UNIT_TEST
 
 		private:
