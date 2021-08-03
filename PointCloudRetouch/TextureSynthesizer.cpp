@@ -38,8 +38,6 @@ void CTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, co
 				auto Feature = __generateFeatureAt(vioScene, NeighborMask, RowId, ColId);
 				auto [NearestRowId, NearestColId] = __findNearestPos(vInput, NeighborMask, Feature);
 				vioScene.coeffRef(RowId, ColId) = vInput.coeff(NearestRowId, NearestColId);
-				auto color = vioScene.coeffRef(RowId, ColId);
-				//hiveEventLogger::hiveOutputEvent(_FORMAT_STR7("Output: (%1%, %2%), color: (%3%, %4%, %5%), Scene: (%6%, %7%)", RowId, ColId, color[0], color[1], color[2], NearestRowId, NearestColId));
 			}
 }
 
