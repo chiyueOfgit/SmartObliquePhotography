@@ -101,7 +101,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	Eigen::MatrixXi Mask = __genMask((1.0f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices);
 
 	//input高度校正
-	//__inputHeightCorrection(InputPlaneLattices, BoundaryPlaneLattices);
+	__inputHeightCorrection(InputPlaneLattices, BoundaryPlaneLattices);
 
 	//生成颜色
 	{
