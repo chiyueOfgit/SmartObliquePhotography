@@ -18,12 +18,12 @@ bool CBoundaryDetector::init(const hiveConfig::CHiveConfig* vConfig)
 
 //*****************************************************************
 //FUNCTION: 
-void CBoundaryDetector::runV(const std::vector<pcl::index_t>& vBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
+void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
 {
-	if (vBoundarySet.empty())
+	if (vioBoundarySet.empty())
 		return;
 	auto pManager = CPointCloudRetouchManager::getInstance();
-	for (auto CurrentIndex : vBoundarySet)
+	for (auto CurrentIndex : vioBoundarySet)
 		if (CurrentIndex < 0 || CurrentIndex >= pManager->getRetouchScene().getNumPoint())
 			_THROW_RUNTIME_ERROR("Index is out of range");
 
@@ -31,9 +31,9 @@ void CBoundaryDetector::runV(const std::vector<pcl::index_t>& vBoundarySet, std:
 
 	std::mutex Mutex;
 #pragma omp parallel for
-	for(int m = 0;m < vBoundarySet.size();m++)
+	for(int m = 0;m < vioBoundarySet.size();m++)
 	{
-		auto Index = vBoundarySet[m];
+		auto Index = vioBoundarySet[m];
 		auto HomoCenterPosition = pManager->getRetouchScene().getPositionAt(Index);
 		auto HomoCenterNormal = pManager->getRetouchScene().getNormalAt(Index);
 		Eigen::Vector3f CenterPosition{ HomoCenterPosition.x(), HomoCenterPosition.y(), HomoCenterPosition.z() };
@@ -57,6 +57,8 @@ void CBoundaryDetector::runV(const std::vector<pcl::index_t>& vBoundarySet, std:
 		for(int i = 1;i < NeighborSet.size();i++)
 		{
 			auto HomoNeighborPos = pManager->getRetouchScene().getPositionAt(NeighborSet[i]);
+			if(pManager->getLabelAt(NeighborSet[i]) == EPointLabel::DISCARDED)
+				continue;
 			Eigen::Vector3f NeighborPos{ HomoNeighborPos.x(), HomoNeighborPos.y(), HomoNeighborPos.z() };
 			auto ProjectivePos = __calcProjectivePoint(CenterPosition, FitNormal, NeighborPos);
 			Eigen::Vector3f TempVector = ProjectivePos - CenterPosition;
@@ -88,6 +90,9 @@ void CBoundaryDetector::runV(const std::vector<pcl::index_t>& vBoundarySet, std:
 			Mutex.unlock();
 		}
 	}
+
+	auto TempSet = BoundarySet;
+	vioBoundarySet.swap(TempSet) ;
 	
 	__divideBoundary(BoundarySet, voHoleSet);
 	for (auto& Hole : voHoleSet)

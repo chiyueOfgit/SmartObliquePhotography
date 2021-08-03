@@ -55,6 +55,7 @@ namespace hiveObliquePhotography
 			void switchLabel(EPointLabel vTo, EPointLabel vFrom);
 			void setLabel(const std::vector<pcl::index_t>& vPoints, EPointLabel vTarget);	//for perform
 			void dumpIndicesByLabel(std::vector<pcl::index_t>& vioIndices, EPointLabel vLabel);
+			EPointLabel getLabelAt(pcl::index_t vIndex) { return m_PointLabelSet.getLabelAt(vIndex); };
 
 			bool dumpColorFeatureMainColors(std::vector<Eigen::Vector3i>& vMainColors) const;
 			bool dumpColorFeatureNearestPoints(std::vector<pcl::index_t>& vNearestPoints) const;
