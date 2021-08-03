@@ -18,6 +18,8 @@
 //	* Lattices_Projection_BaseTest_1: 整个场景一个小空洞；
 //  * Lattices_Projection_BaseTest_2: 场景有五个空洞；
 //  * Lattices_Generation_Test:		  测试通过给定包围盒及平面能否正确均匀划分格子
+//  * Points_Projection_Test:		  测试能否将点投影到对应格子内
+//  * OriginInfos_Filling_Test:		  测试能否通过格子内的点生成原始颜色和高度
 
 #define ENABLE_VISUALIZER false
 
@@ -174,30 +176,108 @@ protected:
 		}
 		return true;
 	}
+	bool _isInBox(const Eigen::Vector3f vPos, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (vPos.data()[i] < vBox.first.data()[i])
+				return false;
+			if (vPos.data()[i] > vBox.second.data()[i])
+				return false;
+		}
+		return true;
+	}
 
 	//test generation
 	void _testLatticesGeneration(const std::vector<int>& vIndices)
 	{
 		SPlaneInfos PlaneInfos;
 		std::vector<std::vector<SLattice>> PlaneLattices;
-		const std::vector<Eigen::Vector2i> ResolutionSet = { { 1, 1 }, {32, 32}, {16, 9}, {3, 101} };
+		const std::vector<Eigen::Vector2i> ResolutionSet = { { 1, 1 }, {32, 32}, {16, 9}, {7, 101} };
+		auto Plane = m_Repairer.calcPlane(vIndices);
+		auto Box = _getBoundingBox(m_pCloud, vIndices);
 		auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(vIndices));
 		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
+		const float BoxHeight = 0.5f;
+		//排除分辨率x, y顺序影响
 		for (auto& Resolution : ResolutionSet)
 		{
-			m_Repairer.generatePlaneLattices(m_Repairer.calcPlane(vIndices), _getBoundingBox(m_pCloud, vIndices), Resolution, PlaneInfos, PlaneLattices);
+			m_Repairer.generateLattices(Plane, Box, Resolution, PlaneInfos, PlaneLattices);
 			ASSERT_EQ(PlaneLattices.size(), Resolution.y());
 			for (auto& PerRow : PlaneLattices)
 				ASSERT_EQ(PerRow.size(), Resolution.x());
 
-			const Eigen::Vector2i Coord{ 2, 4 };
-			if (Resolution.x() > Coord.x() && Resolution.y() > Coord.y())
+			PlaneInfos.BoundingBox.first.data()[Z] -= BoxHeight;
+			PlaneInfos.BoundingBox.second.data()[Z] += BoxHeight;
+			//盒内和平面上
+			for (int Y = 0; Y < Resolution.y(); Y++)
+				for (int X = 0; X < Resolution.x(); X++)
+				{
+					auto& Pos = PlaneLattices[Y][X].CenterPos;
+
+					ASSERT_TRUE(_isInBox(Pos, PlaneInfos.BoundingBox));
+					float Point2Plane = Pos.x() * Plane.x() + Pos.y() * Plane.y() + Pos.z() * Plane.z() + Plane.w();
+					ASSERT_NEAR(Point2Plane, 0, Epsilon);
+				}
+
+			//格子大小均匀
+			const std::vector<Eigen::Vector2i> CoordSet{ {2, 4}, {3, 5}, {11, 6} };
+			for (auto& Coord : CoordSet)
 			{
-				Eigen::Vector3f DeltaPos = PlaneLattices[Coord.y()][Coord.x()].CenterPos - PlaneLattices[0][0].CenterPos;
-				ASSERT_NEAR(DeltaPos.data()[X], Coord.x() * PlaneInfos.LatticeSize.x(), Epsilon);
-				ASSERT_NEAR(DeltaPos.data()[Y], Coord.y() * PlaneInfos.LatticeSize.y(), Epsilon);
+				if (Resolution.x() > Coord.x() && Resolution.y() > Coord.y())
+				{
+					Eigen::Vector3f DeltaPos = PlaneLattices[Coord.y()][Coord.x()].CenterPos - PlaneLattices[0][0].CenterPos;
+					ASSERT_NEAR(DeltaPos.data()[X], Coord.x() * PlaneInfos.LatticeSize.x(), Epsilon);
+					ASSERT_NEAR(DeltaPos.data()[Y], Coord.y() * PlaneInfos.LatticeSize.y(), Epsilon);
+				}
 			}
 		}
+	}
+
+	//test projection
+	void _testPointsProjection(const std::vector<int>& vIndices)
+	{
+		SPlaneInfos PlaneInfos;
+		std::vector<std::vector<SLattice>> PlaneLattices;
+		auto Plane = m_Repairer.calcPlane(vIndices);
+		auto Box = _getBoundingBox(m_pCloud, vIndices);
+		auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(vIndices));
+		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
+		const Eigen::Vector2i Resolution{ 16, 16 };
+		m_Repairer.generateLattices(Plane, Box, Resolution, PlaneInfos, PlaneLattices);
+		m_Repairer.projectPoints({}, PlaneInfos, PlaneLattices);
+		
+		for (int Y = 0; Y < Resolution.y(); Y++)
+			for (int X = 0; X < Resolution.x(); X++)
+			{
+				auto& Lattice = PlaneLattices[Y][X];
+				for (auto Index : Lattice.Indices)
+				{
+					Eigen::Vector3f PointPos{ m_pCloud->points[Index].x, m_pCloud->points[Index].y, m_pCloud->points[Index].z };
+					ASSERT_LE(abs(PlaneInfos.Normal.dot(PointPos - Lattice.CenterPos)), 0.99f);
+				}
+			}
+	}
+
+	//test filling
+	void _testOriginInfosFilling(const std::vector<int>& vIndices)
+	{
+		SPlaneInfos PlaneInfos;
+		std::vector<std::vector<SLattice>> PlaneLattices;
+		auto Plane = m_Repairer.calcPlane(vIndices);
+		auto Box = _getBoundingBox(m_pCloud, vIndices);
+		auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(vIndices));
+		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
+		const Eigen::Vector2i Resolution{ 16, 16 };
+		m_Repairer.generateLattices(Plane, Box, Resolution, PlaneInfos, PlaneLattices);
+		m_Repairer.projectPoints({}, PlaneInfos, PlaneLattices);
+
+		for (int Y = 0; Y < Resolution.y(); Y++)
+			for (int X = 0; X < Resolution.x(); X++)
+			{
+				auto& Lattice = PlaneLattices[Y][X];
+
+			}
 	}
 
 	void _drawBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
@@ -248,6 +328,7 @@ TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_1)
 {
 	auto& Boundary = m_BoundaryIndices.front();
 	_testLatticesGeneration(Boundary);
+	_testPointsProjection(Boundary);
 }
 
 TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_2)
@@ -255,6 +336,7 @@ TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_2)
 	for (auto& Boundary : m_BoundaryIndices)
 	{
 		_testLatticesGeneration(Boundary);
+		_testPointsProjection(Boundary);
 	}
 }
 
