@@ -103,13 +103,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			{
 				PointCloud_t::Ptr RepairCloud(new PointCloud_t);
 				for (auto& Point : NewPoints)
-					if (Point.r != 0 && Point.g != 0 && Point.b != 0)	//不画出初始点
-						RepairCloud->push_back(Point);
-					else
-					{
+				{
+					if (Point.r == 0 && Point.g == 0 && Point.b == 0)
 						Point.rgba = -1;
-						RepairCloud->push_back(Point);
-					}
+					RepairCloud->push_back(Point);
+				}
 
 				m_pVisualizer->addUserPointCloud(RepairCloud);
 				RefreshFlag = true;
