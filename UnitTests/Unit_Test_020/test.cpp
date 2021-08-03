@@ -15,17 +15,19 @@
 
 //测试用例列表：
 // LatticesProjectionBaseTest:通过不同空洞边界点正确生成对应栅格，并将边界点投影到正确栅格内；
-//	* Lattices_Projection_BaseTest_1:整个场景一个小空洞；
-//  * Lattices_Projection_BaseTest_2:场景有五个空洞；
+//	* Lattices_Projection_BaseTest_1: 整个场景一个小空洞；
+//  * Lattices_Projection_BaseTest_2: 场景有五个空洞；
+//  * Lattices_Generation_Test:		  测试通过给定包围盒及平面能否正确均匀划分格子
 
-#define ENABLE_VISUALIZER true
+#define ENABLE_VISUALIZER false
+
+#define Epsilon 1e-3
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 const auto RetouchConfigFile = TESTMODEL_DIR + std::string("Config/Test018_PointCloudRetouchConfig.xml");
 const auto HoleRepairerConfigFile = TESTMODEL_DIR + std::string("Config/Test020_HoleRepairerConfig.xml"); 
 const auto DataPath = TESTMODEL_DIR + std::string("Test018_Model/");
-
 const std::vector<std::string> ModelNames{ "one_hole", "five_holes" };
 
 class TestLatticesProjection : public testing::Test
@@ -37,13 +39,13 @@ protected:
 
 		m_pRetouchConfig = new CPointCloudRetouchConfig;
 		ASSERT_EQ(hiveConfig::hiveParseConfig(RetouchConfigFile, hiveConfig::EConfigType::XML, m_pRetouchConfig), hiveConfig::EParseResult::SUCCEED);
-
-		m_pHoleRepairerConfig = new CPointCloudRetouchConfig;
-		ASSERT_EQ(hiveConfig::hiveParseConfig(HoleRepairerConfigFile, hiveConfig::EConfigType::XML, m_pHoleRepairerConfig), hiveConfig::EParseResult::SUCCEED);
-
 		m_pCloud.reset(new PointCloud_t);
 		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ DataPath + ModelNames[m_TestNumber] + ".ply" });
 		hiveInit(m_pCloud, m_pRetouchConfig);
+
+		m_pHoleRepairerConfig = new CPointCloudRetouchConfig;
+		ASSERT_EQ(hiveConfig::hiveParseConfig(HoleRepairerConfigFile, hiveConfig::EConfigType::XML, m_pHoleRepairerConfig), hiveConfig::EParseResult::SUCCEED);
+		m_Repairer.init(m_pHoleRepairerConfig);
 
 		//读入所有boundary points
 		for (int i = 1; hiveUtility::hiveLocateFile(DataPath + ModelNames[m_TestNumber] + std::to_string(i) + ".txt") != ""; i++)
@@ -61,6 +63,41 @@ protected:
 			hiveDumpPointLabel(Label);
 			m_pVisualizer->refresh(Label);
 			m_pPCLVisualizer = hiveObliquePhotography::Visualization::hiveGetPCLVisualizer();
+
+			for (auto& Indices : m_BoundaryIndices)
+			{
+				std::vector<pcl::PointSurfel> TempPoints;
+				m_Repairer.repairHoleByBoundaryAndInput(Indices, m_InputIndices, TempPoints);
+				PointCloud_t::Ptr TempCloud(new PointCloud_t);
+				for (auto& Point : TempPoints)
+				{
+					if (Point.r == 0 && Point.g == 0 && Point.b == 0)
+						Point.rgba = -1;
+					else
+					{
+						//注释取消高亮
+						Point.r = 255;
+						Point.g = 0;
+						Point.b = 0;
+					}
+					TempCloud->push_back(Point);
+				}
+
+				auto TempBox = _getBoundingBox(m_pCloud, Indices);
+				auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(Indices));
+				auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
+
+				const float BoxHeight = 0.5f;	//包围盒的高度不会使用
+				TempBox.first.data()[Z] -= BoxHeight;
+				TempBox.second.data()[Z] += BoxHeight;
+
+				//add lattices
+				const int PointSize = 3;
+				m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
+				m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
+				//add box line
+				_drawBox(TempBox);
+			}
 		}
 	}
 
@@ -108,6 +145,20 @@ protected:
 		return { Min, Max };
 	}
 	
+	std::vector<int> _getAxisOrder(const Eigen::Vector4f& vPlane)
+	{
+		Eigen::Vector3f PlaneNormal{ vPlane.x(), vPlane.y(), vPlane.z() };
+		auto MinAxis = PlaneNormal.maxCoeff();
+		std::vector<int> AxisOrder(3);	//Min在最后
+		if (MinAxis == PlaneNormal.x())
+			AxisOrder = { 1, 2, 0 };
+		else if (MinAxis == PlaneNormal.y())
+			AxisOrder = { 2, 0, 1 };
+		else if (MinAxis == PlaneNormal.z())
+			AxisOrder = { 0, 1, 2 };
+		return AxisOrder;
+	}
+
 	bool _isInBox(const pcl::PointSurfel& vPoint, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
 	{
 		Eigen::Vector3f Pos;
@@ -122,6 +173,31 @@ protected:
 				return false;
 		}
 		return true;
+	}
+
+	//test generation
+	void _testLatticesGeneration(const std::vector<int>& vIndices)
+	{
+		SPlaneInfos PlaneInfos;
+		std::vector<std::vector<SLattice>> PlaneLattices;
+		const std::vector<Eigen::Vector2i> ResolutionSet = { { 1, 1 }, {32, 32}, {16, 9}, {3, 101} };
+		auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(vIndices));
+		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
+		for (auto& Resolution : ResolutionSet)
+		{
+			m_Repairer.generatePlaneLattices(m_Repairer.calcPlane(vIndices), _getBoundingBox(m_pCloud, vIndices), Resolution, PlaneInfos, PlaneLattices);
+			ASSERT_EQ(PlaneLattices.size(), Resolution.y());
+			for (auto& PerRow : PlaneLattices)
+				ASSERT_EQ(PerRow.size(), Resolution.x());
+
+			const Eigen::Vector2i Coord{ 2, 4 };
+			if (Resolution.x() > Coord.x() && Resolution.y() > Coord.y())
+			{
+				Eigen::Vector3f DeltaPos = PlaneLattices[Coord.y()][Coord.x()].CenterPos - PlaneLattices[0][0].CenterPos;
+				ASSERT_NEAR(DeltaPos.data()[X], Coord.x() * PlaneInfos.LatticeSize.x(), Epsilon);
+				ASSERT_NEAR(DeltaPos.data()[Y], Coord.y() * PlaneInfos.LatticeSize.y(), Epsilon);
+			}
+		}
 	}
 
 	void _drawBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
@@ -159,6 +235,8 @@ protected:
 	hiveObliquePhotography::Visualization::CPointCloudVisualizer* m_pVisualizer = nullptr;
 	pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 
+	CHoleRepairer m_Repairer;
+
 	std::vector<std::vector<int>> m_BoundaryIndices;
 	std::vector<int> m_InputIndices;
 	static int m_TestNumber;
@@ -168,111 +246,15 @@ int TestLatticesProjection::m_TestNumber = -1;
 
 TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_1)
 {
-	CHoleRepairer Repairer;
-	Repairer.init(m_pHoleRepairerConfig);
-	for (auto& Indices : m_BoundaryIndices)
-	{
-		std::vector<pcl::PointSurfel> TempPoints;
-		Repairer.repairHoleByBoundaryAndInput(Indices, m_InputIndices, TempPoints);
-		PointCloud_t::Ptr TempCloud(new PointCloud_t);
-		for (auto& Point : TempPoints)
-		{
-			if (Point.r == 0 && Point.g == 0 && Point.b == 0)
-				Point.rgba = -1;
-			else
-			{
-				//注释取消高亮
-				Point.r = 255;
-				Point.g = 0;
-				Point.b = 0;
-			}
-
-			TempCloud->push_back(Point);
-		}
-
-		auto TempBox = _getBoundingBox(m_pCloud, Indices);
-		auto BoxLength = TempBox.second - TempBox.first;
-		Eigen::Vector3f PlaneNormal{ BoxLength.x(), BoxLength.y(), BoxLength.z() };
-		auto MinAxis = PlaneNormal.minCoeff();
-		std::vector<std::size_t> AxisOrder(3);	//Min在最后
-		if (MinAxis == PlaneNormal.x())
-			AxisOrder = { 1, 2, 0 };
-		else if (MinAxis == PlaneNormal.y())
-			AxisOrder = { 2, 0, 1 };
-		else if (MinAxis == PlaneNormal.z())
-			AxisOrder = { 0, 1, 2 };
-		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
-
-		const float BoxHeight = 0.5f;	//包围盒的高度不会使用
-		TempBox.first.data()[Z] -= BoxHeight;
-		TempBox.second.data()[Z] += BoxHeight;
-		for (auto& Point : TempPoints)
-			EXPECT_TRUE(_isInBox(Point, TempBox));
-
-		if (ENABLE_VISUALIZER)
-		{
-			//add lattices
-			const int PointSize = 3;
-			m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(Indices.size()));
-			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "TempCloud" + std::to_string(Indices.size()));
-			//add box line
-			_drawBox(TempBox);
-		}
-	}
+	auto& Boundary = m_BoundaryIndices.front();
+	_testLatticesGeneration(Boundary);
 }
 
 TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_2)
 {
-	CHoleRepairer Repairer;
-	Repairer.init(m_pHoleRepairerConfig);
-	for (auto& Indices : m_BoundaryIndices)
+	for (auto& Boundary : m_BoundaryIndices)
 	{
-		std::vector<pcl::PointSurfel> TempPoints;
-		Repairer.repairHoleByBoundaryAndInput(Indices, m_InputIndices, TempPoints);
-		PointCloud_t::Ptr TempCloud(new PointCloud_t);
-		for (auto& Point : TempPoints)
-		{
-			if (Point.r == 0 && Point.g == 0 && Point.b == 0)
-				Point.rgba = -1;
-			else
-			{
-				//注释取消高亮
-				Point.r = 255;
-				Point.g = 0;
-				Point.b = 0;
-			}
-
-			TempCloud->push_back(Point);
-		}
-
-		auto TempBox = _getBoundingBox(m_pCloud, Indices);
-		auto BoxLength = TempBox.second - TempBox.first;
-		Eigen::Vector3f PlaneNormal{ BoxLength.x(), BoxLength.y(), BoxLength.z() };
-		auto MinAxis = PlaneNormal.minCoeff();
-		std::vector<std::size_t> AxisOrder(3);	//Min在最后
-		if (MinAxis == PlaneNormal.x())
-			AxisOrder = { 1, 2, 0 };
-		else if (MinAxis == PlaneNormal.y())
-			AxisOrder = { 2, 0, 1 };
-		else if (MinAxis == PlaneNormal.z())
-			AxisOrder = { 0, 1, 2 };
-		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
-
-		const float BoxHeight = 0.5f;	//包围盒的高度不会使用
-		TempBox.first.data()[Z] -= BoxHeight;
-		TempBox.second.data()[Z] += BoxHeight;
-		for (auto& Point : TempPoints)
-			EXPECT_TRUE(_isInBox(Point, TempBox));
-
-		if (ENABLE_VISUALIZER)
-		{
-			//add lattices
-			const int PointSize = 3;
-			m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(Indices.size()));
-			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "TempCloud" + std::to_string(Indices.size()));
-			//add box line
-			_drawBox(TempBox);
-		}
+		_testLatticesGeneration(Boundary);
 	}
 }
 
