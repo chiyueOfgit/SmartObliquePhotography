@@ -12,15 +12,14 @@ namespace hiveObliquePhotography
 			~CBoundaryDetector() = default;
 
 			bool init(const hiveConfig::CHiveConfig* vConfig);
-			virtual void runV(const std::vector<pcl::index_t>& vBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet);
+			virtual void runV(std::vector<pcl::index_t>& vioBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet);
 
 		private:
 			Eigen::Vector3f __calcProjectivePoint(Eigen::Vector3f& vCenterPosition, Eigen::Vector3f& vCenterNormal, Eigen::Vector3f& vProjectPosition);
 			float __calcAngle(Eigen::Vector3f& vStandardVector, Eigen::Vector3f& vOtherVector, Eigen::Vector3f& vCenterNormal);
-			void __calcFitPlaneLeastSquares(Eigen::Vector3f& voPlaneCoeff, const std::vector<Eigen::Vector3f>& vData);
-			Eigen::Vector3f __calcFitPlaneRANSAC(const std::vector<Eigen::Vector3f>& vData, double vDistanceThreshold, const Eigen::Vector3f& vUp);
 			void __divideBoundary(std::vector<pcl::index_t>& vBoundaryPointSet, std::vector<std::vector<pcl::index_t>>& voHoleSet);
-			void __findNearestBoundaryPoint(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet);
+			void __findNearestBoundaryPoint(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet, float vTolerance);
+			bool __isClosedHoleBoundary(std::vector<pcl::index_t>& vHoleBoundary);
 			const hiveConfig::CHiveConfig* m_pBoundaryDetectorConfig = nullptr;
 		};
 	}

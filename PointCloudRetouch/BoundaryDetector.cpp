@@ -18,19 +18,22 @@ bool CBoundaryDetector::init(const hiveConfig::CHiveConfig* vConfig)
 
 //*****************************************************************
 //FUNCTION: 
-void CBoundaryDetector::runV(const std::vector<pcl::index_t>& vBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
+void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
 {
-	if (vBoundarySet.empty())
+	if (vioBoundarySet.empty())
 		return;
 	auto pManager = CPointCloudRetouchManager::getInstance();
-	for (auto CurrentIndex : vBoundarySet)
+	for (auto CurrentIndex : vioBoundarySet)
 		if (CurrentIndex < 0 || CurrentIndex >= pManager->getRetouchScene().getNumPoint())
 			_THROW_RUNTIME_ERROR("Index is out of range");
 
 	std::vector<pcl::index_t> BoundarySet;
-	
-	for(auto Index : vBoundarySet)
+
+	std::mutex Mutex;
+#pragma omp parallel for
+	for(int m = 0;m < vioBoundarySet.size();m++)
 	{
+		auto Index = vioBoundarySet[m];
 		auto HomoCenterPosition = pManager->getRetouchScene().getPositionAt(Index);
 		auto HomoCenterNormal = pManager->getRetouchScene().getNormalAt(Index);
 		Eigen::Vector3f CenterPosition{ HomoCenterPosition.x(), HomoCenterPosition.y(), HomoCenterPosition.z() };
@@ -54,6 +57,8 @@ void CBoundaryDetector::runV(const std::vector<pcl::index_t>& vBoundarySet, std:
 		for(int i = 1;i < NeighborSet.size();i++)
 		{
 			auto HomoNeighborPos = pManager->getRetouchScene().getPositionAt(NeighborSet[i]);
+			if(pManager->getLabelAt(NeighborSet[i]) == EPointLabel::DISCARDED)
+				continue;
 			Eigen::Vector3f NeighborPos{ HomoNeighborPos.x(), HomoNeighborPos.y(), HomoNeighborPos.z() };
 			auto ProjectivePos = __calcProjectivePoint(CenterPosition, FitNormal, NeighborPos);
 			Eigen::Vector3f TempVector = ProjectivePos - CenterPosition;
@@ -79,13 +84,20 @@ void CBoundaryDetector::runV(const std::vector<pcl::index_t>& vBoundarySet, std:
 			}
 		}
 		if (Sum == 1)
-			BoundarySet.push_back(Index);
+		{
+			Mutex.lock();
+	        BoundarySet.push_back(Index);
+			Mutex.unlock();
+		}
 	}
+
+	auto TempSet = BoundarySet;
+	vioBoundarySet.swap(TempSet) ;
 	
 	__divideBoundary(BoundarySet, voHoleSet);
-	//for(auto& Hole: voHoleSet)
-	//	for(auto Index: Hole)
-	//		pManager->tagPointLabel(Index, EPointLabel::KEPT, 0, 0);
+	for (auto& Hole : voHoleSet)
+	    for (auto Index : Hole)
+			pManager->tagPointLabel(Index, EPointLabel::KEPT, 0, 0);
 }
 
 Eigen::Vector3f CBoundaryDetector::__calcProjectivePoint(Eigen::Vector3f& vCenterPosition, Eigen::Vector3f& vCenterNormal, Eigen::Vector3f& vProjectPosition)
@@ -112,115 +124,16 @@ float CBoundaryDetector::__calcAngle(Eigen::Vector3f& vStandardVector, Eigen::Ve
 		return 2 * PI - Angle;
 }
 
-void CBoundaryDetector::__calcFitPlaneLeastSquares(Eigen::Vector3f& voPlaneCoeff, const std::vector<Eigen::Vector3f>& vData)
-{
-	int Size = voPlaneCoeff.size();
-	if (Size < 3)
-		return;
-
-	float MeanX = 0, MeanY = 0, MeanZ = 0;
-	float MeanXX = 0, MeanYY = 0, MeanZZ = 0;
-	float MeanXY = 0, MeanXZ = 0, MeanYZ = 0;
-	for (int i = 0; i < Size; i++)
-	{
-		MeanX += vData[i].x();
-		MeanY += vData[i].y();
-		MeanZ += vData[i].z();
-		
-		MeanXX += vData[i].x() * vData[i].x();
-		MeanYY += vData[i].y() * vData[i].y();
-		MeanZZ += vData[i].z() * vData[i].z();
-										   
-		MeanXY += vData[i].x() * vData[i].y();
-		MeanXZ += vData[i].x() * vData[i].z();
-		MeanYZ += vData[i].y() * vData[i].z();
-	}
-	MeanX /= Size;
-	MeanY /= Size;
-	MeanZ /= Size;
-	MeanXX /= Size;
-	MeanYY /= Size;
-	MeanZZ /= Size;
-	MeanXY /= Size;
-	MeanXZ /= Size;
-	MeanYZ /= Size;
-
-	/* eigenvector */
-	Eigen::Matrix3f ParaMat;
-	ParaMat(0, 0) = MeanXX - MeanX * MeanX; ParaMat(0, 1) = MeanXY - MeanX * MeanY; ParaMat(0, 2) = MeanXZ - MeanX * MeanZ;
-	ParaMat(1, 0) = MeanXY - MeanX * MeanY; ParaMat(1, 1) = MeanYY - MeanY * MeanY; ParaMat(1, 2) = MeanYZ - MeanY * MeanZ;
-	ParaMat(2, 0) = MeanXZ - MeanX * MeanZ; ParaMat(2, 1) = MeanYZ - MeanY * MeanZ; ParaMat(2, 2) = MeanZZ - MeanZ * MeanZ;
-	Eigen::EigenSolver<Eigen::Matrix3f> EigenMat(ParaMat);
-	Eigen::Matrix3f EigenValue = EigenMat.pseudoEigenvalueMatrix();
-	Eigen::Matrix3f EigenVector = EigenMat.pseudoEigenvectors();
-
-	/* the eigenvector corresponding to the minimum eigenvalue */
-	float Value1 = EigenValue(0, 0);
-	float Value2 = EigenValue(1, 1);
-	float Value3 = EigenValue(2, 2);
-	int MinNumber = 0;
-	if ((abs(Value2) <= abs(Value1)) && (abs(Value2) <= abs(Value3)))
-	{
-		MinNumber = 1;
-	}
-	if ((abs(Value3) <= abs(Value1)) && (abs(Value3) <= abs(Value2)))
-	{
-		MinNumber = 2;
-	}
-	float A = EigenVector(0, MinNumber);
-	float B = EigenVector(1, MinNumber);
-	float C = EigenVector(2, MinNumber);
-	float D = -(A * MeanX + B * MeanY + C * MeanZ);
-
-	if (C < 0)
-	{
-		A *= -1.0f;
-		B *= -1.0f;
-		C *= -1.0f;
-		D *= -1.0f;
-	}
-	
-	voPlaneCoeff.x() = A;
-	voPlaneCoeff.y() = B;
-	voPlaneCoeff.z() = C;
-}
-
-Eigen::Vector3f CBoundaryDetector::__calcFitPlaneRANSAC(const std::vector<Eigen::Vector3f>& vData, double vDistanceThreshold, const Eigen::Vector3f& vUp)
-{
-	pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for(Eigen::Vector3f Normal: vData)
-	{
-		pcl::PointXYZ Point;
-		Point.x = Normal.x();
-		Point.y = Normal.y();
-		Point.z = Normal.z();
-		vCloud->push_back(Point);
-	}
-
-	Eigen::VectorXf Coeff;
-	pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr ModelPlane(new pcl::SampleConsensusModelPlane<pcl::PointXYZ>(vCloud));
-	pcl::RandomSampleConsensus<pcl::PointXYZ> Ransac(ModelPlane);
-	Ransac.setDistanceThreshold(vDistanceThreshold);
-	Ransac.computeModel();
-	Ransac.getModelCoefficients(Coeff);
-	if (!Coeff.size())
-		return { 0, 0, 0};
-	const Eigen::Vector3f Normal(Coeff.x(), Coeff.y(), Coeff.z());
-	if (Normal.dot(vUp) < 0.0f)
-		Coeff *= -1.0f;
-	
-	Eigen::Vector3f TempCoeff{ Coeff.x(), Coeff.y(), Coeff.z()};
-	return TempCoeff;
-}
-
 void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPointSet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
 {
-    std::map<int, bool> TraversedFlag;
+	std::vector<std::vector<pcl::index_t>> TempHoleSet;
+	std::map<int, bool> TraversedFlag;
 	for (auto Index : vBoundaryPointSet)
 	{
 		TraversedFlag.insert(std::make_pair(Index, false));
 	}
 	std::queue<pcl::index_t> ExpandingCandidateQueue;
+	auto DistanceTolerance = m_pBoundaryDetectorConfig->getAttribute<float>("BOUNDARY_DISTANCE_TOLERANCE").value();
 	
 	while (!vBoundaryPointSet.empty())
 	{
@@ -236,7 +149,7 @@ void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPoi
 			TempBoundary.push_back(Candidate);
 			
 			std::vector<pcl::index_t> NeighborSet;
-			__findNearestBoundaryPoint(Candidate, vBoundaryPointSet, NeighborSet);
+			__findNearestBoundaryPoint(Candidate, vBoundaryPointSet, NeighborSet, DistanceTolerance);
 			if(NeighborSet.empty())
 				continue;
 			
@@ -252,7 +165,7 @@ void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPoi
 			}
 		}
 		if (TempBoundary.size() > m_pBoundaryDetectorConfig->getAttribute<int>("BOUNDARY_SIZE_TOLERANCE").value())
-			voHoleSet.push_back(TempBoundary);
+			TempHoleSet.push_back(TempBoundary);
 		
 		for (auto Iter = vBoundaryPointSet.begin(); Iter != vBoundaryPointSet.end(); )
 		{
@@ -263,16 +176,79 @@ void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPoi
 		}
 		
 	}
+
+	int ClosedNum = 0;
+	for (auto& Hole : TempHoleSet)
+		if (__isClosedHoleBoundary(Hole))
+			ClosedNum++;
+	
+	if(ClosedNum == 0)
+	{
+		std::vector<pcl::index_t> MergeSet;
+		for (auto Temp : TempHoleSet)
+			MergeSet.insert(MergeSet.end(), Temp.begin(), Temp.end());
+		voHoleSet.push_back(MergeSet);
+	}
+	else
+	{
+		std::vector<pcl::index_t> MergeSet;
+		for (auto Temp : TempHoleSet)
+		{
+			if (__isClosedHoleBoundary(Temp))
+				voHoleSet.push_back(Temp);
+			else
+				MergeSet.insert(MergeSet.end(), Temp.begin(), Temp.end());
+		}
+		if (MergeSet.size() > 0.75f * vBoundaryPointSet.size())
+			voHoleSet.push_back(MergeSet);
+	}
 }
 
-void CBoundaryDetector::__findNearestBoundaryPoint(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet)
+void CBoundaryDetector::__findNearestBoundaryPoint(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet, float vTolerance)
 {
+	std::map<float, pcl::index_t> DistanceMap;
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	auto SeedPos = pManager->getRetouchScene().getPositionAt(vSeed);
 	for(auto Index: vTotalSet)
 	{
 		auto TempPos = pManager->getRetouchScene().getPositionAt(Index);
-		if ((SeedPos - TempPos).norm() < m_pBoundaryDetectorConfig->getAttribute<float>("BOUNDARY_DISTANCE_TOLERANCE").value())
-			voNeighborSet.push_back(Index);
+		if ((SeedPos - TempPos).norm() < vTolerance)
+			DistanceMap.insert(std::make_pair((SeedPos - TempPos).norm(), Index));
 	}
+	for(auto Pair: DistanceMap)
+		voNeighborSet.push_back(Pair.second);
+}
+
+bool CBoundaryDetector::__isClosedHoleBoundary(std::vector<pcl::index_t>& vHoleBoundary)
+{
+	auto DistanceTolerance = m_pBoundaryDetectorConfig->getAttribute<float>("BOUNDARY_IF_CLOSED_TOLERANCE").value();
+	auto pManager = CPointCloudRetouchManager::getInstance();
+	auto CurrentIndex = vHoleBoundary[0];
+	std::vector<pcl::index_t> OrderedSet;
+    OrderedSet.push_back(CurrentIndex);
+	while (1)
+	{
+		std::vector<pcl::index_t> NeighborSet;
+		__findNearestBoundaryPoint(CurrentIndex, vHoleBoundary, NeighborSet, DistanceTolerance);
+		int i = 0;
+		for(;i< NeighborSet.size();i++)
+		{
+			if(find(OrderedSet.begin(),OrderedSet.end(), NeighborSet[i])!= OrderedSet.end())
+				continue;
+			else
+			{
+				OrderedSet.push_back(NeighborSet[i]);
+				CurrentIndex = NeighborSet[i];
+				break;
+			}
+		}
+		if (i == NeighborSet.size())
+			break;
+	}
+	auto BeginPos = pManager->getRetouchScene().getPositionAt(OrderedSet[0]);
+	auto EndPos = pManager->getRetouchScene().getPositionAt(OrderedSet[OrderedSet.size() - 1]);
+	if ((BeginPos - EndPos).norm() <= DistanceTolerance)
+		return true;
+	else
+		return false;
 }
