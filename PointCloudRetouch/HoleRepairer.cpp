@@ -87,7 +87,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	auto BoundaryPlane = __calculatePlaneByIndices(vBoundaryIndices);	//可以从别的地方给
 	auto BoundaryBox = __calculateBoundingBoxByIndices(vBoundaryIndices);	//可以和indices无关
 	auto BoundaryBoxLength = BoundaryBox.second - BoundaryBox.first;
-	const float Delta = 0.2f;
+	const float Delta = 0.0f;
 	BoundaryBox.first = BoundaryBox.first - Delta * BoundaryBoxLength;
 	BoundaryBox.second = BoundaryBox.second + Delta * BoundaryBoxLength;
 	Eigen::Vector2f BoundaryPiece{ BoundaryBox.second.data()[InputAxisOrder[0]] - BoundaryBox.first.data()[InputAxisOrder[0]], BoundaryBox.second.data()[InputAxisOrder[1]] - BoundaryBox.first.data()[InputAxisOrder[1]] };
@@ -274,7 +274,7 @@ void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, st
 	}
 
 	//post process
-	__fixTextureColorAndHeight(vioPlaneLattices, 3);
+	__fixTextureColorAndHeight(vioPlaneLattices, Resolution.x() / 30);
 
 	//post process
 	//__fixTextureColorAndHeight(vioPlaneLattices, 5);
@@ -439,25 +439,6 @@ std::vector<std::size_t> CHoleRepairer::__calcAxisOrder(const Eigen::Vector4f& v
 	else if (MinAxis == PlaneNormal.z())
 		AxisOrder = { 0, 1, 2 };
 	return AxisOrder;
-}
-
-//*****************************************************************
-//FUNCTION: 
-float CHoleRepairer::__calcMeanPointsPerLattice(const std::vector<std::vector<SLattice>>& vPlaneLattices)
-{
-	std::size_t NumPoints = 0;
-
-	Eigen::Vector2i Resolution = { vPlaneLattices.front().size(), vPlaneLattices.size() };
-	for (int Y = 0; Y < Resolution.y(); Y++)
-	{
-		for (int X = 0; X < Resolution.x(); X++)
-		{
-			auto& Lattice = vPlaneLattices[Y][X];
-			NumPoints += Lattice.Indices.size();
-		}
-	}
-
-	return (float)NumPoints / (Resolution.x() * Resolution.y());
 }
 
 //*****************************************************************
