@@ -76,7 +76,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	Eigen::Vector2f InputPiece{ InputBox.second.data()[InputAxisOrder[0]] - InputBox.first.data()[InputAxisOrder[0]], InputBox.second.data()[InputAxisOrder[1]] - InputBox.first.data()[InputAxisOrder[1]] };
 	float InputPieceArea = InputPiece.x() * InputPiece.y();
 	float PointsPerArea = vInputIndices.size() / InputPieceArea;
-	const Eigen::Vector2i InputResolution{ (int)sqrtf(vInputIndices.size()), (int)sqrtf(vInputIndices.size()) };
+	const Eigen::Vector2i InputResolution{ (int)(sqrtf(vInputIndices.size()) / 2), (int)(sqrtf(vInputIndices.size()) / 2) };
 
 	SPlaneInfos InputPlaneInfos;
 	std::vector<std::vector<SLattice>> InputPlaneLattices;
