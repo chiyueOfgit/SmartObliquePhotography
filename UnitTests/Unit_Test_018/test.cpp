@@ -157,7 +157,7 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_3)
 	ASSERT_TRUE(!Result.empty());
 	std::set<pcl::index_t> ResultSet(Result.begin(), Result.end());
 
-	const float ExpectCorrectRate = 75.0f;
+	const float ExpectRate = 30.0f;
 
 	for (auto& Groundtruth : m_BoundaryIndices)
 	{
@@ -165,6 +165,6 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_3)
 		std::set_intersection(ResultSet.begin(), ResultSet.end(),
 			Groundtruth.begin(), Groundtruth.end(),
 			std::inserter(Intersection, Intersection.begin()));
-		EXPECT_GE((float)Intersection.size() / Groundtruth.size() * 100.0f, ExpectCorrectRate);
+		EXPECT_GE((float)Intersection.size() / Groundtruth.size() * 100.0f, ExpectRate);
 	}
 }
