@@ -12,6 +12,8 @@
 #include <string>
 #include <set>
 #include <ctime>
+#include <cmath>
+#include <numbers>
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>

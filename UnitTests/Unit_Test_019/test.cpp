@@ -72,7 +72,7 @@ protected:
 				voMask(i, k) = ImageData[(i * Width + k) * BytesPerPixel] / 255;
 	}
 
-	void ChangeChannel(Eigen::Matrix<Eigen::Vector3i, -1, -1> &vioTexture, int vMode)
+	void ChangeChannel(Eigen::Matrix<Eigen::Vector3i, -1, -1>& vioTexture, int vMode)
 	{
 		for (int i = 0; i < vioTexture.rows(); i++)
 			for (int k = 0; k < vioTexture.cols(); k++)
@@ -134,7 +134,68 @@ protected:
 		stbi_image_free(ResultImage);
 	}
 
-	//void GenerateMipMap(Eigen::Matrix<Eigen::Vector3i, -1, -1> &vInputTexture, Eigen::Matrix<Eigen::Vector3i, -1, -1> )
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> getMipMap(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture)
+	{
+		Eigen::Matrix<Eigen::Vector3i, -1, -1> Mipmap((vTexture.rows() + 1) / 2, (vTexture.cols() + 1) / 2);
+		GaussianBlur(vTexture, Mipmap);
+		return Mipmap;
+	}
+
+	void GaussianBlur(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, Eigen::Matrix<Eigen::Vector3i, -1, -1>& voMipmap)
+	{
+		auto GaussianKernal = getGaussianKernal(3, 0);
+		for (int i = 0; i < voMipmap.rows(); i++)
+			for (int k = 0; k < voMipmap.cols(); k++)
+				for (int Channel = 0; Channel < 3; Channel++)
+					voMipmap(i, k)[Channel] = GaussianFilter(vTexture, GaussianKernal, Channel, i * 2, k * 2);
+	}
+
+	float GaussianFilter(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const Eigen::Matrix<float, -1, -1>& vGaussianKernal, int vChannel, int vRow, int vCol)
+	{
+		float Value = 0.0;
+		int GaussianKernalRowIndex = -1;
+		int GaussianKernalColIndex = -1;
+		for (int i = vRow - (vGaussianKernal.rows() - 1) / 2; i <= vRow + (vGaussianKernal.rows() - 1) / 2; i++)
+		{
+			GaussianKernalRowIndex++;
+			for (int k = vCol - (vGaussianKernal.cols() - 1) / 2; k <= vCol + (vGaussianKernal.cols() - 1) / 2; k++)
+			{
+				GaussianKernalColIndex++;
+				if (i < 0 || k < 0 || i >= vTexture.rows() || k >= vTexture.cols())
+					continue;
+				Value += vGaussianKernal.coeff(GaussianKernalRowIndex, GaussianKernalColIndex) * vTexture.coeff(i, k)[vChannel];
+			}
+			GaussianKernalColIndex = -1;
+		}
+
+		return Value;
+	}
+
+	Eigen::Matrix<float, -1, -1> getGaussianKernal(int vKernalSize, float vSigma)
+	{
+		if (!vSigma)
+			vSigma = 0.3 * ((vKernalSize - 1) * 0.5 - 1) + 0.8;
+
+		float SumWeight = 0.0;
+		Eigen::Matrix<float, -1, -1> GaussianKernal(vKernalSize, vKernalSize);
+
+		for (int i = 0; i < vKernalSize; i++)
+			for (int k = 0; k < vKernalSize; k++)
+			{
+				GaussianKernal(i, k) = getGaussianWeight(std::abs((vKernalSize - 1) / 2 - i) + std::abs((vKernalSize - 1) / 2 - k), vSigma);
+				SumWeight += GaussianKernal.coeff(i, k);
+			}
+
+		GaussianKernal /= SumWeight;
+
+		return GaussianKernal;
+	}
+
+	float getGaussianWeight(float vRadius, float vSigma)
+	{
+		// Considering that normalization is required later, the coefficient is not calculated
+		return std::pow(std::numbers::e, -vRadius * vRadius / (2 * vSigma * vSigma));
+	}
 };
 
 TEST_F(TestTextureSynthesizer, DeathTest_EmptyInput)
@@ -220,7 +281,7 @@ TEST_F(TestTextureSynthesizer, RandomMask)
 
 TEST_F(TestTextureSynthesizer, Height)
 {
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture; 
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
 
 	ReadImage(HeightInputImagePath, InputTexture);
@@ -238,4 +299,15 @@ TEST_F(TestTextureSynthesizer, Height)
 	ChangeChannel(OutputTexture, 1);
 
 	GenerateResultImage(OutputTexture, HeightResultImagePath);
+}
+
+TEST_F(TestTextureSynthesizer, Mipmap)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> MipmapTexture;
+
+	ReadImage(InputImagePath, InputTexture);
+	MipmapTexture = getMipMap(InputTexture);
+
+	GenerateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap.png"));
 }
