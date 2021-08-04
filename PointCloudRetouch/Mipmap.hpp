@@ -14,20 +14,49 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 namespace Utility {
 
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> getMipMap(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture)
+	void GenerateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath)
 	{
-		Eigen::Matrix<Eigen::Vector3i, -1, -1> Mipmap((vTexture.rows() + 1) / 2, (vTexture.cols() + 1) / 2);
-		executeGaussianBlur(vTexture, Mipmap);
-		return Mipmap;
+		const auto Width = vTexture.cols();
+		const auto Height = vTexture.rows();
+		const auto BytesPerPixel = 3;
+		auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+		for (auto i = 0; i < Height; i++)
+			for (auto k = 0; k < Width; k++)
+			{
+				auto Offset = (i * Width + k) * BytesPerPixel;
+				ResultImage[Offset] = vTexture.coeff(i, k)[0];
+				ResultImage[Offset + 1] = vTexture.coeff(i, k)[1];
+				ResultImage[Offset + 2] = vTexture.coeff(i, k)[2];
+			}
+
+		stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+		stbi_image_free(ResultImage);
 	}
 
-	void executeGaussianBlur(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, Eigen::Matrix<Eigen::Vector3i, -1, -1>& voMipmap)
+	float getGaussianWeight(float vRadius, float vSigma)
 	{
-		auto GaussianKernal = getGaussianKernal(3, 0);
-		for (int i = 0; i < voMipmap.rows(); i++)
-			for (int k = 0; k < voMipmap.cols(); k++)
-				for (int Channel = 0; Channel < 3; Channel++)
-					voMipmap(i, k)[Channel] = executeGaussianFilter(vTexture, GaussianKernal, Channel, i * 2, k * 2);
+		// Considering that normalization is required later, the coefficient is not calculated
+		return std::pow(std::numbers::e, -vRadius * vRadius / (2 * vSigma * vSigma));
+	}
+
+	Eigen::Matrix<float, -1, -1> getGaussianKernal(int vKernalSize, float vSigma)
+	{
+		if (!vSigma)
+			vSigma = 0.3 * ((vKernalSize - 1) * 0.5 - 1) + 0.8;
+
+		float SumWeight = 0.0;
+		Eigen::Matrix<float, -1, -1> GaussianKernal(vKernalSize, vKernalSize);
+
+		for (int i = 0; i < vKernalSize; i++)
+			for (int k = 0; k < vKernalSize; k++)
+			{
+				GaussianKernal(i, k) = getGaussianWeight(std::abs((vKernalSize - 1) / 2 - i) + std::abs((vKernalSize - 1) / 2 - k), vSigma);
+				SumWeight += GaussianKernal.coeff(i, k);
+			}
+
+		GaussianKernal /= SumWeight;
+
+		return GaussianKernal;
 	}
 
 	float executeGaussianFilter(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const Eigen::Matrix<float, -1, -1>& vGaussianKernal, int vChannel, int vRow, int vCol)
@@ -51,48 +80,19 @@ namespace Utility {
 		return Value;
 	}
 
-	Eigen::Matrix<float, -1, -1> getGaussianKernal(int vKernalSize, float vSigma)
+	void executeGaussianBlur(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, Eigen::Matrix<Eigen::Vector3i, -1, -1>& voMipmap)
 	{
-		if (!vSigma)
-			vSigma = 0.3 * ((vKernalSize - 1) * 0.5 - 1) + 0.8;
-
-		float SumWeight = 0.0;
-		Eigen::Matrix<float, -1, -1> GaussianKernal(vKernalSize, vKernalSize);
-
-		for (int i = 0; i < vKernalSize; i++)
-			for (int k = 0; k < vKernalSize; k++)
-			{
-				GaussianKernal(i, k) = getGaussianWeight(std::abs((vKernalSize - 1) / 2 - i) + std::abs((vKernalSize - 1) / 2 - k), vSigma);
-				SumWeight += GaussianKernal.coeff(i, k);
-			}
-
-		GaussianKernal /= SumWeight;
-
-		return GaussianKernal;
+		auto GaussianKernal = getGaussianKernal(3, 0);
+		for (int i = 0; i < voMipmap.rows(); i++)
+			for (int k = 0; k < voMipmap.cols(); k++)
+				for (int Channel = 0; Channel < 3; Channel++)
+					voMipmap(i, k)[Channel] = executeGaussianFilter(vTexture, GaussianKernal, Channel, i * 2, k * 2);
 	}
 
-	float getGaussianWeight(float vRadius, float vSigma)
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> getMipMap(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture)
 	{
-		// Considering that normalization is required later, the coefficient is not calculated
-		return std::pow(std::numbers::e, -vRadius * vRadius / (2 * vSigma * vSigma));
-	}
-
-	void GenerateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath)
-	{
-		const auto Width = vTexture.cols();
-		const auto Height = vTexture.rows();
-		const auto BytesPerPixel = 3;
-		auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
-		for (auto i = 0; i < Height; i++)
-			for (auto k = 0; k < Width; k++)
-			{
-				auto Offset = (i * Width + k) * BytesPerPixel;
-				ResultImage[Offset] = vTexture.coeff(i, k)[0];
-				ResultImage[Offset + 1] = vTexture.coeff(i, k)[1];
-				ResultImage[Offset + 2] = vTexture.coeff(i, k)[2];
-			}
-
-		stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
-		stbi_image_free(ResultImage);
+		Eigen::Matrix<Eigen::Vector3i, -1, -1> Mipmap((vTexture.rows() + 1) / 2, (vTexture.cols() + 1) / 2);
+		executeGaussianBlur(vTexture, Mipmap);
+		return Mipmap;
 	}
 }
