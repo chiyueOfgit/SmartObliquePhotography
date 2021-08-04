@@ -167,6 +167,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="HoleRepairer.h" />
     <ClInclude Include="InitialClusterCreator.h" />
+    <ClInclude Include="Mipmap.hpp" />
     <ClInclude Include="NeighborhoodBuilder.h" />
     <ClInclude Include="NormalComplexity.h" />
     <ClInclude Include="OutlierDetector.h" />
