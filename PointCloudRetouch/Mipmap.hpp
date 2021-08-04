@@ -14,7 +14,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 namespace Utility {
 
-	void GenerateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath)
+	void generateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath)
 	{
 		const auto Width = vTexture.cols();
 		const auto Height = vTexture.rows();
