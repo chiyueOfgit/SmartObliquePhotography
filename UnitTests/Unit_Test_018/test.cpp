@@ -15,6 +15,7 @@
 // BoundaryDetectionBaseTest:给出不同场景下用户理解的空洞边界，证明空洞边界检测的有效性；
 //	* Boundary_Detection_BaseTest_1:整个场景一个小空洞，验证是否能检测单一空洞；
 //  * Boundary_Detection_BaseTest_2:场景有五个空洞，验证是否能检测多个空洞；
+//  * Boundary_Detection_BaseTest_3:选择区域内有一个完整的空洞以及大洞的若干部分，验证是否能准确检测洞的存在及数量；
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -22,7 +23,7 @@ const auto RetouchConfigFile = TESTMODEL_DIR + std::string("Config/Test018_Point
 const auto DetectorConfigFile = TESTMODEL_DIR + std::string("Config/Test018_BoundaryDetectorConfig.xml");
 const auto DataPath = TESTMODEL_DIR + std::string("Test018_Model/");
 
-const std::vector<std::string> ModelNames{ "one_hole", "five_holes" };
+const std::vector<std::string> ModelNames{ "one_hole", "five_holes" ,"small_big_holes"};
 
 class TestBoundaryDetection : public testing::Test
 {
@@ -126,6 +127,33 @@ TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_2)
 			Result.push_back(Index);
 	
 	EXPECT_EQ(HoleSet.size(), 5);
+	ASSERT_TRUE(!Result.empty());
+	std::set<pcl::index_t> ResultSet(Result.begin(), Result.end());
+
+	const float ExpectCorrectRate = 75.0f;
+
+	for (auto& Groundtruth : m_BoundaryIndices)
+	{
+		std::vector<pcl::index_t> Intersection;
+		std::set_intersection(ResultSet.begin(), ResultSet.end(),
+			Groundtruth.begin(), Groundtruth.end(),
+			std::inserter(Intersection, Intersection.begin()));
+		EXPECT_GE((float)Intersection.size() / Groundtruth.size() * 100.0f, ExpectCorrectRate);
+	}
+}
+
+TEST_F(TestBoundaryDetection, Boundary_Detection_BaseTest_3)
+{
+	std::vector<pcl::index_t> BoundaryPoints = _loadIndices(DataPath + "small_big_holes_Input.txt");
+	std::vector<std::vector<pcl::index_t>> HoleSet;
+
+	m_pDetector->execute<CBoundaryDetector>(BoundaryPoints, HoleSet);
+	std::vector<pcl::index_t> Result;
+	for (auto& Hole : HoleSet)
+		for (auto Index : Hole)
+			Result.push_back(Index);
+
+	EXPECT_EQ(HoleSet.size(), 2);
 	ASSERT_TRUE(!Result.empty());
 	std::set<pcl::index_t> ResultSet(Result.begin(), Result.end());
 
