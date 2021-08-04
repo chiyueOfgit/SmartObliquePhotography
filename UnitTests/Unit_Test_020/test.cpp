@@ -272,12 +272,35 @@ protected:
 		m_Repairer.generateLattices(Plane, Box, Resolution, PlaneInfos, PlaneLattices);
 		m_Repairer.projectPoints({}, PlaneInfos, PlaneLattices);
 
+		const int KernelSize = 3;
+		const int Delta = KernelSize / 2;
+
 		for (int Y = 0; Y < Resolution.y(); Y++)
 			for (int X = 0; X < Resolution.x(); X++)
 			{
 				auto& Lattice = PlaneLattices[Y][X];
-
+				if (!Lattice.Indices.empty())
+				{
+					ASSERT_NE(Lattice.Color.norm(), 0);
+					ASSERT_NE(Lattice.Height(0, 0), 0.0f);
+				}
+				else    //空的若周围都有点(非空洞部分)，也得有值
+				{
+					std::size_t NumValue = 0;
+					for (int i = Y - Delta; i <= Y + Delta; i++)
+						for (int k = X - Delta; k <= X + Delta; k++)
+							if (i >= 0 && i < Resolution.y() && k >= 0 && k < Resolution.x())
+								if (!PlaneLattices[i][k].Indices.empty())
+									NumValue++;
+					if (NumValue > pow(KernelSize, 2) * 2 / 3)
+					{
+						EXPECT_NE(Lattice.Color.norm(), 0);
+						EXPECT_NE(Lattice.Height(0, 0), 0.0f);
+					}
+				}
 			}
+		//auto ColorMatrix = m_Repairer.extractMatrix<Eigen::Vector3i>(PlaneLattices, offsetof(SLattice, Color));
+		//m_Repairer.outputImage(ColorMatrix, "Color_" + std::to_string(PlaneLattices[0][0].Color.x()) + std::to_string(PlaneLattices[0][0].Color.y()) + std::to_string(PlaneLattices[0][0].Color.z()) + ".png");
 	}
 
 	void _drawBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
@@ -329,6 +352,7 @@ TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_1)
 	auto& Boundary = m_BoundaryIndices.front();
 	_testLatticesGeneration(Boundary);
 	_testPointsProjection(Boundary);
+	_testOriginInfosFilling(Boundary);
 }
 
 TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_2)
@@ -337,6 +361,7 @@ TEST_F(TestLatticesProjection, Boundary_Detection_BaseTest_2)
 	{
 		_testLatticesGeneration(Boundary);
 		_testPointsProjection(Boundary);
+		_testOriginInfosFilling(Boundary);
 	}
 }
 

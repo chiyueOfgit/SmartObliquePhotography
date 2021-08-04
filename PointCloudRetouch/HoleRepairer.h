@@ -41,6 +41,12 @@ namespace hiveObliquePhotography
 			Eigen::Vector4f calcPlane(const std::vector<pcl::index_t>& vIndices) { return __calculatePlaneByIndices(vIndices); }
 			void generateLattices(const Eigen::Vector4f& vPlane, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Vector2i& vResolution, SPlaneInfos& voPlaneInfos, std::vector<std::vector<SLattice>>& voPlaneLattices) { __generatePlaneLattices(vPlane, vBox, vResolution, voPlaneInfos, voPlaneLattices); }
 			void projectPoints(const std::vector<pcl::index_t>& vIndices, const SPlaneInfos& vPlaneInfos, std::vector<std::vector<SLattice>>& vioPlaneLattices) { __projectPoints2PlaneLattices(vIndices, vPlaneInfos, vioPlaneLattices); }
+			void outputImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath) { __outputImage(vTexture, vOutputImagePath); }
+			void outputImage(const Eigen::MatrixXi& vTexture, const std::string& vOutputImagePath) { __outputImage(vTexture, vOutputImagePath); }
+			void outputImage(const Eigen::Matrix<Eigen::Matrix<float, 1, 1>, -1, -1>& vTexture, const std::string& vOutputImagePath) { __outputImage(vTexture, vOutputImagePath); }
+			template<class T>
+			Eigen::Matrix<T, -1, -1> extractMatrix(const std::vector<std::vector<SLattice>>& vLattices, int vOffset) { return __extractMatrixFromLattices<T>(vLattices, vOffset); }
+
 #endif // _UNIT_TEST
 
 		private:
@@ -54,7 +60,6 @@ namespace hiveObliquePhotography
 			Eigen::Vector4f __calculatePlaneByIndices(const std::vector<pcl::index_t>& vIndices);
 			std::pair<Eigen::Vector3f, Eigen::Vector3f> __calculateBoundingBoxByIndices(const std::vector<pcl::index_t>& vIndices);
 			std::vector<std::size_t> __calcAxisOrder(const Eigen::Vector4f& vPlane);
-			float __calcMeanPointsPerLattice(const std::vector<std::vector<SLattice>>& vPlaneLattices);
 			void __gaussBlurbyHeightMatrix(const Eigen::Matrix<Eigen::Matrix<float, 1, 1>, -1, -1>& vHeightMatrix, std::vector<std::vector<SLattice>>& vPlaneLattices);
 			Eigen::MatrixXi __genMask(const Eigen::Vector2i& vResolution, const std::vector<std::vector<SLattice>>& vPlaneLattices);
 
