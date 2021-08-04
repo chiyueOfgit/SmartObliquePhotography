@@ -76,7 +76,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	Eigen::Vector2f InputPiece{ InputBox.second.data()[InputAxisOrder[0]] - InputBox.first.data()[InputAxisOrder[0]], InputBox.second.data()[InputAxisOrder[1]] - InputBox.first.data()[InputAxisOrder[1]] };
 	float InputPieceArea = InputPiece.x() * InputPiece.y();
 	float PointsPerArea = vInputIndices.size() / InputPieceArea;
-	const Eigen::Vector2i InputResolution{ (int)sqrtf(vInputIndices.size()), (int)sqrtf(vInputIndices.size()) };
+	const Eigen::Vector2i InputResolution{ (int)(sqrtf(vInputIndices.size()) / 2), (int)(sqrtf(vInputIndices.size()) / 2) };
 
 	SPlaneInfos InputPlaneInfos;
 	std::vector<std::vector<SLattice>> InputPlaneLattices;
@@ -318,7 +318,7 @@ void CHoleRepairer::__fixTextureColorAndHeight(std::vector<std::vector<SLattice>
 						return vLeft.norm() < vRight.norm();
 					});
 
-				if (!Colors.empty() && NumNoValue < pow(vKernelSize, 2) * 0.33f)
+				if (!Colors.empty() && NumNoValue < pow(vKernelSize, 2) / 3)
 				{
 					vioPlaneLattices[Y][X].Color = Colors[Colors.size() / 2];
 					vioPlaneLattices[Y][X].Height(0, 0) = SumHeights / (pow(vKernelSize, 2) - NumNoValue);
@@ -467,7 +467,7 @@ void CHoleRepairer::__gaussBlurbyHeightMatrix(const Eigen::Matrix<Eigen::Matrix<
 	Eigen::Vector2i Resolution = { vPlaneLattices.front().size(), vPlaneLattices.size() };
 	const int KernelSize = 3;
 	const int Delta = KernelSize / 2;
-	const float KernelRate[3] = { 0.0454f, 0.0566f, 0.0707f };
+	const float KernelRate[3] = { 0.0947f, 0.1183f, 0.1478f };
 	for (int Y = 0; Y < Resolution.y(); Y++)
 	{
 		for (int X = 0; X < Resolution.x(); X++)
