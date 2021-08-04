@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TextureSynthesizer.h"
+#include "Mipmap.h"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/serialization/vector.hpp"
@@ -310,4 +311,14 @@ TEST_F(TestTextureSynthesizer, Mipmap)
 	MipmapTexture = _getMipMap(InputTexture);
 
 	_generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap.png"));
+}
+
+TEST_F(TestTextureSynthesizer, TestMipmapInPointCloudRetouch)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> MipmapTexture;
+
+	_readImage(InputImagePath, InputTexture);
+	MipmapTexture = Utility::getMipMap(InputTexture);
+	Utility::generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap2.png"));
 }
