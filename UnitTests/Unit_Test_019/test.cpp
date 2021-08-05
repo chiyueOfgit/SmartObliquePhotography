@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "TextureSynthesizer.h"
-#include "Mipmap.h"
+#include "MipmapGenerator.h"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/serialization/vector.hpp"
@@ -189,108 +189,108 @@ protected:
 	}
 };
 
-TEST_F(TestTextureSynthesizer, DeathTest_EmptyInput)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-	Eigen::MatrixXi MaskTexture;
-
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
-	EXPECT_ANY_THROW(TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture));
-}
-
-TEST_F(TestTextureSynthesizer, DeathTest_DifferentSizesOfMaskAndScene)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-
-	_readImage(InputImagePath, InputTexture);
-	_readImage(SceneImagePath, OutputTexture);
-
-	Eigen::MatrixXi MaskTexture(OutputTexture.rows() - 1, OutputTexture.cols() - 1);
-	_generateMask(MaskTexture, 0);
-
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
-	EXPECT_ANY_THROW(TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture));
-}
-
-TEST_F(TestTextureSynthesizer, AllBlackMask)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-
-	_readImage(InputImagePath, InputTexture);
-	_readImage(SceneImagePath, OutputTexture);
-
-	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-	_generateMask(MaskTexture, 0);
-
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> SceneTexture = OutputTexture;
-
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
-	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-
-	for (int i = 0; i < OutputTexture.rows(); i++)
-		for (int k = 0; k < OutputTexture.cols(); k++)
-			EXPECT_EQ(OutputTexture(i, k), SceneTexture(i, k));
-}
-
-TEST_F(TestTextureSynthesizer, SquareMask)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-
-	_readImage(InputImagePath, InputTexture);
-	_readImage(SceneImagePath, OutputTexture);
-
-	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-	/*_generateMask(MaskTexture, -1);*/
-	_readMask(MaskImagePath, MaskTexture);
-
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
-	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-
-	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
-}
-
-TEST_F(TestTextureSynthesizer, RandomMask)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-
-	_readImage(InputImagePath, InputTexture);
-	_readImage(SceneImagePath, OutputTexture);
-
-	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-	_readMask(RandomMaskImagePath, MaskTexture);
-
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
-	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-
-	_generateResultImage(OutputTexture, RandomMaskResultImagePath);
-}
-
-TEST_F(TestTextureSynthesizer, Height)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-
-	_readImage(HeightInputImagePath, InputTexture);
-	_readImage(HeightSceneImagePath, OutputTexture);
-
-	_changeChannel(InputTexture, 0);
-	_changeChannel(OutputTexture, 0);
-
-	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-	_readMask(HeightMaskImagePath, MaskTexture);
-
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
-	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-
-	_changeChannel(OutputTexture, 1);
-
-	_generateResultImage(OutputTexture, HeightResultImagePath);
-}
+//TEST_F(TestTextureSynthesizer, DeathTest_EmptyInput)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+//	Eigen::MatrixXi MaskTexture;
+//
+//	CTextureSynthesizer<int, 3> TextureSynthesizer;
+//	EXPECT_ANY_THROW(TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture));
+//}
+//
+//TEST_F(TestTextureSynthesizer, DeathTest_DifferentSizesOfMaskAndScene)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+//
+//	_readImage(InputImagePath, InputTexture);
+//	_readImage(SceneImagePath, OutputTexture);
+//
+//	Eigen::MatrixXi MaskTexture(OutputTexture.rows() - 1, OutputTexture.cols() - 1);
+//	_generateMask(MaskTexture, 0);
+//
+//	CTextureSynthesizer<int, 3> TextureSynthesizer;
+//	EXPECT_ANY_THROW(TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture));
+//}
+//
+//TEST_F(TestTextureSynthesizer, AllBlackMask)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+//
+//	_readImage(InputImagePath, InputTexture);
+//	_readImage(SceneImagePath, OutputTexture);
+//
+//	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+//	_generateMask(MaskTexture, 0);
+//
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> SceneTexture = OutputTexture;
+//
+//	CTextureSynthesizer<int, 3> TextureSynthesizer;
+//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+//
+//	for (int i = 0; i < OutputTexture.rows(); i++)
+//		for (int k = 0; k < OutputTexture.cols(); k++)
+//			EXPECT_EQ(OutputTexture(i, k), SceneTexture(i, k));
+//}
+//
+//TEST_F(TestTextureSynthesizer, SquareMask)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+//
+//	_readImage(InputImagePath, InputTexture);
+//	_readImage(SceneImagePath, OutputTexture);
+//
+//	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+//	/*_generateMask(MaskTexture, -1);*/
+//	_readMask(MaskImagePath, MaskTexture);
+//
+//	CTextureSynthesizer<int, 3> TextureSynthesizer;
+//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+//
+//	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
+//}
+//
+//TEST_F(TestTextureSynthesizer, RandomMask)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+//
+//	_readImage(InputImagePath, InputTexture);
+//	_readImage(SceneImagePath, OutputTexture);
+//
+//	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+//	_readMask(RandomMaskImagePath, MaskTexture);
+//
+//	CTextureSynthesizer<int, 3> TextureSynthesizer;
+//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+//
+//	_generateResultImage(OutputTexture, RandomMaskResultImagePath);
+//}
+//
+//TEST_F(TestTextureSynthesizer, Height)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+//
+//	_readImage(HeightInputImagePath, InputTexture);
+//	_readImage(HeightSceneImagePath, OutputTexture);
+//
+//	_changeChannel(InputTexture, 0);
+//	_changeChannel(OutputTexture, 0);
+//
+//	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+//	_readMask(HeightMaskImagePath, MaskTexture);
+//
+//	CTextureSynthesizer<int, 3> TextureSynthesizer;
+//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+//
+//	_changeChannel(OutputTexture, 1);
+//
+//	_generateResultImage(OutputTexture, HeightResultImagePath);
+//}
 
 TEST_F(TestTextureSynthesizer, GenerateMipmap)
 {
@@ -298,6 +298,7 @@ TEST_F(TestTextureSynthesizer, GenerateMipmap)
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> MipmapTexture;
 
 	_readImage(InputImagePath, InputTexture);
-	MipmapTexture = Utility::getMipMap(InputTexture);
+	CMipmapGenerator<int, 3> MipmapGenerator;
+	MipmapTexture = MipmapGenerator.getMipmap(InputTexture);
 	_generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap2.png"));
 }

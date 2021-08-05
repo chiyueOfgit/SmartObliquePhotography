@@ -99,7 +99,7 @@
     </ClInclude>
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
-    <ClInclude Include="Mipmap.h">
+    <ClInclude Include="MipmapGenerator.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
@@ -166,7 +166,7 @@
     <ClCompile Include="TextureSynthesizer.cpp">
       <Filter>Operation</Filter>
     </ClCompile>
-    <ClCompile Include="Mipmap.cpp">
+    <ClCompile Include="MipmapGenerator.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
