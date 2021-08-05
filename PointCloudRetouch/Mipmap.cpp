@@ -68,27 +68,9 @@ void __executeGaussianBlur(const Eigen::Matrix<Eigen::Vector3i, -1, -1> &vTextur
 				voMipmap(i, k)[Channel] = __executeGaussianFilter(vTexture, GaussianKernal, Channel, i * 2, k * 2);
 }
 
-void Utility::generateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1> &vTexture, const std::string &vOutputImagePath)
-{
-	const auto Width = vTexture.cols();
-	const auto Height = vTexture.rows();
-	const auto BytesPerPixel = 3;
-	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
-	for (auto i = 0; i < Height; i++)
-		for (auto k = 0; k < Width; k++)
-		{
-			auto Offset = (i * Width + k) * BytesPerPixel;
-			ResultImage[Offset] = vTexture.coeff(i, k)[0];
-			ResultImage[Offset + 1] = vTexture.coeff(i, k)[1];
-			ResultImage[Offset + 2] = vTexture.coeff(i, k)[2];
-		}
-
-	stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
-	stbi_image_free(ResultImage);
-}
-
 Eigen::Matrix<Eigen::Vector3i, -1, -1> Utility::getMipMap(const Eigen::Matrix<Eigen::Vector3i, -1, -1> &vTexture)
 {
+	_ASSERTE(vTexture);
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> Mipmap((vTexture.rows() + 1) / 2, (vTexture.cols() + 1) / 2);
 	__executeGaussianBlur(vTexture, Mipmap);
 	return Mipmap;

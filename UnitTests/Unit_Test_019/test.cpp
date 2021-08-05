@@ -106,18 +106,6 @@ protected:
 			}
 	}
 
-	void _GenerateImage(Eigen::Matrix<Eigen::Vector3i, -1, -1>& voTexture, Eigen::Vector3i vMode)
-	{
-		for (int i = 0; i < voTexture.rows(); i++)
-			for (int k = 0; k < voTexture.cols(); k++)
-			{
-				if (vMode.x() < 0 || vMode.y() < 0 || vMode.z() < 0)
-					voTexture(i, k) = { hiveMath::hiveGenerateRandomInteger(0, 255), hiveMath::hiveGenerateRandomInteger(0, 255), hiveMath::hiveGenerateRandomInteger(0, 255) };
-				else
-					voTexture(i, k) = vMode;
-			}
-	}
-
 	void _generateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath)
 	{
 		const auto Width = vTexture.cols();
@@ -311,5 +299,5 @@ TEST_F(TestTextureSynthesizer, GenerateMipmap)
 
 	_readImage(InputImagePath, InputTexture);
 	MipmapTexture = Utility::getMipMap(InputTexture);
-	Utility::generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap2.png"));
+	_generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap2.png"));
 }
