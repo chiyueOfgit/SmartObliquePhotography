@@ -38,7 +38,7 @@ Eigen::Matrix<float, -1, -1> __getGaussianKernal(int vKernalSize, float vSigma)
 	return GaussianKernal;
 }
 
-float __executeGaussianFilter(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const Eigen::Matrix<float, -1, -1>& vGaussianKernal, int vChannel, int vRow, int vCol)
+float __executeGaussianFilter(const Eigen::Matrix<Eigen::Vector3i, -1, -1> &vTexture, const Eigen::Matrix<float, -1, -1> &vGaussianKernal, int vChannel, int vRow, int vCol)
 {
 	float Value = 0.0;
 	int GaussianKernalRowIndex = -1;
@@ -59,7 +59,7 @@ float __executeGaussianFilter(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTex
 	return Value;
 }
 
-void __executeGaussianBlur(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, Eigen::Matrix<Eigen::Vector3i, -1, -1>& voMipmap)
+void __executeGaussianBlur(const Eigen::Matrix<Eigen::Vector3i, -1, -1> &vTexture, Eigen::Matrix<Eigen::Vector3i, -1, -1> &voMipmap)
 {
 	auto GaussianKernal = __getGaussianKernal(3, 0);
 	for (int i = 0; i < voMipmap.rows(); i++)
@@ -68,7 +68,7 @@ void __executeGaussianBlur(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTextur
 				voMipmap(i, k)[Channel] = __executeGaussianFilter(vTexture, GaussianKernal, Channel, i * 2, k * 2);
 }
 
-void Utility::generateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath)
+void Utility::generateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1> &vTexture, const std::string &vOutputImagePath)
 {
 	const auto Width = vTexture.cols();
 	const auto Height = vTexture.rows();
@@ -87,7 +87,7 @@ void Utility::generateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& 
 	stbi_image_free(ResultImage);
 }
 
-Eigen::Matrix<Eigen::Vector3i, -1, -1> Utility::getMipMap(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture)
+Eigen::Matrix<Eigen::Vector3i, -1, -1> Utility::getMipMap(const Eigen::Matrix<Eigen::Vector3i, -1, -1> &vTexture)
 {
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> Mipmap((vTexture.rows() + 1) / 2, (vTexture.cols() + 1) / 2);
 	__executeGaussianBlur(vTexture, Mipmap);

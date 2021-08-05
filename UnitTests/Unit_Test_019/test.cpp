@@ -17,7 +17,9 @@
 //  * DeathTest_DifferentSizesOfMaskAndScene: 输入大小不同的Mask和Scene，期待抛出异常
 //  * AllBlaskMask: Mask全为0，期望Output和Scene一样
 //  * SquareMask: 从图片中读取Mask，该图片的边缘值为255，即Mask为规则的正方形，边缘为0，输出保存为图片
-//  * RandomMask：从图片中读取Mask，该图片的白色区域不规则，输出保存为图片
+//  * RandomMask: 从图片中读取Mask，该图片的白色区域不规则，输出保存为图片
+//  * Height: 补全高度信息的纹理并可视化
+//  * GenerateMipmap: 生成输入纹理的mipmap
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -302,18 +304,7 @@ TEST_F(TestTextureSynthesizer, Height)
 	_generateResultImage(OutputTexture, HeightResultImagePath);
 }
 
-TEST_F(TestTextureSynthesizer, Mipmap)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> MipmapTexture;
-
-	_readImage(InputImagePath, InputTexture);
-	MipmapTexture = _getMipMap(InputTexture);
-
-	_generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap.png"));
-}
-
-TEST_F(TestTextureSynthesizer, TestMipmapInPointCloudRetouch)
+TEST_F(TestTextureSynthesizer, GenerateMipmap)
 {
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> MipmapTexture;
