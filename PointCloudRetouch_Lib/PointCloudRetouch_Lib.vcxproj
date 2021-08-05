@@ -171,6 +171,7 @@
     <ClInclude Include="..\PointCloudRetouch\InitialClusterCreator.h" />
     <ClInclude Include="..\PointCloudRetouch\NeighborhoodBuilder.h" />
     <ClInclude Include="..\PointCloudRetouch\NormalComplexity.h" />
+    <ClInclude Include="..\PointCloudRetouch\OrderIndependentTextureSynthesizer.h" />
     <ClInclude Include="..\PointCloudRetouch\OutlierDetector.h" />
     <ClInclude Include="..\PointCloudRetouch\pch.h" />
     <ClInclude Include="..\PointCloudRetouch\PlanarityFeature.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp" />
     <ClCompile Include="..\PointCloudRetouch\NeighborhoodBuilder.cpp" />
     <ClCompile Include="..\PointCloudRetouch\NormalComplexity.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\OrderIndependentTextureSynthesizer.cpp" />
     <ClCompile Include="..\PointCloudRetouch\OutlierDetector.cpp" />
     <ClCompile Include="..\PointCloudRetouch\PlanarityFeature.cpp" />
     <ClCompile Include="..\PointCloudRetouch\PointCloudRetouchConfig.cpp" />

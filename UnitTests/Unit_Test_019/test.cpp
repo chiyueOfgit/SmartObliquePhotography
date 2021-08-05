@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "TextureSynthesizer.h"
+#include "OrderIndependentTextureSynthesizer.h"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/serialization/vector.hpp"
@@ -204,7 +204,7 @@ TEST_F(TestTextureSynthesizer, DeathTest_EmptyInput)
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
 	Eigen::MatrixXi MaskTexture;
 
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	COrderIndependentTextureSynthesizer TextureSynthesizer;
 	EXPECT_ANY_THROW(TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture));
 }
 
@@ -219,7 +219,7 @@ TEST_F(TestTextureSynthesizer, DeathTest_DifferentSizesOfMaskAndScene)
 	Eigen::MatrixXi MaskTexture(OutputTexture.rows() - 1, OutputTexture.cols() - 1);
 	GenerateMask(MaskTexture, 0);
 
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	COrderIndependentTextureSynthesizer TextureSynthesizer;
 	EXPECT_ANY_THROW(TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture));
 }
 
@@ -236,7 +236,7 @@ TEST_F(TestTextureSynthesizer, AllBlackMask)
 
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> SceneTexture = OutputTexture;
 
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	COrderIndependentTextureSynthesizer TextureSynthesizer;
 	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 
 	for (int i = 0; i < OutputTexture.rows(); i++)
@@ -256,7 +256,7 @@ TEST_F(TestTextureSynthesizer, SquareMask)
 	/*GenerateMask(MaskTexture, -1);*/
 	ReadMask(MaskImagePath, MaskTexture);
 
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	COrderIndependentTextureSynthesizer TextureSynthesizer;
 	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 
 	GenerateResultImage(OutputTexture, SquareMaskResultImagePath);
@@ -273,7 +273,7 @@ TEST_F(TestTextureSynthesizer, RandomMask)
 	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
 	ReadMask(RandomMaskImagePath, MaskTexture);
 
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	COrderIndependentTextureSynthesizer TextureSynthesizer;
 	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 
 	GenerateResultImage(OutputTexture, RandomMaskResultImagePath);
@@ -293,7 +293,7 @@ TEST_F(TestTextureSynthesizer, Height)
 	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
 	ReadMask(HeightMaskImagePath, MaskTexture);
 
-	CTextureSynthesizer<int, 3> TextureSynthesizer;
+	COrderIndependentTextureSynthesizer TextureSynthesizer;
 	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 
 	ChangeChannel(OutputTexture, 1);

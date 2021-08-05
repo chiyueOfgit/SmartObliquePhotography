@@ -170,6 +170,7 @@
     <ClInclude Include="Mipmap.hpp" />
     <ClInclude Include="NeighborhoodBuilder.h" />
     <ClInclude Include="NormalComplexity.h" />
+    <ClInclude Include="OrderIndependentTextureSynthesizer.h" />
     <ClInclude Include="OutlierDetector.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlanarityFeature.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="InitialClusterCreator.cpp" />
     <ClCompile Include="NeighborhoodBuilder.cpp" />
     <ClCompile Include="NormalComplexity.cpp" />
+    <ClCompile Include="OrderIndependentTextureSynthesizer.cpp" />
     <ClCompile Include="OutlierDetector.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
