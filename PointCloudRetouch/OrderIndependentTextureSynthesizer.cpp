@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "OrderIndependentTextureSynthesizer.h"
-#include "Mipmap.hpp"
+#include "MipmapGenerator.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -72,7 +72,9 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildPyramid(
 	while (m_Pyramid.size() < m_PyramidLayer)
 	{
 		const auto& LastLayer = m_Pyramid.back();
-		m_Pyramid.emplace_back(Utility::getMipMap(std::get<0>(LastLayer)), Utility::getMipMap(std::get<1>(LastLayer)), Utility::getMipMap(std::get<2>(LastLayer)));
+		CMipmapGenerator<Eigen::Vector3i> TextureMipmapGenerator;
+		CMipmapGenerator<int> MaskMipmapGenerator;
+		m_Pyramid.emplace_back(TextureMipmapGenerator.getMipmap(std::get<0>(LastLayer)), MaskMipmapGenerator.getMipmap(std::get<1>(LastLayer)), TextureMipmapGenerator.getMipmap(std::get<2>(LastLayer)));
 	}
 	std::ranges::reverse(m_Pyramid);
 }

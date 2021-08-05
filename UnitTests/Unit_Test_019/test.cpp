@@ -296,9 +296,11 @@ TEST_F(TestTextureSynthesizer, GenerateMipmap)
 {
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> MipmapTexture;
+	//Eigen::Matrix
 
 	_readImage(InputImagePath, InputTexture);
-	CMipmapGenerator<int, 3> MipmapGenerator;
+	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
 	MipmapTexture = MipmapGenerator.getMipmap(InputTexture);
 	_generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap2.png"));
+
 }

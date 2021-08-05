@@ -12,31 +12,28 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-template <typename Scalar_t, unsigned Channel>
-using Texture_t = Eigen::Matrix<Eigen::Matrix<Scalar_t, Channel, 1>, Eigen::Dynamic, Eigen::Dynamic>;
-
-template <typename Scalar_t, unsigned Channel>
-Texture_t<Scalar_t, Channel> CMipmapGenerator<Scalar_t, Channel>::getMipmap(const Texture_t& vTexture)
+template <typename Color_t>
+CMipmapGenerator<Color_t>::Texture_t CMipmapGenerator<Color_t>::getMipmap(const Texture_t& vTexture)
 {
 	Texture_t Mipmap((vTexture.rows() + 1) / 2, (vTexture.cols() + 1) / 2);
 	__executeGaussianBlur(vTexture, Mipmap);
 	return Mipmap;
 }
 
-template <typename Scalar_t, unsigned Channel>
-void CMipmapGenerator<Scalar_t, Channel>::__executeGaussianBlur(const Texture_t &vTexture, Texture_t &voMipmap)
+template <typename Color_t>
+void CMipmapGenerator<Color_t>::__executeGaussianBlur(const Texture_t &vTexture, Texture_t &voMipmap)
 {
 	auto GaussianKernal = __getGaussianKernal(3, 0);
 	for (int i = 0; i < voMipmap.rows(); i++)
 		for (int k = 0; k < voMipmap.cols(); k++)
-			for (int m = 0; m < Channel; m++)
-				voMipmap(i, k)[m] = __executeGaussianFilter(vTexture, GaussianKernal, m, i * 2, k * 2);
+			voMipmap(i, k) = __executeGaussianFilter(vTexture, GaussianKernal, i * 2, k * 2);
 }
 
-template <typename Scalar_t, unsigned Channel>
-float CMipmapGenerator<Scalar_t, Channel>::__executeGaussianFilter(const Texture_t &vTexture, const Eigen::Matrix<float, -1, -1> &vGaussianKernal, int vChannel, int vRow, int vCol)
+template <typename Color_t>
+Color_t CMipmapGenerator<Color_t>::__executeGaussianFilter(const Texture_t &vTexture, const Eigen::Matrix<float, -1, -1> &vGaussianKernal, int vRow, int vCol)
 {
-	float Value = 0.0;
+	Color_t Value = vTexture.coeff(0, 0);
+	Value -= Value;
 	int GaussianKernalRowIndex = -1;
 	int GaussianKernalColIndex = -1;
 	for (int i = vRow - (vGaussianKernal.rows() - 1) / 2; i <= vRow + (vGaussianKernal.rows() - 1) / 2; i++)
@@ -47,7 +44,11 @@ float CMipmapGenerator<Scalar_t, Channel>::__executeGaussianFilter(const Texture
 			GaussianKernalColIndex++;
 			if (i < 0 || k < 0 || i >= vTexture.rows() || k >= vTexture.cols())
 				continue;
-			Value += vGaussianKernal.coeff(GaussianKernalRowIndex, GaussianKernalColIndex) * vTexture.coeff(i, k)[vChannel];
+			if constexpr (std::is_arithmetic<Color_t>::value)
+				Value += vGaussianKernal.coeff(GaussianKernalRowIndex, GaussianKernalColIndex) * vTexture.coeff(i, k);
+			else
+				for (int m = 0; m < 3; m++)
+					Value[m] += vGaussianKernal.coeff(GaussianKernalRowIndex, GaussianKernalColIndex) * vTexture.coeff(i, k)[m];
 		}
 		GaussianKernalColIndex = -1;
 	}
@@ -55,8 +56,8 @@ float CMipmapGenerator<Scalar_t, Channel>::__executeGaussianFilter(const Texture
 	return Value;
 }
 
-template <typename Scalar_t, unsigned Channel>
-Eigen::Matrix<float, -1, -1> CMipmapGenerator<Scalar_t, Channel>::__getGaussianKernal(int vKernalSize, float vSigma)
+template <typename Color_t>
+Eigen::Matrix<float, -1, -1> CMipmapGenerator<Color_t>::__getGaussianKernal(int vKernalSize, float vSigma)
 {
 	if (!vSigma)
 		vSigma = 0.3 * ((vKernalSize - 1) * 0.5 - 1) + 0.8;
@@ -76,8 +77,8 @@ Eigen::Matrix<float, -1, -1> CMipmapGenerator<Scalar_t, Channel>::__getGaussianK
 	return GaussianKernal;
 }
 
-template <typename Scalar_t, unsigned Channel>
-float CMipmapGenerator<Scalar_t, Channel>::__getGaussianWeight(float vRadius, float vSigma)
+template <typename Color_t>
+float CMipmapGenerator<Color_t>::__getGaussianWeight(float vRadius, float vSigma)
 {
 	// Considering that normalization is required later, the coefficient is not calculated
 	return std::pow(std::numbers::e, -vRadius * vRadius / (2 * vSigma * vSigma));
