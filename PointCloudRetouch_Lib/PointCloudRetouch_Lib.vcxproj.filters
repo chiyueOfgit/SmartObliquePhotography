@@ -105,7 +105,10 @@
     <ClInclude Include="..\PointCloudRetouch\stb_image_write.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\PointCloudRetouch\Mipmap.h">
+    <ClInclude Include="..\PointCloudRetouch\OrderIndependentTextureSynthesizer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PointCloudRetouch\MipmapGenerator.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -182,7 +185,10 @@
     <ClCompile Include="..\PointCloudRetouch\TextureSynthesizer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\PointCloudRetouch\Mipmap.cpp">
+    <ClCompile Include="..\PointCloudRetouch\OrderIndependentTextureSynthesizer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\MipmapGenerator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
