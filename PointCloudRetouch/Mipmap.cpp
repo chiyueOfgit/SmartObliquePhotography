@@ -70,7 +70,6 @@ void __executeGaussianBlur(const Eigen::Matrix<Eigen::Vector3i, -1, -1> &vTextur
 
 Eigen::Matrix<Eigen::Vector3i, -1, -1> Utility::getMipMap(const Eigen::Matrix<Eigen::Vector3i, -1, -1> &vTexture)
 {
-	_ASSERTE(vTexture);
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> Mipmap((vTexture.rows() + 1) / 2, (vTexture.cols() + 1) / 2);
 	__executeGaussianBlur(vTexture, Mipmap);
 	return Mipmap;
