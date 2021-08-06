@@ -76,7 +76,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	auto InputBoxMin = std::get<1>(InputBox);
 	
 	auto InputBoxLength = InputBoxMax - InputBoxMin;
-	std::vector<std::size_t> InputAxisOrder { 0, 1, 2 };
+	auto InputAxisOrder = __calcAxisOrder(InputPlane);
 	Eigen::Vector2f InputPiece{ InputBoxMax.data()[InputAxisOrder[0]] - InputBoxMin.data()[InputAxisOrder[0]], InputBoxMax.data()[InputAxisOrder[1]] - InputBoxMin.data()[InputAxisOrder[1]] };
 	float InputPieceArea = InputPiece.x() * InputPiece.y();
 	float PointsPerArea = vInputIndices.size() / InputPieceArea;
@@ -154,7 +154,7 @@ void CHoleRepairer::__generatePlaneLattices(const Eigen::Vector4f& vPlane, const
 
 	Eigen::Vector3f PlaneNormal{ vPlane.x(), vPlane.y(), vPlane.z() };
 	
-	std::vector<std::size_t> AxisOrder { 0, 1, 2 };
+	auto AxisOrder = __calcAxisOrder(vPlane);
 	auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
 
 	auto BoxMax = std::get<2>(vBox);
