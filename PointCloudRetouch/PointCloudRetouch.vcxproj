@@ -167,9 +167,10 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="HoleRepairer.h" />
     <ClInclude Include="InitialClusterCreator.h" />
-    <ClInclude Include="Mipmap.h" />
+    <ClInclude Include="MipmapGenerator.h" />
     <ClInclude Include="NeighborhoodBuilder.h" />
     <ClInclude Include="NormalComplexity.h" />
+    <ClInclude Include="OrderIndependentTextureSynthesizer.h" />
     <ClInclude Include="OutlierDetector.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlanarityFeature.h" />
@@ -200,9 +201,10 @@
     <ClCompile Include="EuclideanNeighborhoodBuilder.cpp" />
     <ClCompile Include="HoleRepairer.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
-    <ClCompile Include="Mipmap.cpp" />
+    <ClCompile Include="MipmapGenerator.cpp" />
     <ClCompile Include="NeighborhoodBuilder.cpp" />
     <ClCompile Include="NormalComplexity.cpp" />
+    <ClCompile Include="OrderIndependentTextureSynthesizer.cpp" />
     <ClCompile Include="OutlierDetector.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
