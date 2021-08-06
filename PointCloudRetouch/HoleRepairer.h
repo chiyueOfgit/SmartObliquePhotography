@@ -46,7 +46,7 @@ namespace hiveObliquePhotography
 			void outputImage(const Eigen::Matrix<Eigen::Matrix<float, 1, 1>, -1, -1>& vTexture, const std::string& vOutputImagePath) { __outputImage(vTexture, vOutputImagePath); }
 			template<class T>
 			Eigen::Matrix<T, -1, -1> extractMatrix(const std::vector<std::vector<SLattice>>& vLattices, int vOffset) { return __extractMatrixFromLattices<T>(vLattices, vOffset); }
-
+			std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> calcOBBByIndices(const std::vector<pcl::index_t>& vIndices) { return __calcOBBByIndices(vIndices); };
 #endif // _UNIT_TEST
 
 		private:
