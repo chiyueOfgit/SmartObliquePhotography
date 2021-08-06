@@ -296,11 +296,22 @@ TEST_F(TestTextureSynthesizer, GenerateMipmap)
 {
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> MipmapTexture;
-	//Eigen::Matrix
 
 	_readImage(InputImagePath, InputTexture);
 	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
 	MipmapTexture = MipmapGenerator.getMipmap(InputTexture);
 	_generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap2.png"));
 
+}
+
+TEST_F(TestTextureSynthesizer, GaussianBlur)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> ResultTexture;
+
+	_readImage(InputImagePath, InputTexture);
+	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
+	MipmapGenerator.setKernalSize(9);
+	ResultTexture = MipmapGenerator.executeGaussianBlur(InputTexture);
+	_generateResultImage(ResultTexture, TESTMODEL_DIR + std::string("Test019_Model/Gaussian.png"));
 }
