@@ -117,8 +117,8 @@ void CMipmapGenerator<Color_t>::setKernalSize(int vKernalSize)
 	m_KernalSize = vKernalSize;
 }
 
-template <typename Color_t>
-auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, int vLayer) -> std::vector<CMipmapGenerator<Color_t>::Texture_t>
-{
-
-}
+//template <typename Color_t>
+//auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, int vLayer) -> std::vector<CMipmapGenerator<Color_t>::Texture_t>
+//{
+//
+//}
