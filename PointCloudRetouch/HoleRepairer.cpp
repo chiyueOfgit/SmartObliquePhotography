@@ -716,8 +716,8 @@ void CHoleRepairer::__restoreWorldCoord(SPlaneInfos& vioPlaneInfos, std::vector<
 	vioPlaneInfos.Normal.normalize();
 	
 	vioPlaneInfos.PlaneCenter = vRotationMatrix.inverse() * vioPlaneInfos.PlaneCenter;
-	for(auto Row: vioPlaneLattices)
-		for(auto Lattice : Row)
+	for(auto& Row: vioPlaneLattices)
+		for(auto& Lattice : Row)
 		{
 			Lattice.CenterPos = vRotationMatrix.inverse() * Lattice.CenterPos;
 		}
