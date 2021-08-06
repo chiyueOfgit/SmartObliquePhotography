@@ -38,9 +38,9 @@ namespace hiveObliquePhotography
 			void repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints);
 
 #ifdef _UNIT_TEST
-			//Eigen::Vector4f calcPlane(const std::vector<pcl::index_t>& vIndices) { return __calculatePlaneByIndices(vIndices); }
-			//void generateLattices(const Eigen::Vector4f& vPlane, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Vector2i& vResolution, SPlaneInfos& voPlaneInfos, std::vector<std::vector<SLattice>>& voPlaneLattices) { __generatePlaneLattices(vPlane, vBox, vResolution, voPlaneInfos, voPlaneLattices); }
-			//void projectPoints(const std::vector<pcl::index_t>& vIndices, const SPlaneInfos& vPlaneInfos, std::vector<std::vector<SLattice>>& vioPlaneLattices) { __projectPoints2PlaneLattices(vIndices, vPlaneInfos, vioPlaneLattices); }
+			Eigen::Vector4f calcPlane(const std::vector<pcl::index_t>& vIndices, Eigen::Matrix3f& vRotationMatrix) { return __calculatePlaneByIndices(vIndices, vRotationMatrix); }
+			void generateLattices(const Eigen::Vector4f& vPlane, const std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Vector2i& vResolution, SPlaneInfos& voPlaneInfos, std::vector<std::vector<SLattice>>& voPlaneLattices) { __generatePlaneLattices(vPlane, vBox, vResolution, voPlaneInfos, voPlaneLattices); }
+			void projectPoints(const std::vector<pcl::index_t>& vIndices, SPlaneInfos& vPlaneInfos, std::vector<std::vector<SLattice>>& vioPlaneLattices) { __projectPoints2PlaneLattices(vIndices, vPlaneInfos, vioPlaneLattices); }
 			void outputImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath) { __outputImage(vTexture, vOutputImagePath); }
 			void outputImage(const Eigen::MatrixXi& vTexture, const std::string& vOutputImagePath) { __outputImage(vTexture, vOutputImagePath); }
 			void outputImage(const Eigen::Matrix<Eigen::Matrix<float, 1, 1>, -1, -1>& vTexture, const std::string& vOutputImagePath) { __outputImage(vTexture, vOutputImagePath); }
@@ -52,13 +52,12 @@ namespace hiveObliquePhotography
 		private:
 			void __generatePlaneLattices(const Eigen::Vector4f& vPlane, const std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Vector2i& vResolution, SPlaneInfos& voPlaneInfos, std::vector<std::vector<SLattice>>& voPlaneLattices);
 			void __projectPoints2PlaneLattices(const std::vector<pcl::index_t>& vIndices, SPlaneInfos& vioPlaneInfos, std::vector<std::vector<SLattice>>& vioPlaneLattices);
-			void __fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices);
+			void __fillLatticesOriginInfos(const Eigen::Vector3f& vPlaneNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices);
 			void  __fixTextureColorAndHeight(std::vector<std::vector<SLattice>>& vioPlaneLattices, int vKernelSize);
 			void __inputHeightCorrection(std::vector<std::vector<SLattice>>& vInput, const std::vector<std::vector<SLattice>>& vBoundary);
-			void __generateNewPointsFromLattices(const Eigen::Vector3f& vNormal, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints);
+			void __generateNewPointsFromLattices(const Eigen::Vector3f& vPlaneNormal, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints);
 
 			Eigen::Vector4f __calculatePlaneByIndices(const std::vector<pcl::index_t>& vIndices, Eigen::Matrix3f& vRotationMatrix);
-			Eigen::Vector4f __calculatePlane(const std::vector<pcl::index_t>& vIndices);
 			std::pair<Eigen::Vector3f, Eigen::Vector3f> __calculateBoundingBoxByIndices(const std::vector<pcl::index_t>& vIndices);
 			std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> __calcOBBByIndices(const std::vector<pcl::index_t>& vIndices);
 			std::vector<std::size_t> __calcAxisOrder(const Eigen::Vector4f& vPlane);

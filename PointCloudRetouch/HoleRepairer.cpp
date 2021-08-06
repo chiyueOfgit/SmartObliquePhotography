@@ -70,25 +70,26 @@ void CHoleRepairer::repairHole(std::vector<pcl::PointSurfel>& voNewPoints)
 void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints)
 {
 	//Input
-	auto InputOBBBox = __calcOBBByIndices(vInputIndices);
-	auto InputPlane = __calculatePlaneByIndices(vInputIndices, std::get<0>(InputOBBBox));
+	auto InputBox = __calcOBBByIndices(vInputIndices);
+	auto InputPlane = __calculatePlaneByIndices(vInputIndices, std::get<0>(InputBox));
+	auto InputBoxMax = std::get<2>(InputBox);
+	auto InputBoxMin = std::get<1>(InputBox);
 	
-	auto InputBoxLength = std::get<2>(InputOBBBox) - std::get<1>(InputOBBBox);
-	std::vector<std::size_t> InputAxisOrder {0,1,2};
-	Eigen::Vector2f InputPiece{ std::get<2>(InputOBBBox).data()[InputAxisOrder[0]] - std::get<1>(InputOBBBox).data()[InputAxisOrder[0]], std::get<2>(InputOBBBox).data()[InputAxisOrder[1]] - std::get<1>(InputOBBBox).data()[InputAxisOrder[1]] };
+	auto InputBoxLength = InputBoxMax - InputBoxMin;
+	std::vector<std::size_t> InputAxisOrder { 0, 1, 2 };
+	Eigen::Vector2f InputPiece{ InputBoxMax.data()[InputAxisOrder[0]] - InputBoxMin.data()[InputAxisOrder[0]], InputBoxMax.data()[InputAxisOrder[1]] - InputBoxMin.data()[InputAxisOrder[1]] };
 	float InputPieceArea = InputPiece.x() * InputPiece.y();
 	float PointsPerArea = vInputIndices.size() / InputPieceArea;
 	const Eigen::Vector2i InputResolution{ (int)(sqrtf(vInputIndices.size()) / 2), (int)(sqrtf(vInputIndices.size()) / 2) };
 
 	SPlaneInfos InputPlaneInfos;
 	std::vector<std::vector<SLattice>> InputPlaneLattices;
-	__generatePlaneLattices(InputPlane, InputOBBBox, InputResolution, InputPlaneInfos, InputPlaneLattices);
+	__generatePlaneLattices(InputPlane, InputBox, InputResolution, InputPlaneInfos, InputPlaneLattices);
 	__projectPoints2PlaneLattices({}, InputPlaneInfos, InputPlaneLattices);
 
 	//Boundary
 	auto BoundaryBox = __calcOBBByIndices(vBoundaryIndices);	//可以和indices无关
 	auto BoundaryPlane = __calculatePlaneByIndices(vBoundaryIndices, std::get<0>(BoundaryBox));	//可以从别的地方给
-	
 	auto BoundaryBoxMax = std::get<2>(BoundaryBox);
 	auto BoundaryBoxMin = std::get<1>(BoundaryBox);
 	
@@ -153,7 +154,7 @@ void CHoleRepairer::__generatePlaneLattices(const Eigen::Vector4f& vPlane, const
 
 	Eigen::Vector3f PlaneNormal{ vPlane.x(), vPlane.y(), vPlane.z() };
 	
-	std::vector<std::size_t> AxisOrder {0,1,2};
+	std::vector<std::size_t> AxisOrder { 0, 1, 2 };
 	auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
 
 	auto BoxMax = std::get<2>(vBox);
@@ -196,6 +197,7 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 	Eigen::Vector2i Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
 	auto X = vioPlaneInfos.AxisOrder[0], Y = vioPlaneInfos.AxisOrder[1];
 	std::vector<pcl::index_t> ProjectSet;
+	
 	if (vIndices.empty())
 	{
 		//magic
@@ -203,8 +205,8 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 		Eigen::Vector3f DeltaBox = (std::get<2>(vioPlaneInfos.BoundingBox) - std::get<1>(vioPlaneInfos.BoundingBox)) * DeltaBoxRate;
 		DeltaBox.data()[vioPlaneInfos.AxisOrder[2]] += 5.0f;
 
-		std::pair<Eigen::Vector3f, Eigen::Vector3f> Box = { std::get<1>(vioPlaneInfos.BoundingBox) - DeltaBox, std::get<2>(vioPlaneInfos.BoundingBox) + DeltaBox };
-		ProjectSet = Scene.getPointsInBox(Box, RotationMatrix);
+		std::pair<Eigen::Vector3f, Eigen::Vector3f> ExpandBox = { std::get<1>(vioPlaneInfos.BoundingBox) - DeltaBox, std::get<2>(vioPlaneInfos.BoundingBox) + DeltaBox };
+		ProjectSet = Scene.getPointsInBox(ExpandBox, RotationMatrix);
 	}
 	else
 		ProjectSet = vIndices;
@@ -222,7 +224,6 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 		auto Pos4f = Scene.getPositionAt(Index);
 		Eigen::Vector3f PointPos{ Pos4f.x(), Pos4f.y(), Pos4f.z() };
 		PointPos = RotationMatrix * PointPos;
-		
 		Eigen::Vector3f VecCenter2Point = PointPos - vioPlaneInfos.PlaneCenter;
 		Eigen::Vector3f VecProj2Point = VecCenter2Point.dot(vioPlaneInfos.Normal) * vioPlaneInfos.Normal;
 		Eigen::Vector3f ProjPoint = vioPlaneInfos.PlaneCenter + (VecCenter2Point - VecProj2Point);
@@ -236,10 +237,7 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 					vioPlaneLattices[i][k].Indices.push_back(Index);
 			}
 		}
-
-		
 	}
-
 	//变回世界坐标
 	__restoreWorldCoord(vioPlaneInfos, vioPlaneLattices, RotationMatrix);
 	__fillLatticesOriginInfos(vioPlaneInfos.Normal, vioPlaneLattices);
@@ -247,7 +245,7 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 
 //*****************************************************************
 //FUNCTION: 
-void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices)
+void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vPlaneNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices)
 {
 	_ASSERTE(!vioPlaneLattices.empty());
 	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
@@ -267,7 +265,7 @@ void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, st
 					auto TempPos = Scene.getPositionAt(Index);
 					Eigen::Vector3f Pos{ TempPos.x(), TempPos.y(), TempPos.z() };
 					ColorLengths.push_back({ Index, Scene.getPositionAt(Index).norm() });
-					AverageHeight += (Pos - Lattice.CenterPos).dot(vNormal);
+					AverageHeight += (Pos - Lattice.CenterPos).dot(vPlaneNormal);
 				}
 
 				std::sort(ColorLengths.begin(), ColorLengths.end(), [](std::pair<std::size_t, float> vLeft, std::pair<std::size_t, float> vRight)
@@ -280,14 +278,8 @@ void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vNormal, st
 			}
 		}
 	}
-
 	//post process
 	__fixTextureColorAndHeight(vioPlaneLattices, Resolution.x() / 30);
-
-	//post process
-	//__fixTextureColorAndHeight(vioPlaneLattices, 5);
-	//__fixTextureColorAndHeight(vioPlaneLattices, 3);
-	//__fixTextureColorAndHeight(vioPlaneLattices, 3);
 }
 
 //*****************************************************************
@@ -380,11 +372,10 @@ void CHoleRepairer::__inputHeightCorrection(std::vector<std::vector<SLattice>>& 
 
 //*****************************************************************
 //FUNCTION: 
-void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vNormal, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints)
+void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vPlaneNormal, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints)
 {
 	_ASSERTE(!vPlaneLattices.empty());
 	Eigen::Vector2i Resolution{ vPlaneLattices.front().size(), vPlaneLattices.size() };
-	//Eigen::Vector3f Normal = { vPlane.x(), vPlane.y(), vPlane.z() };
 
 	const float K = 1.0f, B = 0.0f;	//线性系数
 
@@ -396,7 +387,7 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vNorm
 			auto& Lattice = vPlaneLattices[Y][X];
 			if (Lattice.Indices.empty())
 			{
-				Eigen::Vector3f RealPos = Lattice.CenterPos + vNormal * (K * Lattice.Height(0, 0) + B);	//取出加偏移
+				Eigen::Vector3f RealPos = Lattice.CenterPos + vPlaneNormal * (K * Lattice.Height(0, 0) + B);	//取出加偏移
 				pcl::PointSurfel TempPoint;
 				TempPoint.x = RealPos.x();
 				TempPoint.y = RealPos.y();
@@ -410,7 +401,6 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vNorm
 			}
 		}
 	}
-
 	std::swap(voNewPoints, NewPoints);
 }
 
@@ -429,27 +419,7 @@ Eigen::Vector4f CHoleRepairer::__calculatePlaneByIndices(const std::vector<pcl::
 		TempPoint.x = Pos.x(); TempPoint.y = Pos.y(); TempPoint.z = Pos.z();
 		BoundaryCloud->push_back(TempPoint);
 	}
-	//CPointCloudRetouchManager::getInstance()->getRetouchScene().dumpPointCloud<pcl::PointXYZ>(vIndices, *BoundaryCloud);
-
 	return CPlanarityFeature::fitPlane(BoundaryCloud, 0.2f, { 0.0f, 0.0f, 1.0f });
-}
-
-Eigen::Vector4f CHoleRepairer::__calculatePlane(const std::vector<pcl::index_t>& vIndices)
-{
-	_ASSERTE(!vIndices.empty());
-	pcl::PointCloud<pcl::PointXYZ>::Ptr BoundaryCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	
-	CPointCloudRetouchManager::getInstance()->getRetouchScene().dumpPointCloud<pcl::PointXYZ>(vIndices, *BoundaryCloud);
-
-	return CPlanarityFeature::fitPlane(BoundaryCloud, 0.2f, { 0.0f, 0.0f, 1.0f });
-}
-
-//*****************************************************************
-//FUNCTION: 
-std::pair<Eigen::Vector3f, Eigen::Vector3f> CHoleRepairer::__calculateBoundingBoxByIndices(const std::vector<pcl::index_t>& vIndices)
-{
-	_ASSERTE(!vIndices.empty());
-	return CPointCloudRetouchManager::getInstance()->getRetouchScene().getBoundingBox(vIndices);
 }
 
 //*****************************************************************
@@ -700,7 +670,7 @@ std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CHoleRepairer::__c
 		}
 	};
 	
-	for(auto Pos:RawPosSet)
+	for(auto& Pos:RawPosSet)
 	{
 		Eigen::Vector3f AfterPos = EigenVector * Pos;
 		update(AfterPos);
