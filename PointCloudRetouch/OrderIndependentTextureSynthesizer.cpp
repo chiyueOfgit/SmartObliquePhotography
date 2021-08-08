@@ -6,8 +6,8 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION:
-//template <typename Scalar_t, unsigned Channel>
-Scalar_t COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__computeDistance(const Feature_t& vLhs, const Feature_t& vRhs)
+template <typename Scalar_t, unsigned Channel>
+Scalar_t COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__computeDistance(const Feature_t& vLhs, const Feature_t& vRhs)
 {
 	_ASSERTE(vLhs.size() == vRhs.size());
 	const auto Size = vLhs.size();
@@ -22,8 +22,8 @@ Scalar_t COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__computeDi
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-typename COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::NeighborOffset_t COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildNeighborOffset(int vKernelSize)
+template <typename Scalar_t, unsigned Channel>
+typename COrderIndependentTextureSynthesizer<Scalar_t, Channel>::NeighborOffset_t COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildNeighborOffset(int vKernelSize)
 {
 	const int KernelOffset = vKernelSize / 2;
 	const size_t KernelWidth = static_cast<size_t>(KernelOffset) * 2 + 1;
@@ -43,8 +43,8 @@ typename COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::NeighborOff
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
+template <typename Scalar_t, unsigned Channel>
+void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
 {
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
 	__buildPyramid(vInput, vMask, vioScene);
@@ -113,8 +113,8 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const T
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildPyramid(const Texture_t& vInput, const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
+template <typename Scalar_t, unsigned Channel>
+void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildPyramid(const Texture_t& vInput, const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
 {
 	CMipmapGenerator<Eigen::Vector3i> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
@@ -140,8 +140,8 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildPyramid(
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-typename COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::Feature_t COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__generateFeatureAt(const Texture_t& vTexture, size_t vRowId, size_t vColId) const
+template <typename Scalar_t, unsigned Channel>
+typename COrderIndependentTextureSynthesizer<Scalar_t, Channel>::Feature_t COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__generateFeatureAt(const Texture_t& vTexture, size_t vRowId, size_t vColId) const
 {
 	auto wrap = [](Eigen::Index vIndex, Eigen::Index vSize)
 	{
@@ -166,8 +166,8 @@ typename COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::Feature_t C
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-std::pair<Eigen::Index, Eigen::Index> COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestPos(const Texture_t& vTexture, const Feature_t& vFeature) const
+template <typename Scalar_t, unsigned Channel>
+std::pair<Eigen::Index, Eigen::Index> COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__findNearestPos(const Texture_t& vTexture, const Feature_t& vFeature) const
 {
 	Scalar_t MinDistance = std::numeric_limits<Scalar_t>::max();
 	std::pair<Eigen::Index, Eigen::Index> MinPos;
