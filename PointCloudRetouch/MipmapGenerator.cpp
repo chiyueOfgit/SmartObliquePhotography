@@ -112,33 +112,13 @@ float CMipmapGenerator<Color_t>::__getGaussianWeight(float vRadius, float vSigma
 }
 
 template <typename Color_t>
-void CMipmapGenerator<Color_t>::setKernalSize(const int vKernalSize)
+void CMipmapGenerator<Color_t>::setKernalSize(int vKernalSize)
 {
 	m_KernalSize = vKernalSize;
 }
 
-template <typename Color_t>
-auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, const int vLayer) -> std::vector<Texture_t>
-{
-	std::vector<Texture_t> GaussianPyramid;
-	GaussianPyramid.push_back(vTexture);
-
-	for (int i = 0; i < vLayer - 1; i++)
-		GaussianPyramid.push_back(getMipmap(GaussianPyramid.back()));
-
-	std::reverse(std::begin(GaussianPyramid), std::end(GaussianPyramid));
-	return GaussianPyramid;
-}
-
-template <typename Color_t>
-auto CMipmapGenerator<Color_t>::getGaussianStack(const Texture_t& vTexture, const int vLayer) -> std::vector<Texture_t>
-{
-	std::vector<Texture_t> GaussianStack;
-	GaussianStack.push_back(vTexture);
-
-	for (int i = 0; i < vLayer - 1; i++)
-		GaussianStack.push_back(executeGaussianBlur(GaussianStack.back()));
-
-	std::reverse(std::begin(GaussianStack), std::end(GaussianStack));
-	return GaussianStack;
-}
+//template <typename Color_t>
+//auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, int vLayer) -> std::vector<CMipmapGenerator<Color_t>::Texture_t>
+//{
+//
+//}

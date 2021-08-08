@@ -84,13 +84,15 @@ std::pair<Eigen::Vector3f, Eigen::Vector3f> CPointCloudRetouchScene::getBounding
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> CPointCloudRetouchScene::getPointsInBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox) const
+std::vector<pcl::index_t> CPointCloudRetouchScene::getPointsInBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Matrix3f& vRotationMatrix) const
 {
 	std::vector<pcl::index_t> TempPoints;
 	for (auto Index = 0; Index < m_pPointCloudScene->size(); Index++)
 	{
 		auto& Point = m_pPointCloudScene->points[Index];
 		Eigen::Vector3f Pos{ Point.x, Point.y, Point.z };
+		Pos = vRotationMatrix * Pos;
+		
 		int i = 0;
 		for (i = 0; i < 3; i++)
 		{

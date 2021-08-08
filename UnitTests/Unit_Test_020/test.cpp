@@ -11,6 +11,7 @@
 #include <boost/archive/text_oarchive.hpp> 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
+#include <pcl/common/centroid.h>
 #include <pcl/io/pcd_io.h>
 
 //测试用例列表：
@@ -86,19 +87,19 @@ protected:
 				}
 
 				auto TempBox = _getBoundingBox(m_pCloud, Indices);
-				auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(Indices));
+				auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(Indices, std::get<0>(TempBox)));
 				auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
 
 				const float BoxHeight = 0.5f;	//包围盒的高度不会使用
-				TempBox.first.data()[Z] -= BoxHeight;
-				TempBox.second.data()[Z] += BoxHeight;
+				std::get<1>(TempBox).data()[Z] -= BoxHeight;
+				std::get<2>(TempBox).data()[Z] += BoxHeight;
 
 				//add lattices
 				const int PointSize = 3;
 				m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
 				m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
 				//add box line
-				_drawBox(TempBox);
+				_drawBox(std::make_pair(std::get<1>(TempBox), std::get<2>(TempBox)));
 			}
 		}
 	}
@@ -125,26 +126,63 @@ protected:
 		return Indices;
 	}
 
-	std::pair<Eigen::Vector3f, Eigen::Vector3f> _getBoundingBox(PointCloud_t::Ptr vCloud, const std::vector<pcl::index_t>& vIndices)
+	std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> _getBoundingBox(PointCloud_t::Ptr vCloud, const std::vector<pcl::index_t>& vIndices)
 	{
-		Eigen::Vector3f Min{ FLT_MAX, FLT_MAX, FLT_MAX };
-		Eigen::Vector3f Max{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
-
+		std::vector<Eigen::Vector3f> RawPosSet;
+		auto pManager = CPointCloudRetouchManager::getInstance();
+		pcl::PointCloud<pcl::PointXYZ>::Ptr pCloud(new pcl::PointCloud<pcl::PointXYZ>);
 		for (auto Index : vIndices)
 		{
-			Eigen::Vector3f Pos;
-			Pos.x() = vCloud->points[Index].x;
-			Pos.y() = vCloud->points[Index].y;
-			Pos.z() = vCloud->points[Index].z;
+			auto TempPos = vCloud->points[Index].getVector3fMap();
+			pcl::PointXYZ TempPoint;
+			TempPoint.x = TempPos.x(); TempPoint.y = TempPos.y(); TempPoint.z = TempPos.z();
+			pCloud->push_back(TempPoint);
+			RawPosSet.push_back(Eigen::Vector3f{ TempPos.x(), TempPos.y(), TempPos.z() });
+		}
+		Eigen::Matrix3f CovarianceMatrix;
+		Eigen::Vector4f Centroid;
+		pcl::compute3DCentroid(*pCloud, Centroid);
+		pcl::computeCovarianceMatrix(*pCloud, Centroid, CovarianceMatrix);
+
+		Eigen::EigenSolver<Eigen::Matrix3f> EigenMat(CovarianceMatrix);
+		Eigen::Vector3f EigenValue = EigenMat.pseudoEigenvalueMatrix().diagonal();
+		Eigen::Matrix3f EigenVector = EigenMat.pseudoEigenvectors();
+
+		std::vector<std::tuple<float, Eigen::Vector3f>> EigenValueAndVector;
+		int Size = static_cast<int>(EigenValue.size());
+		EigenValueAndVector.reserve(Size);
+		for (int i = 0; i < Size; ++i)
+			EigenValueAndVector.push_back(std::tuple<float, Eigen::Vector3f>(EigenValue[i], EigenVector.col(i)));
+		std::ranges::sort(EigenValueAndVector,
+			[&](const std::tuple<float, Eigen::Vector3f>& a, const std::tuple<float, Eigen::Vector3f>& b) -> bool {
+				return std::get<0>(a) > std::get<0>(b);
+			});
+		for (int i = 0; i < Size; ++i)
+		{
+			EigenVector.col(i).swap(std::get<1>(EigenValueAndVector[i]));
+		}
+
+		Eigen::Vector3f Min{ FLT_MAX, FLT_MAX, FLT_MAX };
+		Eigen::Vector3f Max{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
+		auto update = [&](const Eigen::Vector3f& vPos)
+		{
 			for (int i = 0; i < 3; i++)
 			{
-				if (Pos.data()[i] < Min.data()[i])
-					Min.data()[i] = Pos.data()[i];
-				if (Pos.data()[i] > Max.data()[i])
-					Max.data()[i] = Pos.data()[i];
+				if (vPos.data()[i] < Min.data()[i])
+					Min.data()[i] = vPos.data()[i];
+				if (vPos.data()[i] > Max.data()[i])
+					Max.data()[i] = vPos.data()[i];
 			}
+		};
+
+		for (auto& Pos : RawPosSet)
+		{
+			Eigen::Vector3f AfterPos = EigenVector * Pos;
+			update(AfterPos);
 		}
-		return { Min, Max };
+
+		std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> ObbBox(EigenVector, Min, Max);
+		return ObbBox;
 	}
 	
 	std::vector<int> _getAxisOrder(const Eigen::Vector4f& vPlane)
@@ -176,13 +214,14 @@ protected:
 		}
 		return true;
 	}
-	bool _isInBox(const Eigen::Vector3f vPos, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
+	bool _isInBox(const Eigen::Vector3f vPos, const std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f>& vBox)
 	{
+		Eigen::Vector3f TempPos = std::get<0>(vBox) * vPos;
 		for (int i = 0; i < 3; i++)
 		{
-			if (vPos.data()[i] < vBox.first.data()[i])
+			if (TempPos.data()[i] < std::get<1>(vBox).data()[i])
 				return false;
-			if (vPos.data()[i] > vBox.second.data()[i])
+			if (TempPos.data()[i] > std::get<2>(vBox).data()[i])
 				return false;
 		}
 		return true;
@@ -194,9 +233,10 @@ protected:
 		SPlaneInfos PlaneInfos;
 		std::vector<std::vector<SLattice>> PlaneLattices;
 		const std::vector<Eigen::Vector2i> ResolutionSet = { { 1, 1 }, {32, 32}, {16, 9}, {7, 101} };
-		auto Plane = m_Repairer.calcPlane(vIndices);
-		auto Box = _getBoundingBox(m_pCloud, vIndices);
-		auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(vIndices));
+        auto Box = _getBoundingBox(m_pCloud, vIndices);
+		auto Plane = m_Repairer.calcPlane(vIndices, std::get<0>(Box));
+		
+		std::vector<size_t> AxisOrder { 0, 1, 2 };
 		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
 		const float BoxHeight = 0.5f;
 		//排除分辨率x, y顺序影响
@@ -207,15 +247,16 @@ protected:
 			for (auto& PerRow : PlaneLattices)
 				ASSERT_EQ(PerRow.size(), Resolution.x());
 
-			PlaneInfos.BoundingBox.first.data()[Z] -= BoxHeight;
-			PlaneInfos.BoundingBox.second.data()[Z] += BoxHeight;
+			std::get<1>(PlaneInfos.BoundingBox).data()[Z] -= BoxHeight;
+			std::get<2>(PlaneInfos.BoundingBox).data()[Z] += BoxHeight;
 			//盒内和平面上
 			for (int Y = 0; Y < Resolution.y(); Y++)
 				for (int X = 0; X < Resolution.x(); X++)
 				{
 					auto& Pos = PlaneLattices[Y][X].CenterPos;
 
-					ASSERT_TRUE(_isInBox(Pos, PlaneInfos.BoundingBox));
+					Eigen::Vector3f RestorePos = std::get<0>(Box).inverse() * Pos;
+					ASSERT_TRUE(_isInBox(RestorePos, PlaneInfos.BoundingBox));
 					float Point2Plane = Pos.x() * Plane.x() + Pos.y() * Plane.y() + Pos.z() * Plane.z() + Plane.w();
 					ASSERT_NEAR(Point2Plane, 0, Epsilon);
 				}
@@ -239,9 +280,9 @@ protected:
 	{
 		SPlaneInfos PlaneInfos;
 		std::vector<std::vector<SLattice>> PlaneLattices;
-		auto Plane = m_Repairer.calcPlane(vIndices);
 		auto Box = _getBoundingBox(m_pCloud, vIndices);
-		auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(vIndices));
+		auto Plane = m_Repairer.calcPlane(vIndices,std::get<0>(Box));
+		std::vector<size_t> AxisOrder { 0, 1, 2 };
 		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
 		const Eigen::Vector2i Resolution{ 16, 16 };
 		m_Repairer.generateLattices(Plane, Box, Resolution, PlaneInfos, PlaneLattices);
@@ -264,9 +305,9 @@ protected:
 	{
 		SPlaneInfos PlaneInfos;
 		std::vector<std::vector<SLattice>> PlaneLattices;
-		auto Plane = m_Repairer.calcPlane(vIndices);
 		auto Box = _getBoundingBox(m_pCloud, vIndices);
-		auto AxisOrder = _getAxisOrder(m_Repairer.calcPlane(vIndices));
+		auto Plane = m_Repairer.calcPlane(vIndices, std::get<0>(Box));
+		std::vector<size_t> AxisOrder{ 0, 1, 2 };
 		auto X = AxisOrder[0], Y = AxisOrder[1], Z = AxisOrder[2];
 		const Eigen::Vector2i Resolution{ 16, 16 };
 		m_Repairer.generateLattices(Plane, Box, Resolution, PlaneInfos, PlaneLattices);
