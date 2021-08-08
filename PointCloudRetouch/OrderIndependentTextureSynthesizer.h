@@ -15,14 +15,22 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 	private:
 		using Feature_t = std::vector<Eigen::Matrix<Scalar_t, Channel, 1>>;
+		using NeighborOffset_t = std::vector<std::pair<int, int>>;
+		struct SPyramidLayer
+		{
+			Texture_t _Input;
+			Eigen::MatrixXi _Mask;
+			Texture_t _Output;
+		};
 		//TODO: magic number
 		int m_KernelSize = 9;
-		int m_PyramidLayer = 3;
-		std::vector<std::pair<int, int>> m_NeighborOffset;
-		std::vector<std::tuple<Texture_t, Eigen::MatrixXi, Texture_t>> m_Pyramid;
+		NeighborOffset_t m_NeighborOffset;
+		int m_PyramidLayerNum = 9;
+		int m_GaussianSize = 9;
+		std::vector<SPyramidLayer> m_Pyramid;
 		
 		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs);
-		static std::vector<std::pair<int, int>> __buildNeighborOffset(int vKernelSize);
+		static NeighborOffset_t __buildNeighborOffset(int vKernelSize);
 		void __buildPyramid(const Texture_t& vInput, const Eigen::MatrixXi& vMask, const Texture_t& vOutput);
 		Feature_t __generateFeatureAt(const Texture_t& vTexture, size_t vRowId, size_t vColId) const;
 		std::pair<Eigen::Index, Eigen::Index> __findNearestPos(const Texture_t& vTexture, const Feature_t& vFeature) const;

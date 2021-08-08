@@ -16,17 +16,30 @@ template <typename Color_t>
 CMipmapGenerator<Color_t>::Texture_t CMipmapGenerator<Color_t>::getMipmap(const Texture_t& vTexture)
 {
 	Texture_t Mipmap((vTexture.rows() + 1) / 2, (vTexture.cols() + 1) / 2);
-	__executeGaussianBlur(vTexture, Mipmap);
+	executeGaussianBlur(vTexture, Mipmap);
 	return Mipmap;
 }
 
 template <typename Color_t>
-void CMipmapGenerator<Color_t>::__executeGaussianBlur(const Texture_t &vTexture, Texture_t &voMipmap)
+void CMipmapGenerator<Color_t>::executeGaussianBlur(const Texture_t &vTexture, Texture_t &voMipmap)
 {
-	auto GaussianKernal = __getGaussianKernal(3, 0);
+	auto GaussianKernal = __getGaussianKernal(m_KernalSize, 0);
+
 	for (int i = 0; i < voMipmap.rows(); i++)
 		for (int k = 0; k < voMipmap.cols(); k++)
 			voMipmap(i, k) = __executeGaussianFilter(vTexture, GaussianKernal, i * 2, k * 2);
+}
+
+template <typename Color_t>
+CMipmapGenerator<Color_t>::Texture_t CMipmapGenerator<Color_t>::executeGaussianBlur(const Texture_t& vTexture)
+{
+	Texture_t ResultTexture(vTexture.rows(), vTexture.cols());
+	auto GaussianKernal = __getGaussianKernal(m_KernalSize, 0);
+
+	for (int i = 0; i < ResultTexture.rows(); i++)
+		for (int k = 0; k < ResultTexture.cols(); k++)
+			ResultTexture(i, k) = __executeGaussianFilter(vTexture, GaussianKernal, i, k);
+	return ResultTexture;
 }
 
 template <typename Color_t>
@@ -34,8 +47,11 @@ Color_t CMipmapGenerator<Color_t>::__executeGaussianFilter(const Texture_t &vTex
 {
 	Color_t Value = vTexture.coeff(0, 0);
 	Value -= Value;
+	Eigen::Vector3f Valuef = { 0.0f, 0.0f, 0.0f };
+
 	int GaussianKernalRowIndex = -1;
 	int GaussianKernalColIndex = -1;
+	float GaussianWeightSum = 0.0;
 	for (int i = vRow - (vGaussianKernal.rows() - 1) / 2; i <= vRow + (vGaussianKernal.rows() - 1) / 2; i++)
 	{
 		GaussianKernalRowIndex++;
@@ -44,15 +60,26 @@ Color_t CMipmapGenerator<Color_t>::__executeGaussianFilter(const Texture_t &vTex
 			GaussianKernalColIndex++;
 			if (i < 0 || k < 0 || i >= vTexture.rows() || k >= vTexture.cols())
 				continue;
+			auto Weight = vGaussianKernal.coeff(GaussianKernalRowIndex, GaussianKernalColIndex);
 			if constexpr (std::is_arithmetic<Color_t>::value)
-				Value += vGaussianKernal.coeff(GaussianKernalRowIndex, GaussianKernalColIndex) * vTexture.coeff(i, k);
+				Value += Weight * vTexture.coeff(i, k);
 			else
 				for (int m = 0; m < 3; m++)
-					Value[m] += vGaussianKernal.coeff(GaussianKernalRowIndex, GaussianKernalColIndex) * vTexture.coeff(i, k)[m];
+					Valuef[m] += Weight * vTexture.coeff(i, k)[m];
+			GaussianWeightSum += Weight;
 		}
 		GaussianKernalColIndex = -1;
 	}
 
+	if constexpr (std::is_arithmetic<Color_t>::value)
+		Value /= GaussianWeightSum;
+	else
+	{
+		Valuef /= GaussianWeightSum;
+		for (int i = 0; i < Valuef.size(); i++)
+			Value[i] = int(std::round(Valuef[i]));
+	}
+		
 	return Value;
 }
 
@@ -82,4 +109,36 @@ float CMipmapGenerator<Color_t>::__getGaussianWeight(float vRadius, float vSigma
 {
 	// Considering that normalization is required later, the coefficient is not calculated
 	return std::pow(std::numbers::e, -vRadius * vRadius / (2 * vSigma * vSigma));
+}
+
+template <typename Color_t>
+void CMipmapGenerator<Color_t>::setKernalSize(const int vKernalSize)
+{
+	m_KernalSize = vKernalSize;
+}
+
+template <typename Color_t>
+auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, const int vLayer) -> std::vector<Texture_t>
+{
+	std::vector<Texture_t> GaussianPyramid;
+	GaussianPyramid.push_back(vTexture);
+
+	for (int i = 0; i < vLayer - 1; i++)
+		GaussianPyramid.push_back(getMipmap(GaussianPyramid.back()));
+
+	std::reverse(std::begin(GaussianPyramid), std::end(GaussianPyramid));
+	return GaussianPyramid;
+}
+
+template <typename Color_t>
+auto CMipmapGenerator<Color_t>::getGaussianStack(const Texture_t& vTexture, const int vLayer) -> std::vector<Texture_t>
+{
+	std::vector<Texture_t> GaussianStack;
+	GaussianStack.push_back(vTexture);
+
+	for (int i = 0; i < vLayer - 1; i++)
+		GaussianStack.push_back(executeGaussianBlur(GaussianStack.back()));
+
+	std::reverse(std::begin(GaussianStack), std::end(GaussianStack));
+	return GaussianStack;
 }
