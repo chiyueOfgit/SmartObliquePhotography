@@ -10,12 +10,12 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		CMipmapGenerator() = default;
 		~CMipmapGenerator() = default;
 
-		std::vector<Texture_t> getGaussianStack(const Texture_t& vTexture, int vLayer);
-		std::vector<Texture_t> getGaussianPyramid(const Texture_t& vTexture, int vLayer);
+		std::vector<Texture_t> getGaussianStack(const Texture_t& vTexture, const int vLayer);
+		std::vector<Texture_t> getGaussianPyramid(const Texture_t& vTexture, const int vLayer);
 		Texture_t getMipmap(const Texture_t& vTexture);
 		void executeGaussianBlur(const Texture_t& vTexture, Texture_t& voMipmap);
 		Texture_t executeGaussianBlur(const Texture_t& vTexture);
-		void setKernalSize(int vKernalSize);
+		void setKernalSize(const int vKernalSize);
 
 	private:
 		float __getGaussianWeight(float vRadius, float vSigma);
@@ -23,7 +23,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		Color_t __executeGaussianFilter(const Texture_t& vTexture, const Eigen::Matrix<float, -1, -1>& vGaussianKernal, int vRow, int vCol);
 
 		// TODO::magic number
-		int m_KernalSize = 3;
+		int m_KernalSize = 9;
 	};
 
 	template class CMipmapGenerator<float>;
