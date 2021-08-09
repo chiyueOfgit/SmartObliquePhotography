@@ -292,26 +292,45 @@ protected:
 //	_generateResultImage(OutputTexture, HeightResultImagePath);
 //}
 
-TEST_F(TestTextureSynthesizer, GenerateMipmap)
+//TEST_F(TestTextureSynthesizer, GenerateMipmap)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> MipmapTexture;
+//
+//	_readImage(InputImagePath, InputTexture);
+//	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
+//	MipmapTexture = MipmapGenerator.getMipmap(InputTexture);
+//	_generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap2.png"));
+//
+//}
+
+//TEST_F(TestTextureSynthesizer, GaussianBlur)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> ResultTexture;
+//
+//	_readImage(InputImagePath, InputTexture);
+//	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
+//	MipmapGenerator.setKernalSize(9);
+//	ResultTexture = MipmapGenerator.executeGaussianBlur(InputTexture);
+//	_generateResultImage(ResultTexture, TESTMODEL_DIR + std::string("Test019_Model/Gaussian.png"));
+//}
+
+TEST_F(TestTextureSynthesizer, GaussianPyramid)
 {
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> MipmapTexture;
+	std::vector<Eigen::Matrix<Eigen::Vector3i, -1, -1>> GaussianPyramid, GaussianStack;
 
 	_readImage(InputImagePath, InputTexture);
 	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
-	MipmapTexture = MipmapGenerator.getMipmap(InputTexture);
-	_generateResultImage(MipmapTexture, TESTMODEL_DIR + std::string("Test019_Model/mipmap2.png"));
+	MipmapGenerator.setKernalSize(20);
+	int Layer = 40;
+	//GaussianPyramid = MipmapGenerator.getGaussianPyramid(InputTexture, Layer);
+	GaussianStack = MipmapGenerator.getGaussianStack(InputTexture, Layer);
 
-}
-
-TEST_F(TestTextureSynthesizer, GaussianBlur)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> ResultTexture;
-
-	_readImage(InputImagePath, InputTexture);
-	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
-	MipmapGenerator.setKernalSize(9);
-	ResultTexture = MipmapGenerator.executeGaussianBlur(InputTexture);
-	_generateResultImage(ResultTexture, TESTMODEL_DIR + std::string("Test019_Model/Gaussian.png"));
+	for (int i = 0; i < Layer; i++)
+	{
+		//_generateResultImage(GaussianPyramid[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianPyramid/GaussianPyramid_") + std::to_string(i) + std::string(".png"));
+		_generateResultImage(GaussianStack[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianStack/GaussianStack_") + std::to_string(i) + std::string(".png"));
+	}
 }

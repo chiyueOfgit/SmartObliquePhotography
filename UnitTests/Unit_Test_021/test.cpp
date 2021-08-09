@@ -6,7 +6,7 @@
 #include "HoleRepairer.h"
 
 //测试用例列表：
-//  * Simple_Model: 简单模型的OBB正确性判断
+//  * Cube: 简单Cube模型的OBB正确性判断
 
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
