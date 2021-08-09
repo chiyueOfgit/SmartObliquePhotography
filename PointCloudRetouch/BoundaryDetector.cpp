@@ -199,7 +199,7 @@ void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPoi
 			else
 				MergeSet.insert(MergeSet.end(), Temp.begin(), Temp.end());
 		}
-		if (MergeSet.size() > 0.30f * vBoundaryPointSet.size())
+		if (MergeSet.size() > 0.40f * vBoundaryPointSet.size())
 			voHoleSet.push_back(MergeSet);
 	}
 }

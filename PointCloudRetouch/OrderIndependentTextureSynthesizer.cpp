@@ -6,8 +6,8 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION:
-//template <typename Scalar_t, unsigned Channel>
-Scalar_t COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__computeDistance(const Feature_t& vLhs, const Feature_t& vRhs)
+template <typename Scalar_t, unsigned Channel>
+Scalar_t COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__computeDistance(const Feature_t& vLhs, const Feature_t& vRhs)
 {
 	_ASSERTE(vLhs.size() == vRhs.size());
 	const auto Size = vLhs.size();
@@ -22,12 +22,12 @@ Scalar_t COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__computeDi
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-std::vector<std::pair<int, int>> COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildNeighborOffset(int vKernelSize)
+template <typename Scalar_t, unsigned Channel>
+typename COrderIndependentTextureSynthesizer<Scalar_t, Channel>::NeighborOffset_t COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildNeighborOffset(int vKernelSize)
 {
 	const int KernelOffset = vKernelSize / 2;
 	const size_t KernelWidth = static_cast<size_t>(KernelOffset) * 2 + 1;
-	std::vector<std::pair<int, int>> NeighborOffset;
+	NeighborOffset_t NeighborOffset;
 	NeighborOffset.reserve(KernelWidth * KernelWidth);
 	
 	for (int i = -KernelOffset; i <= KernelOffset; ++i)
@@ -43,48 +43,107 @@ std::vector<std::pair<int, int>> COrderIndependentTextureSynthesizer/*<Scalar_t,
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
+template <typename Scalar_t, unsigned Channel>
+void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
 {
-	__buildPyramid(vInput, vMask, vioScene);
-	//pass1: 自上而下遍历金字塔，注意需要上一层级的邻域
-	//pass2: 自上而下遍历金字塔，注意还需要上一层级的邻域
-	//输入金字塔最底端的结果
-	
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
-	for (Eigen::Index RowId = 0; RowId < vMask.rows(); ++RowId)
-		for (Eigen::Index ColId = 0; ColId < vMask.cols(); ++ColId)
-			if (vMask.coeff(RowId, ColId) != 0)
-			{
-				auto Feature = __generateFeatureAt(vioScene, RowId, ColId);
-				auto [NearestRowId, NearestColId] = __findNearestPos(vInput, Feature);
-				vioScene.coeffRef(RowId, ColId) = vInput.coeff(NearestRowId, NearestColId);
-			}
+	__buildPyramid(vInput, vMask, vioScene);
+	SPyramidLayer LastLayer = m_Pyramid.front();
+	for (size_t Layer = 1; Layer < m_Pyramid.size(); ++Layer)
+	{
+		auto& CurrentLayer = m_Pyramid[Layer];
+		for (Eigen::Index RowId = 0; RowId < CurrentLayer._Mask.rows(); ++RowId)
+			for (Eigen::Index ColId = 0; ColId < CurrentLayer._Mask.cols(); ++ColId)
+				if (CurrentLayer._Mask.coeff(RowId, ColId) != 0)
+				{
+					auto Feature = __generateFeatureAt(LastLayer._Output, RowId, ColId);
+					Eigen::Index NearestRowId, NearestColId;
+					{
+						Scalar_t MinDistance = std::numeric_limits<Scalar_t>::max();
+						for (Eigen::Index i = 0; i < CurrentLayer._Input.rows(); ++i)
+							for (Eigen::Index k = 0; k < CurrentLayer._Input.cols(); ++k)
+							{
+								auto Distance = __computeDistance(Feature, __generateFeatureAt(LastLayer._Input, i, k));
+
+								if (MinDistance > Distance)
+								{
+									MinDistance = Distance;
+									NearestRowId = i;
+									NearestColId = k;
+								}
+							}
+					}
+					CurrentLayer._Output.coeffRef(RowId, ColId) = CurrentLayer._Input.coeff(NearestRowId, NearestColId);
+				}
+		LastLayer = CurrentLayer;
+	}
+	LastLayer = m_Pyramid.front();
+	for (size_t Layer = 1; Layer < m_Pyramid.size(); ++Layer)
+	{
+		auto& CurrentLayer = m_Pyramid[Layer];
+		for (Eigen::Index RowId = 0; RowId < CurrentLayer._Mask.rows(); ++RowId)
+			for (Eigen::Index ColId = 0; ColId < CurrentLayer._Mask.cols(); ++ColId)
+				if (CurrentLayer._Mask.coeff(RowId, ColId) != 0)
+				{
+					auto Feature = __generateFeatureAt(LastLayer._Output, RowId, ColId);
+					auto TempFeature = __generateFeatureAt(CurrentLayer._Output, RowId, ColId);
+					Eigen::Index NearestRowId, NearestColId;
+					{
+						Scalar_t MinDistance = std::numeric_limits<Scalar_t>::max();
+						for (Eigen::Index i = 0; i < CurrentLayer._Input.rows(); ++i)
+							for (Eigen::Index k = 0; k < CurrentLayer._Input.cols(); ++k)
+							{
+								auto Distance =  __computeDistance(Feature, __generateFeatureAt(LastLayer._Input, i, k)) / 4
+									+ __computeDistance(TempFeature, __generateFeatureAt(CurrentLayer._Input, i, k));
+
+								if (MinDistance > Distance)
+								{
+									MinDistance = Distance;
+									NearestRowId = i;
+									NearestColId = k;
+								}
+							}
+					}
+					CurrentLayer._Output.coeffRef(RowId, ColId) = CurrentLayer._Input.coeff(NearestRowId, NearestColId);
+				}
+		LastLayer = CurrentLayer;
+	}
+	vioScene = std::move(m_Pyramid.back()._Output);
 }
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildPyramid(const Texture_t& vInput, const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
+template <typename Scalar_t, unsigned Channel>
+void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildPyramid(const Texture_t& vInput, const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
 {
+	CMipmapGenerator<Eigen::Vector3i> TextureMipmapGenerator;
+	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
+	CMipmapGenerator<int> MaskMipmapGenerator;
+	MaskMipmapGenerator.setKernalSize(m_GaussianSize);
+	auto InputPyramid = TextureMipmapGenerator.getGaussianStack(vInput, m_PyramidLayerNum);
+	auto MaskPyramid = MaskMipmapGenerator.getGaussianStack(vMask, m_PyramidLayerNum);
+	auto OutputPyramid = TextureMipmapGenerator.getGaussianStack(vOutput, m_PyramidLayerNum);
+
 	m_Pyramid.clear();
-	m_Pyramid.emplace_back(vInput, vMask, vOutput);
-	while (m_Pyramid.size() < m_PyramidLayer)
+	m_Pyramid.resize(m_PyramidLayerNum);
+	for (auto& [Input ,Mask, Output] : m_Pyramid)
 	{
-		const auto& LastLayer = m_Pyramid.back();
-		CMipmapGenerator<Eigen::Vector3i> TextureMipmapGenerator;
-		CMipmapGenerator<int> MaskMipmapGenerator;
-		m_Pyramid.emplace_back(TextureMipmapGenerator.getMipmap(std::get<0>(LastLayer)), MaskMipmapGenerator.getMipmap(std::get<1>(LastLayer)), TextureMipmapGenerator.getMipmap(std::get<2>(LastLayer)));
+		Input.swap(InputPyramid.back());
+		InputPyramid.pop_back();
+		Mask.swap(MaskPyramid.back());
+		MaskPyramid.pop_back();
+		Output.swap(OutputPyramid.back());
+		OutputPyramid.pop_back();
 	}
 	std::ranges::reverse(m_Pyramid);
 }
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-typename COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::Feature_t COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__generateFeatureAt(const Texture_t& vTexture, size_t vRowId, size_t vColId) const
+template <typename Scalar_t, unsigned Channel>
+typename COrderIndependentTextureSynthesizer<Scalar_t, Channel>::Feature_t COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__generateFeatureAt(const Texture_t& vTexture, size_t vRowId, size_t vColId) const
 {
-	auto wrap = [](auto vIndex, auto vSize)
+	auto wrap = [](Eigen::Index vIndex, Eigen::Index vSize)
 	{
 		if (vIndex < 0)
 			vIndex += vSize;
@@ -107,8 +166,8 @@ typename COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::Feature_t C
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-std::pair<Eigen::Index, Eigen::Index> COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestPos(const Texture_t& vTexture, const Feature_t& vFeature) const
+template <typename Scalar_t, unsigned Channel>
+std::pair<Eigen::Index, Eigen::Index> COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__findNearestPos(const Texture_t& vTexture, const Feature_t& vFeature) const
 {
 	Scalar_t MinDistance = std::numeric_limits<Scalar_t>::max();
 	std::pair<Eigen::Index, Eigen::Index> MinPos;
