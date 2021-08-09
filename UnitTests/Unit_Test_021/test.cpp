@@ -130,10 +130,40 @@ TEST_F(TestOBB, CubeRotate45)
 	EXPECT_EQ(Result, true);
 }
 
-//TEST_F(TestOBB, 1)
-//{
-//	pcl::PointCloud<pcl::PointXYZ>::Ptr pCloud(new pcl::PointCloud<pcl::PointXYZ>);
-//	generateCuboid(pCloud);
-//	pcl::io::savePLYFileASCII(CuboidRandomModelPath, *pCloud);
-//
-//}
+TEST_F(TestOBB, CuboidRandom)
+{
+	initTest(CuboidRandomModelPath);
+	std::vector<pcl::index_t> Indices;
+	for (int i = 0; i < m_CloudSize; i++)
+		Indices.push_back(i);
+
+	std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CubeOBB;
+	CHoleRepairer Repairer;
+	CubeOBB = Repairer.calcOBBByIndices(Indices);
+
+	bool Result = false;
+	Eigen::Matrix3f Axis = std::get<0>(CubeOBB);
+	Eigen::Matrix3f GTaxis;
+	Eigen::Matrix3i GToffset;
+	float AxisValue = std::sqrt(2) * 0.5;
+	GTaxis << AxisValue, 0.0, -AxisValue,
+			  0.5, AxisValue, 0.5,
+			  0.5, -AxisValue, 0.5;
+	GToffset << 5, 5, 5,
+				4, 4, 4,
+				3, 3, 3;
+
+	for (int i = 0; i < 3; i++)
+		for (int k = 0; k < 3; k++)
+		{
+			Result = Axis.col(i).isApprox(GTaxis.col(k)) || Axis.col(i).isApprox(GTaxis.col(k) * -1.0);
+			if (Result)
+			{
+				EXPECT_LT(std::get<2>(CubeOBB)[i] - GToffset(k, k), 0.01);
+				EXPECT_LT(std::get<1>(CubeOBB)[i] - (-GToffset(k, k)), 0.01);
+				break;
+			}
+		}
+	EXPECT_EQ(Result, true);
+
+}
