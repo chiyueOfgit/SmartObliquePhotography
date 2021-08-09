@@ -12,6 +12,8 @@
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 const auto CubeModelPath = TESTMODEL_DIR + std::string("Test021_Model/Cube.pcd");
+const auto CubeRotate45ModelPath = TESTMODEL_DIR + std::string("Test021_Model/CubeRotate45.ply");
+const auto CuboidRandomModelPath = TESTMODEL_DIR + std::string("Test021_Model/CuboidRandom.ply");
 const auto ConfigPath = TESTMODEL_DIR + std::string("Config/Test021_PointCloudRetouchConfig.xml");
 
 class TestOBB : public testing::Test
@@ -19,7 +21,7 @@ class TestOBB : public testing::Test
 public:
 	hiveConfig::CHiveConfig* pConfig = nullptr;
 	CPointCloudRetouchManager* pManager = nullptr;
-	int CloudSize = 0;
+	int m_CloudSize = 0;
 
 protected:
 	void SetUp() override
@@ -34,24 +36,32 @@ protected:
 
 	void TearDown() override
 	{
-
+		pManager->destroy();
+		m_CloudSize = 0;
 	}
 
 	void initTest(const std::string& vModelPath)
 	{
+		std::string FileExtension = hiveUtility::hiveGetFileSuffix(vModelPath);
 		PointCloud_t::Ptr pCloud(new PointCloud_t);
-		pcl::io::loadPCDFile(vModelPath, *pCloud);
-		CloudSize = pCloud->size();
+
+		if (FileExtension == "pcd")
+			pcl::io::loadPCDFile(vModelPath, *pCloud);
+		else if (FileExtension == "ply")
+			pcl::io::loadPLYFile(vModelPath, *pCloud);
+		else
+			return;
+		m_CloudSize = pCloud->size();
 		ASSERT_GT(pCloud->size(), 0);
 		pManager = CPointCloudRetouchManager::getInstance();
 		pManager->init(pCloud, pConfig);
 	}
 
-	void generateCube(pcl::PointCloud<pcl::PointXYZ>::Ptr& vioCloud)
+	void generateCuboid(pcl::PointCloud<pcl::PointXYZ>::Ptr& vioCloud)
 	{
 		for (float XAxis = -5; XAxis <= 5; XAxis += 0.1)
-			for (float YAxis = -5; YAxis <= 5; YAxis += 0.1)
-				for (float ZAxis = -5; ZAxis <= 5; ZAxis += 0.1)
+			for (float YAxis = -4; YAxis <= 4; YAxis += 0.1)
+				for (float ZAxis = -3; ZAxis <= 3; ZAxis += 0.1)
 					vioCloud->push_back({XAxis, YAxis, ZAxis});
 	}
 
@@ -61,7 +71,7 @@ TEST_F(TestOBB, Cube)
 {
 	initTest(CubeModelPath);
 	std::vector<pcl::index_t> Indices;
-	for (int i = 0; i < CloudSize; i++)
+	for (int i = 0; i < m_CloudSize; i++)
 		Indices.push_back(i);
 	std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CubeOBB;
 	CHoleRepairer Repairer;
@@ -69,7 +79,7 @@ TEST_F(TestOBB, Cube)
 	CubeOBB = Repairer.calcOBBByIndices(Indices);
 	for (int i = 0; i < 3; i++)
 	{
-		EXPECT_LT(std::get<1>(CubeOBB)[i] - (-5),0.01);
+		EXPECT_LT(std::get<1>(CubeOBB)[i] - (-5), 0.01);
 		EXPECT_LT(std::get<2>(CubeOBB)[i] - 5, 0.01);
 	}
 
@@ -87,3 +97,43 @@ TEST_F(TestOBB, Cube)
 
 	EXPECT_EQ(Result, true);
 }
+
+TEST_F(TestOBB, CubeRotate45)
+{
+	initTest(CubeRotate45ModelPath);
+	std::vector<pcl::index_t> Indices;
+	for (int i = 0; i < m_CloudSize; i++)
+		Indices.push_back(i);
+
+	std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CubeOBB;
+	CHoleRepairer Repairer;
+	CubeOBB = Repairer.calcOBBByIndices(Indices);
+	for (int i = 0; i < 3; i++)
+	{
+		EXPECT_LT(std::get<1>(CubeOBB)[i] - (-5), 0.01);
+		EXPECT_LT(std::get<2>(CubeOBB)[i] - 5, 0.01);
+	}
+
+	bool Result = false;
+	Eigen::Matrix3f Axis = std::get<0>(CubeOBB);
+	Eigen::Matrix3f GTaxis;
+	float AxisValue = std::sqrt(2) * 0.5;
+	GTaxis << 1.0, 0.0, 0.0, 0.0, AxisValue, AxisValue, 0, AxisValue, -AxisValue;
+
+	for (int i = 0; i < 3; i++)
+		for (int k = 0; k < 3; k++)
+		{
+			Result = Axis.col(i).isApprox(GTaxis.col(k));
+			if (Result)
+				break;
+		}
+	EXPECT_EQ(Result, true);
+}
+
+//TEST_F(TestOBB, 1)
+//{
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr pCloud(new pcl::PointCloud<pcl::PointXYZ>);
+//	generateCuboid(pCloud);
+//	pcl::io::savePLYFileASCII(CuboidRandomModelPath, *pCloud);
+//
+//}
