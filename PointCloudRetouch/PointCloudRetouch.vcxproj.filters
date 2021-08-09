@@ -96,13 +96,7 @@
     </ClInclude>
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
-    <ClInclude Include="MipmapGenerator.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="TextureSynthesizer.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
-    <ClInclude Include="OrderIndependentTextureSynthesizer.h">
       <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
@@ -167,12 +161,6 @@
       <Filter>Operation</Filter>
     </ClCompile>
     <ClCompile Include="TextureSynthesizer.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="OrderIndependentTextureSynthesizer.cpp">
-      <Filter>Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="MipmapGenerator.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
