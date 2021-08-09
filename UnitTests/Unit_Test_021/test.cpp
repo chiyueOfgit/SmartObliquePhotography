@@ -108,24 +108,47 @@ TEST_F(TestOBB, CubeRotate45)
 	std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CubeOBB;
 	CHoleRepairer Repairer;
 	CubeOBB = Repairer.calcOBBByIndices(Indices);
-	for (int i = 0; i < 3; i++)
-	{
-		EXPECT_LT(std::get<1>(CubeOBB)[i] - (-5), 0.01);
-		EXPECT_LT(std::get<2>(CubeOBB)[i] - 5, 0.01);
-	}
 
 	bool Result = false;
 	Eigen::Matrix3f Axis = std::get<0>(CubeOBB);
 	Eigen::Matrix3f GTaxis;
+	Eigen::Matrix3i GToffset;
 	float AxisValue = std::sqrt(2) * 0.5;
-	GTaxis << 1.0, 0.0, 0.0, 0.0, AxisValue, AxisValue, 0, AxisValue, -AxisValue;
+	GTaxis << 1.0, 0.0, 0.0, 
+		0.0, AxisValue, AxisValue, 
+		0, AxisValue, -AxisValue;
+
+	Eigen::Vector3d AxisX(1, 0, 0);
+	Eigen::Vector3d AxisY(0, 1, 0);
+	Eigen::Vector3d AxisZ(0, 0, 1);
+	Eigen::AngleAxisd RotationX(std::numbers::pi * 0.25, Eigen::Vector3d(1, 0, 0));
+
+	Eigen::Vector3f MaxValue(FLT_MIN, FLT_MIN, FLT_MIN);
+	Eigen::Vector3f MinValue(FLT_MAX, FLT_MAX, FLT_MAX);
+	for (int i = 0; i < 2; i++)
+		for (int k = 0; k < 2; k++)
+			for (int m = 0; m < 2; m++)
+			{
+				Eigen::Vector3d Point(5 * std::pow(-1, i), 5 * std::pow(-1, k), 5 * std::pow(-1, m));
+				Eigen::Vector3d PointAfterRotation = RotationX * Point;
+
+				for (int Axis = 0; Axis < 3; Axis++)
+				{
+					MaxValue[Axis] = (MaxValue[Axis] < PointAfterRotation[Axis]) ? PointAfterRotation[Axis] : MaxValue[Axis];
+					MinValue[Axis] = (MinValue[Axis] > PointAfterRotation[Axis]) ? PointAfterRotation[Axis] : MinValue[Axis];
+				}
+			}
 
 	for (int i = 0; i < 3; i++)
 		for (int k = 0; k < 3; k++)
 		{
-			Result = Axis.col(i).isApprox(GTaxis.col(k));
+			Result = Axis.col(i).isApprox(GTaxis.col(k)) || Axis.col(i).isApprox(GTaxis.col(k) * -1.0);
 			if (Result)
+			{
+				EXPECT_LT(std::get<2>(CubeOBB)[i] - MaxValue[k], 0.01);
+				EXPECT_LT(std::get<1>(CubeOBB)[i] - MinValue[k], 0.01);
 				break;
+			}
 		}
 	EXPECT_EQ(Result, true);
 }
@@ -144,14 +167,12 @@ TEST_F(TestOBB, CuboidRandom)
 	bool Result = false;
 	Eigen::Matrix3f Axis = std::get<0>(CubeOBB);
 	Eigen::Matrix3f GTaxis;
-	Eigen::Matrix3i GToffset;
 	float AxisValue = std::sqrt(2) * 0.5;
 	GTaxis << AxisValue, 0.0, -AxisValue,
 			  0.5, AxisValue, 0.5,
 			  0.5, -AxisValue, 0.5;
-	GToffset << 5, 5, 5,
-				4, 4, 4,
-				3, 3, 3;
+	Eigen::Vector3f MaxValue(7.03553, 4.94975, 7.03553);
+	Eigen::Vector3f MinValue(-7.03553, -4.94975, -7.03553);
 
 	for (int i = 0; i < 3; i++)
 		for (int k = 0; k < 3; k++)
@@ -159,11 +180,40 @@ TEST_F(TestOBB, CuboidRandom)
 			Result = Axis.col(i).isApprox(GTaxis.col(k)) || Axis.col(i).isApprox(GTaxis.col(k) * -1.0);
 			if (Result)
 			{
-				EXPECT_LT(std::get<2>(CubeOBB)[i] - GToffset(k, k), 0.01);
-				EXPECT_LT(std::get<1>(CubeOBB)[i] - (-GToffset(k, k)), 0.01);
+				EXPECT_LT(std::get<2>(CubeOBB)[i] - MaxValue[k], 0.01);
+				EXPECT_LT(std::get<1>(CubeOBB)[i] - MinValue[k], 0.01);
 				break;
 			}
 		}
 	EXPECT_EQ(Result, true);
 
+}
+
+void CalcuPointsAfterRotation()
+{
+	Eigen::Vector3d AxisX(1, 0, 0);
+	Eigen::Vector3d AxisY(0, 1, 0);
+	Eigen::Vector3d AxisZ(0, 0, 1);
+	Eigen::AngleAxisd RotationX(std::numbers::pi * 0.25, Eigen::Vector3d(1, 0, 0));
+	Eigen::AngleAxisd RotationY(std::numbers::pi * 0.25, Eigen::Vector3d(0, 1, 0));
+	auto Rotation = RotationY * RotationX;
+
+	Eigen::Vector3f MaxValue(FLT_MIN, FLT_MIN, FLT_MIN);
+	Eigen::Vector3f MinValue(FLT_MAX, FLT_MAX, FLT_MAX);
+	for (int i = 0; i < 2; i++)
+		for (int k = 0; k < 2; k++)
+			for (int m = 0; m < 2; m++)
+			{
+				Eigen::Vector3d Point(5 * std::pow(-1, i), 4 * std::pow(-1, k), 3 * std::pow(-1, m));
+				Eigen::Vector3d PointAfterRotation = RotationY * RotationX * Point;
+				std::cout << "(" << Point[0] << ", " << Point[1] << ", " << Point[2] << "): " << PointAfterRotation[0] << ", " << PointAfterRotation[1] << ", " << PointAfterRotation[2] << std::endl;
+
+				for (int Axis = 0; Axis < 3; Axis++)
+				{
+					MaxValue[Axis] = (MaxValue[Axis] < PointAfterRotation[Axis]) ? PointAfterRotation[Axis] : MaxValue[Axis];
+					MinValue[Axis] = (MinValue[Axis] > PointAfterRotation[Axis]) ? PointAfterRotation[Axis] : MinValue[Axis];
+				}
+			}
+
+	std::cout << MaxValue << std::endl << MinValue << std::endl;
 }
