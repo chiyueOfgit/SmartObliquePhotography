@@ -99,6 +99,9 @@
     <ClInclude Include="TextureSynthesizer.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="OrderIndependentTextureSynthesizer.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
     <ClInclude Include="MipmapGenerator.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -164,6 +167,9 @@
       <Filter>Operation</Filter>
     </ClCompile>
     <ClCompile Include="TextureSynthesizer.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderIndependentTextureSynthesizer.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
     <ClCompile Include="MipmapGenerator.cpp">
