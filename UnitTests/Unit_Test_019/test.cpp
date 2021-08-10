@@ -28,7 +28,7 @@ const auto InputImagePath = TESTMODEL_DIR + std::string("Test019_Model/input.png
 const auto SceneImagePath = TESTMODEL_DIR + std::string("Test019_Model/scene.png");
 const auto MaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/Mask.png");
 const auto RandomMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/RandomMask.png");
-const auto HoleMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/RandomMask.png");
+const auto HoleMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/HoleMask.png");
 const auto AllBlackMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/AllBlackMaskResultImage.png");
 const auto SquareMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/SquareMaskResultImage.png");
 const auto RandomMaskResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/RandomMaskResultImage.png");
@@ -37,7 +37,7 @@ const auto HeightMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/mask
 const auto HeightSceneImagePath = TESTMODEL_DIR + std::string("Test019_Model/sceneH.png");
 const auto HeightResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/ResultH.png");
 
-const std::vector<std::string> SpecialImageName{ "FourColor", "LineColor" ,"Tangram" };
+const std::vector<std::string> SpecialImageName{ /*"Diamond", "FourColor", */"LineColor" ,"Tangram", "Star"};
 const auto SpecialImagePath = TESTMODEL_DIR + std::string("Test019_Model/SpecialTest/");
 
 class TestTextureSynthesizer : public testing::Test
@@ -293,7 +293,6 @@ TEST_F(TestTextureSynthesizer, SpecialInput)
 		TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 
 		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask" + ".png"});
-		
 	}
 	
 }
