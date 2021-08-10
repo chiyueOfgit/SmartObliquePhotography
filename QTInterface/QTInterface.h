@@ -53,7 +53,8 @@ namespace hiveObliquePhotography
             QMdiSubWindow* m_pAreaPickingSetting = nullptr;
             CInstructionsDialog* m_pInstructionsDialog = nullptr;
             CDisplayOptionsSettingDialog* m_pDisplayOptionsSettingDialog = nullptr;
-
+            vtkSmartPointer<vtkOrientationMarkerWidget> m_Axes;
+        	
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
             hiveConfig::CHiveConfig* m_pPointCloudRetouchConfig = nullptr;
 
@@ -67,7 +68,8 @@ namespace hiveObliquePhotography
             void __parseConfigFile();
             bool __messageDockWidgetOutputText(QString vString);
             bool __addResourceSpaceCloudItem(const std::string& vFilePath);
-
+            void __addAxesToView(vtkRenderWindowInteractor* vInteractor, double vX, double vY, double vXWide, double vYWide);
+        	
             std::string __getFileName(const std::string& vFilePath);
             std::string __getDirectory(const std::string& vFilePath);
 
