@@ -24,11 +24,11 @@ void CTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, co
 						auto RowIdWithOffset = (i + RowId + vMask.rows()) % vMask.rows();
 						auto ColIdWithOffset = (k + ColId + vMask.cols()) % vMask.cols();
 
-						if (vMask.coeff(RowIdWithOffset, ColIdWithOffset) == 0)
+						/*if (vMask.coeff(RowIdWithOffset, ColIdWithOffset) == 0)
 							NeighborMask(i + KernelOffset, k + KernelOffset) = 1;
-						else if (i < 0 || (i == 0 && k < 0))
+						else*/ if (i < 0 || (i == 0 && k < 0))
 						{
-							if (i + RowId >= 0 && i + RowId < vMask.rows() && k + ColId >= 0 && k + ColId < vMask.cols())
+							//if (i + RowId >= 0 && i + RowId < vMask.rows() && k + ColId >= 0 && k + ColId < vMask.cols())
 							{
 								NeighborMask(i + KernelOffset, k + KernelOffset) = 1;
 							}

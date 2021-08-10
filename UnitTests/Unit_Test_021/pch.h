@@ -12,10 +12,12 @@
 #include <string>
 #include <set>
 #include <ctime>
+#include <numbers>
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/segmentation/impl/extract_clusters.hpp>
@@ -33,6 +35,7 @@
 #include "common/ConfigInterface.h"
 #include "common/UtilityInterface.h"
 #include "common/MathInterface.h"
+#include "common/FileSystem.h"
 
 #include "PointCloudRetouchCommon.h"
 

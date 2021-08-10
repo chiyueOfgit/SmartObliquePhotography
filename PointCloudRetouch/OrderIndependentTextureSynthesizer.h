@@ -1,9 +1,9 @@
 #pragma once
 namespace hiveObliquePhotography::PointCloudRetouch
 {
-	using Scalar_t = int;
-	constexpr unsigned Channel = 3;
-	//template <typename Scalar_t, unsigned Channel>
+	//using Scalar_t = int;
+	//constexpr unsigned Channel = 3;
+	template <typename Scalar_t, unsigned Channel>
 	class COrderIndependentTextureSynthesizer
 	{
 	public:
@@ -46,6 +46,6 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		Texture_t::value_type __findNearestValue(int vLayer, const Feature_t& vFeature) const;
 	};
 
-	//template class COrderIndependentTextureSynthesizer<int, 3>;
-	//template class COrderIndependentTextureSynthesizer<float, 1>;
+	template class COrderIndependentTextureSynthesizer<int, 3>;
+	template class COrderIndependentTextureSynthesizer<float, 1>;
 }
