@@ -11,8 +11,11 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		~CMipmapGenerator() = default;
 
 		std::vector<Texture_t> getGaussianStack(const Texture_t& vTexture, const int vLayer);
+		std::vector<Texture_t> getGaussianStack(const Texture_t& vTexture, const int vLayer, const Eigen::MatrixXi& vMask);
 		std::vector<Texture_t> getGaussianPyramid(const Texture_t& vTexture, const int vLayer);
+		std::vector<Texture_t> getGaussianPyramid(const Texture_t& vTexture, const int vLayer, const Eigen::MatrixXi& vMask);
 		Texture_t getMipmap(const Texture_t& vTexture);
+		Texture_t getMipmap(const Texture_t& vTexture, const Eigen::MatrixXi& vMask);
 		void executeGaussianBlur(const Texture_t& vTexture, Texture_t& voMipmap);
 		Texture_t executeGaussianBlur(const Texture_t& vTexture);
 		void setKernalSize(const int vKernalSize);
