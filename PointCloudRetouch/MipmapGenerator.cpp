@@ -21,6 +21,24 @@ CMipmapGenerator<Color_t>::Texture_t CMipmapGenerator<Color_t>::getMipmap(const 
 }
 
 template <typename Color_t>
+CMipmapGenerator<Color_t>::Texture_t CMipmapGenerator<Color_t>::getMipmap(const Texture_t& vTexture, const Eigen::MatrixXi& vMask)
+{
+	Texture_t TextureWithMask = vTexture;
+	for (int i = 0; i < TextureWithMask.rows(); i++)
+		for (int k = 0; k < TextureWithMask.cols(); k++)
+			if (vMask.coeff(i, k))
+			{
+				if constexpr (std::is_arithmetic<Color_t>::value)
+					TextureWithMask(i, k) = -1;
+				else
+					TextureWithMask(i, k)[0] = -1;
+			}
+	Texture_t Mipmap((TextureWithMask.rows() + 1) / 2, (TextureWithMask.cols() + 1) / 2);
+	executeGaussianBlur(TextureWithMask, Mipmap);
+	return Mipmap;
+}
+
+template <typename Color_t>
 void CMipmapGenerator<Color_t>::executeGaussianBlur(const Texture_t &vTexture, Texture_t &voMipmap)
 {
 	auto GaussianKernal = __getGaussianKernal(m_KernalSize, 0);
@@ -48,10 +66,12 @@ Color_t CMipmapGenerator<Color_t>::__executeGaussianFilter(const Texture_t &vTex
 	Color_t Value = vTexture.coeff(0, 0);
 	Value -= Value;
 	Eigen::Vector3f Valuef = { 0.0f, 0.0f, 0.0f };
+	Eigen::MatrixXd Flags = Eigen::MatrixXd::Zero(vGaussianKernal.rows(), vGaussianKernal.cols());
 
 	int GaussianKernalRowIndex = -1;
 	int GaussianKernalColIndex = -1;
 	float GaussianWeightSum = 0.0;
+	double IfFlag = 0.0;
 	for (int i = vRow - (vGaussianKernal.rows() - 1) / 2; i <= vRow + (vGaussianKernal.rows() - 1) / 2; i++)
 	{
 		GaussianKernalRowIndex++;
@@ -62,13 +82,36 @@ Color_t CMipmapGenerator<Color_t>::__executeGaussianFilter(const Texture_t &vTex
 				continue;
 			auto Weight = vGaussianKernal.coeff(GaussianKernalRowIndex, GaussianKernalColIndex);
 			if constexpr (std::is_arithmetic<Color_t>::value)
+			{
+				if (vTexture.coeff(i, k) < 0)
+					continue;
 				Value += Weight * vTexture.coeff(i, k);
+			}
 			else
+			{
+				if (vTexture.coeff(i, k)[0] < 0)
+					continue;
 				for (int m = 0; m < 3; m++)
 					Valuef[m] += Weight * vTexture.coeff(i, k)[m];
+			}
+			Flags(GaussianKernalRowIndex, GaussianKernalColIndex) = 1;
 			GaussianWeightSum += Weight;
 		}
 		GaussianKernalColIndex = -1;
+	}
+
+	for (int i = 0; i < Flags.rows(); i++)
+		for (int k = 0; k < Flags.cols(); k++)
+			IfFlag += Flags.coeff(i, k);
+			
+	if (!IfFlag)
+	{
+		if constexpr (std::is_arithmetic<Color_t>::value)
+			return -1;
+		else
+			for (int m = 0; m < 3; m++)
+				Value[m] = -1;
+		return Value;
 	}
 
 	if constexpr (std::is_arithmetic<Color_t>::value)
@@ -131,6 +174,43 @@ auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, co
 }
 
 template <typename Color_t>
+auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, const int vLayer, const Eigen::MatrixXi& vMask) -> std::vector<Texture_t>
+{
+	Texture_t TextureWithMask = vTexture;
+	for (int i = 0; i < TextureWithMask.rows(); i++)
+		for (int k = 0; k < TextureWithMask.cols(); k++)
+			if (vMask.coeff(i, k))
+			{
+				if constexpr (std::is_arithmetic<Color_t>::value)
+					TextureWithMask(i, k) = -1;
+				else
+					TextureWithMask(i, k)[0] = -1;
+			}
+
+	std::vector<Texture_t> GaussianPyramid;
+	GaussianPyramid.push_back(TextureWithMask);
+
+	for (int i = 0; i < vLayer - 1; i++)
+		GaussianPyramid.push_back(getMipmap(GaussianPyramid.back()));
+
+	std::reverse(std::begin(GaussianPyramid), std::end(GaussianPyramid));
+	GaussianPyramid.pop_back();
+
+	for (int i = 0; i < TextureWithMask.rows(); i++)
+		for (int k = 0; k < TextureWithMask.cols(); k++)
+			if (vMask.coeff(i, k))
+			{
+				if constexpr (std::is_arithmetic<Color_t>::value)
+					TextureWithMask(i, k) = 255;
+				else
+					for (int m = 0; m < 3; m++)
+						TextureWithMask(i, k)[m] = 255;
+			}
+	GaussianPyramid.push_back(TextureWithMask);
+	return GaussianPyramid;
+}
+
+template <typename Color_t>
 auto CMipmapGenerator<Color_t>::getGaussianStack(const Texture_t& vTexture, const int vLayer) -> std::vector<Texture_t>
 {
 	std::vector<Texture_t> GaussianStack;
@@ -140,5 +220,42 @@ auto CMipmapGenerator<Color_t>::getGaussianStack(const Texture_t& vTexture, cons
 		GaussianStack.push_back(executeGaussianBlur(GaussianStack.back()));
 
 	std::reverse(std::begin(GaussianStack), std::end(GaussianStack));
+	return GaussianStack;
+}
+
+template <typename Color_t>
+auto CMipmapGenerator<Color_t>::getGaussianStack(const Texture_t& vTexture, const int vLayer, const Eigen::MatrixXi& vMask) -> std::vector<Texture_t>
+{
+	Texture_t TextureWithMask = vTexture;
+	for (int i = 0; i < TextureWithMask.rows(); i++)
+		for (int k = 0; k < TextureWithMask.cols(); k++)
+			if (vMask.coeff(i, k))
+			{
+				if constexpr (std::is_arithmetic<Color_t>::value)
+					TextureWithMask(i, k) = -1;
+				else
+					TextureWithMask(i, k)[0] = -1;
+			}
+
+	std::vector<Texture_t> GaussianStack;
+	GaussianStack.push_back(TextureWithMask);
+
+	for (int i = 0; i < vLayer - 1; i++)
+		GaussianStack.push_back(executeGaussianBlur(GaussianStack.back()));
+
+	std::reverse(std::begin(GaussianStack), std::end(GaussianStack));
+	GaussianStack.pop_back();
+
+	for (int i = 0; i < TextureWithMask.rows(); i++)
+		for (int k = 0; k < TextureWithMask.cols(); k++)
+			if (vMask.coeff(i, k))
+			{
+				if constexpr (std::is_arithmetic<Color_t>::value)
+					TextureWithMask(i, k) = 255;
+				else
+					for (int m = 0; m < 3; m++)
+						TextureWithMask(i, k)[m] = 255;
+			}
+	GaussianStack.push_back(TextureWithMask);
 	return GaussianStack;
 }
