@@ -12,7 +12,8 @@
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 const auto CubeModelPath = TESTMODEL_DIR + std::string("Test021_Model/Cube.pcd");
-const auto CubeRotate45ModelPath = TESTMODEL_DIR + std::string("Test021_Model/CubeRotate45.ply");
+//const auto CubeRotate45ModelPath = TESTMODEL_DIR + std::string("Test021_Model/CubeRotate45.ply");
+const auto CubeRotate45ModelPath = TESTMODEL_DIR + std::string("Test021_Model/Cube2.pcd");
 const auto CuboidRandomModelPath = TESTMODEL_DIR + std::string("Test021_Model/CuboidRandom.ply");
 const auto ConfigPath = TESTMODEL_DIR + std::string("Config/Test021_PointCloudRetouchConfig.xml");
 
@@ -131,7 +132,7 @@ TEST_F(TestOBB, CubeRotate45)
 			{
 				Eigen::Vector3d Point(5 * std::pow(-1, i), 5 * std::pow(-1, k), 5 * std::pow(-1, m));
 				Eigen::Vector3d PointAfterRotation = RotationX * Point;
-
+	
 				for (int Axis = 0; Axis < 3; Axis++)
 				{
 					MaxValue[Axis] = (MaxValue[Axis] < PointAfterRotation[Axis]) ? PointAfterRotation[Axis] : MaxValue[Axis];
@@ -168,13 +169,18 @@ TEST_F(TestOBB, CuboidRandom)
 	Eigen::Matrix3f Axis = std::get<0>(CubeOBB);
 	Eigen::Matrix3f GTaxis;
 	float AxisValue = std::sqrt(2) * 0.5;
-	GTaxis << AxisValue, 0.0, -AxisValue,
+	/*GTaxis << AxisValue, 0.0, -AxisValue,
 			  0.5, AxisValue, 0.5,
-			  0.5, -AxisValue, 0.5;
+			  0.5, -AxisValue, 0.5;*/
+	
+	GTaxis << AxisValue, 0.5, 0.5,
+		      0.0, AxisValue, -AxisValue,
+		      -AxisValue, 0.5, 0.5;
+	
 	Eigen::Vector3f MaxValue(7.03553, 4.94975, 7.03553);
 	Eigen::Vector3f MinValue(-7.03553, -4.94975, -7.03553);
 
-	for (int i = 0; i < 3; i++)
+	/*for (int i = 0; i < 3; i++)
 		for (int k = 0; k < 3; k++)
 		{
 			Result = Axis.col(i).isApprox(GTaxis.col(k)) || Axis.col(i).isApprox(GTaxis.col(k) * -1.0);
@@ -184,6 +190,18 @@ TEST_F(TestOBB, CuboidRandom)
 				EXPECT_LT(std::get<1>(CubeOBB)[i] - MinValue[k], 0.01);
 				break;
 			}
+		}*/
+	Eigen::Vector3f a = Axis.col(1);
+	Eigen::Vector3f b = GTaxis.col(1) * (-1.0);
+	bool c = a.isApprox(b);
+	
+	
+	for (int i = 0; i < 3; i++)
+		for (int k = 0; k < 3; k++)
+		{
+			Result = Axis.col(i).dot(GTaxis.col(k)) > 0.9 || Axis.col(i).dot(GTaxis.col(k) * -1.0) > 0.9;
+			if (Result)
+				break;
 		}
 	EXPECT_EQ(Result, true);
 
