@@ -21,6 +21,7 @@
 #include <qcursor.h>
 #include <qevent.h>
 #include <qpainter.h>
+#include <vtkAxesActor.h>
 
 #include "QTDockWidgetTitleBar.h"
 #include "QTInterfaceConfig.h"
@@ -30,6 +31,7 @@
 #include "VisualizationInterface.h"
 #include "PointCloudRetouchConfig.h"
 #include "DisplayOptionsSettingDialog.h"
+#include <vtkOrientationMarkerWidget.h>
 
 #include "pcl/io/pcd_io.h"
 
@@ -86,6 +88,7 @@ void CQTInterface::__initialVTKWidget()
     auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
     m_UI.VTKWidget->SetRenderWindow(pViewer->getRenderWindow());
     pViewer->setupInteractor(m_UI.VTKWidget->GetInteractor(), m_UI.VTKWidget->GetRenderWindow());
+    __addAxesToView(pViewer->getRenderWindow()->GetInteractor(), 0.0, 0.0, 0.15, 0.15);
     m_UI.VTKWidget->update();
 }
 
@@ -533,5 +536,26 @@ void CQTInterface::closeEvent(QCloseEvent* vEvent)
     else
     {
         vEvent->ignore();
+    }
+}
+
+void CQTInterface::__addAxesToView(vtkRenderWindowInteractor* vInteractor, double vX, double vY, double vXWide, double vYWide)
+{
+    if (!m_Axes)
+    {
+        vtkSmartPointer<vtkAxesActor> Axes = vtkSmartPointer<vtkAxesActor>::New();
+
+        m_Axes = vtkSmartPointer<vtkOrientationMarkerWidget>::New();
+        m_Axes->SetOutlineColor(0.9300, 0.5700, 0.1300);
+        m_Axes->SetOrientationMarker(Axes);
+        m_Axes->SetInteractor(vInteractor);
+        m_Axes->SetViewport(vX, vY, vXWide, vYWide);
+        m_Axes->SetEnabled(true);
+        m_Axes->InteractiveOn();
+    }
+    else
+    {
+        m_Axes->SetEnabled(true);
+        pcl::console::print_warn(stderr, "Orientation Widget Axes already exists, just enabling it");
     }
 }
