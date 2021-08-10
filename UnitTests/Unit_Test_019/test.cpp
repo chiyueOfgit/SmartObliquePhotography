@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TextureSynthesizer.h"
+#include "OrderIndependentTextureSynthesizer.h"
 #include "MipmapGenerator.h"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
@@ -129,69 +130,6 @@ protected:
 		stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
 		stbi_image_free(ResultImage);
 	}
-
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> _getMipMap(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture)
-	{
-		Eigen::Matrix<Eigen::Vector3i, -1, -1> Mipmap((vTexture.rows() + 1) / 2, (vTexture.cols() + 1) / 2);
-		_gaussianBlur(vTexture, Mipmap);
-		return Mipmap;
-	}
-
-	void _gaussianBlur(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, Eigen::Matrix<Eigen::Vector3i, -1, -1>& voMipmap)
-	{
-		auto GaussianKernal = _getGaussianKernal(3, 0);
-		for (int i = 0; i < voMipmap.rows(); i++)
-			for (int k = 0; k < voMipmap.cols(); k++)
-				for (int Channel = 0; Channel < 3; Channel++)
-					voMipmap(i, k)[Channel] = _gaussianFilter(vTexture, GaussianKernal, Channel, i * 2, k * 2);
-	}
-
-	float _gaussianFilter(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const Eigen::Matrix<float, -1, -1>& vGaussianKernal, int vChannel, int vRow, int vCol)
-	{
-		float Value = 0.0;
-		int GaussianKernalRowIndex = -1;
-		int GaussianKernalColIndex = -1;
-		for (int i = vRow - (vGaussianKernal.rows() - 1) / 2; i <= vRow + (vGaussianKernal.rows() - 1) / 2; i++)
-		{
-			GaussianKernalRowIndex++;
-			for (int k = vCol - (vGaussianKernal.cols() - 1) / 2; k <= vCol + (vGaussianKernal.cols() - 1) / 2; k++)
-			{
-				GaussianKernalColIndex++;
-				if (i < 0 || k < 0 || i >= vTexture.rows() || k >= vTexture.cols())
-					continue;
-				Value += vGaussianKernal.coeff(GaussianKernalRowIndex, GaussianKernalColIndex) * vTexture.coeff(i, k)[vChannel];
-			}
-			GaussianKernalColIndex = -1;
-		}
-
-		return Value;
-	}
-
-	Eigen::Matrix<float, -1, -1> _getGaussianKernal(int vKernalSize, float vSigma)
-	{
-		if (!vSigma)
-			vSigma = 0.3 * ((vKernalSize - 1) * 0.5 - 1) + 0.8;
-
-		float SumWeight = 0.0;
-		Eigen::Matrix<float, -1, -1> GaussianKernal(vKernalSize, vKernalSize);
-
-		for (int i = 0; i < vKernalSize; i++)
-			for (int k = 0; k < vKernalSize; k++)
-			{
-				GaussianKernal(i, k) = _getGaussianWeight(std::abs((vKernalSize - 1) / 2 - i) + std::abs((vKernalSize - 1) / 2 - k), vSigma);
-				SumWeight += GaussianKernal.coeff(i, k);
-			}
-
-		GaussianKernal /= SumWeight;
-
-		return GaussianKernal;
-	}
-
-	float _getGaussianWeight(float vRadius, float vSigma)
-	{
-		// Considering that normalization is required later, the coefficient is not calculated
-		return std::pow(std::numbers::e, -vRadius * vRadius / (2 * vSigma * vSigma));
-	}
 };
 
 //TEST_F(TestTextureSynthesizer, DeathTest_EmptyInput)
@@ -240,23 +178,23 @@ protected:
 //			EXPECT_EQ(OutputTexture(i, k), SceneTexture(i, k));
 //}
 
-//TEST_F(TestTextureSynthesizer, SquareMask)
-//{
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-//
-//	_readImage(InputImagePath, InputTexture);
-//	_readImage(SceneImagePath, OutputTexture);
-//
-//	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-//	/*_generateMask(MaskTexture, -1);*/
-//	_readMask(MaskImagePath, MaskTexture);
-//
-//	CTextureSynthesizer<int, 3> TextureSynthesizer;
-//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-//
-//	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
-//}
+TEST_F(TestTextureSynthesizer, SquareMask)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	_readImage(InputImagePath, InputTexture);
+	_readImage(SceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	/*_generateMask(MaskTexture, -1);*/
+	_readMask(MaskImagePath, MaskTexture);
+
+	COrderIndependentTextureSynthesizer TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+
+	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
+}
 
 //TEST_F(TestTextureSynthesizer, RandomMask)
 //{
@@ -274,29 +212,29 @@ protected:
 //
 //	_generateResultImage(OutputTexture, RandomMaskResultImagePath);
 //}
-
-TEST_F(TestTextureSynthesizer, SpecialInput)
-{
-	for(auto& Name: SpecialImageName)
-	{
-		Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-		Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-
-		_readImage({ SpecialImagePath + Name + "Input.png" }, InputTexture);
-		_readImage({ SpecialImagePath + Name + ".png" }, OutputTexture);
-
-		Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-		/*_generateMask(MaskTexture, -1);*/
-		_readMask(MaskImagePath, MaskTexture);
-
-		CTextureSynthesizer<int, 3> TextureSynthesizer;
-		TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-
-		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask" + ".png"});
-		
-	}
-	
-}
+//
+//TEST_F(TestTextureSynthesizer, SpecialInput)
+//{
+//	for(auto& Name: SpecialImageName)
+//	{
+//		Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//		Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+//
+//		_readImage({ SpecialImagePath + Name + "Input.png" }, InputTexture);
+//		_readImage({ SpecialImagePath + Name + ".png" }, OutputTexture);
+//
+//		Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+//		/*_generateMask(MaskTexture, -1);*/
+//		_readMask(MaskImagePath, MaskTexture);
+//
+//		CTextureSynthesizer<int, 3> TextureSynthesizer;
+//		TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+//
+//		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask" + ".png"});
+//		
+//	}
+//	
+//}
 
 //TEST_F(TestTextureSynthesizer, Height)
 //{
@@ -387,23 +325,23 @@ TEST_F(TestTextureSynthesizer, SpecialInput)
 //	_generateResultImage(Mipmap, SquareMaskResultImagePath);
 //}
 
-TEST_F(TestTextureSynthesizer, GaussianPyramidWithMask)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	std::vector<Eigen::Matrix<Eigen::Vector3i, -1, -1>> GaussianPyramid, GaussianStack;
-	Eigen::MatrixXi MaskTexture(InputTexture.rows(), InputTexture.cols());
-	
-	_readMask(MaskImagePath, MaskTexture);
-	_readImage(SceneImagePath, InputTexture);
-	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
-	MipmapGenerator.setKernalSize(9);
-	int Layer = 10;
-	GaussianPyramid = MipmapGenerator.getGaussianPyramid(InputTexture, Layer, MaskTexture);
-	GaussianStack = MipmapGenerator.getGaussianStack(InputTexture, Layer, MaskTexture);
-
-	for (int i = 0; i < Layer; i++)
-	{
-		_generateResultImage(GaussianPyramid[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianPyramid/GaussianPyramid_") + std::to_string(i) + std::string(".png"));
-		_generateResultImage(GaussianStack[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianStack/GaussianStack_") + std::to_string(i) + std::string(".png"));
-	}
-}
+//TEST_F(TestTextureSynthesizer, GaussianPyramidWithMask)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	std::vector<Eigen::Matrix<Eigen::Vector3i, -1, -1>> GaussianPyramid, GaussianStack;
+//	Eigen::MatrixXi MaskTexture(InputTexture.rows(), InputTexture.cols());
+//	
+//	_readMask(MaskImagePath, MaskTexture);
+//	_readImage(SceneImagePath, InputTexture);
+//	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
+//	MipmapGenerator.setKernalSize(9);
+//	int Layer = 10;
+//	GaussianPyramid = MipmapGenerator.getGaussianPyramid(InputTexture, Layer, MaskTexture);
+//	GaussianStack = MipmapGenerator.getGaussianStack(InputTexture, Layer, MaskTexture);
+//
+//	for (int i = 0; i < Layer; i++)
+//	{
+//		_generateResultImage(GaussianPyramid[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianPyramid/GaussianPyramid_") + std::to_string(i) + std::string(".png"));
+//		_generateResultImage(GaussianStack[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianStack/GaussianStack_") + std::to_string(i) + std::string(".png"));
+//	}
+//}

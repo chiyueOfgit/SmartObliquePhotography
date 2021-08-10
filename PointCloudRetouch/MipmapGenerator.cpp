@@ -201,10 +201,10 @@ auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, co
 			if (vMask.coeff(i, k))
 			{
 				if constexpr (std::is_arithmetic<Color_t>::value)
-					TextureWithMask(i, k) = 255;
+					TextureWithMask(i, k) = -1;
 				else
 					for (int m = 0; m < 3; m++)
-						TextureWithMask(i, k)[m] = 255;
+						TextureWithMask(i, k)[m] = -1;
 			}
 	GaussianPyramid.push_back(TextureWithMask);
 	return GaussianPyramid;
