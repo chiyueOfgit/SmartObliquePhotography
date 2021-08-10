@@ -30,12 +30,13 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const T
 {
 	__initCache(vMask, vioScene);
 	__initInputPyramid(vInput);
-	for (auto& i : m_Cache.back())
-	{
-		__initTexture(m_InputPyramid.front(), i);
-	}
-	__initTexture(m_InputPyramid.front(), m_Cache.back().front());
+	__initTexture(m_InputPyramid.front(), m_Cache.front().front());
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
+
+	for (Eigen::Index RowId = 0; RowId < vioScene.rows(); ++RowId)
+		for (Eigen::Index ColId = 0; ColId < vioScene.cols(); ++ColId)
+			if (vMask.coeff(RowId, ColId) != 0)
+				vioScene.coeffRef(RowId, ColId) = __synthesizePixel(m_PyramidLayer - 1, m_GenerationNum - 1, RowId, ColId);
 
 	int Cnt = 0;
 	for (const auto& i : m_Cache)
@@ -43,11 +44,6 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const T
 		{
 			generateResultImage(k, "../TestData/Test019_Model/Cache/" + std::string("Cache") + std::to_string(Cnt++) + ".png");
 		}
-	
-	for (Eigen::Index RowId = 0; RowId < vioScene.rows(); ++RowId)
-		for (Eigen::Index ColId = 0; ColId < vioScene.cols(); ++ColId)
-			if (vMask.coeff(RowId, ColId) != 0)
-				vioScene.coeffRef(RowId, ColId) = __synthesizePixel(m_PyramidLayer - 1, m_GenerationNum - 1, RowId, ColId);
 }
 
 //*****************************************************************
@@ -55,7 +51,6 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const T
 //template <typename Scalar_t, unsigned Channel>
 void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
 {
-	//init
 	CMipmapGenerator<Eigen::Vector3i> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
 	auto OutputPyramid = TextureMipmapGenerator.getGaussianPyramid(vOutput, m_PyramidLayer, vMask);
@@ -65,7 +60,7 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__initCache(con
 	for (const auto& Gaussian : OutputPyramid)
 		m_Cache.emplace_back(m_GenerationNum, Gaussian);
 
-	m_Cache.front().resize(1);	
+	m_Cache.front().resize(1);
 }
 
 //*****************************************************************
@@ -95,19 +90,6 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__initTexture(c
 				);
 			}
 		}
-}
-
-//*****************************************************************
-//FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__decrease(int& vioLayer, Eigen::Index& vioRowId, Eigen::Index& vioColId) const
-{
-	if (vioLayer > 0)
-	{
-		--vioLayer;
-		vioRowId /= 2;
-		vioColId /= 2;
-	}
 }
 
 //*****************************************************************
@@ -175,7 +157,7 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizePix
 	auto CacheValue = __getCacheAt(vLayer, vGeneration, vRowId, vColId);
 	if (!__isAvailable(CacheValue))
 	{
-		CacheValue = __findNearestValue(vLayer, __buildOutputFeatureAt(vLayer, vGeneration, vRowId, vColId));
+		CacheValue = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, vRowId, vColId));
 		__addCacheEntry(vLayer, vGeneration, vRowId, vColId, CacheValue);
 	}
 	return CacheValue;
@@ -206,9 +188,9 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildOutputFe
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFeatureAt(int vLayer, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
+auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
 {
-	__decrease(vLayer, vRowId, vColId);
+	__decrease(vLayer, vGeneration, vRowId, vColId);
 	
 	Eigen::Matrix<Scalar_t, Eigen::Dynamic, Channel> Feature(m_NeighborOffset.size(), Channel);
 	for (size_t i = 0; i < m_NeighborOffset.size(); i++)
@@ -225,7 +207,7 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFea
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(int vLayer, const Feature_t& vFeature) const -> Texture_t::value_type
+auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Texture_t::value_type
 {
 	const auto& Input = m_InputPyramid[vLayer];
 	Texture_t::value_type NearestValue;
@@ -234,7 +216,7 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestVa
 	for (Eigen::Index RowId = 0; RowId < Input.rows(); ++RowId)
 		for (Eigen::Index ColId = 0; ColId < Input.cols(); ++ColId)
 		{
-			auto Distance = __computeDistance(vFeature, __buildInputFeatureAt(vLayer, RowId, ColId));
+			auto Distance = __computeDistance(vFeature, __buildInputFeatureAt(vLayer, vGeneration, RowId, ColId));
 			if (MinDistance > Distance)
 			{
 				MinDistance = Distance;
