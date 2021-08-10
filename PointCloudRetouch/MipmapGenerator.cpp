@@ -23,16 +23,21 @@ CMipmapGenerator<Color_t>::Texture_t CMipmapGenerator<Color_t>::getMipmap(const 
 template <typename Color_t>
 CMipmapGenerator<Color_t>::Texture_t CMipmapGenerator<Color_t>::getMipmap(const Texture_t& vTexture, const Eigen::MatrixXi& vMask)
 {
+	std::pair<float, float> SampleRate{ (float)vMask.rows() / vTexture.rows(), (float)vMask.cols() / vTexture.cols() };
 	Texture_t TextureWithMask = vTexture;
 	for (int i = 0; i < TextureWithMask.rows(); i++)
 		for (int k = 0; k < TextureWithMask.cols(); k++)
-			if (vMask.coeff(i, k))
+		{
+			std::pair<int, int> Coord{ int(i * SampleRate.first), int(k * SampleRate.second) };
+			if (Coord.first < vMask.rows() && Coord.second < vMask.cols() && vMask(Coord.first, Coord.second))
 			{
 				if constexpr (std::is_arithmetic<Color_t>::value)
 					TextureWithMask(i, k) = -1;
 				else
 					TextureWithMask(i, k)[0] = -1;
 			}
+		}
+
 	Texture_t Mipmap((TextureWithMask.rows() + 1) / 2, (TextureWithMask.cols() + 1) / 2);
 	executeGaussianBlur(TextureWithMask, Mipmap);
 	return Mipmap;
@@ -192,7 +197,7 @@ auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, co
 	GaussianPyramid.push_back(TextureWithMask);
 
 	for (int i = 0; i < vLayer - 1; i++)
-		GaussianPyramid.push_back(getMipmap(GaussianPyramid.back()));
+		GaussianPyramid.push_back(getMipmap(GaussianPyramid.back(), vMask));
 
 	std::reverse(std::begin(GaussianPyramid), std::end(GaussianPyramid));
 	return GaussianPyramid;

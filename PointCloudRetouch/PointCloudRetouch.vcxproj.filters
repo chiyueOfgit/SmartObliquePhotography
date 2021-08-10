@@ -99,6 +99,9 @@
     <ClInclude Include="TextureSynthesizer.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="MipmapGenerator.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -161,6 +164,9 @@
       <Filter>Operation</Filter>
     </ClCompile>
     <ClCompile Include="TextureSynthesizer.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MipmapGenerator.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
