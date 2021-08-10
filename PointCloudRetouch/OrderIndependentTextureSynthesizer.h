@@ -14,26 +14,36 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		void execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene);
 
 	private:
-		using Feature_t = std::vector<Eigen::Matrix<Scalar_t, Channel, 1>>;
+		using Feature_t = Eigen::Matrix<Scalar_t, Eigen::Dynamic, 1>;
 		using NeighborOffset_t = std::vector<std::pair<int, int>>;
-		struct SPyramidLayer
-		{
-			Texture_t _Input;
-			Eigen::MatrixXi _Mask;
-			Texture_t _Output;
-		};
 		//TODO: magic number
 		int m_KernelSize = 9;
-		NeighborOffset_t m_NeighborOffset;
-		int m_PyramidLayerNum = 9;
 		int m_GaussianSize = 9;
-		std::vector<SPyramidLayer> m_Pyramid;
-		
-		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs);
+		int m_PyramidLayer = 9;
+		int m_GenerationNum = 3;
+		NeighborOffset_t m_NeighborOffset;
+		std::vector<Texture_t> m_InputPyramid;
+		std::vector<std::vector<Texture_t>> m_Cache;
+
+		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).squaredNorm(); }
+		static bool __isAvailable(const Texture_t::value_type& vValue) { return (vValue.array() >= 0).all(); }
+		static void __wrap(Eigen::Index vSize, Eigen::Index& vioIndex) { while (vioIndex < 0) vioIndex += vSize; while (vioIndex >= vSize) vioIndex -= vSize; }
 		static NeighborOffset_t __buildNeighborOffset(int vKernelSize);
-		void __buildPyramid(const Texture_t& vInput, const Eigen::MatrixXi& vMask, const Texture_t& vOutput);
-		Feature_t __generateFeatureAt(const Texture_t& vTexture, size_t vRowId, size_t vColId) const;
-		std::pair<Eigen::Index, Eigen::Index> __findNearestPos(const Texture_t& vTexture, const Feature_t& vFeature) const;
+
+		void __initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput);
+		void __initInputPyramid(const Texture_t& vTexture);
+
+		void __decrease(int& vioLayer, Eigen::Index& vioRowId, Eigen::Index& vioColId) const;
+		void __decrease(int& vioLayer, int& vioGeneration, Eigen::Index& vioRowId, Eigen::Index& vioColId) const;
+		Texture_t::value_type __getInputAt(int vLayer, Eigen::Index vRowId, Eigen::Index vColId) const;
+		Texture_t::value_type __getCacheAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
+		void __addCacheEntry(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId, const Texture_t::value_type& vValue);
+		
+		Texture_t::value_type __synthesizePixel(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId);
+		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId);
+		Feature_t __buildInputFeatureAt(int vLayer, Eigen::Index vRowId, Eigen::Index vColId) const;
+		
+		Texture_t::value_type __findNearestValue(int vLayer, const Feature_t& vFeature) const;
 	};
 
 	//template class COrderIndependentTextureSynthesizer<int, 3>;
