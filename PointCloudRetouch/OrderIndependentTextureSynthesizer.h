@@ -19,8 +19,8 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		using Feature_t = Eigen::Matrix<Scalar_t, Eigen::Dynamic, 1>;
 		using NeighborOffset_t = std::vector<std::pair<int, int>>;
 		//TODO: magic number
-		int m_KernelSize = 7;
-		int m_GaussianSize = 7;
+		int m_KernelSize = 9;
+		int m_GaussianSize = 9;
 		int m_PyramidLayer = 4;
 		int m_GenerationNum = 3;
 		NeighborOffset_t m_NeighborOffset;

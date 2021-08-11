@@ -16,7 +16,7 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildNeighbor
 	
 	for (int i = -KernelOffset; i <= KernelOffset; ++i)
 		for (int k = -KernelOffset; k <= KernelOffset; ++k)
-			//if (i < 0 || (i == 0 && k < 0))
+			if (std::hypot(i ,k) <= KernelOffset)
 				NeighborOffset.emplace_back(i, k);
 	
 	NeighborOffset.shrink_to_fit();
@@ -35,7 +35,7 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const T
 
 	for (Eigen::Index RowId = 0; RowId < vioScene.rows(); ++RowId)
 		for (Eigen::Index ColId = 0; ColId < vioScene.cols(); ++ColId)
-			if (vMask.coeff(RowId, ColId) != 0)
+			if (vMask.coeff(RowId, ColId))
 				vioScene.coeffRef(RowId, ColId) = __synthesizePixel(m_PyramidLayer - 1, m_GenerationNum - 1, RowId, ColId);
 
 	int Cnt = 0;
@@ -97,7 +97,7 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__decrease(int&
 {
 	if (vioGeneration > 0)
 		--vioGeneration;
-	else
+	else if (vioLayer > 0)
 	{
 		--vioLayer;
 		if (vioLayer == 0)
@@ -128,10 +128,7 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__getInputAt(in
 auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__getCacheAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Texture_t::value_type
 {
 	vLayer = std::clamp(vLayer, 0, m_PyramidLayer - 1);
-	if (vLayer == 0)
-		vGeneration = 0;
-	else
-		vGeneration = std::clamp(vGeneration, 0, m_GenerationNum - 1);
+	vGeneration = std::clamp(vGeneration, 0, m_GenerationNum - 1);
 	const auto& Texture = m_Cache[vLayer][vGeneration];
 	
 	__wrap(Texture.rows(), vRowId);
@@ -167,19 +164,19 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizePix
 auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) -> Feature_t
 {
 	__decrease(vLayer, vGeneration, vRowId, vColId);
-	
-	Eigen::Matrix<Scalar_t, Eigen::Dynamic, Channel> Feature(m_NeighborOffset.size(), Channel);
-	for (size_t i = 0; i < m_NeighborOffset.size(); i++)
-	{
-		auto RowIdWithOffset = m_NeighborOffset[i].first + vRowId;
-		auto ColIdWithOffset = m_NeighborOffset[i].second + vColId;
 
+	Eigen::Matrix<Scalar_t, Eigen::Dynamic, Channel> Feature(m_NeighborOffset.size(), Channel);
+	for (Eigen::Index It = 0; auto [RowIdWithOffset, ColIdWithOffset] : m_NeighborOffset)
+	{
+		RowIdWithOffset += vRowId;
+		ColIdWithOffset += vColId;
+		
 		auto CacheValue = __getCacheAt(vLayer, vGeneration, RowIdWithOffset, ColIdWithOffset);
 		if (!__isAvailable(CacheValue))
 			CacheValue = __synthesizePixel(vLayer, vGeneration, RowIdWithOffset, ColIdWithOffset);
-		Feature.row(i) = CacheValue;
+		
+		Feature.row(It++) = CacheValue;
 	}
-
 	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
 }
 
@@ -191,12 +188,12 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFea
 	__decrease(vLayer, vGeneration, vRowId, vColId);
 	
 	Eigen::Matrix<Scalar_t, Eigen::Dynamic, Channel> Feature(m_NeighborOffset.size(), Channel);
-	for (size_t i = 0; i < m_NeighborOffset.size(); i++)
+	for (Eigen::Index It = 0; auto [RowIdWithOffset, ColIdWithOffset] : m_NeighborOffset)
 	{
-		auto RowIdWithOffset = m_NeighborOffset[i].first + vRowId;
-		auto ColIdWithOffset = m_NeighborOffset[i].second + vColId;
+		RowIdWithOffset += vRowId;
+		ColIdWithOffset += vColId;
 
-		Feature.row(i) = __getInputAt(vLayer, RowIdWithOffset, ColIdWithOffset);
+		Feature.row(It++) = __getInputAt(vLayer, RowIdWithOffset, ColIdWithOffset);
 	}
 
 	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
