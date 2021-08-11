@@ -41,9 +41,7 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const T
 	int Cnt = 0;
 	for (const auto& i : m_Cache)
 		for (const auto& k : i)
-		{
 			generateResultImage(k, "../TestData/Test019_Model/Cache/" + std::string("Cache") + std::to_string(Cnt++) + ".png");
-		}
 }
 
 //*****************************************************************

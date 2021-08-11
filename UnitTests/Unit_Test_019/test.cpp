@@ -89,7 +89,7 @@ protected:
 				auto Pixel = vioTexture(i, k);
 				if (!Pixel[0] && Pixel[1] && vMode == 0)
 				{
-					Pixel[0] == -Pixel[1];
+					Pixel[0] = -Pixel[1];
 					Pixel[1] = 0;
 				}
 				else if (Pixel[0] < 0 && vMode == 1)
