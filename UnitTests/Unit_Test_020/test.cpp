@@ -22,7 +22,7 @@
 //  * Points_Projection_Test:		  测试能否将点投影到对应格子内
 //  * OriginInfos_Filling_Test:		  测试能否通过格子内的点生成原始颜色和高度
 
-#define ENABLE_VISUALIZER false
+#define ENABLE_VISUALIZER true
 
 #define Epsilon 1e-3
 

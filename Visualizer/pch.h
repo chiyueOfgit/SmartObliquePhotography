@@ -33,6 +33,7 @@
 #include "common/HiveConfig.h"
 #include "common/ConfigInterface.h"
 
+#include "VisualizationCommon.h"
 using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 
 #endif // PCH_H

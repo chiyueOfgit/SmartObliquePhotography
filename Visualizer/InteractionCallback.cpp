@@ -114,6 +114,24 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			}
 		}
 
+		if (KeyString == "j")
+		{
+			m_pVisualizer->jumpToThreeView(EView::MainView);
+		}
+		if (KeyString == "k")
+		{
+			m_pVisualizer->jumpToThreeView(EView::TopView);
+		}
+		if (KeyString == "l")
+		{
+			m_pVisualizer->jumpToThreeView(EView::SideView);
+		}
+		if (KeyString == "i")
+		{
+			m_pVisualizer->showBoundingBox();
+		}
+		
+		
 		if (RefreshFlag)
 		{
 			std::vector<std::size_t> PointLabel;

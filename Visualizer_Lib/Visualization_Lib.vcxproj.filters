@@ -39,6 +39,9 @@
     <ClInclude Include="..\Visualizer\VisualizationConfig.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\Visualizer\VisualizationCommon.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Visualizer\dllmain.cpp">
