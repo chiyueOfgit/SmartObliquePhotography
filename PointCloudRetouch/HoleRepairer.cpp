@@ -2,6 +2,7 @@
 #include "HoleRepairer.h"
 #include "BoundaryDetector.h"
 #include "TextureSynthesizer.h"
+#include "OrderIndependentTextureSynthesizer.h"
 #include "PlanarityFeature.h"
 #include "PointCloudRetouchManager.h"
 #define STB_IMAGE_STATIC
@@ -106,7 +107,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	std::vector<std::vector<SLattice>> BoundaryPlaneLattices;
 	__generatePlaneLattices(BoundaryPlane, BoundaryBox, HoleResolution, BoundaryPlaneInfos, BoundaryPlaneLattices);	//生成平面格子
 	__projectPoints2PlaneLattices({}, BoundaryPlaneInfos, BoundaryPlaneLattices);	//用包围盒里的点投点进格子
-	Eigen::MatrixXi Mask = __genMask((1.0f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices);
+	Eigen::MatrixXi Mask = __genMask((1.0f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices);	//Mask输出仍为Boundary的分辨率，只是以设定的进行计算
 
 	//input高度校正
 	__inputHeightCorrection(InputPlaneLattices, BoundaryPlaneLattices);
@@ -120,8 +121,11 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		__outputImage(BoundaryColorMatrix, "Temp/output_before.png");
 		__outputImage(Mask, "Temp/mask.png");
 
-		CTextureSynthesizer<int, 3> ColorSynthesizer;
-		ColorSynthesizer.execute(InputColorMatrix, Mask, BoundaryColorMatrix);	//Mask输出仍为Boundary的分辨率，只是以设定的进行计算
+		//CTextureSynthesizer<int, 3> ColorSynthesizer;
+		//ColorSynthesizer.execute(InputColorMatrix, Mask, BoundaryColorMatrix);
+		//__fillLatticesByMatrix<Eigen::Vector3i>(BoundaryColorMatrix, BoundaryPlaneLattices, offsetof(SLattice, Color));
+		COrderIndependentTextureSynthesizer ColorSynthesizer;
+		ColorSynthesizer.execute(InputColorMatrix, Mask, BoundaryColorMatrix);
 		__fillLatticesByMatrix<Eigen::Vector3i>(BoundaryColorMatrix, BoundaryPlaneLattices, offsetof(SLattice, Color));
 
 		__outputImage(BoundaryColorMatrix, "Temp/output_after.png");

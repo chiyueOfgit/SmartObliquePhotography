@@ -2,6 +2,13 @@
 #include "OrderIndependentTextureSynthesizer.h"
 #include "MipmapGenerator.h"
 
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_STATIC
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
@@ -222,4 +229,35 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestVa
 			}
 		}
 	return NearestValue;
+}
+
+//*****************************************************************
+//FUNCTION: 
+void COrderIndependentTextureSynthesizer::generateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath)
+{
+	const auto Width = vTexture.cols();
+	const auto Height = vTexture.rows();
+	const auto BytesPerPixel = 3;
+	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+	for (auto i = 0; i < Height; i++)
+		for (auto k = 0; k < Width; k++)
+		{
+			const auto& Item = vTexture.coeff(i, k);
+			auto Offset = (i * Width + k) * BytesPerPixel;
+			if (__isAvailable(Item))
+			{
+				ResultImage[Offset] = Item[0];
+				ResultImage[Offset + 1] = Item[1];
+				ResultImage[Offset + 2] = Item[2];
+			}
+			else
+			{
+				ResultImage[Offset] = 0;
+				ResultImage[Offset + 1] = 0;
+				ResultImage[Offset + 2] = 0;
+			}
+		}
+
+	stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+	stbi_image_free(ResultImage);
 }
