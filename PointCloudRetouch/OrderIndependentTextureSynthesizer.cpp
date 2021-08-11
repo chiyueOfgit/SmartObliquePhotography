@@ -141,6 +141,12 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__getCacheAt(in
 //template <typename Scalar_t, unsigned Channel>
 void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__addCacheEntry(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId, const Texture_t::value_type& vValue)
 {
+	vLayer = std::clamp(vLayer, 0, m_PyramidLayer - 1);
+	vGeneration = std::clamp(vGeneration, 0, m_GenerationNum - 1);
+	const auto& Texture = m_Cache[vLayer][vGeneration];
+
+	__wrap(Texture.rows(), vRowId);
+	__wrap(Texture.cols(), vColId);
 	m_Cache[vLayer][vGeneration].coeffRef(vRowId, vColId) = vValue;
 }
 
