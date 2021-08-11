@@ -35,6 +35,8 @@ namespace hiveObliquePhotography
 			int addUserColoredPointsAsNewCloud(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, const Eigen::Vector3f& vDeltaPos = { 0.0f, 0.0f, 0.0f }, double vPointSize = 3.0);
 			void removeUserColoredPoints(int vId);
 			void removeAllUserColoredPoints() { m_UserColoredPoints.clear(); }
+			void jumpToThreeView(EView vViewType);
+			void showBoundingBox();
 		
 		private:
 			CPointCloudVisualizer();
@@ -43,6 +45,7 @@ namespace hiveObliquePhotography
 			CInteractionCallback* m_pCallback = nullptr;
 
 			PointCloud_t::Ptr m_pSceneCloud = nullptr;
+			std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> m_ObbBox;
 
 			std::vector<PointCloud_t::Ptr> m_UserCloudSet;
 

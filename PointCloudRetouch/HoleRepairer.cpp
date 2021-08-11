@@ -70,8 +70,10 @@ void CHoleRepairer::repairHole(std::vector<pcl::PointSurfel>& voNewPoints)
 //FUNCTION: 
 void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints)
 {
+	auto pManager = CPointCloudRetouchManager::getInstance();
 	//Input
-	auto InputBox = __calcOBBByIndices(vInputIndices);
+	//auto InputBox = __calcOBBByIndices(vInputIndices);
+	auto InputBox = pManager->calcOBBByIndices(vInputIndices);
 	auto InputPlane = __calculatePlaneByIndices(vInputIndices, std::get<0>(InputBox));
 	auto InputBoxMax = std::get<2>(InputBox);
 	auto InputBoxMin = std::get<1>(InputBox);
@@ -89,7 +91,8 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	__projectPoints2PlaneLattices({}, InputPlaneInfos, InputPlaneLattices);
 
 	//Boundary
-	auto BoundaryBox = __calcOBBByIndices(vBoundaryIndices);	//可以和indices无关
+	//auto BoundaryBox = __calcOBBByIndices(vBoundaryIndices);	//可以和indices无关
+	auto BoundaryBox = pManager->calcOBBByIndices(vBoundaryIndices);
 	auto BoundaryPlane = __calculatePlaneByIndices(vBoundaryIndices, std::get<0>(BoundaryBox));	//可以从别的地方给
 	auto BoundaryBoxMax = std::get<2>(BoundaryBox);
 	auto BoundaryBoxMin = std::get<1>(BoundaryBox);
@@ -622,66 +625,6 @@ void CHoleRepairer::__reset()
 {
 	m_BoundarySet.clear();
 	m_Input.clear();
-}
-
-std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CHoleRepairer::__calcOBBByIndices(const std::vector<pcl::index_t>& vIndices)
-{
-	
-	std::vector<Eigen::Vector3f> RawPosSet;
-	auto pManager = CPointCloudRetouchManager::getInstance();
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pCloud(new pcl::PointCloud<pcl::PointXYZ>);
-	for (auto Index : vIndices)
-	{
-		auto TempPos = pManager->getRetouchScene().getPositionAt(Index);
-		pcl::PointXYZ TempPoint;
-		TempPoint.x = TempPos.x(); TempPoint.y = TempPos.y(); TempPoint.z = TempPos.z();
-		pCloud->push_back(TempPoint);
-		RawPosSet.push_back(Eigen::Vector3f{ TempPos.x(), TempPos.y(), TempPos.z() });
-	}
-	Eigen::Matrix3f CovarianceMatrix;
-	Eigen::Vector4f Centroid;
-	pcl::compute3DCentroid(*pCloud, Centroid);
-	pcl::computeCovarianceMatrix(*pCloud, Centroid, CovarianceMatrix);
-
-	Eigen::EigenSolver<Eigen::Matrix3f> EigenMat(CovarianceMatrix);
-	Eigen::Vector3f EigenValue = EigenMat.pseudoEigenvalueMatrix().diagonal();
-	Eigen::Matrix3f EigenVector = EigenMat.pseudoEigenvectors();
-
-	std::vector<std::tuple<float, Eigen::Vector3f>> EigenValueAndVector;
-	int Size = static_cast<int>(EigenValue.size());
-	EigenValueAndVector.reserve(Size);
-	for (int i = 0; i < Size; ++i)
-		EigenValueAndVector.push_back(std::tuple<float, Eigen::Vector3f>(EigenValue[i], EigenVector.col(i)));
-	std::ranges::sort(EigenValueAndVector,
-	                  [&](const std::tuple<float, Eigen::Vector3f>& a, const std::tuple<float, Eigen::Vector3f>& b) -> bool {
-		                  return std::get<0>(a) > std::get<0>(b);
-	                  });
-	for (int i = 0; i < Size; ++i)
-	{
-		EigenVector.col(i).swap(std::get<1>(EigenValueAndVector[i]));
-	}
-	
-	Eigen::Vector3f Min{ FLT_MAX, FLT_MAX, FLT_MAX };
-	Eigen::Vector3f Max{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
-	auto update = [&](const Eigen::Vector3f& vPos)
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			if (vPos.data()[i] < Min.data()[i])
-				Min.data()[i] = vPos.data()[i];
-			if (vPos.data()[i] > Max.data()[i])
-				Max.data()[i] = vPos.data()[i];
-		}
-	};
-	
-	for(auto& Pos:RawPosSet)
-	{
-		Eigen::Vector3f AfterPos = EigenVector * Pos;
-		update(AfterPos);
-	}
-
-	std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> ObbBox(EigenVector, Min, Max);
-	return ObbBox;
 }
 
 void CHoleRepairer::__restoreWorldCoord(SPlaneInfos& vioPlaneInfos, std::vector<std::vector<SLattice>>& vioPlaneLattices, Eigen::Matrix3f& vRotationMatrix)

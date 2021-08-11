@@ -131,7 +131,7 @@
       <AdditionalIncludeDirectories>../visualization/include;../PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4819;</DisableSpecificWarnings>
     </ClCompile>
@@ -152,7 +152,7 @@
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);VISUALIZATION_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>../visualization/include;../PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
       <Optimization>MaxSpeed</Optimization>
@@ -176,6 +176,7 @@
     <ClInclude Include="InteractionCallback.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PointCloudVisualizer.h" />
+    <ClInclude Include="VisualizationCommon.h" />
     <ClInclude Include="VisualizationConfig.h" />
     <ClInclude Include="VisualizationExport.h" />
     <ClInclude Include="VisualizationInterface.h" />

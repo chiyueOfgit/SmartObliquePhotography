@@ -409,3 +409,14 @@ void CPointCloudRetouchManager::executeHoleRepairer(std::vector<pcl::PointSurfel
 {
 	m_HoleRepairer.repairHole(voNewPoints);
 }
+
+std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CPointCloudRetouchManager::calcOBBByIndices(const std::vector<pcl::index_t>& vIndices)
+{
+	std::vector<Eigen::Vector3f> PosSet;
+	for(auto Index:vIndices)
+	{
+		auto Pos = m_Scene.getPositionAt(Index);
+		PosSet.push_back({ Pos.x(),Pos.y(),Pos.z() });
+	}
+	return calcOBB(PosSet);
+}

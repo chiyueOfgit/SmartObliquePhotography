@@ -46,7 +46,6 @@ namespace hiveObliquePhotography
 			void outputImage(const Eigen::Matrix<Eigen::Matrix<float, 1, 1>, -1, -1>& vTexture, const std::string& vOutputImagePath) { __outputImage(vTexture, vOutputImagePath); }
 			template<class T>
 			Eigen::Matrix<T, -1, -1> extractMatrix(const std::vector<std::vector<SLattice>>& vLattices, int vOffset) { return __extractMatrixFromLattices<T>(vLattices, vOffset); }
-			std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> calcOBBByIndices(const std::vector<pcl::index_t>& vIndices) { return __calcOBBByIndices(vIndices); };
 #endif // _UNIT_TEST
 
 		private:
@@ -58,8 +57,6 @@ namespace hiveObliquePhotography
 			void __generateNewPointsFromLattices(const Eigen::Vector3f& vPlaneNormal, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints);
 
 			Eigen::Vector4f __calculatePlaneByIndices(const std::vector<pcl::index_t>& vIndices, Eigen::Matrix3f& vRotationMatrix);
-			std::pair<Eigen::Vector3f, Eigen::Vector3f> __calculateBoundingBoxByIndices(const std::vector<pcl::index_t>& vIndices);
-			std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> __calcOBBByIndices(const std::vector<pcl::index_t>& vIndices);
 			std::vector<std::size_t> __calcAxisOrder(const Eigen::Vector4f& vPlane);
 			void __gaussBlurbyHeightMatrix(const Eigen::Matrix<Eigen::Matrix<float, 1, 1>, -1, -1>& vHeightMatrix, std::vector<std::vector<SLattice>>& vPlaneLattices);
 			Eigen::MatrixXi __genMask(const Eigen::Vector2i& vResolution, const std::vector<std::vector<SLattice>>& vPlaneLattices);
