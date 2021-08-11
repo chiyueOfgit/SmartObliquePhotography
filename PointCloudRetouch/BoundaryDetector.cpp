@@ -126,6 +126,9 @@ float CBoundaryDetector::__calcAngle(Eigen::Vector3f& vStandardVector, Eigen::Ve
 
 void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPointSet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
 {
+	if (vBoundaryPointSet.empty())
+		return;
+
 	std::vector<std::vector<pcl::index_t>> TempHoleSet;
 	std::map<int, bool> TraversedFlag;
 	for (auto Index : vBoundaryPointSet)
