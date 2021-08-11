@@ -81,5 +81,26 @@ namespace hiveObliquePhotography
 			std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> ObbBox(EigenVector, Min, Max);
 			return ObbBox;
 		}
+		static std::pair<Eigen::Vector3f, Eigen::Vector3f> calcAABB(std::vector<Eigen::Vector3f>& vInput)
+		{
+			Eigen::Vector3f Min{ FLT_MAX, FLT_MAX, FLT_MAX };
+			Eigen::Vector3f Max{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+			auto update = [&](const Eigen::Vector3f& vPos)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					if (vPos.data()[i] < Min.data()[i])
+						Min.data()[i] = vPos.data()[i];
+					if (vPos.data()[i] > Max.data()[i])
+						Max.data()[i] = vPos.data()[i];
+				}
+			};
+			
+		    for (auto& Position : vInput)
+				update(Position);
+			return { Min, Max };
+		}
+		
 	}
 }

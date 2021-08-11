@@ -45,7 +45,7 @@ namespace hiveObliquePhotography
 			CInteractionCallback* m_pCallback = nullptr;
 
 			PointCloud_t::Ptr m_pSceneCloud = nullptr;
-			std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> m_ObbBox;
+			std::pair<Eigen::Vector3f, Eigen::Vector3f> m_AabbBox;
 
 			std::vector<PointCloud_t::Ptr> m_UserCloudSet;
 
