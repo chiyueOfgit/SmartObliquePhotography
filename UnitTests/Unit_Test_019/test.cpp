@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TextureSynthesizer.h"
+#include "OrderIndependentTextureSynthesizer.h"
 #include "MipmapGenerator.h"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
@@ -88,7 +89,7 @@ protected:
 				auto Pixel = vioTexture(i, k);
 				if (!Pixel[0] && Pixel[1] && vMode == 0)
 				{
-					Pixel[0] == -Pixel[1];
+					Pixel[0] = -Pixel[1];
 					Pixel[1] = 0;
 				}
 				else if (Pixel[0] < 0 && vMode == 1)
@@ -240,23 +241,23 @@ protected:
 //			EXPECT_EQ(OutputTexture(i, k), SceneTexture(i, k));
 //}
 
-//TEST_F(TestTextureSynthesizer, SquareMask)
-//{
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-//
-//	_readImage(InputImagePath, InputTexture);
-//	_readImage(SceneImagePath, OutputTexture);
-//
-//	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-//	/*_generateMask(MaskTexture, -1);*/
-//	_readMask(MaskImagePath, MaskTexture);
-//
-//	CTextureSynthesizer<int, 3> TextureSynthesizer;
-//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-//
-//	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
-//}
+TEST_F(TestTextureSynthesizer, SquareMask)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	_readImage(InputImagePath, InputTexture);
+	_readImage(SceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	/*_generateMask(MaskTexture, -1);*/
+	_readMask(MaskImagePath, MaskTexture);
+
+	COrderIndependentTextureSynthesizer TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+
+	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
+}
 
 //TEST_F(TestTextureSynthesizer, RandomMask)
 //{
@@ -275,27 +276,27 @@ protected:
 //	_generateResultImage(OutputTexture, RandomMaskResultImagePath);
 //}
 
-TEST_F(TestTextureSynthesizer, SpecialInput)
-{
-	for(auto& Name: SpecialImageName)
-	{
-		Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-		Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-
-		_readImage({ SpecialImagePath + Name + "Input.png" }, InputTexture);
-		_readImage({ SpecialImagePath + Name + ".png" }, OutputTexture);
-
-		Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-		/*_generateMask(MaskTexture, -1);*/
-		_readMask(MaskImagePath, MaskTexture);
-
-		CTextureSynthesizer<int, 3> TextureSynthesizer;
-		TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-
-		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask" + ".png"});
-	}
-	
-}
+//TEST_F(TestTextureSynthesizer, SpecialInput)
+//{
+//	for(auto& Name: SpecialImageName)
+//	{
+//		Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//		Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+//
+//		_readImage({ SpecialImagePath + Name + "Input.png" }, InputTexture);
+//		_readImage({ SpecialImagePath + Name + ".png" }, OutputTexture);
+//
+//		Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+//		/*_generateMask(MaskTexture, -1);*/
+//		_readMask(MaskImagePath, MaskTexture);
+//
+//		CTextureSynthesizer<int, 3> TextureSynthesizer;
+//		TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+//
+//		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask" + ".png"});
+//	}
+//	
+//}
 
 //TEST_F(TestTextureSynthesizer, Height)
 //{
@@ -386,23 +387,23 @@ TEST_F(TestTextureSynthesizer, SpecialInput)
 //	_generateResultImage(Mipmap, SquareMaskResultImagePath);
 //}
 
-TEST_F(TestTextureSynthesizer, GaussianPyramidWithMask)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	std::vector<Eigen::Matrix<Eigen::Vector3i, -1, -1>> GaussianPyramid, GaussianStack;
-	Eigen::MatrixXi MaskTexture(InputTexture.rows(), InputTexture.cols());
-	
-	_readMask(MaskImagePath, MaskTexture);
-	_readImage(SceneImagePath, InputTexture);
-	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
-	MipmapGenerator.setKernalSize(9);
-	int Layer = 10;
-	GaussianPyramid = MipmapGenerator.getGaussianPyramid(InputTexture, Layer, MaskTexture);
-	GaussianStack = MipmapGenerator.getGaussianStack(InputTexture, Layer, MaskTexture);
-
-	for (int i = 0; i < Layer; i++)
-	{
-		_generateResultImage(GaussianPyramid[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianPyramid/GaussianPyramid_") + std::to_string(i) + std::string(".png"));
-		_generateResultImage(GaussianStack[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianStack/GaussianStack_") + std::to_string(i) + std::string(".png"));
-	}
-}
+//TEST_F(TestTextureSynthesizer, GaussianPyramidWithMask)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	std::vector<Eigen::Matrix<Eigen::Vector3i, -1, -1>> GaussianPyramid, GaussianStack;
+//	Eigen::MatrixXi MaskTexture(InputTexture.rows(), InputTexture.cols());
+//	
+//	_readMask(MaskImagePath, MaskTexture);
+//	_readImage(SceneImagePath, InputTexture);
+//	CMipmapGenerator<Eigen::Vector3i> MipmapGenerator;
+//	MipmapGenerator.setKernalSize(9);
+//	int Layer = 10;
+//	GaussianPyramid = MipmapGenerator.getGaussianPyramid(InputTexture, Layer, MaskTexture);
+//	GaussianStack = MipmapGenerator.getGaussianStack(InputTexture, Layer, MaskTexture);
+//
+//	for (int i = 0; i < Layer; i++)
+//	{
+//		_generateResultImage(GaussianPyramid[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianPyramid/GaussianPyramid_") + std::to_string(i) + std::string(".png"));
+//		_generateResultImage(GaussianStack[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianStack/GaussianStack_") + std::to_string(i) + std::string(".png"));
+//	}
+//}
