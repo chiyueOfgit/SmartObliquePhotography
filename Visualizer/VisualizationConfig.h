@@ -31,6 +31,11 @@ namespace hiveObliquePhotography
 		const std::string LITTER_HIGHLIGHT_COLOR = "LITTER_HIGHLIGHT_COLOR";
 		const std::string BACKGROUND_HIGHLIGHT_COLOR = "BACKGROUND_HIGHLIGHT_COLOR";
 
+		const std::string JUMP_TO_MAIN_VIEW = "JUMP_TO_MAIN_VIEW";
+		const std::string JUMP_TO_TOP_VIEW = "JUMP_TO_TOP_VIEW";
+		const std::string JUMP_TO_SIDE_VIEW = "JUMP_TO_SIDE_VIEW";
+		const std::string SHOW_BOUNDING_BOX = "SHOW_BOUNDING_BOX";
+		
 		class CVisualizationConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CVisualizationConfig>
 		{
 		public:
@@ -76,6 +81,11 @@ namespace hiveObliquePhotography
 
 				_defineAttribute(LITTER_HIGHLIGHT_COLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC3I);
 				_defineAttribute(BACKGROUND_HIGHLIGHT_COLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC3I);
+
+				_defineAttribute(JUMP_TO_MAIN_VIEW, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(JUMP_TO_TOP_VIEW, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(JUMP_TO_SIDE_VIEW, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(SHOW_BOUNDING_BOX, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 
 			}
 

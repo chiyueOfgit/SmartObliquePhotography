@@ -114,19 +114,19 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			}
 		}
 
-		if (KeyString == "j")
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_MAIN_VIEW).value())
 		{
 			m_pVisualizer->jumpToThreeView(EView::MainView);
 		}
-		if (KeyString == "k")
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_TOP_VIEW).value())
 		{
 			m_pVisualizer->jumpToThreeView(EView::TopView);
 		}
-		if (KeyString == "l")
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_SIDE_VIEW).value())
 		{
 			m_pVisualizer->jumpToThreeView(EView::SideView);
 		}
-		if (KeyString == "i")
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SHOW_BOUNDING_BOX).value())
 		{
 			m_pVisualizer->showBoundingBox();
 		}
