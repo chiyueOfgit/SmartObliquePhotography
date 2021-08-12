@@ -15,22 +15,21 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		void execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene);
 
 	private:
-		using Color_t = Texture_t::value_type;
+		using Color_t = Eigen::Matrix<Scalar_t, Channel, 1>;
 		using Feature_t = Eigen::Matrix<Scalar_t, Eigen::Dynamic, 1>;
-		using NeighborOffset_t = std::vector<std::pair<int, int>>;
 		//TODO: magic number
 		int m_KernelSize = 9;
 		int m_GaussianSize = 9;
 		int m_PyramidLayer = 4;
 		int m_GenerationNum = 3;
-		NeighborOffset_t m_NeighborOffset;
+		std::vector<std::pair<int, int>> m_NeighborOffset;
 		std::vector<Texture_t> m_InputPyramid;
 		std::vector<std::vector<Texture_t>> m_Cache;
 
 		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).squaredNorm(); }
 		static bool __isAvailable(const Color_t& vValue) { return (vValue.array() >= 0).all(); }
 		static void __wrap(Eigen::Index vSize, Eigen::Index& vioIndex) { while (vioIndex < 0) vioIndex += vSize; while (vioIndex >= vSize) vioIndex -= vSize; }
-		static NeighborOffset_t __buildNeighborOffset(int vKernelSize);
+		static std::vector<std::pair<int, int>> __buildNeighborOffset(int vKernelSize);
 
 		void __initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput);
 		void __initInputPyramid(const Texture_t& vTexture);

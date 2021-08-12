@@ -14,7 +14,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-auto COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildNeighborOffset(int vKernelSize) -> NeighborOffset_t
+std::vector<std::pair<int, int>> COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildNeighborOffset(int vKernelSize)
 {
 	const int KernelOffset = vKernelSize / 2;
 	const int KernelWidth = KernelOffset * 2 + 1;
