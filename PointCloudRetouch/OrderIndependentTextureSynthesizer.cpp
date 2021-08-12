@@ -56,7 +56,7 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const T
 //template <typename Scalar_t, unsigned Channel>
 void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
 {
-	CMipmapGenerator<Eigen::Vector3i> TextureMipmapGenerator;
+	CMipmapGenerator<Color_t> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
 	auto OutputPyramid = TextureMipmapGenerator.getGaussianPyramid(vOutput, m_PyramidLayer, vMask);
 	
@@ -73,7 +73,7 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__initCache(con
 //template <typename Scalar_t, unsigned Channel>
 void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__initInputPyramid(const Texture_t& vTexture)
 {
-	CMipmapGenerator<Eigen::Vector3i> TextureMipmapGenerator;
+	CMipmapGenerator<Color_t> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
 	m_InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vTexture, m_PyramidLayer);
 }
@@ -119,7 +119,7 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__decrease(int&
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__getInputAt(int vLayer, Eigen::Index vRowId, Eigen::Index vColId) const -> Texture_t::value_type
+auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__getInputAt(int vLayer, Eigen::Index vRowId, Eigen::Index vColId) const -> Color_t
 {
 	vLayer = std::clamp(vLayer, 0, m_PyramidLayer - 1);
 	const auto& Texture = m_InputPyramid[vLayer];
@@ -132,7 +132,7 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__getInputAt(in
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__getCacheAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Texture_t::value_type
+auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__getCacheAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Color_t
 {
 	vLayer = std::clamp(vLayer, 0, m_PyramidLayer - 1);
 	vGeneration = std::clamp(vGeneration, 0, m_GenerationNum - 1);
@@ -146,7 +146,7 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__getCacheAt(in
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__addCacheEntry(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId, const Texture_t::value_type& vValue)
+void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__addCacheEntry(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId, const Color_t& vValue)
 {
 	vLayer = std::clamp(vLayer, 0, m_PyramidLayer - 1);
 	vGeneration = std::clamp(vGeneration, 0, m_GenerationNum - 1);
@@ -160,14 +160,10 @@ void COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__addCacheEntry
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizePixel(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) -> Texture_t::value_type
+auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizePixel(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) -> Color_t
 {
-	auto CacheValue = __getCacheAt(vLayer, vGeneration, vRowId, vColId);
-	if (!__isAvailable(CacheValue))
-	{
-		CacheValue = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, vRowId, vColId));
-		__addCacheEntry(vLayer, vGeneration, vRowId, vColId, CacheValue);
-	}
+	auto CacheValue = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, vRowId, vColId));
+	__addCacheEntry(vLayer, vGeneration, vRowId, vColId, CacheValue);
 	return CacheValue;
 }
 
@@ -215,10 +211,10 @@ auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFea
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Texture_t::value_type
+auto COrderIndependentTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Color_t
 {
 	const auto& Input = m_InputPyramid[vLayer];
-	Texture_t::value_type NearestValue;
+	Color_t NearestValue;
 	auto MinDistance = std::numeric_limits<Scalar_t>::max();
 	
 	for (Eigen::Index RowId = 0; RowId < Input.rows(); ++RowId)
