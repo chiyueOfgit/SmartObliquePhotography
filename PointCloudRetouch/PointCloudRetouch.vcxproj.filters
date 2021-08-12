@@ -22,6 +22,12 @@
     <Filter Include="Utility">
       <UniqueIdentifier>{b9410939-016c-44ff-8db3-2fa6e933b55f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Operation\HoleRepair">
+      <UniqueIdentifier>{4e6b1e57-78ea-4df5-bcce-0c22c8927d98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Operation\Expander">
+      <UniqueIdentifier>{b2eea53f-b834-45d9-a571-0bac94d0973e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PointCluster.h">
@@ -48,9 +54,6 @@
       <Filter>PointCloud</Filter>
     </ClInclude>
     <ClInclude Include="PointCloudRetouchManager.h" />
-    <ClInclude Include="PointClusterExpander.h">
-      <Filter>Operation</Filter>
-    </ClInclude>
     <ClInclude Include="PointClassifier.h">
       <Filter>Operation</Filter>
     </ClInclude>
@@ -82,18 +85,6 @@
     <ClInclude Include="PrecomputeManager.h">
       <Filter>Precompute</Filter>
     </ClInclude>
-    <ClInclude Include="PointClusterExpanderMultithread.h">
-      <Filter>Operation</Filter>
-    </ClInclude>
-    <ClInclude Include="BoundaryDetector.h">
-      <Filter>Operation</Filter>
-    </ClInclude>
-    <ClInclude Include="PointClusterExpanderBase.h">
-      <Filter>Operation</Filter>
-    </ClInclude>
-    <ClInclude Include="HoleRepairer.h">
-      <Filter>Operation</Filter>
-    </ClInclude>
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="TextureSynthesizer.h">
@@ -104,6 +95,21 @@
     </ClInclude>
     <ClInclude Include="MipmapGenerator.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundaryDetector.h">
+      <Filter>Operation\HoleRepair</Filter>
+    </ClInclude>
+    <ClInclude Include="HoleRepairer.h">
+      <Filter>Operation\HoleRepair</Filter>
+    </ClInclude>
+    <ClInclude Include="PointClusterExpander.h">
+      <Filter>Operation\Expander</Filter>
+    </ClInclude>
+    <ClInclude Include="PointClusterExpanderBase.h">
+      <Filter>Operation\Expander</Filter>
+    </ClInclude>
+    <ClInclude Include="PointClusterExpanderMultithread.h">
+      <Filter>Operation\Expander</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -129,9 +135,6 @@
       <Filter>PointCloud</Filter>
     </ClCompile>
     <ClCompile Include="PointCloudRetouchManager.cpp" />
-    <ClCompile Include="PointClusterExpander.cpp">
-      <Filter>Operation</Filter>
-    </ClCompile>
     <ClCompile Include="NeighborhoodBuilder.cpp">
       <Filter>NeighborhoodBuilder</Filter>
     </ClCompile>
@@ -157,15 +160,6 @@
     <ClCompile Include="PrecomputeManager.cpp">
       <Filter>Precompute</Filter>
     </ClCompile>
-    <ClCompile Include="PointClusterExpanderMultithread.cpp">
-      <Filter>Operation</Filter>
-    </ClCompile>
-    <ClCompile Include="BoundaryDetector.cpp">
-      <Filter>Operation</Filter>
-    </ClCompile>
-    <ClCompile Include="HoleRepairer.cpp">
-      <Filter>Operation</Filter>
-    </ClCompile>
     <ClCompile Include="TextureSynthesizer.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
@@ -174,6 +168,18 @@
     </ClCompile>
     <ClCompile Include="MipmapGenerator.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundaryDetector.cpp">
+      <Filter>Operation\HoleRepair</Filter>
+    </ClCompile>
+    <ClCompile Include="HoleRepairer.cpp">
+      <Filter>Operation\HoleRepair</Filter>
+    </ClCompile>
+    <ClCompile Include="PointClusterExpander.cpp">
+      <Filter>Operation\Expander</Filter>
+    </ClCompile>
+    <ClCompile Include="PointClusterExpanderMultithread.cpp">
+      <Filter>Operation\Expander</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

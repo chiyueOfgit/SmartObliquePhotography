@@ -68,35 +68,35 @@ protected:
 
 };
 
-//TEST_F(TestOBB, Cube)
-//{
-//	initTest(CubeModelPath);
-//	std::vector<pcl::index_t> Indices;
-//	for (int i = 0; i < m_CloudSize; i++)
-//		Indices.push_back(i);
-//	std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CubeOBB;
-//	
-//	CubeOBB = pManager->calcOBBByIndices(Indices);
-//	for (int i = 0; i < 3; i++)
-//	{
-//		EXPECT_LT(std::get<1>(CubeOBB)[i] - (-5), 0.01);
-//		EXPECT_LT(std::get<2>(CubeOBB)[i] - 5, 0.01);
-//	}
-//
-//	bool Result = false;
-//	Eigen::Matrix3f Axis = std::get<0>(CubeOBB);
-//	Eigen::Matrix3f GTaxis;
-//	GTaxis << 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0;
-//	for (int i = 0; i < 3; i++)
-//		for (int k = 0; k < 3; k++)
-//		{
-//			Result = Axis.col(i).isApprox(GTaxis.col(k));
-//			if (Result)
-//				break;
-//		}
-//
-//	EXPECT_EQ(Result, true);
-//}
+TEST_F(TestOBB, Cube)
+{
+	initTest(CubeModelPath);
+	std::vector<pcl::index_t> Indices;
+	for (int i = 0; i < m_CloudSize; i++)
+		Indices.push_back(i);
+	std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CubeOBB;
+	
+	CubeOBB = pManager->calcOBBByIndices(Indices);
+	for (int i = 0; i < 3; i++)
+	{
+		EXPECT_LT(std::get<1>(CubeOBB)[i] - (-5), 0.01);
+		EXPECT_LT(std::get<2>(CubeOBB)[i] - 5, 0.01);
+	}
+
+	bool Result = false;
+	Eigen::Matrix3f Axis = std::get<0>(CubeOBB);
+	Eigen::Matrix3f GTaxis;
+	GTaxis << 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0;
+	for (int i = 0; i < 3; i++)
+		for (int k = 0; k < 3; k++)
+		{
+			Result = Axis.row(i).isApprox(GTaxis.row(k));
+			if (Result)
+				break;
+		}
+
+	EXPECT_EQ(Result, true);
+}
 
 //TEST_F(TestOBB, CubeRotate45)
 //{

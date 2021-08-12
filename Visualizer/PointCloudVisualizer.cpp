@@ -36,7 +36,7 @@ void CPointCloudVisualizer::init(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
 	std::vector<Eigen::Vector3f> PositionSet;
 	for(auto Point: *vPointCloud)
 		PositionSet.push_back(Point.getVector3fMap());
-	m_ObbBox = calcOBB(PositionSet);
+	m_AabbBox = calcAABB(PositionSet);
 	
 	m_pPCLVisualizer = new pcl::visualization::PCLVisualizer("Visualizer", !vIsInQt);
 	m_pCallback = new CInteractionCallback(m_pPCLVisualizer);
@@ -231,59 +231,105 @@ void CPointCloudVisualizer::removeUserColoredPoints(int vId)
 
 void CPointCloudVisualizer::jumpToThreeView(EView vViewType)
 {
-	auto RotateMatrix = std::get<0>(m_ObbBox);
-	Eigen::Vector3f MinCoord = std::get<1>(m_ObbBox);
-	Eigen::Vector3f MaxCoord = std::get<2>(m_ObbBox);
+	Eigen::Vector3f MinCoord = m_AabbBox.first;
+	Eigen::Vector3f MaxCoord = m_AabbBox.second;
 	auto Offset = MaxCoord - MinCoord;
+	int MinDis = INT_MAX; int MaxDis = -INT_MAX;
+	int MinDirection = -1; int MaxDirection = -1; int MidDirection = -1;
+	for(int i = 0;i < 3;i++)
+	{
+		if(Offset[i] < MinDis)
+		{
+			MinDis = Offset[i];
+			MinDirection = i;
+		}
+		if(Offset[i] > MaxDis)
+		{
+			MaxDis = Offset[i];
+			MaxDirection = i;
+		}
+	}
+	for (int i = 0; i < 3; i++)
+		if (i != MinDirection && i != MaxDirection)
+			MidDirection = i;
+	float MaxRate = Offset[MaxDirection] / Offset[MinDirection];
+	float MinRate = Offset[MaxDirection] / Offset[MidDirection];
 	Eigen::Vector3f CenterPos = (MinCoord + MaxCoord) / 2.0f;
-	
-    Eigen::Vector3f TopViewPos{ CenterPos.x(), CenterPos.y(), CenterPos.z() + Offset.z() };
-	TopViewPos = RotateMatrix.inverse() * TopViewPos;
-	Eigen::Vector3f MianViewPos{ CenterPos.x(), CenterPos.y() + Offset.y(), CenterPos.z() };
-	MianViewPos = RotateMatrix.inverse() * MianViewPos;
-	Eigen::Vector3f SideViewPos{ CenterPos.x() + Offset.x(), CenterPos.y(), CenterPos.z() };
-	SideViewPos = RotateMatrix.inverse() * SideViewPos;
-
-	CenterPos = RotateMatrix.inverse() * CenterPos;
-	
+	Eigen::Vector3f TopViewPos;
+	Eigen::Vector3f MianViewPos;
+	Eigen::Vector3f SideViewPos;
+	Eigen::Vector3f Up;
+	Eigen::Vector3f Front;
+	for(int k = 0; k < 3;k++)
+	{
+		if(k == MinDirection)
+		{
+			TopViewPos[k] = CenterPos[k] + 2 * MaxRate * Offset[k];
+			MianViewPos[k] = CenterPos[k];
+			SideViewPos[k] = CenterPos[k];
+			Up[k] = 1.0;
+			Front[k] = 0.0;
+		}
+		else if(k == MaxDirection)
+		{
+			TopViewPos[k] = CenterPos[k];
+			MianViewPos[k] = CenterPos[k];
+			SideViewPos[k] = CenterPos[k] - 2  * Offset[k];
+			Up[k] = 0.0;
+			Front[k] = 0.0;
+		}
+		else
+		{
+			TopViewPos[k] = CenterPos[k];
+			MianViewPos[k] = CenterPos[k] + 2 * MinRate * Offset[k];
+			SideViewPos[k] = CenterPos[k];
+			Up[k] = 0.0;
+			Front[k] = -1.0;
+		}
+	}
+ 
 	pcl::visualization::Camera Camera;
 	m_pPCLVisualizer->getCameraParameters(Camera);
 	Camera.focal[0] = CenterPos.x(); Camera.focal[1] = CenterPos.y(); Camera.focal[2] = CenterPos.z();
+	Camera.view[0] = Up.x(); Camera.view[1] = Up.y(); Camera.view[2] = Up.z();
 	switch (vViewType)
 	{
 	    case EView::TopView:
 			Camera.pos[0] = TopViewPos.x(); Camera.pos[1] = TopViewPos.y(); Camera.pos[2] = TopViewPos.z();
+			Camera.view[0] = Front.x(); Camera.view[1] = Front.y(); Camera.view[2] = Front.z();
 			break;
 		case EView::MainView:
 			Camera.pos[0] = MianViewPos.x(); Camera.pos[1] = MianViewPos.y(); Camera.pos[2] = MianViewPos.z();
+			Camera.view[0] = Up.x(); Camera.view[1] = Up.y(); Camera.view[2] = Up.z();
 			break;
 		case EView::SideView:
 			Camera.pos[0] = SideViewPos.x(); Camera.pos[1] = SideViewPos.y(); Camera.pos[2] = SideViewPos.z();
+			Camera.view[0] = Up.x(); Camera.view[1] = Up.y(); Camera.view[2] = Up.z();
 			break;
 	}
+	Camera.clip[0] = 0.1;
+	Camera.clip[1] = 10000.0;
 	m_pPCLVisualizer->setCameraParameters(Camera);
 	m_pPCLVisualizer->updateCamera();
 }
 
 void CPointCloudVisualizer::showBoundingBox()
 {
-	auto RotateMatrix = std::get<0>(m_ObbBox);
-	Eigen::Vector3f MinCoord = std::get<1>(m_ObbBox);
-	Eigen::Vector3f MaxCoord = std::get<2>(m_ObbBox);
-
-	Eigen::Vector3f Vertex1{ MaxCoord.x(), MinCoord.y(), MinCoord.z() }; Vertex1 = RotateMatrix.inverse() * Vertex1; pcl::PointXYZ Point1(Vertex1.x(), Vertex1.y(), Vertex1.z());
-	Eigen::Vector3f Vertex2{ MaxCoord.x(), MaxCoord.y(), MinCoord.z() }; Vertex2 = RotateMatrix.inverse() * Vertex2; pcl::PointXYZ Point2(Vertex2.x(), Vertex2.y(), Vertex2.z());
-	Eigen::Vector3f Vertex3{ MinCoord.x(), MaxCoord.y(), MinCoord.z() }; Vertex3 = RotateMatrix.inverse() * Vertex3; pcl::PointXYZ Point3(Vertex3.x(), Vertex3.y(), Vertex3.z());
-	Eigen::Vector3f Vertex4{ MinCoord.x(), MaxCoord.y(), MaxCoord.z() }; Vertex4 = RotateMatrix.inverse() * Vertex4; pcl::PointXYZ Point4(Vertex4.x(), Vertex4.y(), Vertex4.z());
-	Eigen::Vector3f Vertex5{ MinCoord.x(), MinCoord.y(), MaxCoord.z() }; Vertex5 = RotateMatrix.inverse() * Vertex5; pcl::PointXYZ Point5(Vertex5.x(), Vertex5.y(), Vertex5.z());
-	Eigen::Vector3f Vertex6{ MaxCoord.x(), MinCoord.y(), MaxCoord.z() }; Vertex6 = RotateMatrix.inverse() * Vertex6; pcl::PointXYZ Point6(Vertex6.x(), Vertex6.y(), Vertex6.z());
-	MinCoord = RotateMatrix.inverse() * MinCoord; pcl::PointXYZ Point0(MinCoord.x(), MinCoord.y(), MinCoord.z());
-	MaxCoord = RotateMatrix.inverse() * MaxCoord; pcl::PointXYZ Point7(MaxCoord.x(), MaxCoord.y(), MaxCoord.z());
+	Eigen::Vector3f MinCoord = m_AabbBox.first;
+	Eigen::Vector3f MaxCoord = m_AabbBox.second;
+	
+	Eigen::Vector3f Vertex1{ MaxCoord.x(), MinCoord.y(), MinCoord.z() };  pcl::PointXYZ Point1(Vertex1.x(), Vertex1.y(), Vertex1.z());
+	Eigen::Vector3f Vertex2{ MaxCoord.x(), MaxCoord.y(), MinCoord.z() };  pcl::PointXYZ Point2(Vertex2.x(), Vertex2.y(), Vertex2.z());
+	Eigen::Vector3f Vertex3{ MinCoord.x(), MaxCoord.y(), MinCoord.z() };  pcl::PointXYZ Point3(Vertex3.x(), Vertex3.y(), Vertex3.z());
+	Eigen::Vector3f Vertex4{ MinCoord.x(), MaxCoord.y(), MaxCoord.z() };  pcl::PointXYZ Point4(Vertex4.x(), Vertex4.y(), Vertex4.z());
+	Eigen::Vector3f Vertex5{ MinCoord.x(), MinCoord.y(), MaxCoord.z() };  pcl::PointXYZ Point5(Vertex5.x(), Vertex5.y(), Vertex5.z());
+	Eigen::Vector3f Vertex6{ MaxCoord.x(), MinCoord.y(), MaxCoord.z() };  pcl::PointXYZ Point6(Vertex6.x(), Vertex6.y(), Vertex6.z());
+	pcl::PointXYZ Point0(MinCoord.x(), MinCoord.y(), MinCoord.z());
+	pcl::PointXYZ Point7(MaxCoord.x(), MaxCoord.y(), MaxCoord.z());
 	m_pPCLVisualizer->addLine(Point0, Point1, 1.0, 1.0, 1.0, "0"); m_pPCLVisualizer->addLine(Point0, Point3, 1.0, 1.0, 1.0, "1");
 	m_pPCLVisualizer->addLine(Point0, Point5, 1.0, 1.0, 1.0, "2"); m_pPCLVisualizer->addLine(Point1, Point2, 1.0, 1.0, 1.0, "3");
 	m_pPCLVisualizer->addLine(Point2, Point3, 1.0, 1.0, 1.0, "4"); m_pPCLVisualizer->addLine(Point3, Point4, 1.0, 1.0, 1.0, "5");
 	m_pPCLVisualizer->addLine(Point4, Point5, 1.0, 1.0, 1.0, "6"); m_pPCLVisualizer->addLine(Point5, Point6, 1.0, 1.0, 1.0, "7");
 	m_pPCLVisualizer->addLine(Point6, Point1, 1.0, 1.0, 1.0, "8"); m_pPCLVisualizer->addLine(Point7, Point2, 1.0, 1.0, 1.0, "9");
 	m_pPCLVisualizer->addLine(Point7, Point4, 1.0, 1.0, 1.0, "10"); m_pPCLVisualizer->addLine(Point7, Point6, 1.0, 1.0, 1.0, "11");
-	
 }
