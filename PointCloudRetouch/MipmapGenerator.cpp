@@ -111,7 +111,7 @@ Color_t CMipmapGenerator<Color_t>::__executeGaussianFilter(const Texture_t &vTex
 			{
 				if (vTexture.coeff(i, k)[0] < 0)
 					continue;
-				for (int m = 0; m < 3; m++)
+				for (int m = 0; m < Color_t::MaxRowsAtCompileTime; m++)
 					Valuef[m] += Weight * vTexture.coeff(i, k)[m];
 			}
 			Flags(GaussianKernalRowIndex, GaussianKernalColIndex) = 1;
@@ -129,7 +129,7 @@ Color_t CMipmapGenerator<Color_t>::__executeGaussianFilter(const Texture_t &vTex
 		if constexpr (std::is_arithmetic<Color_t>::value)
 			return -1;
 		else
-			for (int m = 0; m < 3; m++)
+			for (int m = 0; m < Color_t::MaxRowsAtCompileTime; m++)
 				Value[m] = -1;
 		return Value;
 	}
@@ -204,7 +204,7 @@ auto CMipmapGenerator<Color_t>::getGaussianPyramid(const Texture_t& vTexture, co
 				if constexpr (std::is_arithmetic<Color_t>::value)
 					TextureWithMask(i, k) = -1;
 				else
-					for (int m = 0; m < 3; m++)
+					for (int m = 0; m < Color_t::MaxRowsAtCompileTime; m++)
 						TextureWithMask(i, k)[m] = -1;
 			}
 
