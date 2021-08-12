@@ -234,15 +234,60 @@ void CPointCloudVisualizer::jumpToThreeView(EView vViewType)
 	Eigen::Vector3f MinCoord = m_AabbBox.first;
 	Eigen::Vector3f MaxCoord = m_AabbBox.second;
 	auto Offset = MaxCoord - MinCoord;
+	int MinDis = INT_MAX; int MaxDis = -INT_MAX;
+	int MinDirection = -1; int MaxDirection = -1; int MidDirection = -1;
+	for(int i = 0;i < 3;i++)
+	{
+		if(Offset[i] < MinDis)
+		{
+			MinDis = Offset[i];
+			MinDirection = i;
+		}
+		if(Offset[i] > MaxDis)
+		{
+			MaxDis = Offset[i];
+			MaxDirection = i;
+		}
+	}
+	for (int i = 0; i < 3; i++)
+		if (i != MinDirection && i != MaxDirection)
+			MidDirection = i;
+	float MaxRate = Offset[MaxDirection] / Offset[MinDirection];
+	float MinRate = Offset[MaxDirection] / Offset[MidDirection];
 	Eigen::Vector3f CenterPos = (MinCoord + MaxCoord) / 2.0f;
-	
-    Eigen::Vector3f TopViewPos{ CenterPos.x(), CenterPos.y(), CenterPos.z() + 5 * Offset.z() };
-	Eigen::Vector3f MianViewPos{ CenterPos.x(), CenterPos.y() + 2 * Offset.y(), CenterPos.z() };
-	Eigen::Vector3f SideViewPos{ CenterPos.x() + 2 * Offset.x(), CenterPos.y(), CenterPos.z() };
-	
-	Eigen::Vector3f Up{ 0.0,0.0,1.0 };
-	Eigen::Vector3f Front{ 1.0,0.0,0.0 };
-	
+	Eigen::Vector3f TopViewPos;
+	Eigen::Vector3f MianViewPos;
+	Eigen::Vector3f SideViewPos;
+	Eigen::Vector3f Up;
+	Eigen::Vector3f Front;
+	for(int k = 0; k < 3;k++)
+	{
+		if(k == MinDirection)
+		{
+			TopViewPos[k] = CenterPos[k] + 2 * MaxRate * Offset[k];
+			MianViewPos[k] = CenterPos[k];
+			SideViewPos[k] = CenterPos[k];
+			Up[k] = 1.0;
+			Front[k] = 0.0;
+		}
+		else if(k == MaxDirection)
+		{
+			TopViewPos[k] = CenterPos[k];
+			MianViewPos[k] = CenterPos[k];
+			SideViewPos[k] = CenterPos[k] - 2  * Offset[k];
+			Up[k] = 0.0;
+			Front[k] = 0.0;
+		}
+		else
+		{
+			TopViewPos[k] = CenterPos[k];
+			MianViewPos[k] = CenterPos[k] + 2 * MinRate * Offset[k];
+			SideViewPos[k] = CenterPos[k];
+			Up[k] = 0.0;
+			Front[k] = -1.0;
+		}
+	}
+ 
 	pcl::visualization::Camera Camera;
 	m_pPCLVisualizer->getCameraParameters(Camera);
 	Camera.focal[0] = CenterPos.x(); Camera.focal[1] = CenterPos.y(); Camera.focal[2] = CenterPos.z();
@@ -262,6 +307,8 @@ void CPointCloudVisualizer::jumpToThreeView(EView vViewType)
 			Camera.view[0] = Up.x(); Camera.view[1] = Up.y(); Camera.view[2] = Up.z();
 			break;
 	}
+	Camera.clip[0] = 0.1;
+	Camera.clip[1] = 10000.0;
 	m_pPCLVisualizer->setCameraParameters(Camera);
 	m_pPCLVisualizer->updateCamera();
 }
