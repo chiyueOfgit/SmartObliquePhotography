@@ -24,26 +24,7 @@ template <typename Color_t>
 CMipmapGenerator<Color_t>::Texture_t CMipmapGenerator<Color_t>::getMipmap(const Texture_t& vTexture, const Eigen::MatrixXi& vMask)
 {
 	Texture_t TextureWithMask = vTexture;
-
-	const float CoverRate = 0.75f;	//¸²¸ÇÂÊ
-	std::pair<float, float> SampleRate{ (float)vMask.rows() / vTexture.rows(), (float)vMask.cols() / vTexture.cols() };
-	for (int i = 0; i < TextureWithMask.rows(); i++)
-		for (int k = 0; k < TextureWithMask.cols(); k++)
-		{
-			int Sum = 0;
-			for (int MaskY = i * SampleRate.first; MaskY < (i + 1) * SampleRate.first; MaskY++)
-				for (int MaskX = k * SampleRate.second; MaskX < (k + 1) * SampleRate.second; MaskX++)
-					if (MaskX < vMask.cols() && MaskY < vMask.rows() && vMask(MaskY, MaskX))
-						Sum++;
-
-			if (Sum >= CoverRate * SampleRate.first * SampleRate.second)
-			{
-				if constexpr (std::is_arithmetic<Color_t>::value)
-					TextureWithMask(i, k) = -1;
-				else
-					TextureWithMask(i, k)[0] = -1;
-			}
-		}
+	__fixTextureByMask(TextureWithMask, vMask);
 
 	Texture_t Mipmap((TextureWithMask.rows() + 1) / 2, (TextureWithMask.cols() + 1) / 2);
 	executeGaussianBlur(TextureWithMask, vMask, Mipmap);
@@ -69,23 +50,7 @@ void CMipmapGenerator<Color_t>::executeGaussianBlur(const Texture_t& vTexture, c
 		for (int k = 0; k < voMipmap.cols(); k++)
 			voMipmap(i, k) = __executeGaussianFilter(vTexture, GaussianKernal, i * 2, k * 2);
 
-	const float CoverRate = 0.75f;
-	std::pair<float, float> SampleRate{ (float)vMask.rows() / voMipmap.rows(), (float)vMask.cols() / voMipmap.cols() };
-	for (int i = 0; i < voMipmap.rows(); i++)
-		for (int k = 0; k < voMipmap.cols(); k++)
-		{
-			int Sum = 0;
-			for (int MaskY = i * SampleRate.first; MaskY < (i + 1) * SampleRate.first; MaskY++)
-				for (int MaskX = k * SampleRate.second; MaskX < (k + 1) * SampleRate.second; MaskX++)
-					if (MaskX < vMask.cols() && MaskY < vMask.rows() && vMask(MaskY, MaskX))
-						Sum++;
-
-			if (Sum >= CoverRate * SampleRate.first * SampleRate.second)
-				if constexpr (std::is_arithmetic<Color_t>::value)
-					voMipmap(i, k) = -1;
-				else
-					voMipmap(i, k)[0] = -1;
-		}
+	__fixTextureByMask(voMipmap, vMask);
 }
 
 template <typename Color_t>
@@ -110,23 +75,7 @@ CMipmapGenerator<Color_t>::Texture_t CMipmapGenerator<Color_t>::executeGaussianB
 		for (int k = 0; k < ResultTexture.cols(); k++)
 			ResultTexture(i, k) = __executeGaussianFilter(vTexture, GaussianKernal, i, k);
 
-	const float CoverRate = 0.75f;
-	std::pair<float, float> SampleRate{ (float)vMask.rows() / ResultTexture.rows(), (float)vMask.cols() / ResultTexture.cols() };
-	for (int i = 0; i < ResultTexture.rows(); i++)
-		for (int k = 0; k < ResultTexture.cols(); k++)
-		{
-			int Sum = 0;
-			for (int MaskY = i * SampleRate.first; MaskY < (i + 1) * SampleRate.first; MaskY++)
-				for (int MaskX = k * SampleRate.second; MaskX < (k + 1) * SampleRate.second; MaskX++)
-					if (MaskX < vMask.cols() && MaskY < vMask.rows() && vMask(MaskY, MaskX))
-						Sum++;
-
-			if (Sum >= CoverRate * SampleRate.first * SampleRate.second)
-				if constexpr (std::is_arithmetic<Color_t>::value)
-					ResultTexture(i, k) = -1;
-				else
-					ResultTexture(i, k)[0] = -1;
-		}
+	__fixTextureByMask(ResultTexture, vMask);
 
 	return ResultTexture;
 }
@@ -286,23 +235,36 @@ template <typename Color_t>
 auto CMipmapGenerator<Color_t>::getGaussianStack(const Texture_t& vTexture, const int vLayer, const Eigen::MatrixXi& vMask) -> std::vector<Texture_t>
 {
 	Texture_t TextureWithMask = vTexture;
-	for (int i = 0; i < TextureWithMask.rows(); i++)
-		for (int k = 0; k < TextureWithMask.cols(); k++)
-			if (vMask.coeff(i, k))
-			{
-				if constexpr (std::is_arithmetic<Color_t>::value)
-					TextureWithMask(i, k) = -1;
-				else
-					for (int m = 0; m < 3; m++)
-						TextureWithMask(i, k)[m] = -1;
-			}
+	__fixTextureByMask(TextureWithMask, vMask);
 
 	std::vector<Texture_t> GaussianStack;
 	GaussianStack.push_back(TextureWithMask);
 
 	for (int i = 0; i < vLayer - 1; i++)
-		GaussianStack.push_back(executeGaussianBlur(GaussianStack.back()));
+		GaussianStack.push_back(executeGaussianBlur(GaussianStack.back(), vMask));
 
 	std::reverse(std::begin(GaussianStack), std::end(GaussianStack));
 	return GaussianStack;
+}
+
+template <typename Color_t>
+void CMipmapGenerator<Color_t>::__fixTextureByMask(Texture_t& vTexture, const Eigen::MatrixXi& vMask)
+{
+	const float CoverRate = 0.75f;
+	std::pair<float, float> SampleRate{ (float)vMask.rows() / vTexture.rows(), (float)vMask.cols() / vTexture.cols() };
+	for (int i = 0; i < vTexture.rows(); i++)
+		for (int k = 0; k < vTexture.cols(); k++)
+		{
+			int Sum = 0;
+			for (int MaskY = i * SampleRate.first; MaskY < (i + 1) * SampleRate.first; MaskY++)
+				for (int MaskX = k * SampleRate.second; MaskX < (k + 1) * SampleRate.second; MaskX++)
+					if (MaskX < vMask.cols() && MaskY < vMask.rows() && vMask(MaskY, MaskX))
+						Sum++;
+
+			if (Sum >= CoverRate * SampleRate.first * SampleRate.second)
+				if constexpr (std::is_arithmetic<Color_t>::value)
+					vTexture(i, k) = -1;
+				else
+					vTexture(i, k)[0] = -1;
+		}
 }

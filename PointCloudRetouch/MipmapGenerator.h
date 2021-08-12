@@ -27,6 +27,8 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		Eigen::Matrix<float, -1, -1> __getGaussianKernal(int vKernalSize, float vSigma);
 		Color_t __executeGaussianFilter(const Texture_t& vTexture, const Eigen::Matrix<float, -1, -1>& vGaussianKernal, int vRow, int vCol);
 
+		void __fixTextureByMask(Texture_t& vTexture, const Eigen::MatrixXi& vMask);
+
 		// TODO::magic number
 		int m_KernalSize = 9;
 	};
