@@ -29,6 +29,7 @@ namespace hiveObliquePhotography
 
 			void run();
 
+			std::vector<PointCloud_t::Ptr> getUserCloudSet() { return m_UserCloudSet; }
 			void addUserPointCloud(PointCloud_t::Ptr vCloud) { m_UserCloudSet.push_back(vCloud); }
 			void removeAllUserPointCloud() { m_UserCloudSet.clear(); }
 			int addUserColoredPoints(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor);
