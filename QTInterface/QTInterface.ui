@@ -87,6 +87,7 @@
    <addaction name="actionDeleteBackground"/>
    <addaction name="separator"/>
    <addaction name="actionPrecompute"/>
+   <addaction name="actionRepairHole"/>
    <addaction name="actionSetting"/>
    <addaction name="actionInstructions"/>
   </widget>
@@ -388,6 +389,18 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>DeleteBackground</string>
+   </property>
+  </action>
+  <action name="actionRepairHole">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/dichotomy.png</normaloff>:/QTInterface/Icon/dichotomy.png</iconset>
+   </property>
+   <property name="text">
+    <string>RepairHole</string>
    </property>
   </action>
  </widget>
