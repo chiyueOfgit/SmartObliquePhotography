@@ -2,8 +2,6 @@
 
 namespace hiveObliquePhotography::PointCloudRetouch
 {
-	//using Scalar_t = int;
-	//constexpr unsigned Channel = 3;
 	template <typename Scalar_t, unsigned Channel>
 	class COrderIndependentTextureSynthesizer
 	{

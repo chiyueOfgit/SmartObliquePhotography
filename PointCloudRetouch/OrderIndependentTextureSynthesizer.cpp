@@ -18,7 +18,7 @@ std::vector<std::pair<int, int>> COrderIndependentTextureSynthesizer<Scalar_t, C
 {
 	const int KernelOffset = vKernelSize / 2;
 	const int KernelWidth = KernelOffset * 2 + 1;
-	NeighborOffset_t NeighborOffset;
+	std::vector<std::pair<int, int>> NeighborOffset;
 	NeighborOffset.reserve(KernelWidth * KernelWidth);
 	
 	for (int i = -KernelOffset; i <= KernelOffset; ++i)
@@ -45,10 +45,10 @@ void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::execute(const Textu
 			if (vMask.coeff(RowId, ColId))
 				vioScene.coeffRef(RowId, ColId) = __synthesizePixel(m_PyramidLayer - 1, m_GenerationNum - 1, RowId, ColId);
 
-	int Cnt = 0;
-	for (const auto& i : m_Cache)
-		for (const auto& k : i)
-			__generateResultImage(k, "../TestData/Test019_Model/Cache/" + std::string("Cache") + std::to_string(Cnt++) + ".png");
+	//int Cnt = 0;
+	//for (const auto& i : m_Cache)
+	//	for (const auto& k : i)
+	//		__generateResultImage(k, "../TestData/Test019_Model/Cache/" + std::string("Cache") + std::to_string(Cnt++) + ".png");
 }
 
 //*****************************************************************
