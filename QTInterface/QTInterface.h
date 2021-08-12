@@ -85,6 +85,7 @@ namespace hiveObliquePhotography
             void onActionRubber();
             void onActionBrush();
             void onActionOutlierDetection();
+            void onActionStartRepairHole();
             void onActionInstructions();
             void onActionSetting();
             void onResourceSpaceItemDoubleClick(QModelIndex);

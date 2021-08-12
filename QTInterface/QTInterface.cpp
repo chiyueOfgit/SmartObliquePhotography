@@ -81,6 +81,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
     QObject::connect(m_UI.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
     QObject::connect(m_UI.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
+    QObject::connect(m_UI.actionRepairHole, SIGNAL(triggered()), this, SLOT(onActionStartRepairHole()));
 }
 
 void CQTInterface::__initialVTKWidget()
@@ -245,52 +246,53 @@ void CQTInterface::onActionAreaPicking()
 {
     if (m_pCloud)
     {
-        if (m_UI.actionAreaPicking->isChecked())
+        if (!m_pVisualizationConfig->getAttribute<bool>(Visualization::REPAIR_MODE).value())
         {
-            if (!m_pAreaPickingSetting)
+            if (m_UI.actionAreaPicking->isChecked())
             {
-                m_pAreaPickingSetting = new QMdiSubWindow(m_UI.VTKWidget);
-                m_pAreaPickingSetting->resize({ 200, 50 });
-                QPoint ParentPoint = m_UI.VTKWidget->pos();
-                QPoint p1 = m_UI.VTKWidget->mapToGlobal(ParentPoint);
-                m_pAreaPickingSetting->move(m_UI.VTKWidget->width() - m_pAreaPickingSetting->width(), 0);
-                m_pAreaPickingCullingBox = new QCheckBox;
-                m_pAreaPickingCullingBox->setChecked(m_pVisualizationConfig->getAttribute<bool>(Visualization::AREA_PICK_CULLING).value());
-                m_pAreaPickingCullingBox->setText(QString::fromStdString("Area picking enable culling"));
-                m_pAreaPickingCullingBox->setGeometry(150, 30, 10, 0);
-                m_pAreaPickingSetting->setWidget(m_pAreaPickingCullingBox);
-                m_pAreaPickingSetting->setWindowFlag(Qt::FramelessWindowHint);
-                m_pAreaPickingSetting->show();
+                if (!m_pAreaPickingSetting)
+                {
+                    m_pAreaPickingSetting = new QMdiSubWindow(m_UI.VTKWidget);
+                    m_pAreaPickingSetting->resize({ 200, 50 });
+                    QPoint ParentPoint = m_UI.VTKWidget->pos();
+                    QPoint p1 = m_UI.VTKWidget->mapToGlobal(ParentPoint);
+                    m_pAreaPickingSetting->move(m_UI.VTKWidget->width() - m_pAreaPickingSetting->width(), 0);
+                    m_pAreaPickingCullingBox = new QCheckBox;
+                    m_pAreaPickingCullingBox->setChecked(m_pVisualizationConfig->getAttribute<bool>(Visualization::AREA_PICK_CULLING).value());
+                    m_pAreaPickingCullingBox->setText(QString::fromStdString("Area picking enable culling"));
+                    m_pAreaPickingCullingBox->setGeometry(150, 30, 10, 0);
+                    m_pAreaPickingSetting->setWidget(m_pAreaPickingCullingBox);
+                    m_pAreaPickingSetting->setWindowFlag(Qt::FramelessWindowHint);
+                    m_pAreaPickingSetting->show();
 
-                connect(m_pAreaPickingCullingBox, &QCheckBox::stateChanged, [&]()
-                    {
-                        m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_PICK_CULLING, m_pAreaPickingCullingBox->isChecked());
-                    }
-                );
+                    connect(m_pAreaPickingCullingBox, &QCheckBox::stateChanged, [&]()
+                        {
+                            m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_PICK_CULLING, m_pAreaPickingCullingBox->isChecked());
+                        }
+                    );
+                }
+
+                m_UI.actionPointPicking->setChecked(false);
+                if (m_pVisualizationConfig)
+                    m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, false);
+                if (m_pPointPickingDockWidget)
+                    m_pPointPickingDockWidget->close();
+
+                std::vector<std::size_t> PointLabel;
+                PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+                Visualization::hiveRefreshVisualizer(PointLabel);
+                CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to area picking mode."));
+
             }
-
-
-            m_UI.actionPointPicking->setChecked(false);
-            if (m_pVisualizationConfig)
-                m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, false);
-            if (m_pPointPickingDockWidget)
-                m_pPointPickingDockWidget->close();
-
-            std::vector<std::size_t> PointLabel;
-            PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-            Visualization::hiveRefreshVisualizer(PointLabel);
-            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to area picking mode."));
-
-        }
-        else
-        {
-            if (m_pAreaPickingSetting)
-                _SAFE_DELETE(m_pAreaPickingSetting);
-            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
+            else
+            {
+                if (m_pAreaPickingSetting)
+                    _SAFE_DELETE(m_pAreaPickingSetting);
+                CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
+            }
         }
 
-        if (m_pVisualizationConfig)
-            m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_MODE, m_UI.actionAreaPicking->isChecked());
+        m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_MODE, m_UI.actionAreaPicking->isChecked());
     }
 }
 
@@ -346,6 +348,9 @@ void CQTInterface::onActionOpen()
             m_UI.actionBrush->setEnabled(true);
             m_UI.actionSetting->setEnabled(true);
             m_UI.actionOutlierDetection->setEnabled(true);
+            m_UI.actionRepairHole->setEnabled(true);
+
+            m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
         }
 
         if (FilePathSet.size() == 1)
@@ -362,14 +367,23 @@ void CQTInterface::onActionOpen()
 
 void CQTInterface::onActionSave()
 {
-    const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("PCD files(*.pcd);;""PLY files(*.ply)")).toStdString();
+    const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("PLY files(*.ply);;""PCD files(*.pcd)")).toStdString();
 
-    PointCloud_t::Ptr pCloud(new PointCloud_t);
-    PointCloudRetouch::hiveDumpPointCloudtoSave(pCloud);
-    if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud, FilePath))
-        CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
+    PointCloud_t::Ptr pCloud2Save(new PointCloud_t);
+    PointCloudRetouch::hiveDumpPointCloudtoSave(pCloud2Save);
+    if (m_pVisualizationConfig->getAttribute<bool>(Visualization::REPAIR_MODE).value())
+    {
+        std::vector<PointCloud_t::Ptr> UserCloudSet;
+        Visualization::hiveDumpUserCloudSet(UserCloudSet);
+
+        for (auto pCloud : UserCloudSet)
+            pCloud2Save->insert(pCloud2Save->end(), pCloud->begin(), pCloud->end());
+    }
+
+    if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud2Save, FilePath))
+        __messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
     else
-        CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
+        __messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
 }
 
 void CQTInterface::onActionRubber()
@@ -393,6 +407,53 @@ void CQTInterface::onActionOutlierDetection()
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
         Visualization::hiveRefreshVisualizer(PointLabel);
+    }
+}
+
+void CQTInterface::onActionStartRepairHole()
+{
+    if (m_pCloud)
+    {
+        PointCloud_t::Ptr pCloud(new PointCloud_t);
+        PointCloudRetouch::hiveDumpPointCloudtoSave(pCloud);
+        auto CloudSavedPath = "Temp/" + m_CurrentCloud + ".ply";
+        hiveSavePointCloudScene(*pCloud, CloudSavedPath);
+        
+        m_pCloud = hiveInitPointCloudScene({ CloudSavedPath });
+        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
+        Visualization::hiveInitVisualizer(m_pCloud, true);
+        __initialVTKWidget();
+
+        //unable ui icons and reset configs
+        {
+            m_UI.actionPointPicking->setEnabled(false);
+            m_UI.actionSave->setEnabled(true);
+            m_UI.actionUpdate->setEnabled(false);
+            m_UI.actionDeleteLitter->setEnabled(false);
+            m_UI.actionDeleteBackground->setEnabled(false);
+            m_UI.actionPrecompute->setEnabled(false);
+            m_UI.actionRubber->setEnabled(false);
+            m_UI.actionBrush->setEnabled(false);
+            m_UI.actionSetting->setEnabled(true);
+            m_UI.actionOutlierDetection->setEnabled(false);
+            m_UI.actionRepairHole->setEnabled(true);
+
+            m_pVisualizationConfig->overwriteAttribute(Visualization::RUBBER_MODE, false);
+            m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_MODE, false);
+            m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, false);
+            m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, true);
+
+            if (m_pPointPickingDockWidget)
+                m_pPointPickingDockWidget->close();
+            if (m_pAreaPickingSetting)
+                _SAFE_DELETE(m_pAreaPickingSetting);
+        }
+
+        std::vector<std::size_t> PointLabel;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+        Visualization::hiveRefreshVisualizer(PointLabel, true);
+
+        __messageDockWidgetOutputText(QString::fromStdString("Start hole repair."));
     }
 }
 

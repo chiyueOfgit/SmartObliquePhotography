@@ -23,6 +23,7 @@ namespace hiveObliquePhotography
 
 		const std::string CIRCLE_MODE = "CIRCLE_MODE";
 		const std::string AREA_MODE = "AREA_MODE";
+		const std::string REPAIR_MODE = "REPAIR_MODE";
 		const std::string AREA_PICK_CULLING = "AREA_PICK_CULLING";
 		const std::string RUBBER_MODE = "RUBBER_MODE";
 		const std::string UNWANTED_MODE = "UNWANTED_MODE";
@@ -65,6 +66,7 @@ namespace hiveObliquePhotography
 
 				_defineAttribute(CIRCLE_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(AREA_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(REPAIR_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(AREA_PICK_CULLING, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(RUBBER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(UNWANTED_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
