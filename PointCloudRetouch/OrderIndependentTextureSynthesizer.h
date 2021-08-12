@@ -2,9 +2,9 @@
 
 namespace hiveObliquePhotography::PointCloudRetouch
 {
-	using Scalar_t = int;
-	constexpr unsigned Channel = 3;
-	//template <typename Scalar_t, unsigned Channel>
+	//using Scalar_t = int;
+	//constexpr unsigned Channel = 3;
+	template <typename Scalar_t, unsigned Channel>
 	class COrderIndependentTextureSynthesizer
 	{
 	public:
@@ -40,17 +40,16 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		Color_t __getInputAt(int vLayer, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Color_t __getCacheAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		void __addCacheEntry(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId, const Color_t& vValue);
-		
+
 		Color_t __synthesizePixel(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId);
 		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId);
 		Feature_t __buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
-		
+
 		Color_t __findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const;
 
-		void generateResultImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath);
-
+		void __generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const;
 	};
 
-	//template class COrderIndependentTextureSynthesizer<int, 3>;
-	//template class COrderIndependentTextureSynthesizer<float, 1>;
+	template class COrderIndependentTextureSynthesizer<int, 3>;
+	template class COrderIndependentTextureSynthesizer<float, 1>;
 }
