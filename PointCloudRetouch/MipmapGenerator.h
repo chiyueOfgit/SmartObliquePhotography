@@ -36,5 +36,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 	template class CMipmapGenerator<float>;
 	template class CMipmapGenerator<int>;
 	template class CMipmapGenerator<Eigen::Vector3i>;
+	template class CMipmapGenerator<Eigen::Matrix<int, 3, 1>>;
+	template class CMipmapGenerator<Eigen::Matrix<float, 1, 1>>;
 }
 
