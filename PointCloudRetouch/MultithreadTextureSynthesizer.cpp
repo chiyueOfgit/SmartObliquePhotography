@@ -145,10 +145,10 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(
 	for (int RowId = 0; RowId < Texture.rows(); ++RowId)
 		for (int ColId = 0; ColId < Texture.cols(); ++ColId)
 		{
-			auto& CacheValue = Texture.coeffRef(RowId, ColId);
-			if (!__isAvailable(CacheValue))
+			auto& Item = Texture.coeffRef(RowId, ColId);
+			if (!__isAvailable(Item))
 			{
-				CacheValue = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, RowId, ColId));
+				Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, RowId, ColId));
 			}
 		}
 }
@@ -156,7 +156,7 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) -> Feature_t
+auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
 {
 	__decrease(vLayer, vGeneration, vRowId, vColId);
 	return __buildFeatureAt(m_Cache[vLayer][vGeneration], vRowId, vColId);
@@ -191,18 +191,18 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(con
 //template <typename Scalar_t, unsigned Channel>
 auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Color_t
 {
-	const auto& Input = m_InputPyramid[vLayer];
+	const auto& Texture = m_InputPyramid[vLayer];
 	Color_t NearestValue;
 	auto MinDistance = std::numeric_limits<Scalar_t>::max();
 	
-	for (Eigen::Index RowId = 0; RowId < Input.rows(); ++RowId)
-		for (Eigen::Index ColId = 0; ColId < Input.cols(); ++ColId)
+	for (Eigen::Index RowId = 0; RowId < Texture.rows(); ++RowId)
+		for (Eigen::Index ColId = 0; ColId < Texture.cols(); ++ColId)
 		{
 			auto Distance = __computeDistance(vFeature, __buildInputFeatureAt(vLayer, vGeneration, RowId, ColId));
 			if (MinDistance > Distance)
 			{
 				MinDistance = Distance;
-				NearestValue = Input.coeff(RowId, ColId);
+				NearestValue = Texture.coeff(RowId, ColId);
 			}
 		}
 	return NearestValue;

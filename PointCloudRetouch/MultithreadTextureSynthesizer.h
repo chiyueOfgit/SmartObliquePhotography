@@ -46,7 +46,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		void __synthesizeTexture(int vLayer, int vGeneration);
 		Color_t __findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const;
 		
-		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId);
+		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const;
 
