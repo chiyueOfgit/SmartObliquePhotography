@@ -28,7 +28,12 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).squaredNorm(); }
 		static bool __isAvailable(const Color_t& vValue) { return (vValue.array() >= 0).all(); }
-		static void __wrap(Eigen::Index vSize, Eigen::Index& vioIndex) { while (vioIndex < 0) vioIndex += vSize; while (vioIndex >= vSize) vioIndex -= vSize; }
+		static Eigen::Index __wrap(Eigen::Index vSize, Eigen::Index vIndex)
+		{
+			while (vIndex < 0) vIndex += vSize;
+			while (vIndex >= vSize) vIndex -= vSize;
+			return vIndex;
+		}
 		static std::vector<std::pair<int, int>> __buildNeighborOffset(int vKernelSize);
 
 		void __initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput);
@@ -37,14 +42,12 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 		bool __increase(int& vioLayer, int& vioGeneration) const;
 		void __decrease(int& vioLayer, int& vioGeneration, Eigen::Index& vioRowId, Eigen::Index& vioColId) const;
-		Color_t __getInputAt(int vLayer, Eigen::Index vRowId, Eigen::Index vColId) const;
-		Color_t __getCacheAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		void __addCacheEntry(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId, const Color_t& vValue);
 
 		void __synthesizeTexture(int vLayer, int vGeneration);
-		Color_t __synthesizePixel(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId);
 		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId);
 		Feature_t __buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
+		Feature_t __buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const;
 
 		Color_t __findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const;
 

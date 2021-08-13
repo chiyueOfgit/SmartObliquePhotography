@@ -137,33 +137,6 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__decrease(int& vioL
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__getInputAt(int vLayer, Eigen::Index vRowId, Eigen::Index vColId) const -> Color_t
-{
-	vLayer = std::clamp(vLayer, 0, m_PyramidLayer - 1);
-	const auto& Texture = m_InputPyramid[vLayer];
-	
-	__wrap(Texture.rows(), vRowId);
-	__wrap(Texture.cols(), vColId);
-	return Texture.coeff(vRowId, vColId);
-}
-
-//*****************************************************************
-//FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__getCacheAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Color_t
-{
-	vLayer = std::clamp(vLayer, 0, m_PyramidLayer - 1);
-	vGeneration = std::clamp(vGeneration, 0, m_GenerationNum - 1);
-	const auto& Texture = m_Cache[vLayer][vGeneration];
-	
-	__wrap(Texture.rows(), vRowId);
-	__wrap(Texture.cols(), vColId);
-	return Texture.coeff(vRowId, vColId);
-}
-
-//*****************************************************************
-//FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
 void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__addCacheEntry(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId, const Color_t& vValue)
 {
 	vLayer = std::clamp(vLayer, 0, m_PyramidLayer - 1);
@@ -188,18 +161,11 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(
 		{
 			auto CacheValue = Texture.coeff(RowId, ColId);
 			if (!__isAvailable(CacheValue))
-				CacheValue = __synthesizePixel(vLayer, vGeneration, RowId, ColId);
+			{
+				CacheValue = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, RowId, ColId));
+				__addCacheEntry(vLayer, vGeneration, RowId, ColId, CacheValue);
+			}
 		}
-}
-
-//*****************************************************************
-//FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizePixel(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) -> Color_t
-{
-	auto CacheValue = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, vRowId, vColId));
-	__addCacheEntry(vLayer, vGeneration, vRowId, vColId, CacheValue);
-	return CacheValue;
 }
 
 //*****************************************************************
@@ -208,18 +174,7 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizePixel(in
 auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) -> Feature_t
 {
 	__decrease(vLayer, vGeneration, vRowId, vColId);
-
-	Eigen::Matrix<Scalar_t, Eigen::Dynamic, Channel> Feature(m_NeighborOffset.size(), Channel);
-	for (Eigen::Index It = 0; auto [RowIdWithOffset, ColIdWithOffset] : m_NeighborOffset)
-	{
-		RowIdWithOffset += vRowId;
-		ColIdWithOffset += vColId;
-		
-		auto CacheValue = __getCacheAt(vLayer, vGeneration, RowIdWithOffset, ColIdWithOffset);
-		
-		Feature.row(It++) = CacheValue;
-	}
-	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
+	return __buildFeatureAt(m_Cache[vLayer][vGeneration], vRowId, vColId);
 }
 
 //*****************************************************************
@@ -228,16 +183,21 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildOutputFeature
 auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
 {
 	__decrease(vLayer, vGeneration, vRowId, vColId);
-	
+	return __buildFeatureAt(m_InputPyramid[vLayer], vRowId, vColId);
+}
+
+//*****************************************************************
+//FUNCTION: 
+//template <typename Scalar_t, unsigned Channel>
+auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const->Feature_t
+{
 	Eigen::Matrix<Scalar_t, Eigen::Dynamic, Channel> Feature(m_NeighborOffset.size(), Channel);
-	for (Eigen::Index It = 0; auto [RowIdWithOffset, ColIdWithOffset] : m_NeighborOffset)
+	for (Eigen::Index It = 0; auto [RowOffset, ColOffset] : m_NeighborOffset)
 	{
-		RowIdWithOffset += vRowId;
-		ColIdWithOffset += vColId;
-
-		Feature.row(It++) = __getInputAt(vLayer, RowIdWithOffset, ColIdWithOffset);
+		auto RowIdWithOffset = __wrap(vTexture.rows(), vRowId + RowOffset);
+		auto ColIdWithOffset = __wrap(vTexture.cols(), vColId + ColOffset);
+		Feature.row(It++) = vTexture.coeff(RowIdWithOffset, ColIdWithOffset);
 	}
-
 	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
 }
 
@@ -290,7 +250,6 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__generateResultImag
 				ResultImage[Offset + 2] = 0;
 			}
 		}
-
 	stbi_write_png(vOutputImagePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
 	stbi_image_free(ResultImage);
 }
