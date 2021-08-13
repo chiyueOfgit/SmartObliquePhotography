@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "TextureSynthesizer.h"
 #include "OrderIndependentTextureSynthesizer.h"
+#include "MultithreadTextureSynthesizer.h"
 #include "MipmapGenerator.h"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
@@ -253,7 +254,7 @@ TEST_F(TestTextureSynthesizer, SquareMask)
 	/*_generateMask(MaskTexture, -1);*/
 	_readMask(MaskImagePath, MaskTexture);
 
-	COrderIndependentTextureSynthesizer TextureSynthesizer;
+	CMultithreadTextureSynthesizer TextureSynthesizer;
 	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 
 	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
