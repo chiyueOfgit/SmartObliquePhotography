@@ -140,17 +140,19 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__decrease(int& vioL
 void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(int vLayer, int vGeneration)
 {
 	auto& Texture = m_Cache[vLayer][vGeneration];
+	const auto Height = Texture.rows();
+	const auto Width = Texture.cols();
 
 #pragma omp parallel for
-	for (int RowId = 0; RowId < Texture.rows(); ++RowId)
-		for (int ColId = 0; ColId < Texture.cols(); ++ColId)
-		{
-			auto& Item = Texture.coeffRef(RowId, ColId);
-			if (!__isAvailable(Item))
-			{
-				Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, RowId, ColId));
-			}
-		}
+	for (int i = 0; i < Height * Width; ++i)
+	{
+		auto RowId = i / Width;
+		auto ColId = i % Width;
+		
+		auto& Item = Texture.coeffRef(RowId, ColId);
+		if (!__isAvailable(Item))
+			Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, RowId, ColId));
+	}
 }
 
 //*****************************************************************

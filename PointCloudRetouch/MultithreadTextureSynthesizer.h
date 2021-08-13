@@ -30,8 +30,8 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		static bool __isAvailable(const Color_t& vValue) { return (vValue.array() >= 0).all(); }
 		static Eigen::Index __wrap(Eigen::Index vSize, Eigen::Index vIndex)
 		{
-			while (vIndex < 0) vIndex += vSize;
-			while (vIndex >= vSize) vIndex -= vSize;
+			if (vIndex < 0) vIndex += vSize;
+			else if (vIndex >= vSize) vIndex -= vSize;
 			return vIndex;
 		}
 		static std::vector<std::pair<int, int>> __buildNeighborOffset(int vKernelSize);
