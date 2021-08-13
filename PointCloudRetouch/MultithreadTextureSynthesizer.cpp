@@ -146,12 +146,9 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(
 #pragma omp parallel for
 	for (int i = 0; i < Height * Width; ++i)
 	{
-		auto RowId = i / Width;
-		auto ColId = i % Width;
-		
-		auto& Item = Texture.coeffRef(RowId, ColId);
+		auto& Item = Texture.coeffRef(i);
 		if (!__isAvailable(Item))
-			Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, RowId, ColId));
+			Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, i % Height, i / Height));
 	}
 }
 
