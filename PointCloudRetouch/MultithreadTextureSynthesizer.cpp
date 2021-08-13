@@ -137,20 +137,6 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__decrease(int& vioL
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
-void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__addCacheEntry(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId, const Color_t& vValue)
-{
-	vLayer = std::clamp(vLayer, 0, m_PyramidLayer - 1);
-	vGeneration = std::clamp(vGeneration, 0, m_GenerationNum - 1);
-	const auto& Texture = m_Cache[vLayer][vGeneration];
-
-	__wrap(Texture.rows(), vRowId);
-	__wrap(Texture.cols(), vColId);
-	m_Cache[vLayer][vGeneration].coeffRef(vRowId, vColId) = vValue;
-}
-
-//*****************************************************************
-//FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
 void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(int vLayer, int vGeneration)
 {
 	auto& Texture = m_Cache[vLayer][vGeneration];
@@ -159,11 +145,10 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(
 	for (int RowId = 0; RowId < Texture.rows(); ++RowId)
 		for (int ColId = 0; ColId < Texture.cols(); ++ColId)
 		{
-			auto CacheValue = Texture.coeff(RowId, ColId);
+			auto& CacheValue = Texture.coeffRef(RowId, ColId);
 			if (!__isAvailable(CacheValue))
 			{
 				CacheValue = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, RowId, ColId));
-				__addCacheEntry(vLayer, vGeneration, RowId, ColId, CacheValue);
 			}
 		}
 }

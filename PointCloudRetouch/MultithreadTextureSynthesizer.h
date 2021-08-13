@@ -42,14 +42,13 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 		bool __increase(int& vioLayer, int& vioGeneration) const;
 		void __decrease(int& vioLayer, int& vioGeneration, Eigen::Index& vioRowId, Eigen::Index& vioColId) const;
-		void __addCacheEntry(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId, const Color_t& vValue);
 
 		void __synthesizeTexture(int vLayer, int vGeneration);
+		Color_t __findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const;
+		
 		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId);
 		Feature_t __buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const;
-
-		Color_t __findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const;
 
 		void __generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const;
 	};
