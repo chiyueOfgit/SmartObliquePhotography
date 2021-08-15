@@ -37,8 +37,7 @@ std::vector<std::pair<int, int>> CTreeBasedTextureSynthesizer/*<Scalar_t, Channe
 void CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
 {
 	__initCache(vMask, vioScene);
-	__initInputPyramid(vInput);
-	__initTexture(m_InputPyramid.front(), m_Cache.front().front());
+	__initTexture(vInput, m_Cache.front().front());
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
 	__initSearchSet(vInput, m_NeighborOffset.size() * Channel);
 
@@ -76,10 +75,14 @@ void CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__initCache(const Eige
 //template <typename Scalar_t, unsigned Channel>
 void CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__initSearchSet(const Texture_t& vTexture, int vFeatureLength)
 {
+	CMipmapGenerator<Color_t> TextureMipmapGenerator;
+	TextureMipmapGenerator.setKernalSize(m_GaussianSize);	
+	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vTexture, m_PyramidLayer);
+	
 	m_SearchSet.reserve(m_PyramidLayer);
-	for (auto Layer = 0; Layer < m_InputPyramid.size(); Layer++)
+	for (auto Layer = 0; Layer < InputPyramid.size(); Layer++)
 	{
-		const auto& Input = m_InputPyramid[Layer];
+		const auto& Input = InputPyramid[Layer];
 
 		Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor> FeatureSet(Input.rows() * Input.cols(), vFeatureLength);
 		Eigen::Matrix<Scalar_t, -1, Channel> ColorSet(Input.rows() * Input.cols(), Channel);
@@ -89,26 +92,16 @@ void CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__initSearchSet(const 
 			for (int k = 0; k < Input.cols(); k++)
 			{
 				FeatureSet.row(Row) = __buildFeatureAt(Input, i, k);
-				ColorSet.row(Row) = Input(i, k).transpose();
-				UpperColorSet.row(Row) = Layer + 1 < m_InputPyramid.size() ? m_InputPyramid[Layer + 1](2 * i, 2 * k).transpose() : m_InputPyramid[Layer](i, k).transpose();
+				ColorSet.row(Row) = Input(i, k);
+				UpperColorSet.row(Row) = Layer < InputPyramid.size() - 1 ? InputPyramid[Layer + 1](2 * i, 2 * k) : InputPyramid[Layer](i, k);
 				Row++;
 			}
 		
-		flann::Matrix<Scalar_t> InputIndices(FeatureSet.data(), FeatureSet.rows(), FeatureSet.cols());
+		flann::Matrix InputIndices(FeatureSet.data(), FeatureSet.rows(), FeatureSet.cols());
 		auto pTree = new flann::Index<flann::L2<Scalar_t>>(InputIndices, flann::KDTreeIndexParams(4));
 		pTree->buildIndex();
 		m_SearchSet.emplace_back(pTree, std::move(FeatureSet), std::move(ColorSet), std::move(UpperColorSet));
 	}
-}
-
-//*****************************************************************
-//FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__initInputPyramid(const Texture_t& vTexture)
-{
-	CMipmapGenerator<Color_t> TextureMipmapGenerator;
-	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
-	m_InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vTexture, m_PyramidLayer);
 }
 
 //*****************************************************************
@@ -225,18 +218,16 @@ auto CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(int
 {
 	bool UseUpper = __decrease(vLayer, vGeneration);
 
-	Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor> Feature;
-	Feature = vFeature;
-	flann::Matrix<Scalar_t> Query(Feature.data(), 1, Feature.cols());
-	flann::Matrix<size_t> Index(new size_t, 1, 1);
-	flann::Matrix<float> Distance(new float, 1, 1);
+	auto Feature = vFeature;
+	flann::Matrix Query(Feature.data(), 1, Feature.cols());
+	flann::Matrix Index(new size_t, 1, 1);
+	flann::Matrix Distance(new float, 1, 1);
 	std::get<0>(m_SearchSet[vLayer])->knnSearch(Query, Index, Distance, 1, {});
 	Color_t NearestValue;
 	if (UseUpper)
-		NearestValue = std::get<3>(m_SearchSet[vLayer]).row(Index[0][0]).transpose();
+		NearestValue = std::get<3>(m_SearchSet[vLayer]).row(Index[0][0]);
 	else
-		NearestValue = std::get<2>(m_SearchSet[vLayer]).row(Index[0][0]).transpose();
-	//Color_t TestIndexColor = m_InputPyramid[vLayer](Index[0][0] / m_InputPyramid[vLayer].cols(), Index[0][0] % m_InputPyramid[vLayer].cols()).transpose();
+		NearestValue = std::get<2>(m_SearchSet[vLayer]).row(Index[0][0]);
 
 	delete[] Index.ptr();
 	delete[] Distance.ptr();
