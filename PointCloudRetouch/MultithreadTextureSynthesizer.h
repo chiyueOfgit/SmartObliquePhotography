@@ -2,9 +2,7 @@
 
 namespace hiveObliquePhotography::PointCloudRetouch
 {
-	using Scalar_t = int;
-	constexpr int Channel = 3;
-	//template <typename Scalar_t, unsigned Channel>
+	template <typename Scalar_t, unsigned Channel>
 	class CMultithreadTextureSynthesizer
 	{
 	public:
@@ -53,6 +51,6 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		void __generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const;
 	};
 
-	//template class CMultithreadTextureSynthesizer<int, 3>;
-	//template class CMultithreadTextureSynthesizer<float, 1>;
+	template class CMultithreadTextureSynthesizer<int, 3>;
+	template class CMultithreadTextureSynthesizer<float, 1>;
 }

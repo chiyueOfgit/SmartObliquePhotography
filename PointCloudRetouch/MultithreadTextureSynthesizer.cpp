@@ -13,8 +13,8 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-std::vector<std::pair<int, int>> CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildNeighborOffset(int vKernelSize)
+template <typename Scalar_t, unsigned Channel>
+std::vector<std::pair<int, int>> CMultithreadTextureSynthesizer<Scalar_t, Channel>::__buildNeighborOffset(int vKernelSize)
 {
 	const int KernelOffset = vKernelSize / 2;
 	const int KernelWidth = KernelOffset * 2 + 1;
@@ -32,8 +32,8 @@ std::vector<std::pair<int, int>> CMultithreadTextureSynthesizer/*<Scalar_t, Chan
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
+template <typename Scalar_t, unsigned Channel>
+void CMultithreadTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
 {
 	__initCache(vMask, vioScene);
 	__initInputPyramid(vInput);
@@ -54,8 +54,8 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const Textur
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
+template <typename Scalar_t, unsigned Channel>
+void CMultithreadTextureSynthesizer<Scalar_t, Channel>::__initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
 {
 	CMipmapGenerator<Color_t> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
@@ -71,8 +71,8 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initCache(const Ei
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initInputPyramid(const Texture_t& vTexture)
+template <typename Scalar_t, unsigned Channel>
+void CMultithreadTextureSynthesizer<Scalar_t, Channel>::__initInputPyramid(const Texture_t& vTexture)
 {
 	CMipmapGenerator<Color_t> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
@@ -81,8 +81,8 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initInputPyramid(c
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initTexture(const Texture_t& vFrom, Texture_t& voTo) const
+template <typename Scalar_t, unsigned Channel>
+void CMultithreadTextureSynthesizer<Scalar_t, Channel>::__initTexture(const Texture_t& vFrom, Texture_t& voTo) const
 {
 	for (Eigen::Index RowId = 0; RowId < voTo.rows(); ++RowId)
 		for (Eigen::Index ColId = 0; ColId < voTo.cols(); ++ColId)
@@ -100,8 +100,8 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initTexture(const 
 //
 ////*****************************************************************
 ////FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-bool CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__increase(int& vioLayer, int& vioGeneration) const
+template <typename Scalar_t, unsigned Channel>
+bool CMultithreadTextureSynthesizer<Scalar_t, Channel>::__increase(int& vioLayer, int& vioGeneration) const
 {
 	if (vioGeneration < m_GenerationNum - 1 && vioLayer > 0)
 		++vioGeneration;
@@ -117,8 +117,8 @@ bool CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__increase(int& vioL
 
 ////*****************************************************************
 ////FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__decrease(int& vioLayer, int& vioGeneration, Eigen::Index& vioRowId, Eigen::Index& vioColId) const
+template <typename Scalar_t, unsigned Channel>
+void CMultithreadTextureSynthesizer<Scalar_t, Channel>::__decrease(int& vioLayer, int& vioGeneration, Eigen::Index& vioRowId, Eigen::Index& vioColId) const
 {
 	if (vioGeneration > 0)
 		--vioGeneration;
@@ -136,8 +136,8 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__decrease(int& vioL
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(int vLayer, int vGeneration)
+template <typename Scalar_t, unsigned Channel>
+void CMultithreadTextureSynthesizer<Scalar_t, Channel>::__synthesizeTexture(int vLayer, int vGeneration)
 {
 	auto& Texture = m_Cache[vLayer][vGeneration];
 	const auto Height = Texture.rows();
@@ -154,8 +154,8 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
+template <typename Scalar_t, unsigned Channel>
+auto CMultithreadTextureSynthesizer<Scalar_t, Channel>::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
 {
 	__decrease(vLayer, vGeneration, vRowId, vColId);
 	return __buildFeatureAt(m_Cache[vLayer][vGeneration], vRowId, vColId);
@@ -163,8 +163,8 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildOutputFeature
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
+template <typename Scalar_t, unsigned Channel>
+auto CMultithreadTextureSynthesizer<Scalar_t, Channel>::__buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
 {
 	__decrease(vLayer, vGeneration, vRowId, vColId);
 	return __buildFeatureAt(m_InputPyramid[vLayer], vRowId, vColId);
@@ -172,8 +172,8 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFeatureA
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const->Feature_t
+template <typename Scalar_t, unsigned Channel>
+auto CMultithreadTextureSynthesizer<Scalar_t, Channel>::__buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const->Feature_t
 {
 	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature(Channel, m_NeighborOffset.size());
 	for (Eigen::Index It = 0; auto [RowOffset, ColOffset] : m_NeighborOffset)
@@ -187,8 +187,8 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(con
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Color_t
+template <typename Scalar_t, unsigned Channel>
+auto CMultithreadTextureSynthesizer<Scalar_t, Channel>::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Color_t
 {
 	const auto& Texture = m_InputPyramid[vLayer];
 	Color_t NearestValue;
@@ -209,8 +209,8 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(i
 
 //*****************************************************************
 //FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const
+template <typename Scalar_t, unsigned Channel>
+void CMultithreadTextureSynthesizer<Scalar_t, Channel>::__generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const
 {
 	const auto Width = vTexture.cols();
 	const auto Height = vTexture.rows();

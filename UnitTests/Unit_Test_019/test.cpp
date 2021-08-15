@@ -242,6 +242,24 @@ protected:
 //			EXPECT_EQ(OutputTexture(i, k), SceneTexture(i, k));
 //}
 
+TEST_F(TestTextureSynthesizer, MultithreadSquareMask)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	_readImage(InputImagePath, InputTexture);
+	_readImage(SceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	/*_generateMask(MaskTexture, -1);*/
+	_readMask(MaskImagePath, MaskTexture);
+
+	CMultithreadTextureSynthesizer<int, 3> TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+
+	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
+}
+
 TEST_F(TestTextureSynthesizer, SquareMask)
 {
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
@@ -254,7 +272,7 @@ TEST_F(TestTextureSynthesizer, SquareMask)
 	/*_generateMask(MaskTexture, -1);*/
 	_readMask(MaskImagePath, MaskTexture);
 
-	CMultithreadTextureSynthesizer TextureSynthesizer;
+	COrderIndependentTextureSynthesizer<int, 3> TextureSynthesizer;
 	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 
 	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
