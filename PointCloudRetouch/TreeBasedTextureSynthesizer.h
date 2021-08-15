@@ -6,12 +6,12 @@ namespace hiveObliquePhotography::PointCloudRetouch
 	//template <typename Scalar_t, unsigned Channel>
 	using Scalar_t = int;
 	constexpr int Channel = 3;
-	class CMultithreadTextureSynthesizer
+	class CTreeBasedTextureSynthesizer
 	{
 	public:
 		using Texture_t = Eigen::Matrix<Eigen::Matrix<Scalar_t, Channel, 1>, Eigen::Dynamic, Eigen::Dynamic>;
-		CMultithreadTextureSynthesizer() = default;
-		~CMultithreadTextureSynthesizer() = default;
+		CTreeBasedTextureSynthesizer() = default;
+		~CTreeBasedTextureSynthesizer() = default;
 
 		void execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene);
 
@@ -55,6 +55,6 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		void __generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const;
 	};
 
-	//template class CMultithreadTextureSynthesizer<int, 3>;
-	//template class CMultithreadTextureSynthesizer<float, 1>;
+	//template class CTreeBasedTextureSynthesizer<int, 3>;
+	//template class CTreeBasedTextureSynthesizer<float, 1>;
 }

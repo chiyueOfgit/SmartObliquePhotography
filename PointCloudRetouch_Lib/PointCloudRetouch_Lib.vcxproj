@@ -195,6 +195,7 @@
     <ClInclude Include="..\PointCloudRetouch\stb_image.h" />
     <ClInclude Include="..\PointCloudRetouch\stb_image_write.h" />
     <ClInclude Include="..\PointCloudRetouch\TextureSynthesizer.h" />
+    <ClInclude Include="..\PointCloudRetouch\TreeBasedTextureSynthesizer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PointCloudRetouch\BoundaryDetector.cpp" />
@@ -229,6 +230,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\PointCloudRetouch\TextureSynthesizer.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\TreeBasedTextureSynthesizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\PointCloudRetouch\packages.config" />
