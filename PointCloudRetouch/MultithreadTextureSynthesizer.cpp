@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MultithreadTextureSynthesizer.h"
 #include "MipmapGenerator.h"
+#include <tbb/parallel_for.h>
 
 #define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
@@ -143,13 +144,26 @@ void CMultithreadTextureSynthesizer<Scalar_t, Channel>::__synthesizeTexture(int 
 	const auto Height = Texture.rows();
 	const auto Width = Texture.cols();
 
-#pragma omp parallel for
-	for (int i = 0; i < Height * Width; ++i)
-	{
-		auto& Item = Texture.coeffRef(i);
-		if (!__isAvailable(Item))
-			Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, i % Height, i / Height));
-	}
+	static tbb::affinity_partitioner Ap;
+	tbb::parallel_for(tbb::blocked_range<size_t>(0, Height * Width),
+		[&](const auto& vRange)
+		{
+			for (size_t i = vRange.begin(); i != vRange.end(); ++i)
+			{
+				auto& Item = Texture.coeffRef(i);
+				if (!__isAvailable(Item))
+					Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, i % Height, i / Height));
+			}
+		}, Ap
+	);
+	
+//#pragma omp parallel for
+//	for (int i = 0; i < Height * Width; ++i)
+//	{
+//		auto& Item = Texture.coeffRef(i);
+//		if (!__isAvailable(Item))
+//			Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, i % Height, i / Height));
+//	}
 }
 
 //*****************************************************************
