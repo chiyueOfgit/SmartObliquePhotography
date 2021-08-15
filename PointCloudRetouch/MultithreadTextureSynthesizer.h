@@ -1,8 +1,11 @@
 #pragma once
+#include <flann/flann.hpp>
 
 namespace hiveObliquePhotography::PointCloudRetouch
 {
 	template <typename Scalar_t, unsigned Channel>
+	//using Scalar_t = int;
+	//constexpr int Channel = 3;
 	class CMultithreadTextureSynthesizer
 	{
 	public:
@@ -14,17 +17,18 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 	private:
 		using Color_t = Eigen::Matrix<Scalar_t, Channel, 1>;
-		using Feature_t = Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic>;
+		using Feature_t = Eigen::Matrix<Scalar_t, 1, Eigen::Dynamic>;
 		//TODO: magic number
 		int m_KernelSize = 9;
 		int m_GaussianSize = 9;
 		int m_PyramidLayer = 4;
 		int m_GenerationNum = 3;
 		std::vector<std::pair<int, int>> m_NeighborOffset;
+		std::vector<std::tuple<flann::Index<flann::L2<Scalar_t>>* , Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor>, Eigen::Matrix<Scalar_t, -1, Channel>>> m_SearchSet;
 		std::vector<Texture_t> m_InputPyramid;
 		std::vector<std::vector<Texture_t>> m_Cache;
 
-		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).squaredNorm(); }
+		static auto __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).squaredNorm(); }
 		static bool __isAvailable(const Color_t& vValue) { return (vValue.array() >= 0).all(); }
 		static Eigen::Index __wrap(Eigen::Index vSize, Eigen::Index vIndex)
 		{
@@ -36,6 +40,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 		void __initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput);
 		void __initInputPyramid(const Texture_t& vTexture);
+		void __initSearchSet(const Texture_t& vTexture, int vFeatureLength);
 		void __initTexture(const Texture_t& vFrom, Texture_t& voTo) const;
 
 		bool __increase(int& vioLayer, int& vioGeneration) const;
