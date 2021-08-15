@@ -26,7 +26,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		std::vector<Texture_t> m_InputPyramid;
 		std::vector<std::vector<Texture_t>> m_Cache;
 
-		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).maxCoeff(); }
+		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).squaredNorm(); }
 		static bool __isAvailable(const Color_t& vValue) { return (vValue.array() >= 0).all(); }
 		static Eigen::Index __wrap(Eigen::Index vSize, Eigen::Index vIndex)
 		{
