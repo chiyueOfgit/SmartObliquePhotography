@@ -16,7 +16,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 	private:
 		using Color_t = Eigen::Matrix<Scalar_t, Channel, 1>;
-		using Feature_t = Eigen::Matrix<Scalar_t, Eigen::Dynamic, 1>;
+		using Feature_t = Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic>;
 		//TODO: magic number
 		int m_KernelSize = 9;
 		int m_GaussianSize = 9;
@@ -26,7 +26,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		std::vector<Texture_t> m_InputPyramid;
 		std::vector<std::vector<Texture_t>> m_Cache;
 
-		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).squaredNorm(); }
+		static Scalar_t __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).maxCoeff(); }
 		static bool __isAvailable(const Color_t& vValue) { return (vValue.array() >= 0).all(); }
 		static Eigen::Index __wrap(Eigen::Index vSize, Eigen::Index vIndex)
 		{

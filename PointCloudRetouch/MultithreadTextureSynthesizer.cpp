@@ -175,14 +175,14 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFeatureA
 //template <typename Scalar_t, unsigned Channel>
 auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const->Feature_t
 {
-	Eigen::Matrix<Scalar_t, Eigen::Dynamic, Channel> Feature(m_NeighborOffset.size(), Channel);
+	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature(Channel, m_NeighborOffset.size());
 	for (Eigen::Index It = 0; auto [RowOffset, ColOffset] : m_NeighborOffset)
 	{
 		auto RowIdWithOffset = __wrap(vTexture.rows(), vRowId + RowOffset);
 		auto ColIdWithOffset = __wrap(vTexture.cols(), vColId + ColOffset);
-		Feature.row(It++) = vTexture.coeff(RowIdWithOffset, ColIdWithOffset);
-	}
-	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
+		Feature.col(It++) = vTexture.coeff(RowIdWithOffset, ColIdWithOffset);
+	}	
+	return Feature;
 }
 
 //*****************************************************************
