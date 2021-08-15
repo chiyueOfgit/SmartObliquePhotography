@@ -170,7 +170,6 @@
     <ClInclude Include="..\PointCloudRetouch\HoleRepairer.h" />
     <ClInclude Include="..\PointCloudRetouch\InitialClusterCreator.h" />
     <ClInclude Include="..\PointCloudRetouch\MipmapGenerator.h" />
-    <ClInclude Include="..\PointCloudRetouch\MultithreadTextureSynthesizer.h" />
     <ClInclude Include="..\PointCloudRetouch\NeighborhoodBuilder.h" />
     <ClInclude Include="..\PointCloudRetouch\NormalComplexity.h" />
     <ClInclude Include="..\PointCloudRetouch\OrderIndependentTextureSynthesizer.h" />
@@ -205,7 +204,6 @@
     <ClCompile Include="..\PointCloudRetouch\HoleRepairer.cpp" />
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp" />
     <ClCompile Include="..\PointCloudRetouch\MipmapGenerator.cpp" />
-    <ClCompile Include="..\PointCloudRetouch\MultithreadTextureSynthesizer.cpp" />
     <ClCompile Include="..\PointCloudRetouch\NeighborhoodBuilder.cpp" />
     <ClCompile Include="..\PointCloudRetouch\NormalComplexity.cpp" />
     <ClCompile Include="..\PointCloudRetouch\OrderIndependentTextureSynthesizer.cpp" />

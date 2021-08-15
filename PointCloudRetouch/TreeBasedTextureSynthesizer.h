@@ -24,7 +24,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		int m_PyramidLayer = 4;
 		int m_GenerationNum = 3;
 		std::vector<std::pair<int, int>> m_NeighborOffset;
-		std::vector<std::tuple<flann::Index<flann::L2<Scalar_t>>* , Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor>, Eigen::Matrix<Scalar_t, -1, Channel>>> m_SearchSet;
+		std::vector<std::tuple<flann::Index<flann::L2<Scalar_t>>* , Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor>, Eigen::Matrix<Scalar_t, -1, Channel>, Eigen::Matrix<Scalar_t, -1, Channel>>> m_SearchSet;
 		std::vector<Texture_t> m_InputPyramid;
 		std::vector<std::vector<Texture_t>> m_Cache;
 

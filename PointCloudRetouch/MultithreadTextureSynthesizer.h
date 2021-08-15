@@ -5,7 +5,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 {
 	//template <typename Scalar_t, unsigned Channel>
 	using Scalar_t = int;
-	constexpr int Channel = 3;
+	extern constexpr int Channel = 3;
 	class CMultithreadTextureSynthesizer
 	{
 	public:

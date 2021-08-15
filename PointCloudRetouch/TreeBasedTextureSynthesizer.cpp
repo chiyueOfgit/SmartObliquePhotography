@@ -77,23 +77,27 @@ void CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__initCache(const Eige
 void CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__initSearchSet(const Texture_t& vTexture, int vFeatureLength)
 {
 	m_SearchSet.reserve(m_PyramidLayer);
-	for (const auto& Input : m_InputPyramid)
+	for (auto Layer = 0; Layer < m_InputPyramid.size(); Layer++)
 	{
+		const auto& Input = m_InputPyramid[Layer];
+
 		Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor> FeatureSet(Input.rows() * Input.cols(), vFeatureLength);
 		Eigen::Matrix<Scalar_t, -1, Channel> ColorSet(Input.rows() * Input.cols(), Channel);
+		Eigen::Matrix<Scalar_t, -1, Channel> UpperColorSet(Input.rows() * Input.cols(), Channel);
 		int Row = 0;
 		for (int i = 0; i < Input.rows(); i++)
 			for (int k = 0; k < Input.cols(); k++)
 			{
-				FeatureSet.row(Row) = __buildFeatureAt(Input, i, k).transpose();
+				FeatureSet.row(Row) = __buildFeatureAt(Input, i, k);
 				ColorSet.row(Row) = Input(i, k).transpose();
+				UpperColorSet.row(Row) = Layer + 1 < m_InputPyramid.size() ? m_InputPyramid[Layer + 1](2 * i, 2 * k).transpose() : m_InputPyramid[Layer](i, k).transpose();
 				Row++;
 			}
 		
 		flann::Matrix<Scalar_t> InputIndices(FeatureSet.data(), FeatureSet.rows(), FeatureSet.cols());
 		auto pTree = new flann::Index<flann::L2<Scalar_t>>(InputIndices, flann::KDTreeIndexParams(4));
 		pTree->buildIndex();
-		m_SearchSet.emplace_back(pTree, std::move(FeatureSet), std::move(ColorSet));
+		m_SearchSet.emplace_back(pTree, std::move(FeatureSet), std::move(ColorSet), std::move(UpperColorSet));
 	}
 }
 
@@ -219,19 +223,24 @@ auto CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(const
 //template <typename Scalar_t, unsigned Channel>
 auto CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Color_t
 {
-	__decrease(vLayer, vGeneration);
+	bool UseUpper = __decrease(vLayer, vGeneration);
 
 	Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor> Feature;
-	Feature.resize(1, vFeature.rows());
-	Feature = vFeature.transpose();
+	Feature = vFeature;
 	flann::Matrix<Scalar_t> Query(Feature.data(), 1, Feature.cols());
 	flann::Matrix<size_t> Index(new size_t, 1, 1);
 	flann::Matrix<float> Distance(new float, 1, 1);
 	std::get<0>(m_SearchSet[vLayer])->knnSearch(Query, Index, Distance, 1, {});
-	Color_t NearestValue = std::get<2>(m_SearchSet[vLayer]).row(Index[0][0]).transpose();
+	Color_t NearestValue;
+	if (UseUpper)
+		NearestValue = std::get<3>(m_SearchSet[vLayer]).row(Index[0][0]).transpose();
+	else
+		NearestValue = std::get<2>(m_SearchSet[vLayer]).row(Index[0][0]).transpose();
+	//Color_t TestIndexColor = m_InputPyramid[vLayer](Index[0][0] / m_InputPyramid[vLayer].cols(), Index[0][0] % m_InputPyramid[vLayer].cols()).transpose();
+
 	delete[] Index.ptr();
 	delete[] Distance.ptr();
-	
+
 	return NearestValue;
 }
 

@@ -111,9 +111,6 @@
     <ClInclude Include="PointClusterExpanderMultithread.h">
       <Filter>Operation\Expander</Filter>
     </ClInclude>
-    <ClInclude Include="MultithreadTextureSynthesizer.h">
-      <Filter>Utility</Filter>
-    </ClInclude>
     <ClInclude Include="TreeBasedTextureSynthesizer.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -186,9 +183,6 @@
     </ClCompile>
     <ClCompile Include="PointClusterExpanderMultithread.cpp">
       <Filter>Operation\Expander</Filter>
-    </ClCompile>
-    <ClCompile Include="MultithreadTextureSynthesizer.cpp">
-      <Filter>Utility</Filter>
     </ClCompile>
     <ClCompile Include="TreeBasedTextureSynthesizer.cpp">
       <Filter>Utility</Filter>

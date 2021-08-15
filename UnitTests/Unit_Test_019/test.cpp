@@ -1,7 +1,8 @@
 #include "pch.h"
-#include "TextureSynthesizer.h"
-#include "OrderIndependentTextureSynthesizer.h"
-#include "MultithreadTextureSynthesizer.h"
+//#include "TextureSynthesizer.h"
+//#include "OrderIndependentTextureSynthesizer.h"
+//#include "MultithreadTextureSynthesizer.h"
+#include "TreeBasedTextureSynthesizer.h"
 #include "MipmapGenerator.h"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
@@ -258,7 +259,7 @@ TEST_F(TestTextureSynthesizer, SquareMask)
 	
 	hiveCommon::CCPUTimer Timer;
 	Timer.start();
-	CMultithreadTextureSynthesizer/*<int, 3>*/ TextureSynthesizer;
+	CTreeBasedTextureSynthesizer/*<int, 3>*/ TextureSynthesizer;
 	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 	Timer.stop();
 	std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;

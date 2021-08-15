@@ -168,7 +168,6 @@
     <ClInclude Include="HoleRepairer.h" />
     <ClInclude Include="InitialClusterCreator.h" />
     <ClInclude Include="MipmapGenerator.h" />
-    <ClInclude Include="MultithreadTextureSynthesizer.h" />
     <ClInclude Include="NeighborhoodBuilder.h" />
     <ClInclude Include="NormalComplexity.h" />
     <ClInclude Include="OrderIndependentTextureSynthesizer.h" />
@@ -204,7 +203,6 @@
     <ClCompile Include="HoleRepairer.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
     <ClCompile Include="MipmapGenerator.cpp" />
-    <ClCompile Include="MultithreadTextureSynthesizer.cpp" />
     <ClCompile Include="NeighborhoodBuilder.cpp" />
     <ClCompile Include="NormalComplexity.cpp" />
     <ClCompile Include="OrderIndependentTextureSynthesizer.cpp" />
