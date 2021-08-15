@@ -40,7 +40,6 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const Textur
 	__initInputPyramid(vInput);
 	__initTexture(m_InputPyramid.front(), m_Cache.front().front());
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
-	__initSearchSet(vInput, m_NeighborOffset.size() * Channel);
 
 	int Layer = 0, Generation = 0;
 	while (__increase(Layer, Generation))
@@ -69,32 +68,6 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initCache(const Ei
 		m_Cache.emplace_back(m_GenerationNum, Gaussian);
 
 	m_Cache.front().resize(1);
-}
-
-//*****************************************************************
-//FUNCTION: 
-//template <typename Scalar_t, unsigned Channel>
-void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initSearchSet(const Texture_t& vTexture, int vFeatureLength)
-{
-	m_SearchSet.reserve(m_PyramidLayer);
-	for (const auto& Input : m_InputPyramid)
-	{
-		Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor> FeatureSet(Input.rows() * Input.cols(), vFeatureLength);
-		Eigen::Matrix<Scalar_t, -1, Channel> ColorSet(Input.rows() * Input.cols(), Channel);
-		int Row = 0;
-		for (int i = 0; i < Input.rows(); i++)
-			for (int k = 0; k < Input.cols(); k++)
-			{
-				FeatureSet.row(Row) = __buildFeatureAt(Input, i, k).transpose();
-				ColorSet.row(Row) = Input(i, k).transpose();
-				Row++;
-			}
-		
-		flann::Matrix<Scalar_t> InputIndices(FeatureSet.data(), FeatureSet.rows(), FeatureSet.cols());
-		auto pTree = new flann::Index<flann::L2<Scalar_t>>(InputIndices, flann::KDTreeIndexParams(4));
-		pTree->buildIndex();
-		m_SearchSet.emplace_back(pTree, std::move(FeatureSet), std::move(ColorSet));
-	}
 }
 
 //*****************************************************************
@@ -189,6 +162,19 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(
 //*****************************************************************
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
+auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
+{
+	if (__decrease(vLayer, vGeneration))
+	{
+		vRowId /= 2;
+		vColId /= 2;
+	}
+	return __buildFeatureAt(m_InputPyramid[vLayer], vRowId, vColId);
+}
+
+//*****************************************************************
+//FUNCTION: 
+//template <typename Scalar_t, unsigned Channel>
 auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
 {
 	if (__decrease(vLayer, vGeneration))
@@ -218,20 +204,21 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(con
 //FUNCTION: 
 //template <typename Scalar_t, unsigned Channel>
 auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Color_t
-{
-	__decrease(vLayer, vGeneration);
+{	
+	const auto& Texture = m_InputPyramid[vLayer];
+	Color_t NearestValue;
+	auto MinDistance = std::numeric_limits<Scalar_t>::max();
 
-	Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor> Feature;
-	Feature.resize(1, vFeature.rows());
-	Feature = vFeature.transpose();
-	flann::Matrix<Scalar_t> Query(Feature.data(), 1, Feature.cols());
-	flann::Matrix<size_t> Index(new size_t, 1, 1);
-	flann::Matrix<float> Distance(new float, 1, 1);
-	std::get<0>(m_SearchSet[vLayer])->knnSearch(Query, Index, Distance, 1, {});
-	Color_t NearestValue = std::get<2>(m_SearchSet[vLayer]).row(Index[0][0]).transpose();
-	delete[] Index.ptr();
-	delete[] Distance.ptr();
-	
+	for (Eigen::Index RowId = 0; RowId < Texture.rows(); ++RowId)
+		for (Eigen::Index ColId = 0; ColId < Texture.cols(); ++ColId)
+		{
+			auto Distance = __computeDistance(vFeature, __buildInputFeatureAt(vLayer, vGeneration, RowId, ColId));
+			if (MinDistance > Distance)
+			{
+				MinDistance = Distance;
+				NearestValue = Texture.coeff(RowId, ColId);
+			}
+		}
 	return NearestValue;
 }
 

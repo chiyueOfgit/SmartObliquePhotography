@@ -143,6 +143,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		__outputImage(BoundaryHeightMatrix, "Temp/output_beforeH.png");
 
 		COrderIndependentTextureSynthesizer<float, 1> HeightSynthesizer;
+		//CMultithreadTextureSynthesizer<float, 1> HeightSynthesizer;
 		HeightSynthesizer.execute(InputHeightMatrix, Mask, BoundaryHeightMatrix);
 		//__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
 		__gaussBlurbyHeightMatrix(BoundaryHeightMatrix, BoundaryPlaneLattices);

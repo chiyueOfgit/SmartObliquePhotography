@@ -24,7 +24,6 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		int m_PyramidLayer = 4;
 		int m_GenerationNum = 3;
 		std::vector<std::pair<int, int>> m_NeighborOffset;
-		std::vector<std::tuple<flann::Index<flann::L2<Scalar_t>>* , Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor>, Eigen::Matrix<Scalar_t, -1, Channel>>> m_SearchSet;
 		std::vector<Texture_t> m_InputPyramid;
 		std::vector<std::vector<Texture_t>> m_Cache;
 
@@ -40,7 +39,6 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 		void __initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput);
 		void __initInputPyramid(const Texture_t& vTexture);
-		void __initSearchSet(const Texture_t& vTexture, int vFeatureLength);
 		void __initTexture(const Texture_t& vFrom, Texture_t& voTo) const;
 
 		bool __increase(int& vioLayer, int& vioGeneration) const;
@@ -48,7 +46,8 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 		void __synthesizeTexture(int vLayer, int vGeneration);
 		Color_t __findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const;
-		
+
+		Feature_t __buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const;
 
