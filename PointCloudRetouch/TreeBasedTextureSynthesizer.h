@@ -51,6 +51,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		
 		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const;
+		Feature_t __buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::MatrixXi& vMask) const;
 
 		void __generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const;
 	};

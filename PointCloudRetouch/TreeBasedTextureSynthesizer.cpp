@@ -122,10 +122,32 @@ void CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__initTexture(const Te
 			auto& Item = voTo.coeffRef(RowId, ColId);
 			if (!__isAvailable(Item))
 			{
-				Item = vFrom.coeff(
-					hiveMath::hiveGenerateRandomInteger<Eigen::Index>(0, vFrom.rows() - 1),
-					hiveMath::hiveGenerateRandomInteger<Eigen::Index>(0, vFrom.cols() - 1)
-				);
+				//neighbor mask
+				const int KernelOffset = m_KernelSize / 2;
+				const int KernelWidth = KernelOffset * 2 + 1;
+				Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> NeighborMask(KernelWidth, KernelWidth);
+				NeighborMask.setConstant(0);
+				for (int i = -KernelOffset; i <= KernelOffset; ++i)
+					for (int k = -KernelOffset; k <= KernelOffset; ++k)
+						if (i < 0 || (i == 0 && k < 0))
+							NeighborMask(i + KernelOffset, k + KernelOffset) = 1;
+
+				auto Feature = __buildFeatureWithNeighborMask(voTo, RowId, ColId, NeighborMask);
+
+				float MinDistance = FLT_MAX;
+				std::pair<Eigen::Index, Eigen::Index> MinPos;
+				for (int i = 0; i < vFrom.rows(); i++)
+					for (int k = 0; k < vFrom.cols(); k++)
+					{
+						auto Distance = __computeDistance(Feature, __buildFeatureWithNeighborMask(vFrom, i, k, NeighborMask));
+						if (MinDistance > Distance)
+						{
+							MinDistance = Distance;
+							MinPos = { RowId, ColId };
+						}
+					}
+
+				Item = vFrom.coeff(MinPos.first, MinPos.second);
 			}
 		}
 }
@@ -215,6 +237,26 @@ auto CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(const
 		auto ColIdWithOffset = __wrap(vTexture.cols(), vColId + ColOffset);
 		Feature.col(It++) = vTexture.coeff(RowIdWithOffset, ColIdWithOffset);
 	}	
+	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
+}
+
+//template <typename Scalar_t, unsigned Channel>
+auto CTreeBasedTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const->Feature_t
+{
+	const int KernelOffset = m_KernelSize / 2;
+	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature(Channel, vMask.rows() * vMask.cols());
+	auto It = 0;
+	for (int i = -KernelOffset; i <= KernelOffset; ++i)
+		for (int k = -KernelOffset; k <= KernelOffset; ++k)
+			if (vMask(i + KernelOffset, k + KernelOffset) != 0)
+			{
+				auto RowIdWithOffset = (i + vRowId + vTexture.rows()) % vTexture.rows();
+				auto ColIdWithOffset = (k + vColId + vTexture.cols()) % vTexture.cols();
+				Feature.col(It++) = vTexture.coeff(RowIdWithOffset, ColIdWithOffset);
+			}
+			else
+				Feature.col(It++) = Eigen::Matrix<Scalar_t, Channel, 1>({});
+
 	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
 }
 
