@@ -31,6 +31,9 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		static bool __isAvailable(const Color_t& vValue) { return (vValue.array() >= 0).all(); }
 		static Eigen::Index __wrap(Eigen::Index vSize, Eigen::Index vIndex)
 		{
+			//if (vIndex < 0) vIndex = 0;
+			//else if (vIndex >= vSize) vIndex = vSize - 1;
+			//return vIndex;
 			if (vIndex < 0) vIndex += vSize;
 			else if (vIndex >= vSize) vIndex -= vSize;
 			return vIndex;

@@ -38,7 +38,7 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const Textur
 {
 	__initCache(vMask, vioScene);
 	__initInputPyramid(vInput);
-	__initTextureWithNeighborMask(m_InputPyramid.front(), m_Cache.front().front());
+	__initTextureWithNeighborMask(vInput, m_Cache.front().front());
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
 
 	int Layer = 0, Generation = 0;
@@ -104,6 +104,19 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initTexture(const 
 //template <typename Scalar_t, unsigned Channel>
 void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initTextureWithNeighborMask(const Texture_t& vFrom, Texture_t& voTo) const
 {
+	CMipmapGenerator<Color_t> TextureMipmapGenerator;
+	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
+	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vFrom, m_PyramidLayer);
+	int Suitable = 0;
+	for (int i = 0; i < InputPyramid.size(); i++)
+	{
+		if (abs(InputPyramid[i].rows() - voTo.rows()) < abs(InputPyramid[Suitable].rows() - voTo.rows()) && InputPyramid[i].rows() >= voTo.rows())
+			Suitable = i;
+	}
+	//auto Input = InputPyramid.front();
+	auto Input = InputPyramid[Suitable];
+	//auto Input = vFrom;
+
 	//neighbor mask
 	const int KernelOffset = m_KernelSize / 2;
 	const int KernelWidth = KernelOffset * 2 + 1;
@@ -124,10 +137,10 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initTextureWithNei
 
 				float MinDistance = FLT_MAX;
 				std::pair<Eigen::Index, Eigen::Index> MinPos;
-				for (int i = 0; i < vFrom.rows(); i++)
-					for (int k = 0; k < vFrom.cols(); k++)
+				for (int i = 0; i < Input.rows(); i++)
+					for (int k = 0; k < Input.cols(); k++)
 					{
-						auto Distance = __computeDistance(Feature, __buildFeatureWithNeighborMask(vFrom, i, k, NeighborMask));
+						auto Distance = __computeDistance(Feature, __buildFeatureWithNeighborMask(Input, i, k, NeighborMask));
 						if (MinDistance > Distance)
 						{
 							MinDistance = Distance;
@@ -135,7 +148,8 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initTextureWithNei
 						}
 					}
 
-				Item = vFrom.coeff(MinPos.first, MinPos.second);
+				Item = Input(MinPos.first, MinPos.second);
+				std::cout << _FORMAT_STR3("%1% %2% %3%\n", Input(MinPos.first, MinPos.second).row(0), Input(MinPos.first, MinPos.second).row(1), Input(MinPos.first, MinPos.second).row(2));
 			}
 		}
 }
@@ -247,22 +261,43 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(con
 auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const->Feature_t
 {
 	const int KernelOffset = m_KernelSize / 2;
-	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature(Channel, vMask.rows() * vMask.cols());
-	auto It = 0;
+	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature;
+	std::vector<Eigen::Matrix<Scalar_t, Channel, 1>> FeatureCols;
+
 	for (int i = -KernelOffset; i <= KernelOffset; ++i)
 		for (int k = -KernelOffset; k <= KernelOffset; ++k)
 			if (vMask(i + KernelOffset, k + KernelOffset) != 0)
 			{
-				auto RowIdWithOffset = __wrap(vTexture.rows(), vRowId + i);
-				auto ColIdWithOffset = __wrap(vTexture.cols(), vColId + k);
-				Feature.col(It++) = vTexture.coeff(RowIdWithOffset, ColIdWithOffset);
+				auto RowIdWithOffset = vRowId + i;
+				auto ColIdWithOffset = vColId + k;
+				//if (RowIdWithOffset < 0)
+				//	RowIdWithOffset = 0;
+				//if (ColIdWithOffset < 0)
+				//	ColIdWithOffset = 0;
+				//if (RowIdWithOffset >= vTexture.rows())
+				//	RowIdWithOffset = vTexture.rows() - 1;
+				//if (ColIdWithOffset >= vTexture.cols())
+				//	ColIdWithOffset = vTexture.cols() - 1;
+				RowIdWithOffset = __wrap(vTexture.rows(), RowIdWithOffset);
+				ColIdWithOffset = __wrap(vTexture.cols(), ColIdWithOffset);
+				if (__isAvailable(vTexture(RowIdWithOffset, ColIdWithOffset)))
+					FeatureCols.push_back(vTexture(RowIdWithOffset, ColIdWithOffset));
+				else
+					int i = 0;
 			}
-			else
-			{
-				Eigen::Matrix<Scalar_t, Channel, 1> Zero;
-				Zero.setConstant(0);
-				Feature.col(It++) = Zero;
-			}
+
+	Feature.resize(Channel, FeatureCols.size());
+
+	for (auto It = 0; auto & Col : FeatureCols)
+		Feature.col(It++) = Col;
+
+	//for (int i = 0; i < Feature.cols(); i++)
+	//{
+	//	for (int k = 0; k < Channel; k++)
+	//		std::cout << Feature(k, i) << " ";
+	//	std::cout << std::endl;
+	//}
+	//std::cout << std::endl;
 
 	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
 }

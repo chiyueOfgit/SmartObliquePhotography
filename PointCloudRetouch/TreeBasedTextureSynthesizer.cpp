@@ -132,10 +132,19 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborM
 	CMipmapGenerator<Color_t> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
 	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vFrom, m_PyramidLayer);
-	auto Input = InputPyramid.front();
+	int Suitable = 0;
+	for (int i = 0; i < InputPyramid.size(); i++)
+	{
+		if (abs(InputPyramid[i].rows() - voTo.rows()) < abs(InputPyramid[Suitable].rows() - voTo.rows()) && InputPyramid[i].rows() >= voTo.rows())
+			Suitable = i;
+		__generateResultImage(InputPyramid[i], "../TestData/Test019_Model/Input/Input" + std::to_string(i) + ".png");
+	}
+	//auto Input = vFrom;
+	//auto Input = InputPyramid.front();
+	auto Input = InputPyramid[Suitable];
 
 	//neighbor mask
-	const int KernelOffset = m_KernelSize / 2;
+	const int KernelOffset = m_KernelSize / 2; 
 	const int KernelWidth = KernelOffset * 2 + 1;
 	Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> NeighborMask(KernelWidth, KernelWidth);
 	NeighborMask.setConstant(0);
@@ -165,7 +174,8 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborM
 						}
 					}
 
-				Item = Input.coeff(MinPos.first, MinPos.second);
+				Item = Input(MinPos.first, MinPos.second);
+				std::cout << _FORMAT_STR3("%1% %2% %3%\n", Input(MinPos.first, MinPos.second).row(0), Input(MinPos.first, MinPos.second).row(1), Input(MinPos.first, MinPos.second).row(2));
 			}
 		}
 }
@@ -264,22 +274,33 @@ template <typename Scalar_t, unsigned Channel>
 auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const->Feature_t
 {
 	const int KernelOffset = m_KernelSize / 2;
-	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature(Channel, vMask.rows() * vMask.cols());
-	auto It = 0;
+	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature;
+	std::vector<Eigen::Matrix<Scalar_t, Channel, 1>> FeatureCols;
+
 	for (int i = -KernelOffset; i <= KernelOffset; ++i)
 		for (int k = -KernelOffset; k <= KernelOffset; ++k)
 			if (vMask(i + KernelOffset, k + KernelOffset) != 0)
 			{
 				auto RowIdWithOffset = __wrap(vTexture.rows(), vRowId + i);
 				auto ColIdWithOffset = __wrap(vTexture.cols(), vColId + k);
-				Feature.col(It++) = vTexture.coeff(RowIdWithOffset, ColIdWithOffset);
+				if (__isAvailable(vTexture(RowIdWithOffset, ColIdWithOffset)))
+					FeatureCols.push_back(vTexture(RowIdWithOffset, ColIdWithOffset));
+				else
+					int i = 0;
 			}
-			else
-			{
-				Eigen::Matrix<Scalar_t, Channel, 1> Zero;
-				Zero.setConstant(0);
-				Feature.col(It++) = Zero;
-			}
+
+	Feature.resize(Channel, FeatureCols.size());
+
+	for (auto It = 0; auto& Col : FeatureCols)
+		Feature.col(It++) = Col;
+
+	//for (int i = 0; i < Feature.cols(); i++)
+	//{
+	//	for (int k = 0; k < Channel; k++)
+	//		std::cout << Feature(k, i) << " ";
+	//	std::cout << std::endl;
+	//}
+	//std::cout << std::endl;
 
 	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
 }
