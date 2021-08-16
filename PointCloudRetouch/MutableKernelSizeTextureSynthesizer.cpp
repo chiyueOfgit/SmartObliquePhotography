@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "TreeBasedTextureSynthesizer.h"
+#include "MutableKernelSizeTextureSynthesizer.h"
 #include "MipmapGenerator.h"
 #include <tbb/parallel_for.h>
 
@@ -15,18 +15,18 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-std::vector<std::pair<int, int>> CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildNeighborOffset(int vKernelSize)
+std::vector<std::pair<int, int>> CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__buildNeighborOffset(int vKernelSize)
 {
 	const int KernelOffset = vKernelSize / 2;
 	const int KernelWidth = KernelOffset * 2 + 1;
 	std::vector<std::pair<int, int>> NeighborOffset;
 	NeighborOffset.reserve(KernelWidth * KernelWidth);
-	
+
 	for (int i = -KernelOffset; i <= KernelOffset; ++i)
 		for (int k = -KernelOffset; k <= KernelOffset; ++k)
-			if (std::hypot(i ,k) <= KernelOffset)
+			if (std::hypot(i, k) <= KernelOffset)
 				NeighborOffset.emplace_back(i, k);
-	
+
 	NeighborOffset.shrink_to_fit();
 	return NeighborOffset;
 }
@@ -34,18 +34,25 @@ std::vector<std::pair<int, int>> CTreeBasedTextureSynthesizer<Scalar_t, Channel>
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
+void CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
 {
 	__initCache(vMask, vioScene);
-	//__initTexture(vInput, m_Cache.front().front());
+	CMipmapGenerator<Color_t> TextureMipmapGenerator;
+	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
+	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vInput, m_PyramidLayer);
+	m_MinKernelSize = InputPyramid[0].rows() / 4;
+	for (int i = 0; i < m_PyramidLayer; i++)
+	{
+		int LayerKernelSize = m_MinKernelSize + 2 * i;
+		m_NeighborOffsets.push_back(__buildNeighborOffset(LayerKernelSize));
+	}
 	__initTextureWithNeighborMask(vInput, m_Cache.front().front());
-	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
-	__initSearchSet(vInput, m_NeighborOffset.size() * Channel);
+	__initSearchSet(vInput);
 
 	int Layer = 0, Generation = 0;
 	while (__increase(Layer, Generation))
 		__synthesizeTexture(Layer, Generation);
-	
+
 	int Cnt = 0;
 	for (const auto& i : m_Cache)
 		for (const auto& k : i)
@@ -57,12 +64,12 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& v
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
+void CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput)
 {
 	CMipmapGenerator<Color_t> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
 	auto OutputPyramid = TextureMipmapGenerator.getGaussianPyramid(vOutput, m_PyramidLayer, vMask);
-	
+
 	m_Cache.clear();
 	m_Cache.reserve(m_PyramidLayer);
 	for (const auto& Gaussian : OutputPyramid)
@@ -74,30 +81,30 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initCache(const Eigen::M
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initSearchSet(const Texture_t& vTexture, int vFeatureLength)
+void CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__initSearchSet(const Texture_t& vTexture)
 {
 	CMipmapGenerator<Color_t> TextureMipmapGenerator;
-	TextureMipmapGenerator.setKernalSize(m_GaussianSize);	
+	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
 	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vTexture, m_PyramidLayer);
-	
+
 	m_SearchSet.reserve(m_PyramidLayer);
 	for (auto Layer = 0; Layer < InputPyramid.size(); Layer++)
 	{
 		const auto& Input = InputPyramid[Layer];
 
-		Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor> FeatureSet(Input.rows() * Input.cols(), vFeatureLength);
+		Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor> FeatureSet(Input.rows() * Input.cols(), m_NeighborOffsets[Layer].size() * Channel);
 		Eigen::Matrix<Scalar_t, -1, Channel> ColorSet(Input.rows() * Input.cols(), Channel);
 		Eigen::Matrix<Scalar_t, -1, Channel> UpperColorSet(Input.rows() * Input.cols(), Channel);
 		int Row = 0;
 		for (int i = 0; i < Input.rows(); i++)
 			for (int k = 0; k < Input.cols(); k++)
 			{
-				FeatureSet.row(Row) = __buildFeatureAt(Input, i, k);
+				FeatureSet.row(Row) = __buildFeatureAt(Input, i, k, Layer);
 				ColorSet.row(Row) = Input(i, k);
 				UpperColorSet.row(Row) = Layer < InputPyramid.size() - 1 ? InputPyramid[Layer + 1](2 * i, 2 * k) : InputPyramid[Layer](i, k);
 				Row++;
 			}
-		
+
 		flann::Matrix InputIndices(FeatureSet.data(), FeatureSet.rows(), FeatureSet.cols());
 		auto pTree = new flann::Index<flann::L2<Scalar_t>>(InputIndices, flann::KDTreeIndexParams(4));
 		pTree->buildIndex();
@@ -108,7 +115,7 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initSearchSet(const Text
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTexture(const Texture_t& vFrom, Texture_t& voTo) const
+void CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__initTexture(const Texture_t& vFrom, Texture_t& voTo) const
 {
 	for (Eigen::Index RowId = 0; RowId < voTo.rows(); ++RowId)
 		for (Eigen::Index ColId = 0; ColId < voTo.cols(); ++ColId)
@@ -127,24 +134,22 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTexture(const Textur
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborMask(const Texture_t& vFrom, Texture_t& voTo) const
+void CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborMask(const Texture_t& vFrom, Texture_t& voTo) const
 {
 	CMipmapGenerator<Color_t> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
 	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vFrom, m_PyramidLayer);
 	int Suitable = 0;
-	for (int i = 0; i < InputPyramid.size(); i++)
-	{
-		if (abs(InputPyramid[i].rows() - voTo.rows()) < abs(InputPyramid[Suitable].rows() - voTo.rows()))
-			Suitable = i;
-		__generateResultImage(InputPyramid[i], "../TestData/Test019_Model/Input/Input" + std::to_string(i) + ".png");
-	}
-	//auto Input = InputPyramid.front();
-	//auto Input = InputPyramid[Suitable];
-	auto Input = vFrom;
+	//for (int i = 0; i < InputPyramid.size(); i++)
+	//{
+	//	if (abs(InputPyramid[i].rows() - voTo.rows()) < abs(InputPyramid[Suitable].rows() - voTo.rows()))
+	//		Suitable = i;
+	//	__generateResultImage(InputPyramid[i], "../TestData/Test019_Model/Input/Input" + std::to_string(i) + ".png");
+	//}
+	auto Input = InputPyramid[Suitable];
 
 	//neighbor mask
-	const int KernelOffset = m_KernelSize / 2; 
+	const int KernelOffset = (m_MinKernelSize + 2 * Suitable) / 2;	//最低为Min，和选择的层级相关
 	const int KernelWidth = KernelOffset * 2 + 1;
 	Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> NeighborMask(KernelWidth, KernelWidth);
 	NeighborMask.setConstant(0);
@@ -183,7 +188,7 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborM
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-bool CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__increase(int& vioLayer, int& vioGeneration) const
+bool CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__increase(int& vioLayer, int& vioGeneration) const
 {
 	if (vioGeneration < m_GenerationNum - 1 && vioLayer > 0)
 		++vioGeneration;
@@ -200,7 +205,7 @@ bool CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__increase(int& vioLayer, 
 ////*****************************************************************
 ////FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-bool CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__decrease(int& vioLayer, int& vioGeneration) const
+bool CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__decrease(int& vioLayer, int& vioGeneration) const
 {
 	bool Reduce = false;
 	if (vioGeneration > 0)
@@ -220,7 +225,7 @@ bool CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__decrease(int& vioLayer, 
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__synthesizeTexture(int vLayer, int vGeneration)
+void CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__synthesizeTexture(int vLayer, int vGeneration)
 {
 	auto& Texture = m_Cache[vLayer][vGeneration];
 	const auto Height = Texture.rows();
@@ -243,37 +248,37 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__synthesizeTexture(int vL
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
+auto CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
 {
 	if (__decrease(vLayer, vGeneration))
 	{
 		vRowId /= 2;
 		vColId /= 2;
 	}
-	return __buildFeatureAt(m_Cache[vLayer][vGeneration], vRowId, vColId);
+	return __buildFeatureAt(m_Cache[vLayer][vGeneration], vRowId, vColId, vLayer);
 }
 
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const->Feature_t
+auto CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, int vLayer) const->Feature_t
 {
-	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature(Channel, m_NeighborOffset.size());
-	for (Eigen::Index It = 0; auto [RowOffset, ColOffset] : m_NeighborOffset)
+	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature(Channel, m_NeighborOffsets[vLayer].size());
+	for (Eigen::Index It = 0; auto [RowOffset, ColOffset] : m_NeighborOffsets[vLayer])
 	{
 		auto RowIdWithOffset = __wrap(vTexture.rows(), vRowId + RowOffset);
 		auto ColIdWithOffset = __wrap(vTexture.cols(), vColId + ColOffset);
 		Feature.col(It++) = vTexture.coeff(RowIdWithOffset, ColIdWithOffset);
-	}	
+	}
 	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
 }
 
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const->Feature_t
+auto CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const->Feature_t
 {
-	const int KernelOffset = m_KernelSize / 2;
+	const int KernelOffset = vMask.rows() / 2;
 	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature;
 	std::vector<Eigen::Matrix<Scalar_t, Channel, 1>> FeatureCols;
 
@@ -291,7 +296,7 @@ auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighbor
 
 	Feature.resize(Channel, FeatureCols.size());
 
-	for (auto It = 0; auto& Col : FeatureCols)
+	for (auto It = 0; auto & Col : FeatureCols)
 		Feature.col(It++) = Col;
 
 	//for (int i = 0; i < Feature.cols(); i++)
@@ -308,7 +313,7 @@ auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighbor
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Color_t
+auto CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Color_t
 {
 	bool UseUpper = __decrease(vLayer, vGeneration);
 
@@ -325,14 +330,13 @@ auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__findNearestValue(int vLa
 
 	delete[] Index.ptr();
 	delete[] Distance.ptr();
-
 	return NearestValue;
 }
 
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const
+void CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const
 {
 	const auto Width = vTexture.cols();
 	const auto Height = vTexture.rows();

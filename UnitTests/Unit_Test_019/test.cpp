@@ -3,6 +3,7 @@
 //#include "OrderIndependentTextureSynthesizer.h"
 #include "MultithreadTextureSynthesizer.h"
 #include "TreeBasedTextureSynthesizer.h"
+#include "MutableKernelSizeTextureSynthesizer.h"
 #include "MipmapGenerator.h"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
@@ -42,7 +43,7 @@ const auto HeightMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/mask
 const auto HeightSceneImagePath = TESTMODEL_DIR + std::string("Test019_Model/sceneH.png");
 const auto HeightResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/ResultH.png");
 
-const std::vector<std::string> SpecialImageName{ "FourColor" };
+const std::vector<std::string> SpecialImageName{ "LineColor", "FourColor","Diamond" };
 const auto SpecialImagePath = TESTMODEL_DIR + std::string("Test019_Model/SpecialTest/");
 
 struct SImageInfo
@@ -258,27 +259,27 @@ protected:
 //			EXPECT_EQ(OutputTexture(i, k), SceneTexture(i, k));
 //}
 
-//TEST_F(TestTextureSynthesizer, SquareMask)
-//{
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-//
-//	_readImage(InputImagePath, InputTexture);
-//	_readImage(SceneImagePath, OutputTexture);
-//
-//	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-//	/*_generateMask(MaskTexture, -1);*/
-//	_readMask(MaskImagePath, MaskTexture);
-//	
-//	hiveCommon::CCPUTimer Timer;
-//	Timer.start();
-//	CTreeBasedTextureSynthesizer<int, 3> TextureSynthesizer;
-//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-//	Timer.stop();
-//	std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;
-//	
-//	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
-//}
+TEST_F(TestTextureSynthesizer, SquareMask)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	_readImage(InputImagePath, InputTexture);
+	_readImage(SceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	/*_generateMask(MaskTexture, -1);*/
+	_readMask(MaskImagePath, MaskTexture);
+	
+	hiveCommon::CCPUTimer Timer;
+	Timer.start();
+	CMutableKernelSizeTextureSynthesizer<int, 3> TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+	Timer.stop();
+	std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;
+	
+	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
+}
 
 //TEST_F(TestTextureSynthesizer, RandomMask)
 //{
@@ -312,7 +313,7 @@ TEST_F(TestTextureSynthesizer, SpecialInput)
 		
 		hiveCommon::CCPUTimer Timer;
 		Timer.start();
-		CTreeBasedTextureSynthesizer<int, 3> TextureSynthesizer;
+		CMutableKernelSizeTextureSynthesizer<int, 3> TextureSynthesizer;
 		TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 		Timer.stop();
 		std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;
@@ -320,7 +321,6 @@ TEST_F(TestTextureSynthesizer, SpecialInput)
 		//_generateResultImage(OutputTexture, SquareMaskResultImagePath);
 		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask3" + ".png"});
 	}
-	
 }
 
 //TEST_F(TestTextureSynthesizer, Height)
