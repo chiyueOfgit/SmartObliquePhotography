@@ -37,9 +37,8 @@ template <typename Scalar_t, unsigned Channel>
 void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene)
 {
 	__initCache(vMask, vioScene);
-	__initInputPyramid(vInput);
-	__initTextureWithNeighborMask(m_InputPyramid.front(), m_Cache.front().front());
-	__initTexture(vInput, m_Cache.front().front());
+	//__initTexture(vInput, m_Cache.front().front());
+	__initTextureWithNeighborMask(vInput, m_Cache.front().front());
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
 	__initSearchSet(vInput, m_NeighborOffset.size() * Channel);
 
@@ -109,16 +108,6 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initSearchSet(const Text
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initInputPyramid(const Texture_t& vTexture)
-{
-	CMipmapGenerator<Color_t> TextureMipmapGenerator;
-	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
-	m_InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vTexture, m_PyramidLayer);
-}
-
-//*****************************************************************
-//FUNCTION: 
-template <typename Scalar_t, unsigned Channel>
 void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTexture(const Texture_t& vFrom, Texture_t& voTo) const
 {
 	for (Eigen::Index RowId = 0; RowId < voTo.rows(); ++RowId)
@@ -140,6 +129,11 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTexture(const Textur
 template <typename Scalar_t, unsigned Channel>
 void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborMask(const Texture_t& vFrom, Texture_t& voTo) const
 {
+	CMipmapGenerator<Color_t> TextureMipmapGenerator;
+	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
+	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vInput, m_PyramidLayer);
+	auto Input = InputPyrramid.front();
+
 	//neighbor mask
 	const int KernelOffset = m_KernelSize / 2;
 	const int KernelWidth = KernelOffset * 2 + 1;
@@ -160,10 +154,10 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborM
 
 				float MinDistance = FLT_MAX;
 				std::pair<Eigen::Index, Eigen::Index> MinPos;
-				for (int i = 0; i < vFrom.rows(); i++)
-					for (int k = 0; k < vFrom.cols(); k++)
+				for (int i = 0; i < Input.rows(); i++)
+					for (int k = 0; k < Input.cols(); k++)
 					{
-						auto Distance = __computeDistance(Feature, __buildFeatureWithNeighborMask(vFrom, i, k, NeighborMask));
+						auto Distance = __computeDistance(Feature, __buildFeatureWithNeighborMask(Input, i, k, NeighborMask));
 						if (MinDistance > Distance)
 						{
 							MinDistance = Distance;
@@ -171,7 +165,7 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborM
 						}
 					}
 
-				Item = vFrom.coeff(MinPos.first, MinPos.second);
+				Item = Input.coeff(MinPos.first, MinPos.second);
 			}
 		}
 }
