@@ -258,27 +258,27 @@ protected:
 //			EXPECT_EQ(OutputTexture(i, k), SceneTexture(i, k));
 //}
 
-//TEST_F(TestTextureSynthesizer, SquareMask)
-//{
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-//
-//	_readImage(InputImagePath, InputTexture);
-//	_readImage(SceneImagePath, OutputTexture);
-//
-//	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-//	/*_generateMask(MaskTexture, -1);*/
-//	_readMask(MaskImagePath, MaskTexture);
-//	
-//	hiveCommon::CCPUTimer Timer;
-//	Timer.start();
-//	CMultithreadTextureSynthesizer<int, 3> TextureSynthesizer;
-//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-//	Timer.stop();
-//	std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;
-//	
-//	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
-//}
+TEST_F(TestTextureSynthesizer, SquareMask)
+{
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+
+	_readImage(InputImagePath, InputTexture);
+	_readImage(SceneImagePath, OutputTexture);
+
+	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+	/*_generateMask(MaskTexture, -1);*/
+	_readMask(MaskImagePath, MaskTexture);
+	
+	hiveCommon::CCPUTimer Timer;
+	Timer.start();
+	CTreeBasedTextureSynthesizer<int, 3> TextureSynthesizer;
+	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+	Timer.stop();
+	std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;
+	
+	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
+}
 
 //TEST_F(TestTextureSynthesizer, RandomMask)
 //{

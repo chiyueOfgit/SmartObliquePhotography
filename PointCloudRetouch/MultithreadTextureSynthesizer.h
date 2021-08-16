@@ -40,6 +40,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		void __initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput);
 		void __initInputPyramid(const Texture_t& vTexture);
 		void __initTexture(const Texture_t& vFrom, Texture_t& voTo) const;
+		void __initTextureWithNeighborMask(const Texture_t& vFrom, Texture_t& voTo) const;
 
 		bool __increase(int& vioLayer, int& vioGeneration) const;
 		bool __decrease(int& vioLayer, int& vioGeneration) const;
@@ -50,6 +51,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		Feature_t __buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const;
+		Feature_t __buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const;
 
 		void __generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const;
 	};
