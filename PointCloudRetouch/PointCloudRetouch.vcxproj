@@ -168,7 +168,6 @@
     <ClInclude Include="HoleRepairer.h" />
     <ClInclude Include="InitialClusterCreator.h" />
     <ClInclude Include="MipmapGenerator.h" />
-    <ClInclude Include="MultithreadTextureSynthesizer.h" />
     <ClInclude Include="NeighborhoodBuilder.h" />
     <ClInclude Include="NormalComplexity.h" />
     <ClInclude Include="OrderIndependentTextureSynthesizer.h" />
@@ -194,6 +193,7 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="TextureSynthesizer.h" />
+    <ClInclude Include="TreeBasedTextureSynthesizer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BoundaryDetector.cpp" />
@@ -203,7 +203,6 @@
     <ClCompile Include="HoleRepairer.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
     <ClCompile Include="MipmapGenerator.cpp" />
-    <ClCompile Include="MultithreadTextureSynthesizer.cpp" />
     <ClCompile Include="NeighborhoodBuilder.cpp" />
     <ClCompile Include="NormalComplexity.cpp" />
     <ClCompile Include="OrderIndependentTextureSynthesizer.cpp" />
@@ -228,6 +227,7 @@
     <ClCompile Include="PrecomputeManager.cpp" />
     <ClCompile Include="RetouchTask.cpp" />
     <ClCompile Include="TextureSynthesizer.cpp" />
+    <ClCompile Include="TreeBasedTextureSynthesizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

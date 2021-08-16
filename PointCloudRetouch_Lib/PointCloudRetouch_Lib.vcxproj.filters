@@ -111,7 +111,7 @@
     <ClInclude Include="..\PointCloudRetouch\OrderIndependentTextureSynthesizer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\PointCloudRetouch\MultithreadTextureSynthesizer.h">
+    <ClInclude Include="..\PointCloudRetouch\TreeBasedTextureSynthesizer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -194,7 +194,7 @@
     <ClCompile Include="..\PointCloudRetouch\OrderIndependentTextureSynthesizer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\PointCloudRetouch\MultithreadTextureSynthesizer.cpp">
+    <ClCompile Include="..\PointCloudRetouch\TreeBasedTextureSynthesizer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

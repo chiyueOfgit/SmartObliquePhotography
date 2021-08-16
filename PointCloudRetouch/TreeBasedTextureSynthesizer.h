@@ -5,18 +5,18 @@ namespace hiveObliquePhotography::PointCloudRetouch
 {
 	//template <typename Scalar_t, unsigned Channel>
 	using Scalar_t = int;
-	extern constexpr int Channel = 3;
-	class CMultithreadTextureSynthesizer
+	constexpr int Channel = 3;
+	class CTreeBasedTextureSynthesizer
 	{
 	public:
 		using Texture_t = Eigen::Matrix<Eigen::Matrix<Scalar_t, Channel, 1>, Eigen::Dynamic, Eigen::Dynamic>;
-		CMultithreadTextureSynthesizer() = default;
-		~CMultithreadTextureSynthesizer() = default;
+		CTreeBasedTextureSynthesizer() = default;
+		~CTreeBasedTextureSynthesizer() = default;
 
 		void execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene);
 
 	private:
-		using Color_t = Eigen::Matrix<Scalar_t, Channel, 1>;
+		using Color_t = Texture_t::value_type;
 		using Feature_t = Eigen::Matrix<Scalar_t, 1, Eigen::Dynamic>;
 		//TODO: magic number
 		int m_KernelSize = 9;
@@ -24,7 +24,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		int m_PyramidLayer = 4;
 		int m_GenerationNum = 3;
 		std::vector<std::pair<int, int>> m_NeighborOffset;
-		std::vector<Texture_t> m_InputPyramid;
+		std::vector<std::tuple<flann::Index<flann::L2<Scalar_t>>* , Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor>, Eigen::Matrix<Scalar_t, -1, Channel>, Eigen::Matrix<Scalar_t, -1, Channel>>> m_SearchSet;
 		std::vector<std::vector<Texture_t>> m_Cache;
 
 		static auto __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).squaredNorm(); }
@@ -38,7 +38,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		static std::vector<std::pair<int, int>> __buildNeighborOffset(int vKernelSize);
 
 		void __initCache(const Eigen::MatrixXi& vMask, const Texture_t& vOutput);
-		void __initInputPyramid(const Texture_t& vTexture);
+		void __initSearchSet(const Texture_t& vTexture, int vFeatureLength);
 		void __initTexture(const Texture_t& vFrom, Texture_t& voTo) const;
 
 		bool __increase(int& vioLayer, int& vioGeneration) const;
@@ -46,14 +46,13 @@ namespace hiveObliquePhotography::PointCloudRetouch
 
 		void __synthesizeTexture(int vLayer, int vGeneration);
 		Color_t __findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const;
-
-		Feature_t __buildInputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
+		
 		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const;
 
 		void __generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const;
 	};
 
-	//template class CMultithreadTextureSynthesizer<int, 3>;
-	//template class CMultithreadTextureSynthesizer<float, 1>;
+	//template class CTreeBasedTextureSynthesizer<int, 3>;
+	//template class CTreeBasedTextureSynthesizer<float, 1>;
 }
