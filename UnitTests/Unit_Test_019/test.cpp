@@ -42,8 +42,14 @@ const auto HeightMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/mask
 const auto HeightSceneImagePath = TESTMODEL_DIR + std::string("Test019_Model/sceneH.png");
 const auto HeightResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/ResultH.png");
 
-const std::vector<std::string> SpecialImageName{ /*"Diamond", "FourColor", */"LineColor" ,"Tangram", "Star"};
-const auto SpecialImagePath = TESTMODEL_DIR + std::string("Test019_Model/SpecialTest/");
+const std::vector<std::string> SpecialImageName{ "Diamond", "FourColor", "LineColor" };
+const auto SpecialImagePath = TESTMODEL_DIR + std::string("Test019_Model/");
+
+struct SImageInfo
+{
+	unsigned char* ImageData;
+	int Width, Height, BytesPerPixel;
+};
 
 class TestTextureSynthesizer : public testing::Test
 {
@@ -71,6 +77,13 @@ protected:
 			for (int k = 0; k < Width; k++)
 				for (int Offset = 0; Offset < 3; Offset++)
 					voTexture(i, k)[Offset] = ImageData[(i * Width + k) * BytesPerPixel + Offset];
+	}
+
+	void _readImage(const std::string& vImagePath, SImageInfo& voInfo )
+	{
+		const char* filepath = vImagePath.c_str();
+		unsigned char* ImageData = stbi_load(filepath, &voInfo.Width, &voInfo.Height, &voInfo.BytesPerPixel, 0);
+		voInfo.ImageData = ImageData;	
 	}
 
 	void _readMask(const std::string& vImagePath, Eigen::MatrixXi& voMask)
@@ -297,11 +310,16 @@ TEST_F(TestTextureSynthesizer, SquareMask)
 //		Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
 //		/*_generateMask(MaskTexture, -1);*/
 //		_readMask(MaskImagePath, MaskTexture);
-//
+//		
+//		hiveCommon::CCPUTimer Timer;
+//		Timer.start();
 //		CTextureSynthesizer<int, 3> TextureSynthesizer;
 //		TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-//
-//		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask" + ".png"});
+//		Timer.stop();
+//		std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;
+//		
+//		//_generateResultImage(OutputTexture, SquareMaskResultImagePath);
+//		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask3" + ".png"});
 //	}
 //	
 //}
@@ -415,3 +433,34 @@ TEST_F(TestTextureSynthesizer, SquareMask)
 //		_generateResultImage(GaussianStack[i], TESTMODEL_DIR + std::string("Test019_Model/GaussianStack/GaussianStack_") + std::to_string(i) + std::string(".png"));
 //	}
 //}
+
+TEST_F(TestTextureSynthesizer, PixelComparison)
+{
+	bool Result = true;
+	SImageInfo FormerInfo, LatterInfo;
+	_readImage(InputImagePath, FormerInfo);
+	_readImage(InputImagePath, LatterInfo);
+	if (FormerInfo.Width != LatterInfo.Width || FormerInfo.Height != LatterInfo.Height || FormerInfo.BytesPerPixel != LatterInfo.BytesPerPixel)
+		Result = false;
+	ASSERT_EQ(Result,true);
+	
+	int Width = FormerInfo.Width;
+	int Height = FormerInfo.Height;
+	int BytesPerPixel = FormerInfo.BytesPerPixel;
+	Eigen::Vector3i FormerColor, LatterColor;
+	for(int i = 0; i < Width * Height; i++)
+	{
+		FormerColor[0] = FormerInfo.ImageData[i * BytesPerPixel];
+		FormerColor[1] = FormerInfo.ImageData[i * BytesPerPixel + 1];
+		FormerColor[2] = FormerInfo.ImageData[i * BytesPerPixel + 2];
+		LatterColor[0] = LatterInfo.ImageData[i * BytesPerPixel];
+		LatterColor[1] = LatterInfo.ImageData[i * BytesPerPixel + 1];
+		LatterColor[2] = LatterInfo.ImageData[i * BytesPerPixel + 2];
+		if(FormerColor != LatterColor)
+		{
+			Result = false;
+			break;
+		}
+	}
+	ASSERT_EQ(Result, true);
+}
