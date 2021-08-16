@@ -3,9 +3,10 @@
 
 namespace hiveObliquePhotography::PointCloudRetouch
 {
-	//template <typename Scalar_t, unsigned Channel>
-	using Scalar_t = int;
-	constexpr int Channel = 3;
+	//using Scalar_t = int;
+	//constexpr int Channel = 3;
+
+	template <typename Scalar_t, unsigned Channel>
 	class CTreeBasedTextureSynthesizer
 	{
 	public:
@@ -42,6 +43,7 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		void __initInputPyramid(const Texture_t& vTexture);
 		void __initSearchSet(const Texture_t& vTexture, int vFeatureLength);
 		void __initTexture(const Texture_t& vFrom, Texture_t& voTo) const;
+		void __initTextureWithNeighborMask(const Texture_t& vFrom, Texture_t& voTo) const;
 
 		bool __increase(int& vioLayer, int& vioGeneration) const;
 		bool __decrease(int& vioLayer, int& vioGeneration) const;
@@ -51,11 +53,11 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		
 		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const;
-		Feature_t __buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::MatrixXi& vMask) const;
+		Feature_t __buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const;
 
 		void __generateResultImage(const Texture_t& vTexture, const std::string& vOutputImagePath) const;
 	};
 
-	//template class CTreeBasedTextureSynthesizer<int, 3>;
-	//template class CTreeBasedTextureSynthesizer<float, 1>;
+	template class CTreeBasedTextureSynthesizer<int, 3>;
+	template class CTreeBasedTextureSynthesizer<float, 1>;
 }

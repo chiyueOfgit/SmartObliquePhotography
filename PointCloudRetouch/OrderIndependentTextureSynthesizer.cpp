@@ -37,7 +37,7 @@ void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::execute(const Textu
 {
 	__initCache(vMask, vioScene);
 	__initInputPyramid(vInput);
-	__initTexture(m_InputPyramid.front(), m_Cache.front().front());
+	__initTextureWithNeighborMask(m_InputPyramid.front(), m_Cache.front().front());
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
 
 	for (Eigen::Index RowId = 0; RowId < vioScene.rows(); ++RowId)
@@ -45,10 +45,10 @@ void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::execute(const Textu
 			if (vMask.coeff(RowId, ColId))
 				vioScene.coeffRef(RowId, ColId) = __synthesizePixel(m_PyramidLayer - 1, m_GenerationNum - 1, RowId, ColId);
 
-	//int Cnt = 0;
-	//for (const auto& i : m_Cache)
-	//	for (const auto& k : i)
-	//		__generateResultImage(k, "../TestData/Test019_Model/Cache/" + std::string("Cache") + std::to_string(Cnt++) + ".png");
+	int Cnt = 0;
+	for (const auto& i : m_Cache)
+		for (const auto& k : i)
+			__generateResultImage(k, "../TestData/Test019_Model/Cache/" + std::string("Cache") + std::to_string(Cnt++) + ".png");
 }
 
 //*****************************************************************
@@ -96,9 +96,50 @@ void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__initTexture(const
 			}
 		}
 }
-//
-////*****************************************************************
-////FUNCTION: 
+
+//*****************************************************************
+//FUNCTION: 
+template <typename Scalar_t, unsigned Channel>
+void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborMask(const Texture_t& vFrom, Texture_t& voTo) const
+{
+	//neighbor mask
+	const int KernelOffset = m_KernelSize / 2;
+	const int KernelWidth = KernelOffset * 2 + 1;
+	Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> NeighborMask(KernelWidth, KernelWidth);
+	NeighborMask.setConstant(0);
+	for (int i = -KernelOffset; i <= KernelOffset; ++i)
+		for (int k = -KernelOffset; k <= KernelOffset; ++k)
+			if (i < 0 || (i == 0 && k < 0))
+				NeighborMask(i + KernelOffset, k + KernelOffset) = 1;
+
+	for (Eigen::Index RowId = 0; RowId < voTo.rows(); ++RowId)
+		for (Eigen::Index ColId = 0; ColId < voTo.cols(); ++ColId)
+		{
+			auto& Item = voTo.coeffRef(RowId, ColId);
+			if (!__isAvailable(Item))
+			{
+				auto Feature = __buildFeatureWithNeighborMask(voTo, RowId, ColId, NeighborMask);
+
+				float MinDistance = FLT_MAX;
+				std::pair<Eigen::Index, Eigen::Index> MinPos;
+				for (int i = 0; i < vFrom.rows(); i++)
+					for (int k = 0; k < vFrom.cols(); k++)
+					{
+						auto Distance = __computeDistance(Feature, __buildFeatureWithNeighborMask(vFrom, i, k, NeighborMask));
+						if (MinDistance > Distance)
+						{
+							MinDistance = Distance;
+							MinPos = { i, k };
+						}
+					}
+
+				Item = vFrom.coeff(MinPos.first, MinPos.second);
+			}
+		}
+}
+
+//*****************************************************************
+//FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
 void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__decrease(int& vioLayer, int& vioGeneration, Eigen::Index& vioRowId, Eigen::Index& vioColId) const
 {
@@ -204,6 +245,34 @@ auto COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildInputFeature
 
 		Feature.row(It++) = __getInputAt(vLayer, RowIdWithOffset, ColIdWithOffset);
 	}
+
+	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
+}
+
+//*****************************************************************
+//FUNCTION: 
+template <typename Scalar_t, unsigned Channel>
+auto COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const->Feature_t
+{
+	const int KernelOffset = m_KernelSize / 2;
+	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature(Channel, vMask.rows() * vMask.cols());
+	auto It = 0;
+	for (int i = -KernelOffset; i <= KernelOffset; ++i)
+		for (int k = -KernelOffset; k <= KernelOffset; ++k)
+			if (vMask(i + KernelOffset, k + KernelOffset) != 0)
+			{
+				auto RowIdWithOffset = vRowId + i;
+				auto ColIdWithOffset = vColId + k;
+				__wrap(vTexture.rows(), RowIdWithOffset);
+				__wrap(vTexture.cols(), ColIdWithOffset);
+				Feature.col(It++) = vTexture.coeff(RowIdWithOffset, ColIdWithOffset);
+			}
+			else
+			{
+				Eigen::Matrix<Scalar_t, Channel, 1> Zero;
+				Zero.setConstant(0);
+				Feature.col(It++) = Zero;
+			}
 
 	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
 }
