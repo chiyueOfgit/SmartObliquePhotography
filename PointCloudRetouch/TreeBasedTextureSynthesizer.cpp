@@ -131,8 +131,8 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborM
 {
 	CMipmapGenerator<Color_t> TextureMipmapGenerator;
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
-	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vInput, m_PyramidLayer);
-	auto Input = InputPyrramid.front();
+	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vFrom, m_PyramidLayer);
+	auto Input = InputPyramid.front();
 
 	//neighbor mask
 	const int KernelOffset = m_KernelSize / 2;
