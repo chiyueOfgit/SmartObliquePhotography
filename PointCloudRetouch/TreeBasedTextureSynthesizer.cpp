@@ -42,9 +42,22 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& v
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
 	__initSearchSet(vInput, m_NeighborOffset.size() * Channel);
 
-	int Layer = 0, Generation = 0;
-	while (__increase(Layer, Generation))
-		__synthesizeTexture(Layer, Generation);
+	for (int Layer = 1; Layer < m_PyramidLayer; ++Layer)
+	{
+		//upsample
+		const auto& From = m_Cache[Layer - 1].back();
+		auto& To = m_Cache[Layer].front();
+		for (Eigen::Index RowId = 0; RowId < From.rows(); ++RowId)
+			for (Eigen::Index ColId = 0; ColId < From.cols(); ++ColId)
+			{
+				constexpr std::pair<int, int> Offset[] = { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } };
+				for (auto& [i, k] : Offset)
+					To(2 * RowId + i, 2 * ColId + k) = From(RowId, ColId);
+			}
+		
+		for (int Generation = 1; Generation < m_GenerationNum; ++Generation)
+			__synthesizeTexture(Layer, Generation);
+	}
 	
 	int Cnt = 0;
 	for (const auto& i : m_Cache)
@@ -87,21 +100,19 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initSearchSet(const Text
 
 		Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor> FeatureSet(Input.rows() * Input.cols(), vFeatureLength);
 		Eigen::Matrix<Scalar_t, -1, Channel> ColorSet(Input.rows() * Input.cols(), Channel);
-		Eigen::Matrix<Scalar_t, -1, Channel> UpperColorSet(Input.rows() * Input.cols(), Channel);
 		int Row = 0;
 		for (int i = 0; i < Input.rows(); i++)
 			for (int k = 0; k < Input.cols(); k++)
 			{
 				FeatureSet.row(Row) = __buildFeatureAt(Input, i, k);
 				ColorSet.row(Row) = Input(i, k);
-				UpperColorSet.row(Row) = Layer < InputPyramid.size() - 1 ? InputPyramid[Layer + 1](2 * i, 2 * k) : InputPyramid[Layer](i, k);
 				Row++;
 			}
 		
 		flann::Matrix InputIndices(FeatureSet.data(), FeatureSet.rows(), FeatureSet.cols());
 		auto pTree = new flann::Index<flann::L2<Scalar_t>>(InputIndices, flann::KDTreeIndexParams(4));
 		pTree->buildIndex();
-		m_SearchSet.emplace_back(pTree, std::move(FeatureSet), std::move(ColorSet), std::move(UpperColorSet));
+		m_SearchSet.emplace_back(pTree, std::move(FeatureSet), std::move(ColorSet));
 	}
 }
 
@@ -183,43 +194,6 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborM
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-bool CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__increase(int& vioLayer, int& vioGeneration) const
-{
-	if (vioGeneration < m_GenerationNum - 1 && vioLayer > 0)
-		++vioGeneration;
-	else if (vioLayer < m_PyramidLayer - 1)
-	{
-		++vioLayer;
-		vioGeneration = 0;
-	}
-	else
-		return false;
-	return true;
-}
-
-////*****************************************************************
-////FUNCTION: 
-template <typename Scalar_t, unsigned Channel>
-bool CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__decrease(int& vioLayer, int& vioGeneration) const
-{
-	bool Reduce = false;
-	if (vioGeneration > 0)
-		--vioGeneration;
-	else if (vioLayer > 0)
-	{
-		--vioLayer;
-		if (vioLayer == 0)
-			vioGeneration = 0;
-		else
-			vioGeneration = m_GenerationNum - 1;
-		Reduce = true;
-	}
-	return Reduce;
-}
-
-//*****************************************************************
-//FUNCTION: 
-template <typename Scalar_t, unsigned Channel>
 void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__synthesizeTexture(int vLayer, int vGeneration)
 {
 	auto& Texture = m_Cache[vLayer][vGeneration];
@@ -234,7 +208,7 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__synthesizeTexture(int vL
 			{
 				auto& Item = Texture.coeffRef(i);
 				if (!__isAvailable(Item))
-					Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, i % Height, i / Height));
+					Item = __findNearestValue(vLayer, __buildOutputFeatureAt(vLayer, vGeneration, i % Height, i / Height));
 			}
 		}, Ap
 	);
@@ -245,12 +219,7 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__synthesizeTexture(int vL
 template <typename Scalar_t, unsigned Channel>
 auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const -> Feature_t
 {
-	if (__decrease(vLayer, vGeneration))
-	{
-		vRowId /= 2;
-		vColId /= 2;
-	}
-	return __buildFeatureAt(m_Cache[vLayer][vGeneration], vRowId, vColId);
+	return __buildFeatureAt(m_Cache[vLayer][vGeneration - 1], vRowId, vColId);
 }
 
 //*****************************************************************
@@ -285,8 +254,6 @@ auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighbor
 				auto ColIdWithOffset = __wrap(vTexture.cols(), vColId + k);
 				if (__isAvailable(vTexture(RowIdWithOffset, ColIdWithOffset)))
 					FeatureCols.push_back(vTexture(RowIdWithOffset, ColIdWithOffset));
-				else
-					int i = 0;
 			}
 
 	Feature.resize(Channel, FeatureCols.size());
@@ -308,20 +275,14 @@ auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighbor
 //*****************************************************************
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
-auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const -> Color_t
+auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__findNearestValue(int vLayer, const Feature_t& vFeature) const -> Color_t
 {
-	bool UseUpper = __decrease(vLayer, vGeneration);
-
 	auto Feature = vFeature;
 	flann::Matrix Query(Feature.data(), 1, Feature.cols());
 	flann::Matrix Index(new size_t, 1, 1);
 	flann::Matrix Distance(new float, 1, 1);
 	std::get<0>(m_SearchSet[vLayer])->knnSearch(Query, Index, Distance, 1, {});
-	Color_t NearestValue;
-	if (UseUpper)
-		NearestValue = std::get<3>(m_SearchSet[vLayer]).row(Index[0][0]);
-	else
-		NearestValue = std::get<2>(m_SearchSet[vLayer]).row(Index[0][0]);
+	auto NearestValue = std::get<2>(m_SearchSet[vLayer]).row(Index[0][0]);
 
 	delete[] Index.ptr();
 	delete[] Distance.ptr();
