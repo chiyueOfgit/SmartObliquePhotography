@@ -433,33 +433,33 @@ TEST_F(TestTextureSynthesizer, SpecialInput)
 //	}
 //}
 
-TEST_F(TestTextureSynthesizer, PixelComparison)
-{
-	bool Result = true;
-	SImageInfo FormerInfo, LatterInfo;
-	_readImage(InputImagePath, FormerInfo);
-	_readImage(InputImagePath, LatterInfo);
-	if (FormerInfo.Width != LatterInfo.Width || FormerInfo.Height != LatterInfo.Height || FormerInfo.BytesPerPixel != LatterInfo.BytesPerPixel)
-		Result = false;
-	ASSERT_EQ(Result,true);
-	
-	int Width = FormerInfo.Width;
-	int Height = FormerInfo.Height;
-	int BytesPerPixel = FormerInfo.BytesPerPixel;
-	Eigen::Vector3i FormerColor, LatterColor;
-	for(int i = 0; i < Width * Height; i++)
-	{
-		FormerColor[0] = FormerInfo.ImageData[i * BytesPerPixel];
-		FormerColor[1] = FormerInfo.ImageData[i * BytesPerPixel + 1];
-		FormerColor[2] = FormerInfo.ImageData[i * BytesPerPixel + 2];
-		LatterColor[0] = LatterInfo.ImageData[i * BytesPerPixel];
-		LatterColor[1] = LatterInfo.ImageData[i * BytesPerPixel + 1];
-		LatterColor[2] = LatterInfo.ImageData[i * BytesPerPixel + 2];
-		if(FormerColor != LatterColor)
-		{
-			Result = false;
-			break;
-		}
-	}
-	ASSERT_EQ(Result, true);
-}
+//TEST_F(TestTextureSynthesizer, PixelComparison)
+//{
+//	bool Result = true;
+//	SImageInfo FormerInfo, LatterInfo;
+//	_readImage(InputImagePath, FormerInfo);
+//	_readImage(InputImagePath, LatterInfo);
+//	if (FormerInfo.Width != LatterInfo.Width || FormerInfo.Height != LatterInfo.Height || FormerInfo.BytesPerPixel != LatterInfo.BytesPerPixel)
+//		Result = false;
+//	ASSERT_EQ(Result,true);
+//	
+//	int Width = FormerInfo.Width;
+//	int Height = FormerInfo.Height;
+//	int BytesPerPixel = FormerInfo.BytesPerPixel;
+//	Eigen::Vector3i FormerColor, LatterColor;
+//	for(int i = 0; i < Width * Height; i++)
+//	{
+//		FormerColor[0] = FormerInfo.ImageData[i * BytesPerPixel];
+//		FormerColor[1] = FormerInfo.ImageData[i * BytesPerPixel + 1];
+//		FormerColor[2] = FormerInfo.ImageData[i * BytesPerPixel + 2];
+//		LatterColor[0] = LatterInfo.ImageData[i * BytesPerPixel];
+//		LatterColor[1] = LatterInfo.ImageData[i * BytesPerPixel + 1];
+//		LatterColor[2] = LatterInfo.ImageData[i * BytesPerPixel + 2];
+//		if(FormerColor != LatterColor)
+//		{
+//			Result = false;
+//			break;
+//		}
+//	}
+//	ASSERT_EQ(Result, true);
+//}
