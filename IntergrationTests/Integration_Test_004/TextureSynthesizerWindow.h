@@ -1,7 +1,8 @@
 #pragma once
 #include "ui_TextureSynthesizerWindow.h"
+#include "TreeBasedTextureSynthesizer.h"
 
-class QSlider;
+using namespace hiveObliquePhotography::PointCloudRetouch;
 
 class CTextureSynthesizerWindow : public QMainWindow
 {
@@ -14,15 +15,18 @@ public:
 private:
     Ui::CTextureSynthesizerWindow m_WindowUI;
 
-    QSlider* m_pPointSizeSlider = nullptr;
-    int m_PointSize = 3;             // magic
     std::vector<std::string> m_FilePathList;
-    std::string m_CloudPath = "../TestModel/General";
-    std::string m_IndicesPath = "../TestModel/Indices";
+    std::string m_Path = "../TestModel/Test004";
+
+    Eigen::Matrix<Eigen::Vector3i, -1, -1> m_Input;
+    Eigen::Matrix<Eigen::Vector3i, -1, -1> m_Output;
+    Eigen::MatrixXi m_Mask;
+    std::string m_OutputName;
 
     void __connectSignals();
-    std::string __getFileName(const std::string& vFilePath);
-    std::string __getDirectory(const std::string& vFilePath);
+    void __loadImage(const std::string& vImagePath, Eigen::Matrix<Eigen::Vector3i, -1, -1>& voTexture);
+    void __loadMask(const std::string& vImagePath, Eigen::MatrixXi& voMask);
+    void __saveImage(const Eigen::Matrix<Eigen::Vector3i, -1, -1>& vTexture, const std::string& vOutputImagePath);
 
 private slots:
     void __onActionLoadInput();

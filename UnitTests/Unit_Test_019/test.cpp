@@ -14,9 +14,8 @@
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_STATIC
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <common/CpuTimer.h>
-
 #include "stb_image_write.h"
+#include <common/CpuTimer.h>
 
 //测试用例列表：
 //  * DeathTest_EmptyInput: 输入为空，期待抛出异常
