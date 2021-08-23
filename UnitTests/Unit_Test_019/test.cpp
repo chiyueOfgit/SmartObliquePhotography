@@ -1,6 +1,6 @@
 #include "pch.h"
-//#include "TextureSynthesizer.h"
-//#include "OrderIndependentTextureSynthesizer.h"
+#include "TextureSynthesizer.h"
+#include "OrderIndependentTextureSynthesizer.h"
 #include "MultithreadTextureSynthesizer.h"
 #include "TreeBasedTextureSynthesizer.h"
 #include "MutableKernelSizeTextureSynthesizer.h"
@@ -42,8 +42,10 @@ const auto HeightInputImagePath = TESTMODEL_DIR + std::string("Test019_Model/inp
 const auto HeightMaskImagePath = TESTMODEL_DIR + std::string("Test019_Model/maskH.png");
 const auto HeightSceneImagePath = TESTMODEL_DIR + std::string("Test019_Model/sceneH.png");
 const auto HeightResultImagePath = TESTMODEL_DIR + std::string("Test019_Model/ResultH.png");
+const auto ImageCompareImagePath = TESTMODEL_DIR + std::string("Test019_Model/FullMask.png");
+const auto ImageCompareImagePath2 = TESTMODEL_DIR + std::string("Test019_Model/FullMaskMulti.png");
 
-const std::vector<std::string> SpecialImageName{ "LineColor", "FourColor","Diamond" };
+const std::vector<std::string> SpecialImageName{ "Diamond", "FourColor", "LineColor", "Full" };
 const auto SpecialImagePath = TESTMODEL_DIR + std::string("Test019_Model/SpecialTest/");
 
 struct SImageInfo
@@ -259,27 +261,27 @@ protected:
 //			EXPECT_EQ(OutputTexture(i, k), SceneTexture(i, k));
 //}
 
-TEST_F(TestTextureSynthesizer, SquareMask)
-{
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
-	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
-
-	_readImage(InputImagePath, InputTexture);
-	_readImage(SceneImagePath, OutputTexture);
-
-	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
-	/*_generateMask(MaskTexture, -1);*/
-	_readMask(MaskImagePath, MaskTexture);
-	
-	hiveCommon::CCPUTimer Timer;
-	Timer.start();
-	CMutableKernelSizeTextureSynthesizer<int, 3> TextureSynthesizer;
-	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
-	Timer.stop();
-	std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;
-	
-	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
-}
+//TEST_F(TestTextureSynthesizer, SquareMask)
+//{
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> InputTexture;
+//	Eigen::Matrix<Eigen::Vector3i, -1, -1> OutputTexture;
+//
+//	_readImage(InputImagePath, InputTexture);
+//	_readImage(SceneImagePath, OutputTexture);
+//
+//	Eigen::MatrixXi MaskTexture(OutputTexture.rows(), OutputTexture.cols());
+//	/*_generateMask(MaskTexture, -1);*/
+//	_readMask(MaskImagePath, MaskTexture);
+//	
+//	hiveCommon::CCPUTimer Timer;
+//	Timer.start();
+//	CMutableKernelSizeTextureSynthesizer<int, 3> TextureSynthesizer;
+//	TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
+//	Timer.stop();
+//	std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;
+//	
+//	_generateResultImage(OutputTexture, SquareMaskResultImagePath);
+//}
 
 //TEST_F(TestTextureSynthesizer, RandomMask)
 //{
@@ -313,13 +315,13 @@ TEST_F(TestTextureSynthesizer, SpecialInput)
 		
 		hiveCommon::CCPUTimer Timer;
 		Timer.start();
-		CMutableKernelSizeTextureSynthesizer<int, 3> TextureSynthesizer;
+		CMultithreadTextureSynthesizer TextureSynthesizer;
 		TextureSynthesizer.execute(InputTexture, MaskTexture, OutputTexture);
 		Timer.stop();
 		std::cout <<"RunTime: " << Timer.getElapsedTimeInMS() << std::endl;
 		
 		//_generateResultImage(OutputTexture, SquareMaskResultImagePath);
-		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask3" + ".png"});
+		_generateResultImage(OutputTexture, { SpecialImagePath + Name + "Mask" + ".png"});
 	}
 }
 
@@ -433,33 +435,33 @@ TEST_F(TestTextureSynthesizer, SpecialInput)
 //	}
 //}
 
-//TEST_F(TestTextureSynthesizer, PixelComparison)
-//{
-//	bool Result = true;
-//	SImageInfo FormerInfo, LatterInfo;
-//	_readImage(InputImagePath, FormerInfo);
-//	_readImage(InputImagePath, LatterInfo);
-//	if (FormerInfo.Width != LatterInfo.Width || FormerInfo.Height != LatterInfo.Height || FormerInfo.BytesPerPixel != LatterInfo.BytesPerPixel)
-//		Result = false;
-//	ASSERT_EQ(Result,true);
-//	
-//	int Width = FormerInfo.Width;
-//	int Height = FormerInfo.Height;
-//	int BytesPerPixel = FormerInfo.BytesPerPixel;
-//	Eigen::Vector3i FormerColor, LatterColor;
-//	for(int i = 0; i < Width * Height; i++)
-//	{
-//		FormerColor[0] = FormerInfo.ImageData[i * BytesPerPixel];
-//		FormerColor[1] = FormerInfo.ImageData[i * BytesPerPixel + 1];
-//		FormerColor[2] = FormerInfo.ImageData[i * BytesPerPixel + 2];
-//		LatterColor[0] = LatterInfo.ImageData[i * BytesPerPixel];
-//		LatterColor[1] = LatterInfo.ImageData[i * BytesPerPixel + 1];
-//		LatterColor[2] = LatterInfo.ImageData[i * BytesPerPixel + 2];
-//		if(FormerColor != LatterColor)
-//		{
-//			Result = false;
-//			break;
-//		}
-//	}
-//	ASSERT_EQ(Result, true);
-//}
+TEST_F(TestTextureSynthesizer, PixelComparison)
+{
+	bool Result = true;
+	SImageInfo FormerInfo, LatterInfo;
+	_readImage(ImageCompareImagePath, FormerInfo);
+	_readImage( ImageCompareImagePath2 , LatterInfo);
+	if (FormerInfo.Width != LatterInfo.Width || FormerInfo.Height != LatterInfo.Height || FormerInfo.BytesPerPixel != LatterInfo.BytesPerPixel)
+		Result = false;
+	ASSERT_EQ(Result,true);
+	
+	int Width = FormerInfo.Width;
+	int Height = FormerInfo.Height;
+	int BytesPerPixel = FormerInfo.BytesPerPixel;
+	Eigen::Vector3i FormerColor, LatterColor;
+	for(int i = 0; i < Width * Height; i++)
+	{
+		FormerColor[0] = FormerInfo.ImageData[i * BytesPerPixel];
+		FormerColor[1] = FormerInfo.ImageData[i * BytesPerPixel + 1];
+		FormerColor[2] = FormerInfo.ImageData[i * BytesPerPixel + 2];
+		LatterColor[0] = LatterInfo.ImageData[i * BytesPerPixel];
+		LatterColor[1] = LatterInfo.ImageData[i * BytesPerPixel + 1];
+		LatterColor[2] = LatterInfo.ImageData[i * BytesPerPixel + 2];
+		if(FormerColor != LatterColor)
+		{
+			Result = false;
+			break;
+		}
+	}
+	ASSERT_EQ(Result, true);
+}

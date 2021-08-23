@@ -180,7 +180,7 @@ void CMutableKernelSizeTextureSynthesizer<Scalar_t, Channel>::__initTextureWithN
 					}
 
 				Item = Input(MinPos.first, MinPos.second);
-				std::cout << _FORMAT_STR3("%1% %2% %3%\n", Input(MinPos.first, MinPos.second).row(0), Input(MinPos.first, MinPos.second).row(1), Input(MinPos.first, MinPos.second).row(2));
+				//std::cout << _FORMAT_STR3("%1% %2% %3%\n", Input(MinPos.first, MinPos.second).row(0), Input(MinPos.first, MinPos.second).row(1), Input(MinPos.first, MinPos.second).row(2));
 			}
 		}
 }
