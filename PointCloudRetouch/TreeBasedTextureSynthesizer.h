@@ -17,15 +17,15 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		void execute(const Texture_t& vInput, const Eigen::MatrixXi& vMask, Texture_t& vioScene);
 
 	private:
-		using Color_t = Texture_t::value_type;
+		using Color_t = typename Texture_t::value_type;
 		using Feature_t = Eigen::Matrix<Scalar_t, 1, Eigen::Dynamic>;
 		//TODO: magic number
 		int m_KernelSize = 9;
 		int m_GaussianSize = 9;
 		int m_PyramidLayer = 3;
-		int m_GenerationNum = 4;
+		int m_GenerationNum = 5;
 		std::vector<std::pair<int, int>> m_NeighborOffset;
-		std::vector<std::tuple<flann::Index<flann::L2<Scalar_t>>* , Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor>, Eigen::Matrix<Scalar_t, -1, Channel>, Eigen::Matrix<Scalar_t, -1, Channel>>> m_SearchSet;
+		std::vector<std::tuple<flann::Index<flann::L2<Scalar_t>>* , Eigen::Matrix<Scalar_t, -1, -1, Eigen::RowMajor>, Eigen::Matrix<Scalar_t, -1, Channel>>> m_SearchSet;
 		std::vector<std::vector<Texture_t>> m_Cache;
 
 		static auto __computeDistance(const Feature_t& vLhs, const Feature_t& vRhs) { return (vLhs - vRhs).squaredNorm(); }
@@ -43,11 +43,8 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		void __initTexture(const Texture_t& vFrom, Texture_t& voTo) const;
 		void __initTextureWithNeighborMask(const Texture_t& vFrom, Texture_t& voTo) const;
 
-		bool __increase(int& vioLayer, int& vioGeneration) const;
-		bool __decrease(int& vioLayer, int& vioGeneration) const;
-
 		void __synthesizeTexture(int vLayer, int vGeneration);
-		Color_t __findNearestValue(int vLayer, int vGeneration, const Feature_t& vFeature) const;
+		Color_t __findNearestValue(int vLayer, const Feature_t& vFeature) const;
 		
 		Feature_t __buildOutputFeatureAt(int vLayer, int vGeneration, Eigen::Index vRowId, Eigen::Index vColId) const;
 		Feature_t __buildFeatureAt(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId) const;
