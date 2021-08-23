@@ -21,8 +21,8 @@ namespace hiveObliquePhotography::PointCloudRetouch
 		//TODO: magic number
 		int m_KernelSize = 9;
 		int m_GaussianSize = 9;
-		int m_PyramidLayer = 4;
-		int m_GenerationNum = 3;
+		int m_PyramidLayer = 3;
+		int m_GenerationNum = 4;
 		std::vector<std::pair<int, int>> m_NeighborOffset;
 		std::vector<Texture_t> m_InputPyramid;
 		std::vector<std::vector<Texture_t>> m_Cache;

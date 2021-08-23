@@ -133,18 +133,18 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborM
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
 	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vFrom, m_PyramidLayer);
 	int Suitable = 0;
-	for (int i = 0; i < InputPyramid.size(); i++)
+	/*for (int i = 0; i < InputPyramid.size(); i++)
 	{
 		if (abs(InputPyramid[i].rows() - voTo.rows()) < abs(InputPyramid[Suitable].rows() - voTo.rows()))
 			Suitable = i;
 		__generateResultImage(InputPyramid[i], "../TestData/Test019_Model/Input/Input" + std::to_string(i) + ".png");
-	}
+	}*/
 	//auto Input = InputPyramid.front();
-	//auto Input = InputPyramid[Suitable];
-	auto Input = vFrom;
+	auto Input = InputPyramid[Suitable];
+	//auto Input = vFrom;
 
 	//neighbor mask
-	const int KernelOffset = m_KernelSize / 2; 
+	const int KernelOffset = 2; 
 	const int KernelWidth = KernelOffset * 2 + 1;
 	Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> NeighborMask(KernelWidth, KernelWidth);
 	NeighborMask.setConstant(0);
@@ -175,7 +175,7 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborM
 					}
 
 				Item = Input(MinPos.first, MinPos.second);
-				std::cout << _FORMAT_STR3("%1% %2% %3%\n", Input(MinPos.first, MinPos.second).row(0), Input(MinPos.first, MinPos.second).row(1), Input(MinPos.first, MinPos.second).row(2));
+				//std::cout << _FORMAT_STR3("%1% %2% %3%\n", Input(MinPos.first, MinPos.second).row(0), Input(MinPos.first, MinPos.second).row(1), Input(MinPos.first, MinPos.second).row(2));
 			}
 		}
 }
@@ -273,7 +273,7 @@ auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureAt(const Tex
 template <typename Scalar_t, unsigned Channel>
 auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const->Feature_t
 {
-	const int KernelOffset = m_KernelSize / 2;
+	const int KernelOffset = vMask.cols() / 2;
 	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature;
 	std::vector<Eigen::Matrix<Scalar_t, Channel, 1>> FeatureCols;
 

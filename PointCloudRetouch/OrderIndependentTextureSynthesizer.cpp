@@ -103,7 +103,7 @@ template <typename Scalar_t, unsigned Channel>
 void COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__initTextureWithNeighborMask(const Texture_t& vFrom, Texture_t& voTo) const
 {
 	//neighbor mask
-	const int KernelOffset = m_KernelSize / 2;
+	const int KernelOffset = 2;
 	const int KernelWidth = KernelOffset * 2 + 1;
 	Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> NeighborMask(KernelWidth, KernelWidth);
 	NeighborMask.setConstant(0);
@@ -254,7 +254,7 @@ auto COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildInputFeature
 template <typename Scalar_t, unsigned Channel>
 auto COrderIndependentTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const->Feature_t
 {
-	const int KernelOffset = m_KernelSize / 2;
+	const int KernelOffset = vMask.cols() / 2;
 	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature(Channel, vMask.rows() * vMask.cols());
 	auto It = 0;
 	for (int i = -KernelOffset; i <= KernelOffset; ++i)

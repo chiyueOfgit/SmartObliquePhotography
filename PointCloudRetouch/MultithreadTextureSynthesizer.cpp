@@ -38,6 +38,7 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::execute(const Textur
 {
 	__initCache(vMask, vioScene);
 	__initInputPyramid(vInput);
+	//__initTexture(vInput, m_Cache.front().front());
 	__initTextureWithNeighborMask(vInput, m_Cache.front().front());
 	m_NeighborOffset = __buildNeighborOffset(m_KernelSize);
 
@@ -108,17 +109,17 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initTextureWithNei
 	TextureMipmapGenerator.setKernalSize(m_GaussianSize);
 	auto InputPyramid = TextureMipmapGenerator.getGaussianPyramid(vFrom, m_PyramidLayer);
 	int Suitable = 0;
-	for (int i = 0; i < InputPyramid.size(); i++)
-	{
-		if (abs(InputPyramid[i].rows() - voTo.rows()) < abs(InputPyramid[Suitable].rows() - voTo.rows()) && InputPyramid[i].rows() >= voTo.rows())
-			Suitable = i;
-	}
+	//for (int i = 0; i < InputPyramid.size(); i++)
+	//{
+	//	if (abs(InputPyramid[i].rows() - voTo.rows()) < abs(InputPyramid[Suitable].rows() - voTo.rows()) && InputPyramid[i].rows() >= voTo.rows())
+	//		Suitable = i;
+	//}
 	//auto Input = InputPyramid.front();
 	auto Input = InputPyramid[Suitable];
 	//auto Input = vFrom;
 
 	//neighbor mask
-	const int KernelOffset = m_KernelSize / 2;
+	const int KernelOffset = 2;
 	const int KernelWidth = KernelOffset * 2 + 1;
 	Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic> NeighborMask(KernelWidth, KernelWidth);
 	NeighborMask.setConstant(0);
@@ -149,7 +150,7 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__initTextureWithNei
 					}
 
 				Item = Input(MinPos.first, MinPos.second);
-				std::cout << _FORMAT_STR3("%1% %2% %3%\n", Input(MinPos.first, MinPos.second).row(0), Input(MinPos.first, MinPos.second).row(1), Input(MinPos.first, MinPos.second).row(2));
+				//std::cout << _FORMAT_STR3("%1% %2% %3%\n", Input(MinPos.first, MinPos.second).row(0), Input(MinPos.first, MinPos.second).row(1), Input(MinPos.first, MinPos.second).row(2));
 			}
 		}
 }
@@ -212,6 +213,12 @@ void CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__synthesizeTexture(
 			}
 		}, Ap
 	);
+	/*for (size_t i = 0; i != Height * Width; ++i)
+	{
+		auto& Item = Texture.coeffRef(i);
+		if (!__isAvailable(Item))
+			Item = __findNearestValue(vLayer, vGeneration, __buildOutputFeatureAt(vLayer, vGeneration, i % Height, i / Height));
+	}*/
 }
 
 //*****************************************************************
@@ -260,7 +267,7 @@ auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureAt(con
 //template <typename Scalar_t, unsigned Channel>
 auto CMultithreadTextureSynthesizer/*<Scalar_t, Channel>*/::__buildFeatureWithNeighborMask(const Texture_t& vTexture, Eigen::Index vRowId, Eigen::Index vColId, const Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>& vMask) const->Feature_t
 {
-	const int KernelOffset = m_KernelSize / 2;
+	const int KernelOffset = vMask.rows() / 2;
 	Eigen::Matrix<Scalar_t, Channel, Eigen::Dynamic> Feature;
 	std::vector<Eigen::Matrix<Scalar_t, Channel, 1>> FeatureCols;
 
