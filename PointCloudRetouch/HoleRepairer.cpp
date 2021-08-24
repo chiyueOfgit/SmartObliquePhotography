@@ -4,6 +4,7 @@
 #include "TextureSynthesizer.h"
 #include "OrderIndependentTextureSynthesizer.h"
 #include "MultithreadTextureSynthesizer.h"
+#include "TreeBasedTextureSynthesizer.h"
 #include "PlanarityFeature.h"
 #include "PointCloudRetouchManager.h"
 #define STB_IMAGE_STATIC
@@ -126,8 +127,9 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		__outputImage(Mask, "Temp/mask.png");
 
 		//CTextureSynthesizer<int, 3> ColorSynthesizer;
-		COrderIndependentTextureSynthesizer<int, 3> ColorSynthesizer;
+		//COrderIndependentTextureSynthesizer<int, 3> ColorSynthesizer;
 		//CMultithreadTextureSynthesizer<int, 3> ColorSynthesizer;
+		CTreeBasedTextureSynthesizer<int, 3> ColorSynthesizer;
 		ColorSynthesizer.execute(InputColorMatrix, Mask, BoundaryColorMatrix);
 		__fillLatticesByMatrix<Eigen::Vector3i>(BoundaryColorMatrix, BoundaryPlaneLattices, offsetof(SLattice, Color));
 
@@ -142,8 +144,9 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		__outputImage(InputHeightMatrix, "Temp/inputH.png");
 		__outputImage(BoundaryHeightMatrix, "Temp/output_beforeH.png");
 
-		COrderIndependentTextureSynthesizer<float, 1> HeightSynthesizer;
+		//COrderIndependentTextureSynthesizer<float, 1> HeightSynthesizer;
 		//CMultithreadTextureSynthesizer<float, 1> HeightSynthesizer;
+		CTreeBasedTextureSynthesizer<float, 1> HeightSynthesizer;
 		HeightSynthesizer.execute(InputHeightMatrix, Mask, BoundaryHeightMatrix);
 		//__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
 		__gaussBlurbyHeightMatrix(BoundaryHeightMatrix, BoundaryPlaneLattices);
