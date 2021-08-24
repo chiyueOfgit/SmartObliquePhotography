@@ -65,7 +65,7 @@ void CTextureSynthesizerWindow::__onActionLoadOutput()
 
 void CTextureSynthesizerWindow::__onActionLoadMask()
 {
-    auto Mask = QFileDialog::getOpenFileName(this, tr("Load Mask(Optional)"), QString::fromStdString(m_Path), tr("Image File(*.png *.jpg)")).toStdString();
+    auto Mask = QFileDialog::getOpenFileName(this, tr("Load Mask"), QString::fromStdString(m_Path), tr("Image File(*.png *.jpg)")).toStdString();
     if (Mask != "")
     {
         QImage* Image = new QImage;
@@ -81,17 +81,20 @@ void CTextureSynthesizerWindow::__onActionLoadMask()
 
 void CTextureSynthesizerWindow::__onActionExecute()
 {
-    CTreeBasedTextureSynthesizer<int, 3> TextureSynthesizer;
-    TextureSynthesizer.execute(m_Input, m_Mask, m_Output);
-    auto SavePath = m_Path + "/Results/" + m_OutputName + ".png";
-    __saveImage(m_Output, SavePath);
-    QImage* Image = new QImage;
-    if (!(Image->load(QString::fromStdString(SavePath))))
+    if (m_Input.rows() && m_Output.rows() && m_Mask.rows())
     {
-        delete Image;
-        return;
+        CTreeBasedTextureSynthesizer<int, 3> TextureSynthesizer;
+        TextureSynthesizer.execute(m_Input, m_Mask, m_Output);
+        auto SavePath = m_Path + "/Results/" + m_OutputName + ".png";
+        __saveImage(m_Output, SavePath);
+        QImage* Image = new QImage;
+        if (!(Image->load(QString::fromStdString(SavePath))))
+        {
+            delete Image;
+            return;
+        }
+        m_WindowUI.Result->setPixmap(QPixmap::fromImage(*Image));
     }
-    m_WindowUI.Result->setPixmap(QPixmap::fromImage(*Image));
 }
 
 void CTextureSynthesizerWindow::__loadImage(const std::string& vImagePath, Eigen::Matrix<Eigen::Vector3i, -1, -1>& voTexture)
