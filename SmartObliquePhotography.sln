@@ -78,6 +78,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_021 (OBB)", "Unit
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_004(texture_synthesizer)", "IntergrationTests\Integration_Test_004\Integration_Test_004.vcxproj", "{D4823E3F-6504-4715-B848-33CFFCF7D6AB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneReconstruction", "SceneReconstruction\SceneReconstruction.vcxproj", "{09DA221C-2361-460C-8E26-21F3CFA481FC}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneReconstruction_lib", "SceneReconstruction_lib\SceneReconstruction_lib.vcxproj", "{15649C30-750A-4939-9BEE-F09D0E010785}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -306,6 +310,22 @@ Global
 		{D4823E3F-6504-4715-B848-33CFFCF7D6AB}.Release|x64.ActiveCfg = Release|x64
 		{D4823E3F-6504-4715-B848-33CFFCF7D6AB}.Release|x64.Build.0 = Release|x64
 		{D4823E3F-6504-4715-B848-33CFFCF7D6AB}.Release|x86.ActiveCfg = Release|x64
+		{09DA221C-2361-460C-8E26-21F3CFA481FC}.Debug|x64.ActiveCfg = Debug|x64
+		{09DA221C-2361-460C-8E26-21F3CFA481FC}.Debug|x64.Build.0 = Debug|x64
+		{09DA221C-2361-460C-8E26-21F3CFA481FC}.Debug|x86.ActiveCfg = Debug|Win32
+		{09DA221C-2361-460C-8E26-21F3CFA481FC}.Debug|x86.Build.0 = Debug|Win32
+		{09DA221C-2361-460C-8E26-21F3CFA481FC}.Release|x64.ActiveCfg = Release|x64
+		{09DA221C-2361-460C-8E26-21F3CFA481FC}.Release|x64.Build.0 = Release|x64
+		{09DA221C-2361-460C-8E26-21F3CFA481FC}.Release|x86.ActiveCfg = Release|Win32
+		{09DA221C-2361-460C-8E26-21F3CFA481FC}.Release|x86.Build.0 = Release|Win32
+		{15649C30-750A-4939-9BEE-F09D0E010785}.Debug|x64.ActiveCfg = Debug|x64
+		{15649C30-750A-4939-9BEE-F09D0E010785}.Debug|x64.Build.0 = Debug|x64
+		{15649C30-750A-4939-9BEE-F09D0E010785}.Debug|x86.ActiveCfg = Debug|Win32
+		{15649C30-750A-4939-9BEE-F09D0E010785}.Debug|x86.Build.0 = Debug|Win32
+		{15649C30-750A-4939-9BEE-F09D0E010785}.Release|x64.ActiveCfg = Release|x64
+		{15649C30-750A-4939-9BEE-F09D0E010785}.Release|x64.Build.0 = Release|x64
+		{15649C30-750A-4939-9BEE-F09D0E010785}.Release|x86.ActiveCfg = Release|Win32
+		{15649C30-750A-4939-9BEE-F09D0E010785}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

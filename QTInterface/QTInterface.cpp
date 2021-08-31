@@ -28,12 +28,14 @@
 #include "SliderSizeDockWidget.h"
 #include "ObliquePhotographyDataInterface.h"
 #include "PointCloudRetouchInterface.h"
+#include "SceneReconstructionInterface.h"
 #include "VisualizationInterface.h"
 #include "PointCloudRetouchConfig.h"
 #include "DisplayOptionsSettingDialog.h"
 #include <vtkOrientationMarkerWidget.h>
 
 #include "pcl/io/pcd_io.h"
+#include "pcl/io/ply_io.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -384,6 +386,10 @@ void CQTInterface::onActionSave()
         __messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
     else
         __messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
+
+    pcl::PolygonMesh Mesh;
+    SceneReconstruction::hiveSurfaceReconstruction(m_pCloud, Mesh);
+    pcl::io::savePLYFileBinary("Temp/TestPoisson.ply", Mesh);
 }
 
 void CQTInterface::onActionRubber()

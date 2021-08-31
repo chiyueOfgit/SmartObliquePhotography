@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="SceneReconstructionInterface.cpp" />
+    <ClCompile Include="PoissonSurfaceReconstructor.cpp">
+      <Filter>Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="SurfaceReconstructor.cpp">
+      <Filter>Surface</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="SceneReconstructionCommon.h" />
+    <ClInclude Include="SceneReconstructionExport.h" />
+    <ClInclude Include="SceneReconstructionInterface.h" />
+    <ClInclude Include="PoissonSurfaceReconstructor.h">
+      <Filter>Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="SurfaceReconstructor.h">
+      <Filter>Surface</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Surface">
+      <UniqueIdentifier>{92b455cf-e126-4924-9779-20c86e9fa8f8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
