@@ -1,1 +1,11 @@
-<OCTREE_DEPTH> 9 </OCTREE_DEPTH>
+<SURFACE>
+  PoissonReconstruction
+  <OCTREE_DEPTH> 9 </OCTREE_DEPTH>
+</SURFACE>
+<TEXCOORD>
+  PlaneParameterization
+</TEXCOORD>
+<TEXTURE>
+  PointProjection
+</TEXTURE>
+

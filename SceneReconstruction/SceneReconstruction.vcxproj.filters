@@ -33,4 +33,7 @@
       <UniqueIdentifier>{92b455cf-e126-4924-9779-20c86e9fa8f8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\QTInterface\Config\SceneReconstructionConfig.xml" />
+  </ItemGroup>
 </Project>
