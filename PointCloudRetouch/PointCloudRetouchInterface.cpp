@@ -11,6 +11,8 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 bool hiveObliquePhotography::PointCloudRetouch::hiveInit(PointCloud_t::Ptr vPointCloud, const hiveConfig::CHiveConfig* vConfig)
 {
 	_ASSERTE(vPointCloud && vConfig);
+	if (_access(KEYWORD::TEMP_FOLDER.c_str(), 0) == -1)
+		_mkdir(KEYWORD::TEMP_FOLDER.c_str());
 	return CPointCloudRetouchManager::getInstance()->init(vPointCloud, vConfig);
 }
 
@@ -132,9 +134,9 @@ void hiveObliquePhotography::PointCloudRetouch::hiveRunPrecompute(const std::str
 	auto pPrecomputeManager = CPointCloudRetouchManager::getInstance()->getPrecomputeManager();
 	pFeature->initV(pPrecomputeManager->getFeatureConfig(KEYWORD::NORMAL_COMPLEXITY));
 
-	if (_access(KEYWORD::PRECOMPUTE_FOLDER.c_str(), 0) == -1)
-		_mkdir(KEYWORD::PRECOMPUTE_FOLDER.c_str());
-	pPrecomputeManager->registerPrecompute<std::vector<double>>([=]()->bool {return pFeature->precomputeSceneCloudNormalComplexity(); }, KEYWORD::PRECOMPUTE_FOLDER + vModelName + "_" + std::to_string(CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint()) + "_pre.txt", pFeature->getPtr2Container());
+	if (_access(KEYWORD::TEMP_FOLDER.c_str(), 0) == -1)
+		_mkdir(KEYWORD::TEMP_FOLDER.c_str());
+	pPrecomputeManager->registerPrecompute<std::vector<double>>([=]()->bool {return pFeature->precomputeSceneCloudNormalComplexity(); }, KEYWORD::TEMP_FOLDER + vModelName + "_" + std::to_string(CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint()) + "_pre.txt", pFeature->getPtr2Container());
 
 	pPrecomputeManager->precompute();
 }

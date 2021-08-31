@@ -22,7 +22,7 @@ namespace hiveObliquePhotography
 			const std::string BOUNDARY_DETECTOR = "BOUNDARY_DETECTOR";
 			const std::string HOLE_REPAIRER = "HOLE_REPAIRER";
 
-			const std::string PRECOMPUTE_FOLDER = "Temp/";
+			const std::string TEMP_FOLDER = "Temp/";
 
 		}
 		enum class EPointLabel : unsigned char
