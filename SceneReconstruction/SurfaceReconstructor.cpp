@@ -9,7 +9,8 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 //FUNCTION: 
 bool ISurfaceReconstructor::onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, PointCloud_t::Ptr vPointCloudScene)
 {
-	_ASSERTE(vPointCloudScene);
+	_ASSERTE(vConfig && vPointCloudScene);
+	m_pConfig = vConfig;
 	m_pSceneCloud.reset(new pcl::PointCloud<pcl::PointNormal>);
 	pcl::copyPointCloud(*vPointCloudScene, *m_pSceneCloud);
 	return true;

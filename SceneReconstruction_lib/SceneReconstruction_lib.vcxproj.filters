@@ -53,6 +53,9 @@
     <ClInclude Include="..\SceneReconstruction\SurfaceReconstructor.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\SceneReconstruction\SceneReconstructionConfig.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

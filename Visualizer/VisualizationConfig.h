@@ -48,7 +48,6 @@ namespace hiveObliquePhotography
 				CVisualizationConfig::__defineAttributesV();
 
 				const std::string ConfigPath = "Config/VisualizationConfig.xml";
-
 				if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
 				{
 					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));

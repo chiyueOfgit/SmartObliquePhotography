@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -164,6 +164,7 @@
     <ClInclude Include="SceneReconstructionExport.h" />
     <ClInclude Include="SceneReconstructionInterface.h" />
     <ClInclude Include="SurfaceReconstructor.h" />
+    <ClInclude Include="SceneReconstructionConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

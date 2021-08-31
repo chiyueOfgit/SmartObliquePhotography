@@ -23,6 +23,7 @@
     <ClInclude Include="SurfaceReconstructor.h">
       <Filter>Surface</Filter>
     </ClInclude>
+    <ClInclude Include="SceneReconstructionConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

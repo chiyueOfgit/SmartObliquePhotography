@@ -159,6 +159,7 @@
     <ClInclude Include="..\SceneReconstruction\pch.h" />
     <ClInclude Include="..\SceneReconstruction\PoissonSurfaceReconstructor.h" />
     <ClInclude Include="..\SceneReconstruction\SceneReconstructionCommon.h" />
+    <ClInclude Include="..\SceneReconstruction\SceneReconstructionConfig.h" />
     <ClInclude Include="..\SceneReconstruction\SceneReconstructionExport.h" />
     <ClInclude Include="..\SceneReconstruction\SceneReconstructionInterface.h" />
     <ClInclude Include="..\SceneReconstruction\SurfaceReconstructor.h" />
