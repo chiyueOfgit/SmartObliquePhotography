@@ -10,6 +10,7 @@
     <ClCompile Include="SurfaceReconstructor.cpp">
       <Filter>Surface</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -24,6 +25,7 @@
       <Filter>Surface</Filter>
     </ClInclude>
     <ClInclude Include="SceneReconstructionConfig.h" />
+    <ClInclude Include="Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
