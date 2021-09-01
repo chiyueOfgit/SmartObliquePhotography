@@ -51,8 +51,12 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& v
 			for (Eigen::Index ColId = 0; ColId < From.cols(); ++ColId)
 			{
 				constexpr std::pair<int, int> Offset[] = { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } };
-				for (auto& [i, k] : Offset)
-					To(2 * RowId + i, 2 * ColId + k) = From(RowId, ColId);
+				for (auto [i, k] : Offset)
+				{
+					auto& Item = To(2 * RowId + i, 2 * ColId + k);
+					if (!__isAvailable(Item))
+						Item = From(RowId, ColId);
+				}
 			}
 		
 		for (int Generation = 1; Generation < m_GenerationNum; ++Generation)
@@ -276,7 +280,7 @@ auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighbor
 //FUNCTION: 
 template <typename Scalar_t, unsigned Channel>
 auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__findNearestValue(int vLayer, const Feature_t& vFeature) const -> Color_t
-{
+{	
 	auto Feature = vFeature;
 	flann::Matrix Query(Feature.data(), 1, Feature.cols());
 	flann::Matrix Index(new size_t, 1, 1);
