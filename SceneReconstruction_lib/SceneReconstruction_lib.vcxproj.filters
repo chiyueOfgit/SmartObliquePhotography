@@ -30,6 +30,12 @@
     <ClCompile Include="..\SceneReconstruction\SurfaceReconstructor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\SceneReconstruction\RayCastingBaker.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SceneReconstruction\TextureBaker.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SceneReconstruction\framework.h">
@@ -54,6 +60,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\SceneReconstruction\SceneReconstructionConfig.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SceneReconstruction\RayCastingBaker.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SceneReconstruction\TextureBaker.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

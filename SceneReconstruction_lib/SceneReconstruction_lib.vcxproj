@@ -119,6 +119,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,6 +137,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,18 +153,22 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\SceneReconstruction\PoissonSurfaceReconstructor.cpp" />
+    <ClCompile Include="..\SceneReconstruction\RayCastingBaker.cpp" />
     <ClCompile Include="..\SceneReconstruction\SceneReconstructionInterface.cpp" />
     <ClCompile Include="..\SceneReconstruction\SurfaceReconstructor.cpp" />
+    <ClCompile Include="..\SceneReconstruction\TextureBaker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SceneReconstruction\framework.h" />
     <ClInclude Include="..\SceneReconstruction\pch.h" />
     <ClInclude Include="..\SceneReconstruction\PoissonSurfaceReconstructor.h" />
+    <ClInclude Include="..\SceneReconstruction\RayCastingBaker.h" />
     <ClInclude Include="..\SceneReconstruction\SceneReconstructionCommon.h" />
     <ClInclude Include="..\SceneReconstruction\SceneReconstructionConfig.h" />
     <ClInclude Include="..\SceneReconstruction\SceneReconstructionExport.h" />
     <ClInclude Include="..\SceneReconstruction\SceneReconstructionInterface.h" />
     <ClInclude Include="..\SceneReconstruction\SurfaceReconstructor.h" />
+    <ClInclude Include="..\SceneReconstruction\TextureBaker.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -6,6 +6,6 @@
   PlaneParameterization
 </TEXCOORD>
 <TEXTURE>
-  PointProjection
+  RayCasting
 </TEXTURE>
 

@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ObliquePhotographyData\framework.h" />
+    <ClInclude Include="..\ObliquePhotographyData\Image.h" />
+    <ClInclude Include="..\ObliquePhotographyData\Mesh.h" />
     <ClInclude Include="..\ObliquePhotographyData\ObliquePhotographyDataCommon.h" />
     <ClInclude Include="..\ObliquePhotographyData\ObliquePhotographyDataExport.h" />
     <ClInclude Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.h" />
@@ -32,6 +34,7 @@
     <ClInclude Include="..\ObliquePhotographyData\PointCloudScene.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\ObliquePhotographyData\Mesh.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

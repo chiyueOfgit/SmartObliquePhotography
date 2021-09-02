@@ -49,8 +49,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\ObliquePhotographyData_Lib\ObliquePhotographyData_Lib.vcxproj">
+      <Project>{3757d1fb-eddb-4d14-803b-4d692a7d175b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\PointCloudRetouch_Lib\PointCloudRetouch_Lib.vcxproj">
       <Project>{87879ac2-2e99-42c7-8ff9-a456d9350873}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SceneReconstruction_lib\SceneReconstruction_lib.vcxproj">
+      <Project>{15649c30-750a-4939-9bee-f09d0e010785}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup />
