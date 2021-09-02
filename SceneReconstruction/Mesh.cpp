@@ -17,19 +17,22 @@ CMesh::CMesh(const pcl::TextureMesh& vTexMesh)
 
 //*****************************************************************
 //FUNCTION: 
-pcl::PolygonMesh CMesh::toPolMesh(const CMesh& vMesh)
+pcl::PolygonMesh CMesh::toPolMesh()
 {
 	pcl::PolygonMesh PolMesh;
+	__fillCloud(m_Vertices, PolMesh.cloud);
 	
-	PolMesh.cloud.width = vMesh.m_Vertices.size();
-	PolMesh.cloud.height = 1;
+
 	return pcl::PolygonMesh();
 }
 
 //*****************************************************************
 //FUNCTION: 
-pcl::TextureMesh CMesh::toTexMesh(const CMesh& vMesh)
+pcl::TextureMesh CMesh::toTexMesh()
 {
+	pcl::TextureMesh TexMesh;
+	__fillCloud(m_Vertices, TexMesh.cloud);
+
 	return pcl::TextureMesh();
 }
 
@@ -83,6 +86,8 @@ std::map<std::uint32_t, std::uint32_t> CMesh::__getOffsetTable(const std::vector
 	return OffsetTable;
 }
 
+//*****************************************************************
+//FUNCTION: 
 void CMesh::__copyAttributes(std::vector<SVertex>& vVertices, const std::vector<uint8_t>& vData, const std::map<uint32_t, uint32_t>& vOffsetTable, int vPointStep)
 {
 	vVertices.resize(vData.size() / vPointStep);
@@ -105,3 +110,42 @@ void CMesh::__fillFaces(std::vector<SFace>& vFaces, const std::vector<pcl::Verti
 	for (auto& Face : vFaceData)
 		vFaces.push_back({ Face.vertices[0], Face.vertices[1], Face.vertices[2] });
 }
+
+//*****************************************************************
+//FUNCTION: 
+void CMesh::__fillCloud(const std::vector<SVertex>& vVertices, pcl::PCLPointCloud2& vCloud)
+{
+	vCloud.width = vVertices.size();
+	vCloud.height = 1;
+	vCloud.is_bigendian = 0;
+
+	const std::vector<std::string> AttributeNames = 
+	{
+		"x", "y", "z", "normal_x", "normal_y", "normal_z", "u", "v"
+	};
+	for (int i = 0; i < AttributeNames.size(); i++)
+	{
+		pcl::PCLPointField Attribute;
+		Attribute.name = AttributeNames[i];
+		Attribute.offset = i * sizeof(DataType);
+		Attribute.datatype = pcl::PCLPointField::FLOAT32;
+		Attribute.count = 1;
+		vCloud.fields.push_back(Attribute);
+	}
+	vCloud.point_step = AttributeNames.size() * sizeof(DataType);
+
+	vCloud.row_step = vCloud.point_step * vCloud.width;
+	vCloud.data.resize(vCloud.row_step);
+
+	for (int i = 0; i < vCloud.width; i++)
+		memcpy(&vCloud.data[i * vCloud.point_step], &vVertices[i], vCloud.point_step);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CMesh::__fillPolygons(const std::vector<SFace>& vFaces, std::vector<pcl::Vertices>& vPolygons)
+{
+	for (int i = 0; i < vFaces.size(); i++)
+		vPolygons.push_back({ vFaces[i].a, vFaces[i].b, vFaces[i].c });
+}
+

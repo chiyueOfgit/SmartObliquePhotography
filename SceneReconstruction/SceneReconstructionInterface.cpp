@@ -29,6 +29,7 @@ pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestMesh()
 	Mesh2.tex_materials = Mesh.tex_materials;
 
 	CMesh M(Mesh2);
+	M.toPolMesh();
 	return Mesh2;
 }
 

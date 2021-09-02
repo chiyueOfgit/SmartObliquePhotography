@@ -34,11 +34,8 @@ namespace hiveObliquePhotography
 			CMesh(const pcl::PolygonMesh& vPolMesh);
 			CMesh(const pcl::TextureMesh& vTexMesh);
 
-			static pcl::PolygonMesh toPolMesh(const CMesh& vMesh);
-			static pcl::TextureMesh toTexMesh(const CMesh& vMesh);
-
-			pcl::PolygonMesh toPolMesh() { return toPolMesh(*this); }
-			pcl::TextureMesh toTexMesh() { return toTexMesh(*this); }
+			pcl::PolygonMesh toPolMesh();
+			pcl::TextureMesh toTexMesh();
 
 			std::vector<SVertex> m_Vertices;
 			std::vector<SFace> m_Faces;
@@ -50,6 +47,9 @@ namespace hiveObliquePhotography
 			void __copyAttributes(std::vector<SVertex>& vVertices, const std::vector<uint8_t>& vData, const std::map<uint32_t, uint32_t>& vOffsetTable, int vPointStep);
 
 			void __fillFaces(std::vector<SFace>& vFaces, const std::vector<pcl::Vertices>& vFaceData);
-		};
+
+			void __fillCloud(const std::vector<SVertex>& vVertices, pcl::PCLPointCloud2& vCloud);
+			void __fillPolygons(const std::vector<SFace>& vFaces, std::vector<pcl::Vertices>& vPolygons);
+		}
 	}
 }
