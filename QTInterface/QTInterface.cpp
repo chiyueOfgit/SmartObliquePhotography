@@ -395,7 +395,7 @@ void CQTInterface::onActionSave()
     else
         __messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
 
-    SceneReconstruction::CMesh Mesh;
+    CMesh Mesh;
     SceneReconstruction::hiveSurfaceReconstruction(m_pCloud, Mesh);
     pcl::io::savePLYFileBinary("Temp/TestPoisson.ply", Mesh.toPolMesh());
 }

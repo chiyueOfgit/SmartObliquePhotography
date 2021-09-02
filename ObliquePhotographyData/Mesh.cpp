@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Mesh.h"
 
-using namespace hiveObliquePhotography::SceneReconstruction;
+using namespace hiveObliquePhotography;
 
 CMesh::CMesh(const pcl::PolygonMesh& vPolMesh)
 {
