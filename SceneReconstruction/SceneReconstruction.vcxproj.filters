@@ -10,7 +10,6 @@
     <ClCompile Include="SurfaceReconstructor.cpp">
       <Filter>Surface</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="TextureBaker.cpp">
       <Filter>Texture</Filter>
     </ClCompile>
@@ -31,7 +30,6 @@
       <Filter>Surface</Filter>
     </ClInclude>
     <ClInclude Include="SceneReconstructionConfig.h" />
-    <ClInclude Include="Mesh.h" />
     <ClInclude Include="TextureBaker.h">
       <Filter>Texture</Filter>
     </ClInclude>

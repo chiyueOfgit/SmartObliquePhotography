@@ -15,6 +15,7 @@ namespace hiveObliquePhotography
 
 			//product sig
 			const std::string POISSON_RECONSTRUCTOR = "POISSON_RECONSTRUCTOR";
+			const std::string RAYCASTING_TEXTUREBAKER = "RAYCASTING_TEXTUREBAKER";
 		}
 	}
 }
