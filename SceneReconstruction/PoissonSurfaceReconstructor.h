@@ -11,7 +11,7 @@ namespace hiveObliquePhotography
 			CPoissonSurfaceReconstructor() = default;
 			~CPoissonSurfaceReconstructor() = default;
 
-			virtual void constructSurface(pcl::PolygonMesh& voMesh) override;
+			virtual void constructSurface(CMesh& voMesh) override;
 			
 		private:
 		};

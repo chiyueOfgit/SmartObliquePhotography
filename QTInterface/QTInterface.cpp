@@ -36,6 +36,7 @@
 
 #include "pcl/io/pcd_io.h"
 #include "pcl/io/ply_io.h"
+#include "Mesh.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -365,6 +366,13 @@ void CQTInterface::onActionOpen()
             CQTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
         }
     }
+
+    auto Mesh = SceneReconstruction::hiveTestMesh();
+    auto pVisualizer = Visualization::hiveGetPCLVisualizer();
+    pVisualizer->removeAllPointClouds();
+    pVisualizer->addTextureMesh(Mesh);
+    pVisualizer->resetCamera();
+    pVisualizer->updateCamera();
 }
 
 void CQTInterface::onActionSave()
@@ -387,9 +395,9 @@ void CQTInterface::onActionSave()
     else
         __messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
 
-    pcl::PolygonMesh Mesh;
+    SceneReconstruction::CMesh Mesh;
     SceneReconstruction::hiveSurfaceReconstruction(m_pCloud, Mesh);
-    pcl::io::savePLYFileBinary("Temp/TestPoisson.ply", Mesh);
+    pcl::io::savePLYFileBinary("Temp/TestPoisson.ply", Mesh.toPolMesh());
 }
 
 void CQTInterface::onActionRubber()

@@ -8,10 +8,12 @@ _REGISTER_NORMAL_PRODUCT(CPoissonSurfaceReconstructor, KEYWORD::POISSON_RECONSTR
 
 //*****************************************************************
 //FUNCTION: 
-void CPoissonSurfaceReconstructor::constructSurface(pcl::PolygonMesh& voMesh)
+void CPoissonSurfaceReconstructor::constructSurface(CMesh& voMesh)
 {
+	pcl::PolygonMesh PolMesh;
 	pcl::Poisson<pcl::PointNormal> Poisson;
 	Poisson.setDepth(m_pConfig->getAttribute<int>(KEYWORD::OCTREE_DEPTH).value());
 	Poisson.setInputCloud(m_pSceneCloud);
-	Poisson.performReconstruction(voMesh);
+	Poisson.performReconstruction(PolMesh);
+	voMesh = CMesh(PolMesh);
 }
