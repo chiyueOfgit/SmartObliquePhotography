@@ -42,24 +42,27 @@ namespace hiveObliquePhotography
 	template<typename TColor>
 	class CColorTraits
 	{
-	private:
-		constexpr static size_t extractChannel();
-
 	public:
 		using Scalar_t = std::conditional_t<std::is_arithmetic_v<TColor> || std::is_array_v<TColor>, std::remove_extent_t<TColor>, extract_value_type_t<TColor>>;
-		static constexpr size_t Channel = extractChannel();
+
+		constexpr static size_t extractChannel()
+		{
+			if constexpr (std::is_arithmetic_v<TColor>)
+				return 1;
+			else if constexpr (std::is_array_v<TColor>)
+				return std::extent_v<TColor>;
+			else if constexpr (std::is_void_v<Scalar_t>)
+				return 0;
+			else
+				return std::size(TColor());
+		}
 	};
 
-	template<typename TColor>
-	constexpr size_t CColorTraits<TColor> ::extractChannel()
+	template<typename T>
+	std::ostream& operator << (std::ostream& vOut, CColorTraits<T>)
 	{
-		if constexpr (std::is_arithmetic_v<TColor>)
-			return 1;
-		else if constexpr (std::is_array_v<TColor>)
-			return std::extent_v<TColor>;
-		else if constexpr (std::is_void_v<Scalar_t>)
-			return 0;
-		else
-			return sizeof(TColor) / sizeof(Scalar_t);
+		return vOut <<
+			"Scalar_t:\t" << typeid(CColorTraits<T>::Scalar_t).name() << '\n' <<
+			"Channel:\t" << CColorTraits<T>::extractChannel() << '\n';
 	}
 }
