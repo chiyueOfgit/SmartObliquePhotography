@@ -7,7 +7,7 @@
 #include "ObliquePhotographyDataInterface.h"
 
 //测试用例列表：
-//  * findTexelsPerFace: 
+//  * findTexelsPerFace: 测试每三角面片所覆盖的纹素是否正确
 // 
 //  * executeIntersection: 
 // 
@@ -16,7 +16,7 @@
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
-const auto MeshPath = TESTMODEL_DIR + std::string("");
+const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test024_Model/Plane/Plane100.obj");
 const auto CloudPath = TESTMODEL_DIR + std::string("");
 
 class TestCastingTextureBaker : public testing::Test
@@ -24,24 +24,32 @@ class TestCastingTextureBaker : public testing::Test
 protected:
 	void SetUp() override
 	{
-		pcl::TextureMesh TexMesh1, TexMesh2;
-		pcl::io::loadOBJFile(MeshPath, TexMesh1);
-		pcl::io::loadPolygonFileOBJ(MeshPath, TexMesh2);
-		TexMesh2.tex_materials = TexMesh1.tex_materials;
-		m_Mesh = hiveObliquePhotography::CMesh(TexMesh2);
-		ASSERT_TRUE(!m_Mesh.m_Vertices.empty());
-		ASSERT_TRUE(!m_Mesh.m_Faces.empty());
+		_loadMesh(PlaneMeshPath, m_Mesh);
 
 		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ CloudPath });
-		ASSERT_NE(m_pCloud, nullptr);
 
-		m_pTextureBaker = hiveDesignPattern::hiveCreateProduct<CRayCastingBaker>(KEYWORD::RAYCASTING_TEXTUREBAKER, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), m_Mesh);
-		ASSERT_NE(m_pTextureBaker, nullptr);
+		m_pTextureBaker = _createBaker(m_Mesh);
 	}
 
 	void TearDown() override
 	{
 		delete m_pTextureBaker;
+	}
+
+	void _loadMesh(const std::string& vPath, hiveObliquePhotography::CMesh& vMesh)
+	{
+		pcl::TextureMesh TexMesh1, TexMesh2;
+		pcl::io::loadOBJFile(vPath, TexMesh1);
+		pcl::io::loadPolygonFileOBJ(vPath, TexMesh2);
+		TexMesh2.tex_materials = TexMesh1.tex_materials;
+		vMesh = hiveObliquePhotography::CMesh(TexMesh2);
+		ASSERT_TRUE(!vMesh.m_Vertices.empty());
+		ASSERT_TRUE(!vMesh.m_Faces.empty());
+	}
+
+	CRayCastingBaker* _createBaker(const hiveObliquePhotography::CMesh& vMesh)
+	{
+		return hiveDesignPattern::hiveCreateProduct<CRayCastingBaker>(KEYWORD::RAYCASTING_TEXTUREBAKER, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
 	}
 
 	hiveObliquePhotography::CMesh m_Mesh;
