@@ -21,19 +21,28 @@ pcl::PolygonMesh CMesh::toPolMesh()
 {
 	pcl::PolygonMesh PolMesh;
 	__fillCloud(m_Vertices, PolMesh.cloud);
-	
+	__fillPolygons(m_Faces, PolMesh.polygons);
 
-	return pcl::PolygonMesh();
+	return PolMesh;
 }
 
 //*****************************************************************
 //FUNCTION: 
-pcl::TextureMesh CMesh::toTexMesh()
+pcl::TextureMesh CMesh::toTexMesh(const pcl::TexMaterial& vMaterial)
 {
 	pcl::TextureMesh TexMesh;
 	__fillCloud(m_Vertices, TexMesh.cloud);
+	TexMesh.tex_polygons.resize(1);
+	__fillPolygons(m_Faces, TexMesh.tex_polygons[0]);
+	
+	//tex coord
+	std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f>> Coords;
+	for (int i = 0; i < m_Vertices.size(); i++)
+		Coords.push_back(Eigen::Vector2f{ m_Vertices[i].u, m_Vertices[i].v });
+	TexMesh.tex_coordinates.push_back(Coords);
+	TexMesh.tex_materials.push_back(vMaterial);
 
-	return pcl::TextureMesh();
+	return TexMesh;
 }
 
 //*****************************************************************
@@ -146,6 +155,10 @@ void CMesh::__fillCloud(const std::vector<SVertex>& vVertices, pcl::PCLPointClou
 void CMesh::__fillPolygons(const std::vector<SFace>& vFaces, std::vector<pcl::Vertices>& vPolygons)
 {
 	for (int i = 0; i < vFaces.size(); i++)
-		vPolygons.push_back({ vFaces[i].a, vFaces[i].b, vFaces[i].c });
+	{
+		pcl::Vertices Face;
+		Face.vertices = { vFaces[i].a, vFaces[i].b, vFaces[i].c };
+		vPolygons.push_back(Face);
+	}
 }
 
