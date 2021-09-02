@@ -28,7 +28,7 @@ pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestMesh()
 	pcl::io::loadPolygonFileOBJ(Path, Mesh2);
 	Mesh2.tex_materials = Mesh.tex_materials;
 
-	CMesh Mesh(Mesh2);
+	CMesh M(Mesh2);
 	return Mesh2;
 }
 

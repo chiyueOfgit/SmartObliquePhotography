@@ -19,6 +19,10 @@ CMesh::CMesh(const pcl::TextureMesh& vTexMesh)
 //FUNCTION: 
 pcl::PolygonMesh CMesh::toPolMesh(const CMesh& vMesh)
 {
+	pcl::PolygonMesh PolMesh;
+	
+	PolMesh.cloud.width = vMesh.m_Vertices.size();
+	PolMesh.cloud.height = 1;
 	return pcl::PolygonMesh();
 }
 

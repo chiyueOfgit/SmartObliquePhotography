@@ -1,5 +1,6 @@
 #pragma once
 #include <pcl/TextureMesh.h>
+#include "SceneREconstructionExport.h"
 
 namespace hiveObliquePhotography
 {
@@ -26,7 +27,7 @@ namespace hiveObliquePhotography
 			IndexType c;
 		};
 
-		class CMesh
+		class RECONSTRUCTION_DECLSPEC CMesh
 		{
 		public:
 			CMesh() = default;
