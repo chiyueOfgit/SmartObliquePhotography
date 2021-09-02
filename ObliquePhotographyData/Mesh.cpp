@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Mesh.h"
 
-using namespace hiveObliquePhotography::SceneReconstruction;
+using namespace hiveObliquePhotography;
 
 CMesh::CMesh(const pcl::PolygonMesh& vPolMesh)
 {
@@ -17,20 +17,32 @@ CMesh::CMesh(const pcl::TextureMesh& vTexMesh)
 
 //*****************************************************************
 //FUNCTION: 
-pcl::PolygonMesh CMesh::toPolMesh(const CMesh& vMesh)
+pcl::PolygonMesh CMesh::toPolMesh()
 {
 	pcl::PolygonMesh PolMesh;
-	
-	PolMesh.cloud.width = vMesh.m_Vertices.size();
-	PolMesh.cloud.height = 1;
-	return pcl::PolygonMesh();
+	__fillCloud(m_Vertices, PolMesh.cloud);
+	__fillPolygons(m_Faces, PolMesh.polygons);
+
+	return PolMesh;
 }
 
 //*****************************************************************
 //FUNCTION: 
-pcl::TextureMesh CMesh::toTexMesh(const CMesh& vMesh)
+pcl::TextureMesh CMesh::toTexMesh(const pcl::TexMaterial& vMaterial)
 {
-	return pcl::TextureMesh();
+	pcl::TextureMesh TexMesh;
+	__fillCloud(m_Vertices, TexMesh.cloud);
+	TexMesh.tex_polygons.resize(1);
+	__fillPolygons(m_Faces, TexMesh.tex_polygons[0]);
+	
+	//tex coord
+	std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f>> Coords;
+	for (int i = 0; i < m_Vertices.size(); i++)
+		Coords.push_back(Eigen::Vector2f{ m_Vertices[i].u, m_Vertices[i].v });
+	TexMesh.tex_coordinates.push_back(Coords);
+	TexMesh.tex_materials.push_back(vMaterial);
+
+	return TexMesh;
 }
 
 //*****************************************************************
@@ -83,6 +95,8 @@ std::map<std::uint32_t, std::uint32_t> CMesh::__getOffsetTable(const std::vector
 	return OffsetTable;
 }
 
+//*****************************************************************
+//FUNCTION: 
 void CMesh::__copyAttributes(std::vector<SVertex>& vVertices, const std::vector<uint8_t>& vData, const std::map<uint32_t, uint32_t>& vOffsetTable, int vPointStep)
 {
 	vVertices.resize(vData.size() / vPointStep);
@@ -105,3 +119,46 @@ void CMesh::__fillFaces(std::vector<SFace>& vFaces, const std::vector<pcl::Verti
 	for (auto& Face : vFaceData)
 		vFaces.push_back({ Face.vertices[0], Face.vertices[1], Face.vertices[2] });
 }
+
+//*****************************************************************
+//FUNCTION: 
+void CMesh::__fillCloud(const std::vector<SVertex>& vVertices, pcl::PCLPointCloud2& vCloud)
+{
+	vCloud.width = vVertices.size();
+	vCloud.height = 1;
+	vCloud.is_bigendian = 0;
+
+	const std::vector<std::string> AttributeNames = 
+	{
+		"x", "y", "z", "normal_x", "normal_y", "normal_z", "u", "v"
+	};
+	for (int i = 0; i < AttributeNames.size(); i++)
+	{
+		pcl::PCLPointField Attribute;
+		Attribute.name = AttributeNames[i];
+		Attribute.offset = i * sizeof(DataType);
+		Attribute.datatype = pcl::PCLPointField::FLOAT32;
+		Attribute.count = 1;
+		vCloud.fields.push_back(Attribute);
+	}
+	vCloud.point_step = AttributeNames.size() * sizeof(DataType);
+
+	vCloud.row_step = vCloud.point_step * vCloud.width;
+	vCloud.data.resize(vCloud.row_step);
+
+	for (int i = 0; i < vCloud.width; i++)
+		memcpy(&vCloud.data[i * vCloud.point_step], &vVertices[i], vCloud.point_step);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CMesh::__fillPolygons(const std::vector<SFace>& vFaces, std::vector<pcl::Vertices>& vPolygons)
+{
+	for (int i = 0; i < vFaces.size(); i++)
+	{
+		pcl::Vertices Face;
+		Face.vertices = { vFaces[i].a, vFaces[i].b, vFaces[i].c };
+		vPolygons.push_back(Face);
+	}
+}
+

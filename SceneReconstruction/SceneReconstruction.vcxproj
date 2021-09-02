@@ -120,6 +120,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,6 +139,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,31 +151,39 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PoissonSurfaceReconstructor.cpp" />
+    <ClCompile Include="RayCastingBaker.cpp" />
     <ClCompile Include="SceneReconstructionInterface.cpp" />
     <ClCompile Include="SurfaceReconstructor.cpp" />
+    <ClCompile Include="TextureBaker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ObliquePhotographyData\Image.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Mesh.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PoissonSurfaceReconstructor.h" />
+    <ClInclude Include="RayCastingBaker.h" />
     <ClInclude Include="SceneReconstructionCommon.h" />
     <ClInclude Include="SceneReconstructionExport.h" />
     <ClInclude Include="SceneReconstructionInterface.h" />
     <ClInclude Include="SurfaceReconstructor.h" />
     <ClInclude Include="SceneReconstructionConfig.h" />
+    <ClInclude Include="TextureBaker.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\QTInterface\Config\SceneReconstructionConfig.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ObliquePhotographyData\ObliquePhotographyData.vcxproj">
+      <Project>{983716c5-47d1-4ff5-a982-aa578144f2b2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

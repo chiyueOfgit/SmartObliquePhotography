@@ -54,6 +54,9 @@
     <ClInclude Include="Image.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="TextureLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -90,6 +93,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PointCloudPLYSaver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="TextureLoader.cpp">

@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "Mesh.h"
 
 namespace hiveObliquePhotography
 {
@@ -24,4 +25,45 @@ namespace hiveObliquePhotography
 	private:
 		Eigen::Matrix<TColor, -1, -1> m_Data;
 	};
+
+	template<typename T>
+	struct extract_value_type {
+	private:
+		template <typename _T>
+		static auto check(_T) -> typename _T::value_type;
+		static void check(...);
+
+	public:
+		using type = decltype(check(std::declval<T>()));
+	};
+
+	template <class T>
+	using extract_value_type_t = typename extract_value_type<T>::type;
+
+	template<typename TColor>
+	class CColorTraits
+	{
+	public:
+		using Scalar_t = std::conditional_t<std::is_arithmetic_v<TColor> || std::is_array_v<TColor>, std::remove_extent_t<TColor>, extract_value_type_t<TColor>>;
+
+		constexpr static size_t extractChannel()
+		{
+			if constexpr (std::is_arithmetic_v<TColor>)
+				return 1;
+			else if constexpr (std::is_array_v<TColor>)
+				return std::extent_v<TColor>;
+			else if constexpr (std::is_void_v<Scalar_t>)
+				return 0;
+			else
+				return std::size(TColor());
+		}
+	};
+
+	template<typename T>
+	std::ostream& operator << (std::ostream& vOut, CColorTraits<T>)
+	{
+		return vOut <<
+			"Scalar_t:\t" << typeid(CColorTraits<T>::Scalar_t).name() << '\n' <<
+			"Channel:\t" << CColorTraits<T>::extractChannel() << '\n';
+	}
 }
