@@ -163,6 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Image.h" />
     <ClInclude Include="ObliquePhotographyDataCommon.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ObliquePhotographyDataExport.h" />
