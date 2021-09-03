@@ -7,7 +7,7 @@
 #include "ObliquePhotographyDataInterface.h"
 
 //测试用例列表：
-//  * findTexelsPerFace: 测试每三角面片所覆盖的纹素是否正确
+//  * findTexelsPerFace: 测试每三角面片所覆盖的纹素及对应世界坐标是否正确
 // 
 //  * executeIntersection: 
 // 

@@ -28,7 +28,24 @@ std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelIn
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInfo>& vCandidates)
+Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInfo>& vCandidates, const STexelInfo& vInfo)
 {
+	auto BeginPos = vInfo.TexelPosInWorld;
+	auto RayDirection = __calcRayDirection(vInfo);
+
+	
 	return {};
 }
+
+//*****************************************************************
+//FUNCTION: 
+Eigen::Vector3f CRayCastingBaker::__calcRayDirection(const STexelInfo& vInfo)	//暂用那个面的法线
+{
+	auto PosA = m_Mesh.m_Vertices[vInfo.OriginFace.a].xyz();
+	auto PosB = m_Mesh.m_Vertices[vInfo.OriginFace.b].xyz();
+	auto PosC = m_Mesh.m_Vertices[vInfo.OriginFace.c].xyz();
+
+	return ((PosB - PosA).cross(PosC - PosA)).normalized();
+}
+
+
