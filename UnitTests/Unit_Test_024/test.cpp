@@ -69,24 +69,11 @@ protected:
 
 TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
 {
-	auto pCalcBarycentric = [](Eigen::Vector2f vA, Eigen::Vector2f vB, Eigen::Vector2f vC, Eigen::Vector2f vPoint) -> Eigen::Vector3f
-	{
-		Eigen::Vector3f Temp[2];
-		for (int i = 2; i--; )
-		{
-			Temp[i].x() = vC.data()[i] - vA.data()[i];
-			Temp[i].y() = vB.data()[i] - vA.data()[i];
-			Temp[i].z() = vA.data()[i] - vPoint.data()[i];
-		}
-		Eigen::Vector3f TempVec = Temp[0].cross(Temp[1]); //u, v, 1
-		return Eigen::Vector3f(1.0f - (TempVec.x() + TempVec.y()) / TempVec.z(), TempVec.y() / TempVec.z(), TempVec.x() / TempVec.z());
-	};
-
 	//8 faces plane
 	m_Mesh = _loadMesh(PlaneMeshPath);
 	m_pTextureBaker = _createBaker(m_Mesh);
 
-	std::vector<Eigen::Vector2i> ResolutionList = { {512, 512}, {1, 1} };
+	std::vector<Eigen::Vector2i> ResolutionList = { {512, 512}, {10, 10} };
 	std::vector<int> NumWholeTexels(ResolutionList.size(), 0);
 	auto& Vertices = m_Mesh.m_Vertices;
 	for (auto& Face : m_Mesh.m_Faces)
@@ -101,16 +88,18 @@ TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
 
 			for (auto& Texel : TexelInfos)
 			{
-				Eigen::Vector2f PointUV = { Texel.TexelPos.x() / Resolution.x(), Texel.TexelPos.y() / Resolution.y() };
+				Eigen::Vector2f PointUV = { (Texel.TexelPos.x() + 0.5f) / Resolution.x(), (Texel.TexelPos.y() + 0.5f) / Resolution.y() };
 				Eigen::Vector2f FacesUV[3];
 				for (int i = 0; i < 3; i++)
 					FacesUV[i] = { Vertices[Texel.OriginFace[i]].u, Vertices[Texel.OriginFace[i]].v };
 
-				auto Centric = pCalcBarycentric(FacesUV[0], FacesUV[1], FacesUV[2], PointUV);
-				Eigen::Vector3f ExpectPos = Centric.x() * Vertices[Texel.OriginFace[0]].xyz() + Centric.y() * Vertices[Texel.OriginFace[1]].xyz() + Centric.z() * Vertices[Texel.OriginFace[2]].xyz();
+				Eigen::Vector2f DeltaPos = { PointUV.x() * 100.0f, -PointUV.y() * 100.0f };
+				Eigen::Vector2f BeginPos{ -50.0f, 50.0f };
+
+				Eigen::Vector3f TexelPosInPlane = { BeginPos.x() + DeltaPos.x(), 0.0f, BeginPos.y() + DeltaPos.y() };
 				const float ErrorScope = 1.0f;
 				for (int i = 0; i < 3; i++)
-					ASSERT_NEAR(Texel.TexelPosInWorld.data()[i], ExpectPos.data()[i], ErrorScope);
+					ASSERT_NEAR(Texel.TexelPosInWorld.data()[i], TexelPosInPlane.data()[i], ErrorScope);
 			}
 		}
 
