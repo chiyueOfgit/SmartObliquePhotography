@@ -29,7 +29,7 @@ namespace hiveObliquePhotography
 		IndexType b;
 		IndexType c;
 
-		IndexType operator[](int i)
+		IndexType operator[](int i) const
 		{
 			IndexType Temp;
 			switch (i)
