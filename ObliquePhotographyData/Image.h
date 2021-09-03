@@ -1,6 +1,5 @@
 #pragma once
 #include "pch.h"
-#include "Mesh.h"
 
 namespace hiveObliquePhotography
 {
@@ -59,11 +58,11 @@ namespace hiveObliquePhotography
 		}
 	};
 
-	template<typename T>
-	std::ostream& operator << (std::ostream& vOut, CColorTraits<T>)
+	template<typename TColor>
+	std::ostream& operator << (std::ostream& vOut, CColorTraits<TColor>)
 	{
 		return vOut <<
-			"Scalar_t:\t" << typeid(CColorTraits<T>::Scalar_t).name() << '\n' <<
-			"Channel:\t" << CColorTraits<T>::extractChannel() << '\n';
+			"Scalar_t:\t" << typeid(CColorTraits<TColor>::Scalar_t).name() << '\n' <<
+			"Channel:\t" << CColorTraits<TColor>::extractChannel() << '\n';
 	}
 }
