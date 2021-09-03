@@ -52,6 +52,11 @@ void hiveObliquePhotography::Visualization::hiveRemoveAllShapes()
 	CPointCloudVisualizer::getInstance()->m_pPCLVisualizer->removeAllShapes();
 }
 
+void hiveObliquePhotography::Visualization::hiveDumpUserCloudSet(std::vector<PointCloud_t::Ptr>& voCloudSet)
+{
+	voCloudSet = CPointCloudVisualizer::getInstance()->getUserCloudSet();
+}
+
 pcl::visualization::PCLVisualizer*& hiveObliquePhotography::Visualization::hiveGetPCLVisualizer()
 {
 	return CPointCloudVisualizer::getInstance()->m_pPCLVisualizer;

@@ -95,9 +95,9 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vec
 	vioBoundarySet.swap(TempSet) ;
 	
 	__divideBoundary(BoundarySet, voHoleSet);
-	for (auto& Hole : voHoleSet)
-	    for (auto Index : Hole)
-			pManager->tagPointLabel(Index, EPointLabel::KEPT, 0, 0);
+	//for (auto& Hole : voHoleSet)
+	//    for (auto Index : Hole)
+	//		pManager->tagPointLabel(Index, EPointLabel::KEPT, 0, 0);
 }
 
 Eigen::Vector3f CBoundaryDetector::__calcProjectivePoint(Eigen::Vector3f& vCenterPosition, Eigen::Vector3f& vCenterNormal, Eigen::Vector3f& vProjectPosition)
@@ -126,6 +126,9 @@ float CBoundaryDetector::__calcAngle(Eigen::Vector3f& vStandardVector, Eigen::Ve
 
 void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPointSet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
 {
+	if (vBoundaryPointSet.empty())
+		return;
+
 	std::vector<std::vector<pcl::index_t>> TempHoleSet;
 	std::map<int, bool> TraversedFlag;
 	for (auto Index : vBoundaryPointSet)
@@ -187,7 +190,8 @@ void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPoi
 		std::vector<pcl::index_t> MergeSet;
 		for (auto Temp : TempHoleSet)
 			MergeSet.insert(MergeSet.end(), Temp.begin(), Temp.end());
-		voHoleSet.push_back(MergeSet);
+		if (!MergeSet.empty())
+			voHoleSet.push_back(MergeSet);
 	}
 	else
 	{
@@ -199,7 +203,7 @@ void CBoundaryDetector::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPoi
 			else
 				MergeSet.insert(MergeSet.end(), Temp.begin(), Temp.end());
 		}
-		if (MergeSet.size() > 0.30f * vBoundaryPointSet.size())
+		if (MergeSet.size() > 0.40f * vBoundaryPointSet.size())
 			voHoleSet.push_back(MergeSet);
 	}
 }

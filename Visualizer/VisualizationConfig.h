@@ -23,6 +23,7 @@ namespace hiveObliquePhotography
 
 		const std::string CIRCLE_MODE = "CIRCLE_MODE";
 		const std::string AREA_MODE = "AREA_MODE";
+		const std::string REPAIR_MODE = "REPAIR_MODE";
 		const std::string AREA_PICK_CULLING = "AREA_PICK_CULLING";
 		const std::string RUBBER_MODE = "RUBBER_MODE";
 		const std::string UNWANTED_MODE = "UNWANTED_MODE";
@@ -31,6 +32,11 @@ namespace hiveObliquePhotography
 		const std::string LITTER_HIGHLIGHT_COLOR = "LITTER_HIGHLIGHT_COLOR";
 		const std::string BACKGROUND_HIGHLIGHT_COLOR = "BACKGROUND_HIGHLIGHT_COLOR";
 
+		const std::string JUMP_TO_MAIN_VIEW = "JUMP_TO_MAIN_VIEW";
+		const std::string JUMP_TO_TOP_VIEW = "JUMP_TO_TOP_VIEW";
+		const std::string JUMP_TO_SIDE_VIEW = "JUMP_TO_SIDE_VIEW";
+		const std::string SHOW_BOUNDING_BOX = "SHOW_BOUNDING_BOX";
+		
 		class CVisualizationConfig : public hiveConfig::CHiveConfig, public hiveDesignPattern::CSingleton<CVisualizationConfig>
 		{
 		public:
@@ -42,7 +48,6 @@ namespace hiveObliquePhotography
 				CVisualizationConfig::__defineAttributesV();
 
 				const std::string ConfigPath = "Config/VisualizationConfig.xml";
-
 				if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, this) != hiveConfig::EParseResult::SUCCEED)
 				{
 					_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
@@ -65,6 +70,7 @@ namespace hiveObliquePhotography
 
 				_defineAttribute(CIRCLE_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(AREA_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(REPAIR_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(AREA_PICK_CULLING, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(RUBBER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(UNWANTED_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
@@ -76,6 +82,11 @@ namespace hiveObliquePhotography
 
 				_defineAttribute(LITTER_HIGHLIGHT_COLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC3I);
 				_defineAttribute(BACKGROUND_HIGHLIGHT_COLOR, hiveConfig::EConfigDataType::ATTRIBUTE_VEC3I);
+
+				_defineAttribute(JUMP_TO_MAIN_VIEW, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(JUMP_TO_TOP_VIEW, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(JUMP_TO_SIDE_VIEW, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
+				_defineAttribute(SHOW_BOUNDING_BOX, hiveConfig::EConfigDataType::ATTRIBUTE_STRING);
 
 			}
 

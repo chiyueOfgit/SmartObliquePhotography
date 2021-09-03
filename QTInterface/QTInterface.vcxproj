@@ -62,7 +62,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\visualization\include;..\Visualizer;..\ObliquePhotographyData;..\PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\visualization\include;..\Visualizer;..\ObliquePhotographyData;..\PointCloudRetouch;..\SceneReconstruction;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -76,7 +76,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\visualization\include;..\Visualizer;..\ObliquePhotographyData;..\PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\visualization\include;..\Visualizer;..\ObliquePhotographyData;..\PointCloudRetouch;..\SceneReconstruction;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PreprocessorDefinitions>NOMINMAX;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -151,7 +151,6 @@
     <Xml Include="..\Configs\AutoRetouchConfig.xml" />
     <Xml Include="..\Configs\QTInterfaceConfig.xml" />
     <Xml Include="..\Configs\VisualizationConfig.xml" />
-    <Xml Include="PointCloudRetouchConfig.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ObliquePhotographyData\ObliquePhotographyData.vcxproj">
@@ -159,6 +158,9 @@
     </ProjectReference>
     <ProjectReference Include="..\PointCloudRetouch\PointCloudRetouch.vcxproj">
       <Project>{60928201-7a4d-49df-9579-3ccdde7a134f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SceneReconstruction\SceneReconstruction.vcxproj">
+      <Project>{09da221c-2361-460c-8e26-21f3cfa481fc}</Project>
     </ProjectReference>
     <ProjectReference Include="..\visualization\pcl_visualization.vcxproj">
       <Project>{ff6dcd49-f069-34e5-a385-b82cb8ebf88d}</Project>

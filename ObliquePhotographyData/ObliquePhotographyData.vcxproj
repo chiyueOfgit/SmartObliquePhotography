@@ -163,6 +163,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="ObliquePhotographyDataCommon.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ObliquePhotographyDataExport.h" />
@@ -174,9 +176,12 @@
     <ClInclude Include="PointCloudSaver.h" />
     <ClInclude Include="PointCloudScene.h" />
     <ClInclude Include="PointCloudLoader.h" />
+    <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="TextureSaver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -191,6 +196,8 @@
     <ClCompile Include="PointCloudSaver.cpp" />
     <ClCompile Include="PointCloudScene.cpp" />
     <ClCompile Include="PointCloudLoader.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="TextureSaver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

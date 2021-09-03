@@ -22,6 +22,8 @@ namespace hiveObliquePhotography
 
 		VISUALIZATION_DECLSPEC void hiveRemoveAllShapes();
 
+		VISUALIZATION_DECLSPEC void hiveDumpUserCloudSet(std::vector<PointCloud_t::Ptr>& voCloudSet);
+
 		VISUALIZATION_DECLSPEC pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
 
 		VISUALIZATION_DECLSPEC bool hiveGetVisualizationConfig(CVisualizationConfig*& voConfig);

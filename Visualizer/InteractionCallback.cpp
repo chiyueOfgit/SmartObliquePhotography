@@ -114,6 +114,23 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			}
 		}
 
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_MAIN_VIEW).value())
+		{
+			m_pVisualizer->jumpToThreeView(EView::MainView);
+		}
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_TOP_VIEW).value())
+		{
+			m_pVisualizer->jumpToThreeView(EView::TopView);
+		}
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_SIDE_VIEW).value())
+		{
+			m_pVisualizer->jumpToThreeView(EView::SideView);
+		}
+		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SHOW_BOUNDING_BOX).value())
+		{
+			m_pVisualizer->showBoundingBox();
+		}
+		
 		if (RefreshFlag)
 		{
 			std::vector<std::size_t> PointLabel;
@@ -326,21 +343,26 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double { return -1; }, ViewPos);
 			//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
-			/*auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
+			if (!m_pVisualizationConfig->getAttribute<bool>(REPAIR_MODE).value())
 			{
-				static int i = 0;
-				return i++ % 2 ? 1.0 : 0.0;
-			};
+				auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
+				{
+					static int i = 0;
+					return i++ % 2 ? 1.0 : 0.0;
+				};
 
-			if (m_UnwantedMode)
-				PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, pRandomHardness);
+				if (m_UnwantedMode)
+					PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, pRandomHardness);
+				else
+					PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, pRandomHardness);
+			}
 			else
-				PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, pRandomHardness);*/
-
-			if (m_UnwantedMode)
-				PointCloudRetouch::hiveRepairHoleSetRepairRegion(PickedIndices);
-			else
-				PointCloudRetouch::hiveRepairHoleSetReferenceRegion(PickedIndices);
+			{
+				if (m_UnwantedMode)
+					PointCloudRetouch::hiveRepairHoleSetRepairRegion(PickedIndices);
+				else
+					PointCloudRetouch::hiveRepairHoleSetReferenceRegion(PickedIndices);
+			}
 
 			{
 				std::vector<std::size_t> PointLabel;

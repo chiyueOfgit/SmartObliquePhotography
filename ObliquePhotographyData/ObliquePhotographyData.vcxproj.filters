@@ -51,6 +51,18 @@
     <ClInclude Include="PointCloudPLYSaver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -81,6 +93,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="PointCloudPLYSaver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureSaver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
