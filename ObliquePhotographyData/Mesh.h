@@ -17,6 +17,10 @@ namespace hiveObliquePhotography
 		DataType nz;
 		DataType u;
 		DataType v;
+
+		Eigen::Vector3f xyz() { return { x, y, z }; }
+		Eigen::Vector3f normal() { return { nx, ny, nz }; }
+		Eigen::Vector2f uv() { return { u, v }; }
 	};
 
 	struct SFace
@@ -24,6 +28,27 @@ namespace hiveObliquePhotography
 		IndexType a;
 		IndexType b;
 		IndexType c;
+
+		IndexType operator[](int i) const
+		{
+			IndexType Temp;
+			switch (i)
+			{
+			case 0:
+				Temp = a;
+				break;
+			case 1:
+				Temp = b;
+				break;
+			case 2:
+				Temp = c;
+				break;
+			default:
+				Temp = -1;
+				break;
+			}
+			return Temp;
+		}
 	};
 
 	class OPDATA_DECLSPEC CMesh

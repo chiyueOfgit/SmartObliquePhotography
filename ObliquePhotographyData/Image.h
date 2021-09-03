@@ -3,7 +3,7 @@
 
 namespace hiveObliquePhotography
 {
-	template <typename TColor>
+	template <class TColor>
 	class CImage
 	{
 	public:
@@ -25,10 +25,27 @@ namespace hiveObliquePhotography
 		Eigen::Matrix<TColor, -1, -1> m_Data;
 	};
 
-	template<typename T>
-	struct extract_value_type {
+	template <class T>
+	struct has_member_func_size
+	{
 	private:
-		template <typename _T>
+		template <class _T> static constexpr decltype(&_T::size, bool()) check(int)
+		{
+			return std::is_member_function_pointer_v<decltype(&_T::size)>;
+		}
+		template <class> static constexpr bool check(...) { return false; }
+	public:
+		static constexpr bool value = check<T>(int());
+	};
+
+	template <class T>
+	static constexpr auto has_member_func_size_v = has_member_func_size<T>::value;
+
+	template<class T>
+	struct extract_value_type
+	{
+	private:
+		template <class _T>
 		static auto check(_T) -> typename _T::value_type;
 		static void check(...);
 	public:
@@ -38,30 +55,33 @@ namespace hiveObliquePhotography
 	template <class T>
 	using extract_value_type_t = typename extract_value_type<T>::type;
 
-	template<typename TColor>
+	template<class TColor>
 	class CColorTraits
 	{
 	public:
 		using Scalar_t = std::conditional_t<std::is_arithmetic_v<TColor> || std::is_array_v<TColor>, std::remove_extent_t<TColor>, extract_value_type_t<TColor>>;
 
-		constexpr static size_t extractChannel()
+		static constexpr size_t extractChannel()
 		{
 			if constexpr (std::is_void_v<Scalar_t>)
 				return 0;
 			else if constexpr (std::has_unique_object_representations_v<TColor>)
 				return sizeof(TColor) / sizeof(Scalar_t);
-			else
+			else if constexpr (has_member_func_size_v<TColor>)
 				return std::size(TColor());
+			else
+				return 0;
 		}
 	};
 
-	template<typename TColor>
+	template<class TColor>
 	std::ostream& operator << (std::ostream& vOut, CColorTraits<TColor>)
 	{
 		return vOut << std::boolalpha <<
 			"Name:     " << typeid(TColor).name() << '\n' <<
 			"Memcpy:   " << std::is_trivially_copyable_v<TColor> << '\n' <<
 			"SameObj:  " << std::has_unique_object_representations_v<TColor> << '\n' <<
+			"HasSize:  " << has_member_func_size_v<TColor> << '\n' <<
 			"Scalar_t: " << typeid(CColorTraits<TColor>::Scalar_t).name() << '\n' <<
 			"Channel:  " << CColorTraits<TColor>::extractChannel() << '\n';
 	}
