@@ -67,20 +67,57 @@ protected:
 	CRayCastingBaker* m_pTextureBaker = nullptr;
 };
 
-TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
-{
-	auto pCalcBarycentric = [](Eigen::Vector2f vA, Eigen::Vector2f vB, Eigen::Vector2f vC, Eigen::Vector2f vPoint) -> Eigen::Vector3f
-	{
-		Eigen::Vector3f Temp[2];
-		for (int i = 2; i--; )
-		{
-			Temp[i].x() = vC.data()[i] - vA.data()[i];
-			Temp[i].y() = vB.data()[i] - vA.data()[i];
-			Temp[i].z() = vA.data()[i] - vPoint.data()[i];
-		}
-		Eigen::Vector3f TempVec = Temp[0].cross(Temp[1]); //u, v, 1
-		return Eigen::Vector3f(1.0f - (TempVec.x() + TempVec.y()) / TempVec.z(), TempVec.y() / TempVec.z(), TempVec.x() / TempVec.z());
-	};
+//TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
+//{
+//	//8 faces plane
+//	m_Mesh = _loadMesh(PlaneMeshPath);
+//	m_pTextureBaker = _createBaker(m_Mesh);
+//
+//	std::vector<Eigen::Vector2i> ResolutionList = { {512, 512}, {10, 10} };
+//	std::vector<int> NumWholeTexels(ResolutionList.size(), 0);
+//	auto& Vertices = m_Mesh.m_Vertices;
+//	for (auto& Face : m_Mesh.m_Faces)
+//	{
+//		{
+//			auto& Resolution = ResolutionList[0];
+//			int NumTexels = Resolution.x() * Resolution.y();
+//			auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
+//			ASSERT_TRUE(!TexelInfos.empty());
+//			EXPECT_NEAR(TexelInfos.size(), NumTexels * ((float)1 / 8), NumTexels * 0.1);
+//			NumWholeTexels[0] += TexelInfos.size();
+//
+//			for (auto& Texel : TexelInfos)
+//			{
+//				Eigen::Vector2f PointUV = { (Texel.TexelPos.x() + 0.5f) / Resolution.x(), (Texel.TexelPos.y() + 0.5f) / Resolution.y() };
+//				Eigen::Vector2f FacesUV[3];
+//				for (int i = 0; i < 3; i++)
+//					FacesUV[i] = { Vertices[Texel.OriginFace[i]].u, Vertices[Texel.OriginFace[i]].v };
+//
+//				Eigen::Vector2f DeltaPos = { PointUV.x() * 100.0f, -PointUV.y() * 100.0f };
+//				Eigen::Vector2f BeginPos{ -50.0f, 50.0f };
+//
+//				Eigen::Vector3f TexelPosInPlane = { BeginPos.x() + DeltaPos.x(), 0.0f, BeginPos.y() + DeltaPos.y() };
+//				const float ErrorScope = 1.0f;
+//				for (int i = 0; i < 3; i++)
+//					ASSERT_NEAR(Texel.TexelPosInWorld.data()[i], TexelPosInPlane.data()[i], ErrorScope);
+//			}
+//		}
+//
+//		{
+//			auto& Resolution = ResolutionList[1];
+//			auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
+//			NumWholeTexels[1] += TexelInfos.size();
+//		}	
+//	}
+//
+//	//总处理纹素要接近总纹素数
+//	for (int i = 0; i < ResolutionList.size(); i++)
+//	{
+//		auto& Resolution = ResolutionList[i];
+//		int NumTexels = Resolution.x() * Resolution.y();
+//		EXPECT_NEAR(NumWholeTexels[i], NumTexels, NumTexels * 0.1);
+//	}
+//}
 
 	//8 faces plane
 	m_Mesh = _loadMesh(PlaneMeshPath);
