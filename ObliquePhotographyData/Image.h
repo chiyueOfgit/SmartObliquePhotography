@@ -28,10 +28,11 @@ namespace hiveObliquePhotography
 	template <class T>
 	struct has_member_func_size
 	{
+	private:
 		template <class _T, class _U = decltype(&_T::size), class = std::enable_if_t<std::is_member_function_pointer_v<_U>>>
 		static std::true_type check(_T);
 		static std::false_type check(...);
-
+	public:
 		constexpr static bool value = decltype(check(std::declval<T>()))::value;
 	};
 
