@@ -7,11 +7,24 @@ _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 //*****************************************************************
 //FUNCTION: 
-hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(PointCloud_t::Ptr vPointCloud)
+hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution)
 {
 	m_pCloud = vPointCloud;
 
-	return {};
+	CImage<Eigen::Vector3i> ResultTexture;
+
+	for (auto& Face : m_Mesh.m_Faces)
+	{
+		auto TexelInfos = findTexelsPerFace(Face, vResolution);
+		for (auto& TexelInfo : TexelInfos)
+		{
+			auto Candidates = executeIntersection(TexelInfo);
+			auto TexelColor = calcTexelColor(Candidates, TexelInfo);
+			ResultTexture.fillColor(TexelInfo.TexelPos.y(), TexelInfo.TexelPos.x(), &TexelColor);
+		}
+	}
+
+	return ResultTexture;
 }
 
 //*****************************************************************
@@ -20,76 +33,28 @@ std::vector<STexelInfo> CRayCastingBaker::findTexelsPerFace(const SFace& vFace, 
 {
 	std::vector<STexelInfo> ResultSet;
 	
-	auto PointA = m_Mesh.m_Vertices[vFace.a];
-	auto PointB = m_Mesh.m_Vertices[vFace.b];
-	auto PointC = m_Mesh.m_Vertices[vFace.c];
-	auto Box = __calcBoxInTextureCoord(PointA.uv(), PointB.uv(), PointC.uv());
-	/*int U = 0;
-	int V = 0;*/
-	//Eigen::Vector2f Offset{1 / vResolution[0], 1 / vResolution[1] };
-	/*while (U < Box.first[0] * vResolution[0])
-		U ++;
-	while (V < Box.first[1])
-		V += Offset[1];*/
-
-	for(int U = Box.first[0] * vResolution[0] - 1; U < Box.second[0] * vResolution[0] + 1; U ++)
-	{
-		for(int V = Box.first[1] * vResolution[1]; V < Box.second[1] * vResolution[1] + 1; V ++)
-		{
-			auto BarycentricCoord = __calcBarycentricCoord(PointA.uv(), PointB.uv(), PointC.uv(), { (float)U / vResolution[0],(float)V / vResolution[1] });
-			if( std::get<0>(BarycentricCoord) < 0 || std::get<1>(BarycentricCoord) < 0 || std::get<2>(BarycentricCoord) < 0 )
-				continue;
-			else
-			{
-				auto WorldCoord = __calcTexelCoordInWorld(PointA.xyz(), PointB.xyz(), PointC.xyz(), BarycentricCoord);
-				STexelInfo TexelInfo({ U,V }, WorldCoord, vFace);
-				ResultSet.push_back(TexelInfo);
-			}
-		}
-	}
-	return ResultSet;
-	std::vector<STexelInfo> TexelInfos;
-
 	auto& VertexA = m_Mesh.m_Vertices[vFace.a];
 	auto& VertexB = m_Mesh.m_Vertices[vFace.b];
 	auto& VertexC = m_Mesh.m_Vertices[vFace.c];
 
-	//得到平面包围盒
-	Eigen::Vector2f Min{ FLT_MAX, FLT_MAX };
-	Eigen::Vector2f Max{ -FLT_MAX, -FLT_MAX };
-	for (int i = 0; i < 3; i++)	//a, b, c
-	{
-		auto VertexUV = m_Mesh.m_Vertices[vFace[i]].uv();
-		for (int i = 0; i < 2; i++)
-		{
-			if (Min.data()[i] < VertexUV.data()[i])
-				Min.data()[i] = VertexUV.data()[i];
-			if (Max.data()[i] > VertexUV.data()[i])
-				Max.data()[i] = VertexUV.data()[i];
-		}
+	auto Box = __calcBoxInTextureCoord(VertexA.uv(), VertexB.uv(), VertexC.uv());
 
-	}
-	
-	for (int X = Min.x() * vResolution.x(); X < Max.x() * vResolution.x(); X++)
-		for (int Y = Min.y() * vResolution.y(); Y < Max.y() * vResolution.y(); Y++)
-		{
-			//暂时单点采样, 以后可以纹素内多重采样
-			Eigen::Vector2f CenterUV = { (X + 0.5f) / vResolution.x(), (Y + 0.5f) / vResolution.y() };
-
-			if (__isPointInTriangle(CenterUV, VertexA.uv(), VertexB.uv(), VertexC.uv()))
+	for(int X = Box.first.x() * vResolution.x() - 1; X < Box.second.x() * vResolution.x() + 1; X++)
+		for(int Y = Box.first.y() * vResolution.y() - 1; Y < Box.second.y() * vResolution.y() + 1; Y++)
+			if (X >= 0 && X < vResolution.x() && Y >= 0 && Y < vResolution.y())
 			{
-				STexelInfo Info;
-				Info.OriginFace = vFace;
-				Info.TexelPos = { X, Y };
-				auto Barycentric = __calcBarycentric(CenterUV, VertexA.uv(), VertexB.uv(), VertexC.uv());
-				auto PosInWorld = Barycentric.x() * VertexA.xyz() + Barycentric.y() * VertexB.xyz() + Barycentric.z() * VertexC.xyz();
-				Info.TexelPosInWorld = PosInWorld;
+				Eigen::Vector2f CenterUV = { (X + 0.5f) / vResolution.x(), (Y + 0.5f) / vResolution.y() };
 
-				TexelInfos.push_back(Info);
+				auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), CenterUV);
+				if ((BarycentricCoord.array() >= 0).all())
+				{
+					auto WorldPos = __calcTexelPosInWorld(VertexA.xyz(), VertexB.xyz(), VertexC.xyz(), BarycentricCoord);
+					STexelInfo TexelInfo({ X, Y }, WorldPos, vFace);
+					ResultSet.push_back(TexelInfo);
+				}
 			}
-		}
 
-	return TexelInfos;
+	return ResultSet;
 }
 
 //*****************************************************************
@@ -160,24 +125,46 @@ Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInf
 
 //*****************************************************************
 //FUNCTION: 
-bool CRayCastingBaker::__isPointInTriangle(const Eigen::Vector2f& vPoint, const Eigen::Vector2f& vA, const Eigen::Vector2f& vB, const Eigen::Vector2f& vC)
+std::pair<Eigen::Vector2f, Eigen::Vector2f> CRayCastingBaker::__calcBoxInTextureCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC)
 {
-	return true;
+	Eigen::Vector2f Min{ FLT_MAX, FLT_MAX };
+	Eigen::Vector2f Max{ -FLT_MAX, -FLT_MAX };
+	auto update = [&](const Eigen::Vector2f& vPos)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			if (vPos.data()[i] < Min.data()[i])
+				Min.data()[i] = vPos.data()[i];
+			if (vPos.data()[i] > Max.data()[i])
+				Max.data()[i] = vPos.data()[i];
+		}
+	};
+	update(vPointA);
+	update(vPointB);
+	update(vPointC);
+	return { Min , Max };
 }
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector3f CRayCastingBaker::__calcBarycentric(const Eigen::Vector2f& vPoint, const Eigen::Vector2f& vA, const Eigen::Vector2f& vB, const Eigen::Vector2f& vC)
+Eigen::Vector3f CRayCastingBaker::__calcBarycentricCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC, const Eigen::Vector2f& vPointP)
 {
-	Eigen::Vector3f Temp[2];
-	for (int i = 2; i--; )
-	{
-		Temp[i].x() = vC.data()[i] - vA.data()[i];
-		Temp[i].y() = vB.data()[i] - vA.data()[i];
-		Temp[i].z() = vA.data()[i] - vPoint.data()[i];
-	}
-	Eigen::Vector3f TempVec = Temp[0].cross(Temp[1]);
-	return { 1.0f - (TempVec.x() + TempVec.y()) / TempVec.z(), TempVec.y() / TempVec.z(), TempVec.x() / TempVec.z() };
+	auto A = vPointA - vPointC;
+	auto B = vPointB - vPointC;
+	auto C = vPointP - vPointC;
+
+	float CoeffA = (C.x() * B.y() - C.y() * B.x()) / (A.x() * B.y() - A.y() * B.x());
+	float CoeffB = (C.x() * A.y() - C.y() * A.x()) / (B.x() * A.y() - B.y() * A.x());
+	float CoeffC = 1 - CoeffA - CoeffB;
+
+	return { CoeffA, CoeffB, CoeffC };
+}
+
+//*****************************************************************
+//FUNCTION: 
+Eigen::Vector3f CRayCastingBaker::__calcTexelPosInWorld(const Eigen::Vector3f& vPosA, const Eigen::Vector3f& vPosB, const Eigen::Vector3f& vPosC, const Eigen::Vector3f& vBarycentricCoord)
+{
+	return vBarycentricCoord.x() * vPosA + vBarycentricCoord.y() * vPosB + vBarycentricCoord.z() * vPosC;
 }
 
 //*****************************************************************
@@ -205,47 +192,4 @@ std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vecto
 	}
 
 	return PointIndices;
-}
-
-
-std::pair<Eigen::Vector2f, Eigen::Vector2f> CRayCastingBaker::__calcBoxInTextureCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC)
-{
-	Eigen::Vector2f Min{ FLT_MAX, FLT_MAX };
-	Eigen::Vector2f Max{ -FLT_MAX, -FLT_MAX };
-	auto update = [&](const Eigen::Vector2f& vPos)
-	{
-		for (int i = 0; i < 2; i++)
-		{
-			if (vPos.data()[i] < Min.data()[i])
-				Min.data()[i] = vPos.data()[i];
-			if (vPos.data()[i] > Max.data()[i])
-				Max.data()[i] = vPos.data()[i];
-		}
-	};
-	update(vPointA);
-	update(vPointB);
-	update(vPointC);
-	return { Min , Max };
-}
-
-std::tuple<float, float, float> CRayCastingBaker::__calcBarycentricCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC, const Eigen::Vector2f& vPointP)
-{
-	auto A = vPointA - vPointC;
-	auto B = vPointB - vPointC;
-	auto C = vPointP - vPointC;
-
-	float CoeffA = (C.x() * B.y() - C.y() * B.x()) / (A.x() * B.y() - A.y() * B.x());
-	float CoeffB = (C.x() * A.y() - C.y() * A.x()) / (B.x() * A.y() - B.y() * A.x());
-	float CoeffC = 1 - CoeffA - CoeffB;
-	
-	return { CoeffA, CoeffB, CoeffC };
-}
-
-Eigen::Vector3f CRayCastingBaker::__calcTexelCoordInWorld(const Eigen::Vector3f& vPointA, const Eigen::Vector3f& vPointB, const Eigen::Vector3f& vPointC, const std::tuple<float, float, float>& vBarycentricCoord)
-{
-	auto X = vPointA[0] * std::get<0>(vBarycentricCoord) + vPointB[0] * std::get<1>(vBarycentricCoord) + vPointC[0] * std::get<2>(vBarycentricCoord);
-	auto Y = vPointA[1] * std::get<0>(vBarycentricCoord) + vPointB[1] * std::get<1>(vBarycentricCoord) + vPointC[1] * std::get<2>(vBarycentricCoord);
-	auto Z = vPointA[2] * std::get<0>(vBarycentricCoord) + vPointB[2] * std::get<1>(vBarycentricCoord) + vPointC[2] * std::get<2>(vBarycentricCoord);
-	
-	return { X, Y, Z };
 }

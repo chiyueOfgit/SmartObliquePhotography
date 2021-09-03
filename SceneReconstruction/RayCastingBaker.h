@@ -24,7 +24,7 @@ namespace hiveObliquePhotography
 			CRayCastingBaker() = default;
 			~CRayCastingBaker() = default;
 
-			virtual CImage<Eigen::Vector3i> bakeTexture(PointCloud_t::Ptr vPointCloud) override;
+			virtual CImage<Eigen::Vector3i> bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution) override;
 			std::vector<STexelInfo> findTexelsPerFace(const SFace& vFace, Eigen::Vector2i vResolution);
 			std::vector<SCandidateInfo> executeIntersection(const STexelInfo& vInfo);
 			Eigen::Vector3i calcTexelColor(const std::vector<SCandidateInfo>& vCandidates, const STexelInfo& vInfo);
@@ -34,14 +34,11 @@ namespace hiveObliquePhotography
 #endif // _UNIT_TEST
 
 		private:
-			bool __isPointInTriangle(const Eigen::Vector2f& vPoint, const Eigen::Vector2f& vA, const Eigen::Vector2f& vB, const Eigen::Vector2f& vC);
-			Eigen::Vector3f __calcBarycentric(const Eigen::Vector2f& vPoint, const Eigen::Vector2f& vA, const Eigen::Vector2f& vB, const Eigen::Vector2f& vC);
+			std::pair<Eigen::Vector2f, Eigen::Vector2f> __calcBoxInTextureCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC);
+			Eigen::Vector3f __calcBarycentricCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC, const Eigen::Vector2f& vPointP);
+			Eigen::Vector3f __calcTexelPosInWorld(const Eigen::Vector3f& vPointA, const Eigen::Vector3f& vPointB, const Eigen::Vector3f& vPointC, const Eigen::Vector3f& vBarycentricCoord);
 			Eigen::Vector3f __calcRayDirection(const STexelInfo& vInfo);
 			std::vector<pcl::index_t> __cullPointsByRay(const Eigen::Vector3f& vRayBegin, const Eigen::Vector3f& vRayDirection);
-
-			std::tuple<float, float, float> __calcBarycentricCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC, const Eigen::Vector2f& vPointP);
-			std::pair<Eigen::Vector2f, Eigen::Vector2f> __calcBoxInTextureCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC);
-			Eigen::Vector3f __calcTexelCoordInWorld(const Eigen::Vector3f& vPointA, const Eigen::Vector3f& vPointB, const Eigen::Vector3f& vPointC, const std::tuple<float, float, float>& vBarycentricCoord);
 
 			PointCloud_t::Ptr m_pCloud = nullptr;
 		};
