@@ -35,6 +35,7 @@ namespace hiveObliquePhotography
 
 		private:
 			Eigen::Vector3f __calcRayDirection(const STexelInfo& vInfo);
+			std::vector<pcl::index_t> __cullPointsByRay(const Eigen::Vector3f& vRayBegin, const Eigen::Vector3f& vRayDirection);
 
 			std::tuple<float, float, float> __calcBarycentricCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC, const Eigen::Vector2f& vPointP);
 			std::pair<Eigen::Vector2f, Eigen::Vector2f> __calcBoxInTextureCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC);
