@@ -23,7 +23,31 @@ std::vector<STexelInfo> CRayCastingBaker::findTexelsPerFace(const SFace& vFace, 
 //FUNCTION: 
 std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelInfo& vInfo)
 {
-	return {};
+	std::vector<SCandidateInfo> Candidates;
+
+	auto RayOrigin = vInfo.TexelPosInWorld;
+	auto RayDirection = __calcRayDirection(vInfo);
+
+	auto CulledPoints = __cullPointsByRay(RayOrigin, RayDirection);
+
+	for (auto Index : CulledPoints)
+	{
+		auto& TestPoint = m_pCloud->points[Index];
+		Eigen::Vector3f SurfelPos{ TestPoint.x, TestPoint.y, TestPoint.z };
+		Eigen::Vector3f SurfelNormal{ TestPoint.normal_x, TestPoint.normal_y, TestPoint.normal_z };
+		float Depth = (SurfelPos - RayOrigin).dot(SurfelNormal) / RayDirection.dot(SurfelNormal);
+
+		auto HitPos = RayOrigin + Depth * RayDirection;
+
+		float DistanceToCenter = (HitPos - SurfelPos).norm();
+		float DistanceToTexel = (HitPos - RayOrigin).norm();
+		const float SurfelRadius = 10.0f;
+		//距离反比的半径
+		if (DistanceToCenter < SurfelRadius / DistanceToTexel)
+			Candidates.push_back({ HitPos, Index });
+	}
+
+	return Candidates;
 }
 
 //*****************************************************************
@@ -74,6 +98,22 @@ Eigen::Vector3f CRayCastingBaker::__calcRayDirection(const STexelInfo& vInfo)	//
 	auto PosC = m_Mesh.m_Vertices[vInfo.OriginFace.c].xyz();
 
 	return ((PosB - PosA).cross(PosC - PosA)).normalized();
+}
+
+//*****************************************************************
+//FUNCTION: 
+std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vector3f& vRayBegin, const Eigen::Vector3f& vRayDirection)
+{
+	std::vector<pcl::index_t> PointIndices;
+
+	//暂时不剔除
+	for (int i = 0; i < m_pCloud->size(); i++)
+	{
+
+		PointIndices.push_back(i);
+	}
+
+	return PointIndices;
 }
 
 

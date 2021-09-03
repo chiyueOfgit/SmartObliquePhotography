@@ -35,6 +35,7 @@ namespace hiveObliquePhotography
 
 		private:
 			Eigen::Vector3f __calcRayDirection(const STexelInfo& vInfo);
+			std::vector<pcl::index_t> __cullPointsByRay(const Eigen::Vector3f& vRayBegin, const Eigen::Vector3f& vRayDirection);
 
 			PointCloud_t::Ptr m_pCloud = nullptr;
 		};
