@@ -29,15 +29,17 @@ namespace hiveObliquePhotography
 	struct has_member_func_size
 	{
 	private:
-		template <class _T, class _U = decltype(&_T::size), class = std::enable_if_t<std::is_member_function_pointer_v<_U>>>
-		static std::true_type check(_T);
-		static std::false_type check(...);
+		template <class _T> static constexpr decltype(&_T::size, bool()) check(int)
+		{
+			return std::is_member_function_pointer_v<decltype(&_T::size)>;
+		}
+		template <class> static constexpr bool check(...) { return false; }
 	public:
-		constexpr static bool value = decltype(check(std::declval<T>()))::value;
+		static constexpr bool value = check<T>(int());
 	};
 
 	template <class T>
-	constexpr static auto has_member_func_size_v = has_member_func_size<T>::value;
+	static constexpr auto has_member_func_size_v = has_member_func_size<T>::value;
 
 	template<class T>
 	struct extract_value_type
@@ -59,7 +61,7 @@ namespace hiveObliquePhotography
 	public:
 		using Scalar_t = std::conditional_t<std::is_arithmetic_v<TColor> || std::is_array_v<TColor>, std::remove_extent_t<TColor>, extract_value_type_t<TColor>>;
 
-		constexpr static size_t extractChannel()
+		static constexpr size_t extractChannel()
 		{
 			if constexpr (std::is_void_v<Scalar_t>)
 				return 0;
