@@ -34,6 +34,8 @@ namespace hiveObliquePhotography
 #endif // _UNIT_TEST
 
 		private:
+			bool __isPointInTriangle(const Eigen::Vector2f& vPoint, const Eigen::Vector2f& vA, const Eigen::Vector2f& vB, const Eigen::Vector2f& vC);
+			Eigen::Vector3f __calcBarycentric(const Eigen::Vector2f& vPoint, const Eigen::Vector2f& vA, const Eigen::Vector2f& vB, const Eigen::Vector2f& vC);
 			Eigen::Vector3f __calcRayDirection(const STexelInfo& vInfo);
 			std::vector<pcl::index_t> __cullPointsByRay(const Eigen::Vector3f& vRayBegin, const Eigen::Vector3f& vRayDirection);
 
