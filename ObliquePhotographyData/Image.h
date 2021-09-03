@@ -18,7 +18,7 @@ namespace hiveObliquePhotography
 		
 		void fillColor(unsigned vHeight, unsigned vWidth, TColor* vBuffer)
 		{
-			m_Data = Eigen::Map<Eigen::Matrix<TColor, -1, -1>>(vBuffer, vHeight, vWidth);
+			m_Data = Eigen::Map<decltype(m_Data)>(vBuffer, vHeight, vWidth);
 		}
 	
 	private:
@@ -31,7 +31,6 @@ namespace hiveObliquePhotography
 		template <typename _T>
 		static auto check(_T) -> typename _T::value_type;
 		static void check(...);
-
 	public:
 		using type = decltype(check(std::declval<T>()));
 	};
@@ -47,12 +46,10 @@ namespace hiveObliquePhotography
 
 		constexpr static size_t extractChannel()
 		{
-			if constexpr (std::is_arithmetic_v<TColor>)
-				return 1;
-			else if constexpr (std::is_array_v<TColor>)
-				return std::extent_v<TColor>;
-			else if constexpr (std::is_void_v<Scalar_t>)
+			if constexpr (std::is_void_v<Scalar_t>)
 				return 0;
+			else if constexpr (std::has_unique_object_representations_v<TColor>)
+				return sizeof(TColor) / sizeof(Scalar_t);
 			else
 				return std::size(TColor());
 		}
@@ -61,8 +58,11 @@ namespace hiveObliquePhotography
 	template<typename TColor>
 	std::ostream& operator << (std::ostream& vOut, CColorTraits<TColor>)
 	{
-		return vOut <<
-			"Scalar_t:\t" << typeid(CColorTraits<TColor>::Scalar_t).name() << '\n' <<
-			"Channel:\t" << CColorTraits<TColor>::extractChannel() << '\n';
+		return vOut << std::boolalpha <<
+			"Name:     " << typeid(TColor).name() << '\n' <<
+			"Memcpy:   " << std::is_trivially_copyable_v<TColor> << '\n' <<
+			"SameObj:  " << std::has_unique_object_representations_v<TColor> << '\n' <<
+			"Scalar_t: " << typeid(CColorTraits<TColor>::Scalar_t).name() << '\n' <<
+			"Channel:  " << CColorTraits<TColor>::extractChannel() << '\n';
 	}
 }
