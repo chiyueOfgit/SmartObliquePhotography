@@ -33,5 +33,6 @@
 #include "common/UtilityInterface.h"
 
 #include "PointCloudRetouchCommon.h"
+#include "SceneReconstructionCommon.h"
 
 using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;

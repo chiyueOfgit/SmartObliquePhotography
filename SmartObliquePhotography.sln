@@ -84,7 +84,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneReconstruction_lib", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_022 (template)", "UnitTests\Unit_Test_022\Unit_Test_022.vcxproj", "{E40B29A6-707E-41A8-ABE1-79A6E195ECE5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_023 (raycasting_texture_baker)", "UnitTests\Unit_Test_023\Unit_Test_023.vcxproj", "{82ED2015-2810-4330-B770-26F428AFE139}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_024 (raycasting_texture_baker)", "UnitTests\Unit_Test_024\Unit_Test_024.vcxproj", "{82ED2015-2810-4330-B770-26F428AFE139}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

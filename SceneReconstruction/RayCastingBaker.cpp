@@ -3,7 +3,7 @@
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
-//REGISTER_NORMAL_PRODUCT(CPoissonSurfaceReconstructor, KEYWORD::POISSON_RECONSTRUCTOR)
+_REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 //*****************************************************************
 //FUNCTION: 
