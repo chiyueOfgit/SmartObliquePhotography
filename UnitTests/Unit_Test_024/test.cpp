@@ -67,19 +67,64 @@ protected:
 
 TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
 {
+	auto pCalcBarycentric = [](Eigen::Vector2f vA, Eigen::Vector2f vB, Eigen::Vector2f vC, Eigen::Vector2f vPoint) -> Eigen::Vector3f
+	{
+		Eigen::Vector3f Temp[2];
+		for (int i = 2; i--; )
+		{
+			Temp[i].x() = vC.data()[i] - vA.data()[i];
+			Temp[i].y() = vB.data()[i] - vA.data()[i];
+			Temp[i].z() = vA.data()[i] - vPoint.data()[i];
+		}
+		Eigen::Vector3f TempVec = Temp[0].cross(Temp[1]); //u, v, 1
+		return Eigen::Vector3f(1.0f - (TempVec.x() + TempVec.y()) / TempVec.z(), TempVec.y() / TempVec.z(), TempVec.x() / TempVec.z());
+	};
+
 	//8 faces plane
 	m_Mesh = _loadMesh(PlaneMeshPath);
-	_createBaker(m_Mesh);
+	m_pTextureBaker = _createBaker(m_Mesh);
+
+	std::vector<Eigen::Vector2i> ResolutionList = { {512, 512}, {1, 1} };
+	std::vector<int> NumWholeTexels(ResolutionList.size(), 0);
+	auto& Vertices = m_Mesh.m_Vertices;
 	for (auto& Face : m_Mesh.m_Faces)
 	{
-		Eigen::Vector2i Resolution{ 512, 512 };
-		int NumTexels = Resolution.x() * Resolution.y();
-		auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
-		ASSERT_TRUE(!TexelInfos.empty());
-		EXPECT_NEAR(TexelInfos.size(), NumTexels * (1 / 8), NumTexels * 0.1);
-		
-		Eigen::Vector2i Resolution{ 10, 10 };
+		{
+			auto& Resolution = ResolutionList[0];
+			int NumTexels = Resolution.x() * Resolution.y();
+			auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
+			ASSERT_TRUE(!TexelInfos.empty());
+			EXPECT_NEAR(TexelInfos.size(), NumTexels * (1 / 8), NumTexels * 0.1);
+			NumWholeTexels[0] += TexelInfos.size();
 
+			for (auto& Texel : TexelInfos)
+			{
+				Eigen::Vector2f PointUV = { Texel.TexelPos.x() / Resolution.x(), Texel.TexelPos.y() / Resolution.y() };
+				Eigen::Vector2f FacesUV[3];
+				for (int i = 0; i < 3; i++)
+					FacesUV[i] = { Vertices[Texel.OriginFace[i]].u, Vertices[Texel.OriginFace[i]].v };
+
+				auto Centric = pCalcBarycentric(FacesUV[0], FacesUV[1], FacesUV[2], PointUV);
+				Eigen::Vector3f ExpectPos = Centric.x() * Vertices[Texel.OriginFace[0]].xyz() + Centric.y() * Vertices[Texel.OriginFace[1]].xyz() + Centric.z() * Vertices[Texel.OriginFace[2]].xyz();
+				const float ErrorScope = 1.0f;
+				for (int i = 0; i < 3; i++)
+					ASSERT_NEAR(Texel.TexelPosInWorld.data()[i], ExpectPos.data()[i], ErrorScope);
+			}
+		}
+
+		{
+			auto& Resolution = ResolutionList[1];
+			auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
+			NumWholeTexels[1] += TexelInfos.size();
+		}	
+	}
+
+	//总处理纹素要接近总纹素数
+	for (int i = 0; i < ResolutionList.size(); i++)
+	{
+		auto& Resolution = ResolutionList[i];
+		int NumTexels = Resolution.x() * Resolution.y();
+		EXPECT_NEAR(NumWholeTexels[i], NumTexels, NumTexels * 0.1);
 	}
 
 }
