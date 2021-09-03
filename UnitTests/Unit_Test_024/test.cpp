@@ -96,7 +96,7 @@ TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
 			int NumTexels = Resolution.x() * Resolution.y();
 			auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
 			ASSERT_TRUE(!TexelInfos.empty());
-			EXPECT_NEAR(TexelInfos.size(), NumTexels * (1 / 8), NumTexels * 0.1);
+			EXPECT_NEAR(TexelInfos.size(), NumTexels * ((float)1 / 8), NumTexels * 0.1);
 			NumWholeTexels[0] += TexelInfos.size();
 
 			for (auto& Texel : TexelInfos)
