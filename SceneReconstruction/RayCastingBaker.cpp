@@ -18,6 +18,36 @@ hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(Po
 //FUNCTION: 
 std::vector<STexelInfo> CRayCastingBaker::findTexelsPerFace(const SFace& vFace, Eigen::Vector2i vResolution)
 {
+	std::vector<STexelInfo> ResultSet;
+	
+	auto PointA = m_Mesh.m_Vertices[vFace.a];
+	auto PointB = m_Mesh.m_Vertices[vFace.b];
+	auto PointC = m_Mesh.m_Vertices[vFace.c];
+	auto Box = __calcBoxInTextureCoord(PointA.uv(), PointB.uv(), PointC.uv());
+	/*int U = 0;
+	int V = 0;*/
+	//Eigen::Vector2f Offset{1 / vResolution[0], 1 / vResolution[1] };
+	/*while (U < Box.first[0] * vResolution[0])
+		U ++;
+	while (V < Box.first[1])
+		V += Offset[1];*/
+
+	for(int U = Box.first[0] * vResolution[0] - 1; U < Box.second[0] * vResolution[0] + 1; U ++)
+	{
+		for(int V = Box.first[1] * vResolution[1]; V < Box.second[1] * vResolution[1] + 1; V ++)
+		{
+			auto BarycentricCoord = __calcBarycentricCoord(PointA.uv(), PointB.uv(), PointC.uv(), { (float)U / vResolution[0],(float)V / vResolution[1] });
+			if( std::get<0>(BarycentricCoord) < 0 || std::get<1>(BarycentricCoord) < 0 || std::get<2>(BarycentricCoord) < 0 )
+				continue;
+			else
+			{
+				auto WorldCoord = __calcTexelCoordInWorld(PointA.xyz(), PointB.xyz(), PointC.xyz(), BarycentricCoord);
+				STexelInfo TexelInfo({ U,V }, WorldCoord, vFace);
+				ResultSet.push_back(TexelInfo);
+			}
+		}
+	}
+	return ResultSet;
 	std::vector<STexelInfo> TexelInfos;
 
 	auto& VertexA = m_Mesh.m_Vertices[vFace.a];
@@ -178,3 +208,44 @@ std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vecto
 }
 
 
+std::pair<Eigen::Vector2f, Eigen::Vector2f> CRayCastingBaker::__calcBoxInTextureCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC)
+{
+	Eigen::Vector2f Min{ FLT_MAX, FLT_MAX };
+	Eigen::Vector2f Max{ -FLT_MAX, -FLT_MAX };
+	auto update = [&](const Eigen::Vector2f& vPos)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			if (vPos.data()[i] < Min.data()[i])
+				Min.data()[i] = vPos.data()[i];
+			if (vPos.data()[i] > Max.data()[i])
+				Max.data()[i] = vPos.data()[i];
+		}
+	};
+	update(vPointA);
+	update(vPointB);
+	update(vPointC);
+	return { Min , Max };
+}
+
+std::tuple<float, float, float> CRayCastingBaker::__calcBarycentricCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC, const Eigen::Vector2f& vPointP)
+{
+	auto A = vPointA - vPointC;
+	auto B = vPointB - vPointC;
+	auto C = vPointP - vPointC;
+
+	float CoeffA = (C.x() * B.y() - C.y() * B.x()) / (A.x() * B.y() - A.y() * B.x());
+	float CoeffB = (C.x() * A.y() - C.y() * A.x()) / (B.x() * A.y() - B.y() * A.x());
+	float CoeffC = 1 - CoeffA - CoeffB;
+	
+	return { CoeffA, CoeffB, CoeffC };
+}
+
+Eigen::Vector3f CRayCastingBaker::__calcTexelCoordInWorld(const Eigen::Vector3f& vPointA, const Eigen::Vector3f& vPointB, const Eigen::Vector3f& vPointC, const std::tuple<float, float, float>& vBarycentricCoord)
+{
+	auto X = vPointA[0] * std::get<0>(vBarycentricCoord) + vPointB[0] * std::get<1>(vBarycentricCoord) + vPointC[0] * std::get<2>(vBarycentricCoord);
+	auto Y = vPointA[1] * std::get<0>(vBarycentricCoord) + vPointB[1] * std::get<1>(vBarycentricCoord) + vPointC[1] * std::get<2>(vBarycentricCoord);
+	auto Z = vPointA[2] * std::get<0>(vBarycentricCoord) + vPointB[2] * std::get<1>(vBarycentricCoord) + vPointC[2] * std::get<2>(vBarycentricCoord);
+	
+	return { X, Y, Z };
+}

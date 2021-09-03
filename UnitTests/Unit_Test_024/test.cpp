@@ -131,41 +131,41 @@ TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
 
 }
 
-TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
-{
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
-	m_pTextureBaker->setPointCloud(pCloud);
-	
-	STexelInfo TestTexel{ {98,98},{48.0f, 0.0f, 48.0f},2 };
-	auto CandidateSet = m_pTextureBaker->executeIntersection(TestTexel);
-	EXPECT_EQ(CandidateSet.size(), 3);
-	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.PointIndex < vB.PointIndex; });
-	Eigen::Vector3f IntersectionOne{ 48.0f, 2.0f, 48.0f };
-	Eigen::Vector3f IntersectionTwo{ 48.0f, 3.0f, 48.0f };
-	EXPECT_EQ(CandidateSet[0].PointIndex, 0);
-	EXPECT_EQ(CandidateSet[0].Pos, IntersectionOne);
-	EXPECT_EQ(CandidateSet[1].PointIndex, 1);
-	EXPECT_EQ(CandidateSet[1].Pos, IntersectionTwo);
-	EXPECT_EQ(CandidateSet[2].PointIndex, 2);
-	EXPECT_EQ(CandidateSet[2].Pos, IntersectionOne);
-}
-
-TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
-{
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
-	m_pTextureBaker->setPointCloud(pCloud);
-
-	STexelInfo TestTexel{ {51,51},{1.5f, 0.0f, 1.5f},3 };
-	auto CandidateSet = m_pTextureBaker->executeIntersection(TestTexel);
-	EXPECT_EQ(CandidateSet.size(), 2);
-	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.PointIndex < vB.PointIndex; });
-	Eigen::Vector3f IntersectionOne{ 1.5f, 2.0f, 1.5f };
-	Eigen::Vector3f IntersectionTwo{ 1.5f, -2.0f, 1.5f };
-	EXPECT_EQ(CandidateSet[0].PointIndex, 3);
-	EXPECT_EQ(CandidateSet[0].Pos, IntersectionOne);
-	EXPECT_EQ(CandidateSet[1].PointIndex, 4);
-	EXPECT_EQ(CandidateSet[1].Pos, IntersectionTwo);
-}
+//TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
+//{
+//	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
+//	m_pTextureBaker->setPointCloud(pCloud);
+//	
+//	STexelInfo TestTexel{ {98,98},{48.0f, 0.0f, 48.0f},2 };
+//	auto CandidateSet = m_pTextureBaker->executeIntersection(TestTexel);
+//	EXPECT_EQ(CandidateSet.size(), 3);
+//	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.PointIndex < vB.PointIndex; });
+//	Eigen::Vector3f IntersectionOne{ 48.0f, 2.0f, 48.0f };
+//	Eigen::Vector3f IntersectionTwo{ 48.0f, 3.0f, 48.0f };
+//	EXPECT_EQ(CandidateSet[0].PointIndex, 0);
+//	EXPECT_EQ(CandidateSet[0].Pos, IntersectionOne);
+//	EXPECT_EQ(CandidateSet[1].PointIndex, 1);
+//	EXPECT_EQ(CandidateSet[1].Pos, IntersectionTwo);
+//	EXPECT_EQ(CandidateSet[2].PointIndex, 2);
+//	EXPECT_EQ(CandidateSet[2].Pos, IntersectionOne);
+//}
+//
+//TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
+//{
+//	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
+//	m_pTextureBaker->setPointCloud(pCloud);
+//
+//	STexelInfo TestTexel{ {51,51},{1.5f, 0.0f, 1.5f},3 };
+//	auto CandidateSet = m_pTextureBaker->executeIntersection(TestTexel);
+//	EXPECT_EQ(CandidateSet.size(), 2);
+//	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.PointIndex < vB.PointIndex; });
+//	Eigen::Vector3f IntersectionOne{ 1.5f, 2.0f, 1.5f };
+//	Eigen::Vector3f IntersectionTwo{ 1.5f, -2.0f, 1.5f };
+//	EXPECT_EQ(CandidateSet[0].PointIndex, 3);
+//	EXPECT_EQ(CandidateSet[0].Pos, IntersectionOne);
+//	EXPECT_EQ(CandidateSet[1].PointIndex, 4);
+//	EXPECT_EQ(CandidateSet[1].Pos, IntersectionTwo);
+//}
 
 TEST_F(TestCastingTextureBaker, TestCalcTexelColor)
 {

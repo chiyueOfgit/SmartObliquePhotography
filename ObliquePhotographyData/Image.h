@@ -29,7 +29,7 @@ namespace hiveObliquePhotography
 	struct has_member_func_size
 	{
 	private:
-		template <class _T> static constexpr decltype(&_T::size, bool()) check(int)
+		template <class _T> static constexpr auto check(int) -> decltype(&_T::size, bool())
 		{
 			return std::is_member_function_pointer_v<decltype(&_T::size)>;
 		}
@@ -39,14 +39,13 @@ namespace hiveObliquePhotography
 	};
 
 	template <class T>
-	static constexpr auto has_member_func_size_v = has_member_func_size<T>::value;
+	constexpr bool has_member_func_size_v = has_member_func_size<T>::value;
 
 	template<class T>
 	struct extract_value_type
 	{
 	private:
-		template <class _T>
-		static auto check(_T) -> typename _T::value_type;
+		template <class _T>	static auto check(_T) -> typename _T::value_type;
 		static void check(...);
 	public:
 		using type = decltype(check(std::declval<T>()));
@@ -68,7 +67,7 @@ namespace hiveObliquePhotography
 			else if constexpr (std::has_unique_object_representations_v<TColor>)
 				return sizeof(TColor) / sizeof(Scalar_t);
 			else if constexpr (has_member_func_size_v<TColor>)
-				return std::size(TColor());
+				return std::size(TColor());//may on runtime
 			else
 				return 0;
 		}
