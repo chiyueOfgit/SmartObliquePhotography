@@ -25,6 +25,19 @@ namespace hiveObliquePhotography
 		Eigen::Matrix<TColor, -1, -1> m_Data;
 	};
 
+	template <class T>
+	struct has_member_func_size
+	{
+		template <class _T, class _U = decltype(&_T::size), class = std::enable_if_t<std::is_member_function_pointer_v<_U>>>
+		static std::true_type check(_T);
+		static std::false_type check(...);
+
+		constexpr static bool value = decltype(check(std::declval<T>()))::value;
+	};
+
+	template <class T>
+	constexpr static auto has_member_func_size_v = has_member_func_size<T>::value;
+
 	template<class T>
 	struct extract_value_type
 	{
@@ -51,8 +64,10 @@ namespace hiveObliquePhotography
 				return 0;
 			else if constexpr (std::has_unique_object_representations_v<TColor>)
 				return sizeof(TColor) / sizeof(Scalar_t);
-			else
+			else if constexpr (has_member_func_size_v<TColor>)
 				return std::size(TColor());
+			else
+				return 0;
 		}
 	};
 
@@ -63,6 +78,7 @@ namespace hiveObliquePhotography
 			"Name:     " << typeid(TColor).name() << '\n' <<
 			"Memcpy:   " << std::is_trivially_copyable_v<TColor> << '\n' <<
 			"SameObj:  " << std::has_unique_object_representations_v<TColor> << '\n' <<
+			"HasSize:  " << has_member_func_size_v<TColor> << '\n' <<
 			"Scalar_t: " << typeid(CColorTraits<TColor>::Scalar_t).name() << '\n' <<
 			"Channel:  " << CColorTraits<TColor>::extractChannel() << '\n';
 	}
