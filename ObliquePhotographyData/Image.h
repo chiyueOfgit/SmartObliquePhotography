@@ -26,7 +26,8 @@ namespace hiveObliquePhotography
 	};
 
 	template<typename T>
-	struct extract_value_type {
+	struct extract_value_type
+	{
 	private:
 		template <typename _T>
 		static auto check(_T) -> typename _T::value_type;
