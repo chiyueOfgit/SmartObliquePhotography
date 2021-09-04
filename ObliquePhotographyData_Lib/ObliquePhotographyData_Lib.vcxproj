@@ -20,6 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ObliquePhotographyData\framework.h" />
+    <ClInclude Include="..\ObliquePhotographyData\Mesh.h" />
+    <ClInclude Include="..\ObliquePhotographyData\MeshLoader.h" />
+    <ClInclude Include="..\ObliquePhotographyData\MeshOBJLoader.h" />
+    <ClInclude Include="..\ObliquePhotographyData\MeshOBJSaver.h" />
+    <ClInclude Include="..\ObliquePhotographyData\MeshSaver.h" />
     <ClInclude Include="..\ObliquePhotographyData\ObliquePhotographyDataCommon.h" />
     <ClInclude Include="..\ObliquePhotographyData\ObliquePhotographyDataExport.h" />
     <ClInclude Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.h" />
@@ -32,6 +37,11 @@
     <ClInclude Include="..\ObliquePhotographyData\PointCloudScene.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\ObliquePhotographyData\Mesh.cpp" />
+    <ClCompile Include="..\ObliquePhotographyData\MeshLoader.cpp" />
+    <ClCompile Include="..\ObliquePhotographyData\MeshOBJLoader.cpp" />
+    <ClCompile Include="..\ObliquePhotographyData\MeshOBJSaver.cpp" />
+    <ClCompile Include="..\ObliquePhotographyData\MeshSaver.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.cpp" />
     <ClCompile Include="..\ObliquePhotographyData\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
