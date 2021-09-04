@@ -67,63 +67,13 @@ protected:
 	CRayCastingBaker* m_pTextureBaker = nullptr;
 };
 
-//TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
-//{
-//	//8 faces plane
-//	m_Mesh = _loadMesh(PlaneMeshPath);
-//	m_pTextureBaker = _createBaker(m_Mesh);
-//
-//	std::vector<Eigen::Vector2i> ResolutionList = { {512, 512}, {10, 10} };
-//	std::vector<int> NumWholeTexels(ResolutionList.size(), 0);
-//	auto& Vertices = m_Mesh.m_Vertices;
-//	for (auto& Face : m_Mesh.m_Faces)
-//	{
-//		{
-//			auto& Resolution = ResolutionList[0];
-//			int NumTexels = Resolution.x() * Resolution.y();
-//			auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
-//			ASSERT_TRUE(!TexelInfos.empty());
-//			EXPECT_NEAR(TexelInfos.size(), NumTexels * ((float)1 / 8), NumTexels * 0.1);
-//			NumWholeTexels[0] += TexelInfos.size();
-//
-//			for (auto& Texel : TexelInfos)
-//			{
-//				Eigen::Vector2f PointUV = { (Texel.TexelPos.x() + 0.5f) / Resolution.x(), (Texel.TexelPos.y() + 0.5f) / Resolution.y() };
-//				Eigen::Vector2f FacesUV[3];
-//				for (int i = 0; i < 3; i++)
-//					FacesUV[i] = { Vertices[Texel.OriginFace[i]].u, Vertices[Texel.OriginFace[i]].v };
-//
-//				Eigen::Vector2f DeltaPos = { PointUV.x() * 100.0f, -PointUV.y() * 100.0f };
-//				Eigen::Vector2f BeginPos{ -50.0f, 50.0f };
-//
-//				Eigen::Vector3f TexelPosInPlane = { BeginPos.x() + DeltaPos.x(), 0.0f, BeginPos.y() + DeltaPos.y() };
-//				const float ErrorScope = 1.0f;
-//				for (int i = 0; i < 3; i++)
-//					ASSERT_NEAR(Texel.TexelPosInWorld.data()[i], TexelPosInPlane.data()[i], ErrorScope);
-//			}
-//		}
-//
-//		{
-//			auto& Resolution = ResolutionList[1];
-//			auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
-//			NumWholeTexels[1] += TexelInfos.size();
-//		}	
-//	}
-//
-//	//总处理纹素要接近总纹素数
-//	for (int i = 0; i < ResolutionList.size(); i++)
-//	{
-//		auto& Resolution = ResolutionList[i];
-//		int NumTexels = Resolution.x() * Resolution.y();
-//		EXPECT_NEAR(NumWholeTexels[i], NumTexels, NumTexels * 0.1);
-//	}
-//}
-
+TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
+{
 	//8 faces plane
 	m_Mesh = _loadMesh(PlaneMeshPath);
 	m_pTextureBaker = _createBaker(m_Mesh);
 
-	std::vector<Eigen::Vector2i> ResolutionList = { {512, 512}, {1, 1} };
+	std::vector<Eigen::Vector2i> ResolutionList = { {512, 512}, {10, 10} };
 	std::vector<int> NumWholeTexels(ResolutionList.size(), 0);
 	auto& Vertices = m_Mesh.m_Vertices;
 	for (auto& Face : m_Mesh.m_Faces)
@@ -138,16 +88,18 @@ protected:
 
 			for (auto& Texel : TexelInfos)
 			{
-				Eigen::Vector2f PointUV = { Texel.TexelPos.x() / Resolution.x(), Texel.TexelPos.y() / Resolution.y() };
+				Eigen::Vector2f PointUV = { (Texel.TexelPos.x() + 0.5f) / Resolution.x(), (Texel.TexelPos.y() + 0.5f) / Resolution.y() };
 				Eigen::Vector2f FacesUV[3];
 				for (int i = 0; i < 3; i++)
 					FacesUV[i] = { Vertices[Texel.OriginFace[i]].u, Vertices[Texel.OriginFace[i]].v };
 
-				auto Centric = pCalcBarycentric(FacesUV[0], FacesUV[1], FacesUV[2], PointUV);
-				Eigen::Vector3f ExpectPos = Centric.x() * Vertices[Texel.OriginFace[0]].xyz() + Centric.y() * Vertices[Texel.OriginFace[1]].xyz() + Centric.z() * Vertices[Texel.OriginFace[2]].xyz();
+				Eigen::Vector2f DeltaPos = { PointUV.x() * 100.0f, -PointUV.y() * 100.0f };
+				Eigen::Vector2f BeginPos{ -50.0f, 50.0f };
+
+				Eigen::Vector3f TexelPosInPlane = { BeginPos.x() + DeltaPos.x(), 0.0f, BeginPos.y() + DeltaPos.y() };
 				const float ErrorScope = 1.0f;
 				for (int i = 0; i < 3; i++)
-					ASSERT_NEAR(Texel.TexelPosInWorld.data()[i], ExpectPos.data()[i], ErrorScope);
+					ASSERT_NEAR(Texel.TexelPosInWorld.data()[i], TexelPosInPlane.data()[i], ErrorScope);
 			}
 		}
 
@@ -165,15 +117,15 @@ protected:
 		int NumTexels = Resolution.x() * Resolution.y();
 		EXPECT_NEAR(NumWholeTexels[i], NumTexels, NumTexels * 0.1);
 	}
-
 }
+
 
 TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
 {
 	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
 	m_pTextureBaker->setPointCloud(pCloud);
 	
-	STexelInfo TestTexel{ {98,98},{48.0f, 0.0f, 48.0f},{2, 5, 6} };
+	STexelInfo TestTexel{ {98,98},{48.0f, 0.0f, 48.0f},m_Mesh.m_Faces[2] };
 	auto CandidateSet = m_pTextureBaker->executeIntersection(TestTexel);
 	EXPECT_EQ(CandidateSet.size(), 3);
 	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.PointIndex < vB.PointIndex; });
@@ -192,7 +144,7 @@ TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
 	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
 	m_pTextureBaker->setPointCloud(pCloud);
 
-	STexelInfo TestTexel{ {51,51},{1.5f, 0.0f, 1.5f},{6, 3, 2} };
+	STexelInfo TestTexel{ {51,51},{1.5f, 0.0f, 1.5f},m_Mesh.m_Faces[3] };
 	auto CandidateSet = m_pTextureBaker->executeIntersection(TestTexel);
 	EXPECT_EQ(CandidateSet.size(), 2);
 	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.PointIndex < vB.PointIndex; });
