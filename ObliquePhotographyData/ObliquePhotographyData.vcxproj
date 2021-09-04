@@ -180,6 +180,8 @@
     <ClInclude Include="PointCloudSaver.h" />
     <ClInclude Include="PointCloudScene.h" />
     <ClInclude Include="PointCloudLoader.h" />
+    <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="TextureSaver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -202,6 +204,8 @@
     <ClCompile Include="PointCloudSaver.cpp" />
     <ClCompile Include="PointCloudScene.cpp" />
     <ClCompile Include="PointCloudLoader.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="TextureSaver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
