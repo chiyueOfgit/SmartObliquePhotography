@@ -119,7 +119,6 @@ TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
 	}
 }
 
-
 TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
 {
 	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
@@ -158,6 +157,7 @@ TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
 
 TEST_F(TestCastingTextureBaker, TestCalcTexelColor)
 {
-
+	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
+	m_pTextureBaker->bakeTexture(pCloud, { 512, 512 });
 }
 
