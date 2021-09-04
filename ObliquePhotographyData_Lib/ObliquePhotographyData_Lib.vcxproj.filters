@@ -54,6 +54,12 @@
     <ClInclude Include="..\ObliquePhotographyData\Mesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\TextureLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\TextureSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.cpp">
@@ -81,6 +87,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\ObliquePhotographyData\Mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ObliquePhotographyData\TextureLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ObliquePhotographyData\TextureSaver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

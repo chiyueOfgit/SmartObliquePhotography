@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
-#include "Mesh.h"
+
+using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
 
 namespace hiveObliquePhotography
 {
@@ -21,7 +22,10 @@ namespace hiveObliquePhotography
 		{
 			m_Data = Eigen::Map<Eigen::Matrix<TColor, -1, -1>>(vBuffer, vHeight, vWidth);
 		}
-	
+
+#ifdef _UNIT_TEST
+		TColor* data() { return m_Data.data(); };
+#endif	
 	private:
 		Eigen::Matrix<TColor, -1, -1> m_Data;
 	};
