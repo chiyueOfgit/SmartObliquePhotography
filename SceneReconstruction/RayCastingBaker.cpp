@@ -86,8 +86,8 @@ std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelIn
 
 		float DistanceToCenter = (HitPos - SurfelPos).norm();
 		float DistanceToTexel = (HitPos - RayOrigin).norm();
-		//距离反比的半径
-		if (DistanceToCenter < SurfelRadius / DistanceToTexel)
+		//距离反比的半径or固定半径
+		if (DistanceToCenter < SurfelRadius/* / DistanceToTexel*/)
 			Candidates.push_back({ HitPos, Index });
 	}
 
@@ -101,22 +101,17 @@ Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInf
 	auto RayOrigin = vInfo.TexelPosInWorld;
 	auto RayDirection = __calcRayDirection(vInfo);
 
-	//深度剔除, 有bug
+	//深度剔除
 	std::vector<SCandidateInfo> CulledCandidates;
 	{
-		for (auto& Info : vCandidates)
-			CulledCandidates.push_back(Info);
-
-		//const float DepthLengthRange = 5.0f;	//magic
-		//std::vector<std::pair<std::size_t, float>> DistanceSortedIndices;
-		//for (int i = 0; i < vCandidates.size(); i++)
-		//	DistanceSortedIndices.push_back({ i, (vCandidates[i].Pos - RayOrigin).norm()});
-		//std::sort(DistanceSortedIndices.begin(), DistanceSortedIndices.end(), [](std::pair<std::size_t, float> vLeft, std::pair<std::size_t, float> vRight) { return vLeft.second < vRight.second; });
-		//for (auto [Index, Depth] : DistanceSortedIndices)
-		//{
-		//	if (fabs(Depth - DistanceSortedIndices[0].second) <= DepthLengthRange)
-		//		CulledCandidates.push_back(vCandidates[Index]);
-		//}
+		const float DepthLengthRange = 5.0f;	//magic
+		std::vector<std::pair<std::size_t, float>> DistanceSortedIndices;
+		for (int i = 0; i < vCandidates.size(); i++)
+			DistanceSortedIndices.push_back({ i, (vCandidates[i].Pos - RayOrigin).norm()});
+		std::sort(DistanceSortedIndices.begin(), DistanceSortedIndices.end(), [](std::pair<std::size_t, float> vLeft, std::pair<std::size_t, float> vRight) { return vLeft.second < vRight.second; });
+		for (auto [Index, Depth] : DistanceSortedIndices)
+			if (fabs(Depth - DistanceSortedIndices[0].second) <= DepthLengthRange)
+				CulledCandidates.push_back(vCandidates[Index]);
 	}
 
 	//决定每采样点权重
@@ -138,7 +133,7 @@ Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInf
 	const int NumBlend = 3;
 	Eigen::Vector3f WeightedColor{ 0.0f, 0.0f, 0.0f };
 	float SumWeight = 0.0f;
-	std::sort(CandidateWeights.begin(), CandidateWeights.end(), [](std::pair<std::size_t, float> vLeft, std::pair<std::size_t, float> vRight) { return vLeft.second > vLeft.second; });
+	std::sort(CandidateWeights.begin(), CandidateWeights.end(), [](std::pair<std::size_t, float> vLeft, std::pair<std::size_t, float> vRight) { return vLeft.second > vRight.second; });
 	for (int i = 0; i < NumBlend; i++)
 	{
 		if (i < CandidateWeights.size())
