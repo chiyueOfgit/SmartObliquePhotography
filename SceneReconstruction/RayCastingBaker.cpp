@@ -10,6 +10,7 @@ _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution)
 {
 	m_pCloud = vPointCloud;
+	__buildKdTree(m_pCloud);
 
 	CImage<Eigen::Vector3i> ResultTexture;
 
@@ -125,6 +126,24 @@ Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInf
 
 //*****************************************************************
 //FUNCTION: 
+void CRayCastingBaker::__buildKdTree(PointCloud_t::Ptr vCloud)
+{
+	Eigen::Matrix<float, -1, -1, Eigen::RowMajor> PointsPos(vCloud->size(), 3);
+	for (int i = 0; i < vCloud->size(); i++)
+	{
+		auto& Point = vCloud->points[i];
+		Eigen::Vector3f PointPos{ Point.x, Point.y, Point.z };
+		PointsPos.row(i) = PointPos;
+	}
+
+	flann::Matrix PointPos4Flann(PointsPos.data(), PointsPos.rows(), PointsPos.cols());
+	auto pTree = new flann::Index<flann::L2<float>>(PointPos4Flann, flann::KDTreeIndexParams(4));
+	pTree->buildIndex();
+	m_KdTree = { pTree, std::move(PointsPos) };
+}
+
+//*****************************************************************
+//FUNCTION: 
 std::pair<Eigen::Vector2f, Eigen::Vector2f> CRayCastingBaker::__calcBoxInTextureCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC)
 {
 	Eigen::Vector2f Min{ FLT_MAX, FLT_MAX };
@@ -180,16 +199,16 @@ Eigen::Vector3f CRayCastingBaker::__calcRayDirection(const STexelInfo& vInfo)	//
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vector3f& vRayBegin, const Eigen::Vector3f& vRayDirection)
+std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vector3f& vRayOrigin, const Eigen::Vector3f& vRayDirection)
 {
-	std::vector<pcl::index_t> PointIndices;
+	//暂时用仅光线起点的半径搜索
+	const float Radius = 50.0f;	//to config or calculate
+	Eigen::Matrix<float, 1, 3, Eigen::RowMajor> SearchPos = vRayOrigin;
+	flann::Matrix Query(SearchPos.data(), SearchPos.rows(), SearchPos.cols());
+	std::vector<std::vector<pcl::index_t>> Indices;
+	std::vector<std::vector<float>> Distances;
 
-	//暂时不剔除
-	for (int i = 0; i < m_pCloud->size(); i++)
-	{
-
-		PointIndices.push_back(i);
-	}
-
-	return PointIndices;
+	m_KdTree.first->radiusSearch(Query, Indices, Distances, Radius, {});
+	_ASSERTE(!Indices.empty());
+	return Indices[0];
 }
