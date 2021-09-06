@@ -19,13 +19,12 @@ void hiveObliquePhotography::SceneReconstruction::hiveSurfaceReconstruction(Poin
 
 //*****************************************************************
 //FUNCTION: 
-pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestMesh()
+pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(const std::string& vPath)
 {
-	const std::string Path = "../Models/Tile_obj/Tile_078-082_low.obj";
 	pcl::TextureMesh Mesh;
-	pcl::io::loadOBJFile(Path, Mesh);
+	pcl::io::loadOBJFile(vPath, Mesh);
 	pcl::TextureMesh Mesh2;
-	pcl::io::loadPolygonFileOBJ(Path, Mesh2);
+	pcl::io::loadPolygonFileOBJ(vPath, Mesh2);
 	Mesh2.tex_materials = Mesh.tex_materials;
 	auto Material = Mesh2.tex_materials[0];
 

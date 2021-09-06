@@ -88,6 +88,7 @@ namespace hiveObliquePhotography
             void onActionStartRepairHole();
             void onActionInstructions();
             void onActionSetting();
+            void onActionOpenMesh();
             void onResourceSpaceItemDoubleClick(QModelIndex);
         };
     }

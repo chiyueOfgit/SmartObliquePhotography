@@ -1,6 +1,7 @@
 #pragma once
 #include "VisualizationExport.h"
 #include "VisualizationConfig.h"
+#include "VisualizationCommon.h"
 
 namespace hiveObliquePhotography
 {
@@ -13,6 +14,8 @@ namespace hiveObliquePhotography
 		VISUALIZATION_DECLSPEC void hiveRefreshVisualizer(const std::vector<std::size_t>& vPointLabel, bool vResetCamera = false);
 
 		VISUALIZATION_DECLSPEC void hiveRunVisualizerLoop();
+
+		VISUALIZATION_DECLSPEC void hiveSetVisualFlag(int vFlag);
 		
 		VISUALIZATION_DECLSPEC int hiveHighlightPointSet(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor);
 
@@ -21,6 +24,8 @@ namespace hiveObliquePhotography
 		VISUALIZATION_DECLSPEC void hiveCancelAllHighlighting();
 
 		VISUALIZATION_DECLSPEC void hiveRemoveAllShapes();
+
+		VISUALIZATION_DECLSPEC void hiveAddTextureMesh(const pcl::TextureMesh& vMesh);
 
 		VISUALIZATION_DECLSPEC void hiveDumpUserCloudSet(std::vector<PointCloud_t::Ptr>& voCloudSet);
 

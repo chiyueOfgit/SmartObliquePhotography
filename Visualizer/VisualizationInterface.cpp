@@ -24,6 +24,11 @@ void hiveObliquePhotography::Visualization::hiveRunVisualizerLoop()
 	CPointCloudVisualizer::getInstance()->run();
 }
 
+void hiveObliquePhotography::Visualization::hiveSetVisualFlag(int vFlag)
+{
+	CPointCloudVisualizer::getInstance()->setVisualFlag(vFlag);
+}
+
 int hiveObliquePhotography::Visualization::hiveHighlightPointSet(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor)
 {
 	if (!vPointSet.empty())
@@ -50,6 +55,11 @@ void hiveObliquePhotography::Visualization::hiveRemoveAllShapes()
 {
 	CPointCloudVisualizer::getInstance()->m_MainColors.clear();
 	CPointCloudVisualizer::getInstance()->m_pPCLVisualizer->removeAllShapes();
+}
+
+void hiveObliquePhotography::Visualization::hiveAddTextureMesh(const pcl::TextureMesh& vMesh)
+{
+	CPointCloudVisualizer::getInstance()->addTextureMesh(vMesh);
 }
 
 void hiveObliquePhotography::Visualization::hiveDumpUserCloudSet(std::vector<PointCloud_t::Ptr>& voCloudSet)

@@ -7,6 +7,6 @@ namespace hiveObliquePhotography
 	namespace SceneReconstruction
 	{
 		RECONSTRUCTION_DECLSPEC void hiveSurfaceReconstruction(PointCloud_t::Ptr vSceneCloud, CMesh& voMesh);
-		RECONSTRUCTION_DECLSPEC pcl::TextureMesh hiveTestMesh();
+		RECONSTRUCTION_DECLSPEC pcl::TextureMesh hiveTestCMesh(const std::string& vPath);
 	}
 }
