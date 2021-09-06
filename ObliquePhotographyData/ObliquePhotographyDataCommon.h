@@ -10,4 +10,6 @@ namespace hiveObliquePhotography
 	const std::string PNG_LOADER = "png";
 	const std::string JPG_SAVER = "jpg_Save";
 	const std::string PNG_SAVER = "png_Save";
+	const std::string OBJ_LOADER = "obj";
+	const std::string OBJ_SAVER = "obj_Save";
 }

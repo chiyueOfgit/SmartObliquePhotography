@@ -48,13 +48,25 @@
     <ClInclude Include="..\ObliquePhotographyData\PointCloudPLYSaver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\Mesh.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\MeshLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\MeshOBJLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\MeshOBJSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\MeshSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="..\ObliquePhotographyData\Image.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\ObliquePhotographyData\Mesh.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ObliquePhotographyData\TextureLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\ObliquePhotographyData\TextureSaver.h">
@@ -87,6 +99,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\ObliquePhotographyData\Mesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ObliquePhotographyData\MeshLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ObliquePhotographyData\MeshOBJLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ObliquePhotographyData\MeshOBJSaver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ObliquePhotographyData\MeshSaver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\ObliquePhotographyData\TextureLoader.cpp">

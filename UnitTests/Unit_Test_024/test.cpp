@@ -5,8 +5,20 @@
 #include <pcl/io/obj_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include "ObliquePhotographyDataInterface.h"
+#include "stb_image.h"
+#include "stb_image_write.h"
+
+
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_STATIC
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 //测试用例列表：
+//  * bakeTexture: 测试在简单场景下生成纹理贴图的正确性
+//
 //  * findTexelsPerFace: 测试每三角面片所覆盖的纹素及对应世界坐标是否正确
 // 
 //  * executeIntersection: 测试执行光线投射后与点云面片相交结果是否正确
@@ -161,3 +173,73 @@ TEST_F(TestCastingTextureBaker, TestCalcTexelColor)
 	m_pTextureBaker->bakeTexture(pCloud, { 512, 512 });
 }
 
+TEST_F(TestCastingTextureBaker, PlaneTextureBakingTest)
+{
+	char* PNGFilePath = (TESTMODEL_DIR + std::string("/Test024_Model/100RG.png")).data();
+	Eigen::Vector2i Resolution{ 10, 10 };
+	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/100RGPointCloud.ply") });
+	
+	auto Texture = m_pTextureBaker->bakeTexture(pCloud, Resolution);
+	int Channels = 3;
+	unsigned char* GtData = stbi_load(PNGFilePath, &Resolution.x(), &Resolution.y(), &Channels, 0);
+	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)
+	{
+		Eigen::Vector3i GtColor{ GtData[i * 3], GtData[i * 3 + 1], GtData[i * 3 + 2] };
+		Eigen::Vector3i Color = Texture.getColor(i / Resolution.x(), i % Resolution.x());
+		EXPECT_EQ(Color, GtColor);
+	}
+}
+
+
+//TEST_F(TestCastingTextureBaker, Generator)
+//{
+//	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr Output(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+//	//float X = -50.0f, Z = -50.0f;
+//	for(int i = 0; i < 10; i++)
+//	{
+//		float Z = -50.0f + (2 * i + 1) * 5.0f;
+//		for(int k = 0; k < 10; k++)
+//		{
+//			float X = -50.0f + (2 * k + 1) * 5.0f;
+//			pcl::PointXYZRGBNormal TempPoint;
+//			TempPoint.x = X; TempPoint.y = 1.0f; TempPoint.z = Z;
+//			TempPoint.normal_x = 0.0f; TempPoint.normal_y = 1.0f; TempPoint.normal_z = 0.0f;
+//			if(i%2)
+//			{
+//				TempPoint.r = 255; TempPoint.g = 0; TempPoint.b = 0;
+//			}
+//			else
+//			{
+//				TempPoint.r = 0; TempPoint.g = 255; TempPoint.b = 0;
+//			}
+//			Output->push_back(TempPoint);
+//		}
+//	}
+//	pcl::io::savePLYFile(TESTMODEL_DIR + std::string("/Test024_Model/100RGPointCloud.ply"), *Output);
+//
+//	
+//	Eigen::Vector2i Resolution{ 10, 10 };
+//	int Channels = 3;
+//	unsigned char* data = stbi_load("D://VS2019Repos//SmartObliquePhotography//UnitTests//TestData//Test024_Model//100RG.png", &Resolution.x(), &Resolution.y(), &Channels, 0);
+//
+//	 for (int i = 0; i < 10; i++)
+//	{
+//		for(int k = 0; k < 10; k++)
+//		{
+//			if (i % 2)
+//			{
+//				data[i * 10 * 3 + k * 3] = 0;
+//				data[i * 10 * 3 + k * 3 + 1] = 255;
+//				data[i * 10 * 3 + k * 3 + 2] = 0;
+//			}			    	    
+//			else		    	    
+//			{			    	    
+//				data[i * 10 * 3 + k * 3] = 255;
+//				data[i * 10 * 3 + k * 3 + 1] = 0;
+//				data[i * 10 * 3 + k * 3 + 2] = 0;
+//			}
+//				
+//		}
+//	}
+//	 stbi_write_png("D://VS2019Repos//SmartObliquePhotography//UnitTests//TestData//Test024_Model//100RG.png", Resolution.x(), Resolution.y(), 3, data, 0);
+//}
