@@ -12,6 +12,8 @@ hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(Po
 	m_pCloud = vPointCloud;
 	__buildKdTree(m_pCloud);
 
+	Eigen::Matrix<Eigen::Vector3i, -1, -1> Texture;
+	Texture.resize(vResolution.x(), vResolution.y());
 	CImage<Eigen::Vector3i> ResultTexture;
 
 	for (auto& Face : m_Mesh.m_Faces)
@@ -21,10 +23,12 @@ hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(Po
 		{
 			auto Candidates = executeIntersection(TexelInfo);
 			auto TexelColor = calcTexelColor(Candidates, TexelInfo);
-			ResultTexture.fillColor(TexelInfo.TexelPos.y(), TexelInfo.TexelPos.x(), &TexelColor);
+			if (TexelInfo.TexelPos.y() == 9)
+				int i = 0;
+			Texture(TexelInfo.TexelPos.y(), TexelInfo.TexelPos.x()) = TexelColor;
 		}
 	}
-
+	ResultTexture.fillColor(vResolution.y(), vResolution.x(), Texture.data());
 	return ResultTexture;
 }
 
@@ -80,7 +84,7 @@ std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelIn
 
 		float DistanceToCenter = (HitPos - SurfelPos).norm();
 		float DistanceToTexel = (HitPos - RayOrigin).norm();
-		const float SurfelRadius = 10.0f;
+		const float SurfelRadius = 5.0f;
 		//距离反比的半径
 		if (DistanceToCenter < SurfelRadius / DistanceToTexel)
 			Candidates.push_back({ HitPos, Index });
@@ -101,24 +105,27 @@ Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInf
 	for (int i = 0; i < vCandidates.size(); i++)
 	{
 		auto VectorCandidate = vCandidates[i].Pos - RayOrigin;
-		float DistanceToTexel = VectorCandidate.norm();	//纵向距离
-		float DistanceToRay = VectorCandidate.cross(RayDirection).norm();	//横向距离
+		float DistanceToTexel = VectorCandidate.norm() + 0.01f;	//纵向距离
+		float DistanceToRay = (VectorCandidate.cross(RayDirection).norm()) + 0.01f;	//横向距离
 
 		float Weight = 1 / (DistanceToTexel * DistanceToRay);
 
 		CandidateWeights.push_back({ i, Weight });
 	}
 
-	//决定多少采样点混合, 先固定为3, 有特别多可以考虑的
+	//决定多少采样点混合, 先固定为3, 需要自适应
 	const int NumBlend = 3;
 	Eigen::Vector3i WeightedColor{ 0, 0, 0 };
 	float SumWeight = 0.0f;
 	std::sort(CandidateWeights.begin(), CandidateWeights.end(), [](std::pair<std::size_t, float> vLeft, std::pair<std::size_t, float> vRight) { return vLeft.second > vLeft.second; });
 	for (int i = 0; i < NumBlend; i++)
 	{
-		auto& Point = m_pCloud->points[vCandidates[CandidateWeights[i].first].PointIndex];
-		WeightedColor += (Eigen::Vector3i{ Point.r, Point.g, Point.b }.cast<float>() * CandidateWeights[i].second).cast<int>();
-		SumWeight += CandidateWeights[i].second;
+		if (i < CandidateWeights.size())
+		{
+			auto& Point = m_pCloud->points[vCandidates[CandidateWeights[i].first].PointIndex];
+			WeightedColor += (Eigen::Vector3i{ Point.r, Point.g, Point.b }.cast<float>() * CandidateWeights[i].second).cast<int>();
+			SumWeight += CandidateWeights[i].second;
+		}
 	}
 
 	return (WeightedColor.cast<float>() / SumWeight).cast<int>();

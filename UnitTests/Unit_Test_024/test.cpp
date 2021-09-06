@@ -172,18 +172,36 @@ protected:
 
 TEST_F(TestCastingTextureBaker, PlaneTextureBakingTest)
 {
-	char* PNGFilePath = (TESTMODEL_DIR + std::string("/Test024_Model/100RG.png")).data();
+	auto PNGFilePath = TESTMODEL_DIR + std::string("Test024_Model/100RG.png");
 	Eigen::Vector2i Resolution{ 10, 10 };
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/100RGPointCloud.ply") });
+	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("Test024_Model/100RGPointCloud.ply") });
 	
 	auto Texture = m_pTextureBaker->bakeTexture(pCloud, Resolution);
 	int Channels = 3;
-	unsigned char* GtData = stbi_load(PNGFilePath, &Resolution.x(), &Resolution.y(), &Channels, 0);
+	unsigned char* GtData = stbi_load(PNGFilePath.c_str(), &Resolution.x(), &Resolution.y(), &Channels, 0);
 	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)
 	{
 		Eigen::Vector3i GtColor{ GtData[i * 3], GtData[i * 3 + 1], GtData[i * 3 + 2] };
 		Eigen::Vector3i Color = Texture.getColor(i / Resolution.x(), i % Resolution.x());
 		EXPECT_EQ(Color, GtColor);
+	}
+
+	{
+		const auto Width = Texture.getWidth();
+		const auto Height = Texture.getHeight();
+		const auto BytesPerPixel = 3;
+		auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+		for (auto i = 0; i < Height; i++)
+			for (auto k = 0; k < Width; k++)
+			{
+				auto Offset = (i * Width + k) * BytesPerPixel;
+				ResultImage[Offset] = Texture.getColor(i, k)[0];
+				ResultImage[Offset + 1] = Texture.getColor(i, k)[1];
+				ResultImage[Offset + 2] = Texture.getColor(i, k)[2];
+			}
+
+		stbi_write_png("Test.png", Width, Height, BytesPerPixel, ResultImage, 0);
+		stbi_image_free(ResultImage);
 	}
 }
 
