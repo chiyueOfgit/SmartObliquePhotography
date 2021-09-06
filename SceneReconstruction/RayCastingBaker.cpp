@@ -5,6 +5,8 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
+const float SurfelRadius = 5.0f;	//magic raidus
+
 //*****************************************************************
 //FUNCTION: 
 hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution)
@@ -72,7 +74,6 @@ std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelIn
 	auto RayDirection = __calcRayDirection(vInfo);
 
 	auto CulledPoints = __cullPointsByRay(RayOrigin, RayDirection);
-
 	for (auto Index : CulledPoints)
 	{
 		auto& TestPoint = m_pCloud->points[Index];
@@ -84,7 +85,6 @@ std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelIn
 
 		float DistanceToCenter = (HitPos - SurfelPos).norm();
 		float DistanceToTexel = (HitPos - RayOrigin).norm();
-		const float SurfelRadius = 5.0f;
 		//距离反比的半径
 		if (DistanceToCenter < SurfelRadius / DistanceToTexel)
 			Candidates.push_back({ HitPos, Index });
@@ -100,35 +100,50 @@ Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInf
 	auto RayOrigin = vInfo.TexelPosInWorld;
 	auto RayDirection = __calcRayDirection(vInfo);
 
+	//深度剔除
+	std::vector<SCandidateInfo> CulledCandidates;
+	{
+		const float DepthLengthRange = 5.0f;	//magic
+		std::map<float, std::size_t> DistanceSortedIndices;
+		for (int i = 0; i < vCandidates.size(); i++)
+			DistanceSortedIndices[(vCandidates[i].Pos - RayOrigin).norm()] = i;
+		
+		for (auto Iter = DistanceSortedIndices.begin(); Iter != DistanceSortedIndices.end(); Iter++)
+			if (fabs(Iter->first - DistanceSortedIndices.begin()->first) <= DepthLengthRange)
+				CulledCandidates.push_back(vCandidates[Iter->second]);
+	}
+
 	//决定每采样点权重
 	std::vector<std::pair<std::size_t, float>> CandidateWeights;
-	for (int i = 0; i < vCandidates.size(); i++)
+	for (int i = 0; i < CulledCandidates.size(); i++)
 	{
-		auto VectorCandidate = vCandidates[i].Pos - RayOrigin;
-		float DistanceToTexel = VectorCandidate.norm() + 0.01f;	//纵向距离
-		float DistanceToRay = (VectorCandidate.cross(RayDirection).norm()) + 0.01f;	//横向距离
-
-		float Weight = 1 / (DistanceToTexel * DistanceToRay);
+		auto& Point = m_pCloud->points[CulledCandidates[i].PointIndex];
+		Eigen::Vector3f SurfelCenter{ Point.x, Point.y, Point.z };
+		auto Distance2Center = (CulledCandidates[i].Pos - SurfelCenter).norm();
+		float DistanceRate = Distance2Center / SurfelRadius;
+		_ASSERTE(DistanceRate <= 1.0f);
+		const float AttenuationSpeed = 5.0f;	//magic
+		auto Weight = exp(AttenuationSpeed * -pow(DistanceRate, 2));
 
 		CandidateWeights.push_back({ i, Weight });
 	}
 
 	//决定多少采样点混合, 先固定为3, 需要自适应
 	const int NumBlend = 3;
-	Eigen::Vector3i WeightedColor{ 0, 0, 0 };
+	Eigen::Vector3f WeightedColor{ 0.0f, 0.0f, 0.0f };
 	float SumWeight = 0.0f;
 	std::sort(CandidateWeights.begin(), CandidateWeights.end(), [](std::pair<std::size_t, float> vLeft, std::pair<std::size_t, float> vRight) { return vLeft.second > vLeft.second; });
 	for (int i = 0; i < NumBlend; i++)
 	{
 		if (i < CandidateWeights.size())
 		{
-			auto& Point = m_pCloud->points[vCandidates[CandidateWeights[i].first].PointIndex];
-			WeightedColor += (Eigen::Vector3i{ Point.r, Point.g, Point.b }.cast<float>() * CandidateWeights[i].second).cast<int>();
+			auto& Point = m_pCloud->points[CulledCandidates[CandidateWeights[i].first].PointIndex];
+			WeightedColor += Eigen::Vector3f(Point.r, Point.g, Point.b) * CandidateWeights[i].second;
 			SumWeight += CandidateWeights[i].second;
 		}
 	}
 
-	return (WeightedColor.cast<float>() / SumWeight).cast<int>();
+	return (WeightedColor / SumWeight).cast<int>();
 }
 
 //*****************************************************************
@@ -209,7 +224,7 @@ Eigen::Vector3f CRayCastingBaker::__calcRayDirection(const STexelInfo& vInfo)	//
 std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vector3f& vRayOrigin, const Eigen::Vector3f& vRayDirection)
 {
 	//暂时用仅光线起点的半径搜索
-	const float Radius = 50.0f;	//to config or calculate
+	const float Radius = 10000.0f;	//to config or calculate
 	Eigen::Matrix<float, 1, 3, Eigen::RowMajor> SearchPos = vRayOrigin;
 	flann::Matrix Query(SearchPos.data(), SearchPos.rows(), SearchPos.cols());
 	std::vector<std::vector<pcl::index_t>> Indices;
