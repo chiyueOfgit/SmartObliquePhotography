@@ -6,6 +6,7 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 const float SurfelRadius = 5.0f;	//magic raidus
+const bool VerticalReverse = true;	//垂直翻转
 
 //*****************************************************************
 //FUNCTION: 
@@ -25,8 +26,8 @@ hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(Po
 		{
 			auto Candidates = executeIntersection(TexelInfo);
 			auto TexelColor = calcTexelColor(Candidates, TexelInfo);
-			if (TexelInfo.TexelPos.y() == 9)
-				int i = 0;
+			if (VerticalReverse)
+				TexelInfo.TexelPos.y() = vResolution.y() - TexelInfo.TexelPos.y();
 			Texture(TexelInfo.TexelPos.y(), TexelInfo.TexelPos.x()) = TexelColor;
 		}
 	}
@@ -100,17 +101,22 @@ Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInf
 	auto RayOrigin = vInfo.TexelPosInWorld;
 	auto RayDirection = __calcRayDirection(vInfo);
 
-	//深度剔除
+	//深度剔除, 有bug
 	std::vector<SCandidateInfo> CulledCandidates;
 	{
-		const float DepthLengthRange = 5.0f;	//magic
-		std::map<float, std::size_t> DistanceSortedIndices;
-		for (int i = 0; i < vCandidates.size(); i++)
-			DistanceSortedIndices[(vCandidates[i].Pos - RayOrigin).norm()] = i;
-		
-		for (auto Iter = DistanceSortedIndices.begin(); Iter != DistanceSortedIndices.end(); Iter++)
-			if (fabs(Iter->first - DistanceSortedIndices.begin()->first) <= DepthLengthRange)
-				CulledCandidates.push_back(vCandidates[Iter->second]);
+		for (auto& Info : vCandidates)
+			CulledCandidates.push_back(Info);
+
+		//const float DepthLengthRange = 5.0f;	//magic
+		//std::vector<std::pair<std::size_t, float>> DistanceSortedIndices;
+		//for (int i = 0; i < vCandidates.size(); i++)
+		//	DistanceSortedIndices.push_back({ i, (vCandidates[i].Pos - RayOrigin).norm()});
+		//std::sort(DistanceSortedIndices.begin(), DistanceSortedIndices.end(), [](std::pair<std::size_t, float> vLeft, std::pair<std::size_t, float> vRight) { return vLeft.second < vRight.second; });
+		//for (auto [Index, Depth] : DistanceSortedIndices)
+		//{
+		//	if (fabs(Depth - DistanceSortedIndices[0].second) <= DepthLengthRange)
+		//		CulledCandidates.push_back(vCandidates[Index]);
+		//}
 	}
 
 	//决定每采样点权重

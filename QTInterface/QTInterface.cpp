@@ -36,7 +36,13 @@
 
 #include "pcl/io/pcd_io.h"
 #include "pcl/io/ply_io.h"
-#include "Mesh.h"
+
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_STATIC
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -543,10 +549,29 @@ void CQTInterface::onActionOpenMesh()
     {
         Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
         auto Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
-        Visualization::hiveAddTextureMesh(Mesh);
-        std::vector<std::size_t> PointLabel;
-        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-        Visualization::hiveRefreshVisualizer(PointLabel, true);
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(Mesh, m_pCloud, { 512, 512 });
+
+        {
+            const auto Width = Texture.getWidth();
+            const auto Height = Texture.getHeight();
+            const auto BytesPerPixel = 3;
+            auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+            for (auto i = 0; i < Height; i++)
+                for (auto k = 0; k < Width; k++)
+                {
+                    auto Offset = (i * Width + k) * BytesPerPixel;
+                    ResultImage[Offset] = Texture.getColor(i, k)[0];
+                    ResultImage[Offset + 1] = Texture.getColor(i, k)[1];
+                    ResultImage[Offset + 2] = Texture.getColor(i, k)[2];
+                }
+
+            stbi_write_png("TestColor.png", Width, Height, BytesPerPixel, ResultImage, 0);
+            stbi_image_free(ResultImage);
+        }
+        //Visualization::hiveAddTextureMesh(Mesh);
+        //std::vector<std::size_t> PointLabel;
+        //PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+        //Visualization::hiveRefreshVisualizer(PointLabel, true);
     }
 }
 

@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "SceneReconstructionInterface.h"
-#include "PoissonSurfaceReconstructor.h"
 #include "SceneReconstructionConfig.h"
+#include "PoissonSurfaceReconstructor.h"
+#include "RayCastingBaker.h"
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/obj_io.h>
@@ -31,5 +32,13 @@ pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(cons
 	CMesh M(Mesh2);
 
 	return M.toTexMesh(Material);
+}
+
+//*****************************************************************
+//FUNCTION: 
+RECONSTRUCTION_DECLSPEC hiveObliquePhotography::CImage<Eigen::Vector3i> hiveObliquePhotography::SceneReconstruction::hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, Eigen::Vector2i vResolution)
+{
+	auto pBaker = hiveDesignPattern::hiveCreateProduct<CRayCastingBaker>(KEYWORD::RAYCASTING_TEXTUREBAKER, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
+	return pBaker->bakeTexture(vSceneCloud, vResolution);
 }
 
