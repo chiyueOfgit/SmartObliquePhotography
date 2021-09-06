@@ -82,11 +82,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneReconstruction", "Scen
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneReconstruction_lib", "SceneReconstruction_lib\SceneReconstruction_lib.vcxproj", "{15649C30-750A-4939-9BEE-F09D0E010785}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_022 (template)", "UnitTests\Unit_Test_022\Unit_Test_022.vcxproj", "{E40B29A6-707E-41A8-ABE1-79A6E195ECE5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_022 (load_save_texture)", "UnitTests\Unit_Test_022\Unit_Test_022.vcxproj", "{E40B29A6-707E-41A8-ABE1-79A6E195ECE5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_023 (load_mesh)", "UnitTests\Unit_Test_023\Unit_Test_023.vcxproj", "{881E029A-DCEC-42B8-8002-68601B590BAB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_023 (load_save_mesh)", "UnitTests\Unit_Test_023\Unit_Test_023.vcxproj", "{881E029A-DCEC-42B8-8002-68601B590BAB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_024 (raycasting_texture_baker)", "UnitTests\Unit_Test_024\Unit_Test_024.vcxproj", "{82ED2015-2810-4330-B770-26F428AFE139}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_000 (template)", "UnitTests\Unit_Test_025\Unit_Test_025.vcxproj", "{4AA3A4B3-9428-419B-BE19-62AF0450E157}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -356,6 +358,14 @@ Global
 		{82ED2015-2810-4330-B770-26F428AFE139}.Release|x64.Build.0 = Release|x64
 		{82ED2015-2810-4330-B770-26F428AFE139}.Release|x86.ActiveCfg = Release|Win32
 		{82ED2015-2810-4330-B770-26F428AFE139}.Release|x86.Build.0 = Release|Win32
+		{4AA3A4B3-9428-419B-BE19-62AF0450E157}.Debug|x64.ActiveCfg = Debug|x64
+		{4AA3A4B3-9428-419B-BE19-62AF0450E157}.Debug|x64.Build.0 = Debug|x64
+		{4AA3A4B3-9428-419B-BE19-62AF0450E157}.Debug|x86.ActiveCfg = Debug|Win32
+		{4AA3A4B3-9428-419B-BE19-62AF0450E157}.Debug|x86.Build.0 = Debug|Win32
+		{4AA3A4B3-9428-419B-BE19-62AF0450E157}.Release|x64.ActiveCfg = Release|x64
+		{4AA3A4B3-9428-419B-BE19-62AF0450E157}.Release|x64.Build.0 = Release|x64
+		{4AA3A4B3-9428-419B-BE19-62AF0450E157}.Release|x86.ActiveCfg = Release|Win32
+		{4AA3A4B3-9428-419B-BE19-62AF0450E157}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -388,6 +398,7 @@ Global
 		{E40B29A6-707E-41A8-ABE1-79A6E195ECE5} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{881E029A-DCEC-42B8-8002-68601B590BAB} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{82ED2015-2810-4330-B770-26F428AFE139} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
+		{4AA3A4B3-9428-419B-BE19-62AF0450E157} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39CBE48C-AE02-4207-8AE0-74B21A939B18}
