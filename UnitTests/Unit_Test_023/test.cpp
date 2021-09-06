@@ -3,9 +3,6 @@
 #include "Mesh.h"
 #include "MeshLoader.h"
 #include "MeshSaver.h"
-#include "MeshOBJLoader.h"
-
-_REGISTER_EXCLUSIVE_PRODUCT(CMeshOBJLoader, OBJ_LOADER)
 
 using namespace hiveObliquePhotography;
 
