@@ -59,17 +59,22 @@ namespace hiveObliquePhotography
 	{
 	public:
 		using Scalar_t = std::conditional_t<std::is_arithmetic_v<TColor> || std::is_array_v<TColor>, std::remove_extent_t<TColor>, extract_value_type_t<TColor>>;
+		static_assert(!std::is_void_v<Scalar_t>, "illegal Scalar_t of TColor");
 
 		static constexpr size_t extractChannel()
 		{
-			if constexpr (std::is_void_v<Scalar_t>)
-				return 0;
+			if constexpr (std::is_array_v<TColor>)//TODO: 待vs19的C++20实现后，改为std::is_bounded_array<TColor>，注意sizeof(int[])会出错
+			{
+				constexpr auto Extent = std::extent_v<TColor>;
+				static_assert(Extent != 0, "illegal Scalar_t of TColor");
+				return Extent;
+			}
 			else if constexpr (std::has_unique_object_representations_v<TColor>)
 				return sizeof(TColor) / sizeof(Scalar_t);
 			else if constexpr (has_member_func_size_v<TColor>)
-				return std::size(TColor());//may on runtime
+				return std::size(TColor());//may on runtime, may be zero!!!
 			else
-				return 0;
+				static_assert(false, "illegal Channel of TColor");
 		}
 	};
 
