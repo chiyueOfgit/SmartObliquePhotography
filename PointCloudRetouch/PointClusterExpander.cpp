@@ -19,7 +19,7 @@ void CPointClusterExpander::runV(const CPointCluster* vCluster)
 
 	CPointCloudRetouchManager *pManager = CPointCloudRetouchManager::getInstance();
 	std::queue<pcl::index_t> ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
-	std::deque TraversedFlag(pManager->getRetouchScene().getNumPoint(), false);
+	std::deque TraversedFlag(pManager->getScene().getNumPoint(), false);
 	
 #ifdef _UNIT_TEST
 	hiveCommon::CCPUTimer Timer;

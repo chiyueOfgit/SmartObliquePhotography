@@ -32,7 +32,7 @@ double CColorFeature::generateFeatureV(const std::vector<pcl::index_t>& vDetermi
 
     std::vector<Eigen::Vector3i> PointCloudColors;
     for (auto Index : vDeterminantPointSet)
-        PointCloudColors.push_back(CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index));
+        PointCloudColors.push_back(CPointCloudRetouchManager::getInstance()->getScene().getColorAt(Index));
 
     m_MainBaseColors = __adaptiveColorClustering(PointCloudColors, m_MaxNumMainColors);
 
@@ -91,7 +91,7 @@ double CColorFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
     for (auto Index : Neighbors)
     {
         float MinColorDifference = FLT_MAX;
-        auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index);
+        auto Color = CPointCloudRetouchManager::getInstance()->getScene().getColorAt(Index);
         for (const auto& MainColor : m_MainBaseColors)
         {
             float TempColorDifference = __calcColorDifferences(Color, MainColor);
@@ -112,7 +112,7 @@ std::string CColorFeature::outputDebugInfosV(pcl::index_t vIndex) const
     Infos += _FORMAT_STR1("\nColor Feature:\nNum Main Colors are %1%, They are\n", m_MainBaseColors.size());
     for (auto& Color : m_MainBaseColors)
         Infos += _FORMAT_STR3("%1%, %2%, %3%\n", Color.x(), Color.y(), Color.z());
-    auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(vIndex);
+    auto Color = CPointCloudRetouchManager::getInstance()->getScene().getColorAt(vIndex);
     Infos += _FORMAT_STR3("Point's Color is: %1%, %2%, %3%\n", Color.x(), Color.y(), Color.z());
     Infos += _FORMAT_STR1("Similarity is: %1%\n", const_cast<CColorFeature*>(this)->evaluateFeatureMatchFactorV(vIndex));
 

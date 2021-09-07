@@ -1,11 +1,9 @@
 #include "pch.h"
 #include "OutlierDetector.h"
-#include "PointCloudRetouchManager.h"
 #include <pcl/filters/statistical_outlier_removal.h>
-
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/conditional_removal.h>
-
+#include "PointCloudRetouchManager.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -13,36 +11,41 @@ _REGISTER_EXCLUSIVE_PRODUCT(COutlierDetector, KEYWORD::OUTLIER_DETECTOR)
 
 //*****************************************************************
 //FUNCTION: 
-void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vExpectLabel, const hiveConfig::CHiveConfig* vConfig)
+void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig* vConfig)  //FIXME: 实际从vConfig就拿三个值，还不如直接把这三个字作为参数传进来，这样就不依赖CHiveConfig了，你的测试用例也会变得更简单
 {
-	if (vInputIndices.empty())
-		return;
+	if (vInputIndices.empty()) return;
+
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	for (auto CurrentIndex : vInputIndices)
-		if (CurrentIndex < 0 || CurrentIndex >= pManager->getRetouchScene().getNumPoint())
+		if (CurrentIndex < 0 || CurrentIndex >= pManager->getScene().getNumPoint())
 			_THROW_RUNTIME_ERROR("Index is out of range");
 	
 	PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
-	for (auto Index : vInputIndices)
+	for (auto Index : vInputIndices)  //FIXME:到这里你实际已经对整个点云做了三次遍历了，第一次获得UNDETERMINED的点的索引，第二次获得KEPT的点的索引，这里是
+									  //      第三次遍历。不能在CPointCloudRetouchManager里设计个函数，直接只遍历一次，返回一个PointCloud_t::Ptr吗？
 	{
 		pcl::PointSurfel TempPoint;
-		auto Pos = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(Index);
+		auto Pos = CPointCloudRetouchManager::getInstance()->getScene().getPositionAt(Index);
 		TempPoint.x = Pos.x();
 		TempPoint.y = Pos.y();
 		TempPoint.z = Pos.z();
-		auto Normal = CPointCloudRetouchManager::getInstance()->getRetouchScene().getNormalAt(Index);
+		auto Normal = CPointCloudRetouchManager::getInstance()->getScene().getNormalAt(Index);
 		TempPoint.normal_x = Normal.x();
 		TempPoint.normal_y = Normal.y();
 		TempPoint.normal_z = Normal.z();
-		auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index);
+		auto Color = CPointCloudRetouchManager::getInstance()->getScene().getColorAt(Index);
 		TempPoint.r = Color.x();
 		TempPoint.g = Color.y();
 		TempPoint.b = Color.z();
-		TempPoint.curvature = Index;
+		TempPoint.curvature = Index;  //FIXME：确定在pcl::RadiusOutlierRemoval中不会使用到点的curvature属性吗？这样做很危险，pcl如果以后真的用到在这个属性，
+									  //       这行代码就是一个隐藏很深的bug。PointCloud<T>不是接受的模板吗？用自定义的模板可以吗？直接在自定义的结构中定义index。
+									  //       还有就是，pcl::RadiusOutlierRemoval到底需要什么样的点属性才能执行？一定要颜色吗？半径不需要吗？你的测试用例009里面，
+		                              //       ground truth的结果哪里来的？你肯定你拿到的是正确结果吗？
 		pCloud->push_back(TempPoint);
 	}
+
 	PointCloud_t::Ptr pResultCloud(new pcl::PointCloud<pcl::PointSurfel>);
-	pcl::RadiusOutlierRemoval<pcl::PointSurfel> RadiusOutlier;
+	pcl::RadiusOutlierRemoval<pcl::PointSurfel> RadiusOutlier;     //FIXME: 从include的文件来看，pcl提供了多种去除离群点的方法，为什么选当前这种，有过测试吗？
 	RadiusOutlier.setInputCloud(pCloud);
 	RadiusOutlier.setRadiusSearch(vConfig->getAttribute<float>("SEARCH_RADIUS").value());
 	RadiusOutlier.setMinNeighborsInRadius(vConfig->getAttribute<int>("MIN_NEIGHBORS_IN_RADIUS").value());
@@ -50,7 +53,7 @@ void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vExpectLabe
 	RadiusOutlier.filter(*pResultCloud);
 
 	for (auto& Point : pResultCloud->points)
-	   pManager->tagPointLabel(Point.curvature, vExpectLabel, 0, 0);
+	   pManager->tagPointLabel(Point.curvature, vTargetLabel, 0, 0);
 	
 	pManager->recordCurrentStatus();
 }

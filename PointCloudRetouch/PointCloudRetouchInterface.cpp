@@ -26,15 +26,15 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointCloudtoSave(PointCl
 	for (auto Index : PointIndices)
 	{
 		pcl::PointSurfel TempPoint;
-		auto Pos = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(Index);
+		auto Pos = CPointCloudRetouchManager::getInstance()->getScene().getPositionAt(Index);
 		TempPoint.x = Pos.x();
 		TempPoint.y = Pos.y();
 		TempPoint.z = Pos.z();
-		auto Normal = CPointCloudRetouchManager::getInstance()->getRetouchScene().getNormalAt(Index);
+		auto Normal = CPointCloudRetouchManager::getInstance()->getScene().getNormalAt(Index);
 		TempPoint.normal_x = Normal.x();
 		TempPoint.normal_y = Normal.y();
 		TempPoint.normal_z = Normal.z();
-		auto Color = CPointCloudRetouchManager::getInstance()->getRetouchScene().getColorAt(Index);
+		auto Color = CPointCloudRetouchManager::getInstance()->getScene().getColorAt(Index);
 		TempPoint.r = Color.x();
 		TempPoint.g = Color.y();
 		TempPoint.b = Color.z();
@@ -136,7 +136,7 @@ void hiveObliquePhotography::PointCloudRetouch::hiveRunPrecompute(const std::str
 
 	if (_access(KEYWORD::TEMP_FOLDER.c_str(), 0) == -1)
 		_mkdir(KEYWORD::TEMP_FOLDER.c_str());
-	pPrecomputeManager->registerPrecompute<std::vector<double>>([=]()->bool {return pFeature->precomputeSceneCloudNormalComplexity(); }, KEYWORD::TEMP_FOLDER + vModelName + "_" + std::to_string(CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint()) + "_pre.txt", pFeature->getPtr2Container());
+	pPrecomputeManager->registerPrecompute<std::vector<double>>([=]()->bool {return pFeature->precomputeSceneCloudNormalComplexity(); }, KEYWORD::TEMP_FOLDER + vModelName + "_" + std::to_string(CPointCloudRetouchManager::getInstance()->getScene().getNumPoint()) + "_pre.txt", pFeature->getPtr2Container());
 
 	pPrecomputeManager->precompute();
 }

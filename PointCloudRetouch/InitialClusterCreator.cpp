@@ -15,7 +15,7 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 {
 
 	CPointCluster* pInitialCluster = new CPointCluster;
-	auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	auto CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 	for (auto CurrentIndex : vUserMarkedRegion)
 		if (CurrentIndex < 0 || CurrentIndex >= CloudScene.getNumPoint())
 			_THROW_RUNTIME_ERROR("Index is out of range");
@@ -44,7 +44,7 @@ CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pc
 //FUNCTION: 
 pcl::index_t CInitialClusterCreator::__computeCenterIndex(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix) const
 {
-	const auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 	const auto Size = vUserMarkedRegion.size();
 	
 	std::vector<Eigen::Vector2d> NdcCoordSet(Size);
@@ -82,7 +82,7 @@ pcl::index_t CInitialClusterCreator::__computeCenterIndex(const std::vector<pcl:
 void OutputMessage(pcl::index_t vUserMarkedRegionPoint, std::string& vioOutputString)
 {
 	std::string OutputOnePointMessage = "";
-	auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	auto CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 	Eigen::Vector4f Position = CloudScene.getPositionAt(vUserMarkedRegionPoint);
 	OutputOnePointMessage = " id: " + std::to_string(vUserMarkedRegionPoint) + "\t\t(" + std::to_string(Position[0]) + ", " + std::to_string(Position[1]) + ", " + std::to_string(Position[2]) + ")\n ";
 	vioOutputString += OutputOnePointMessage;
@@ -117,7 +117,7 @@ void CInitialClusterCreator::__divideUserSpecifiedRegion(const std::vector<pcl::
 //FUNCTION: 
 std::vector<double> CInitialClusterCreator::__generateHardness4EveryPoint(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc) const
 {
-	const auto CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 
 	std::vector<double> HardnessSet;
 	HardnessSet.resize(vUserMarkedRegion.size());

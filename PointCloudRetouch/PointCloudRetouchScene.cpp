@@ -3,18 +3,18 @@
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-CPointCloudRetouchScene::CPointCloudRetouchScene() 
+CPointCloudScene::CPointCloudScene() 
 {
 
 }
 
-CPointCloudRetouchScene::~CPointCloudRetouchScene()
+CPointCloudScene::~CPointCloudScene()
 {
 }
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudRetouchScene::init(PointCloud_t::Ptr vPointCloudScene)
+void CPointCloudScene::init(PointCloud_t::Ptr vPointCloudScene)
 {
 	//_ASSERTE(vPointCloudScene);
 
@@ -26,7 +26,7 @@ void CPointCloudRetouchScene::init(PointCloud_t::Ptr vPointCloudScene)
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector4f CPointCloudRetouchScene::getPositionAt(pcl::index_t vIndex) const
+Eigen::Vector4f CPointCloudScene::getPositionAt(pcl::index_t vIndex) const
 {
 	_ASSERTE(vIndex < m_pPointCloudScene->size());
 	return { m_pPointCloudScene->points[vIndex].x, m_pPointCloudScene->points[vIndex].y, m_pPointCloudScene->points[vIndex].z, 1.0 };
@@ -34,7 +34,7 @@ Eigen::Vector4f CPointCloudRetouchScene::getPositionAt(pcl::index_t vIndex) cons
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector4f CPointCloudRetouchScene::getNormalAt(pcl::index_t vIndex) const
+Eigen::Vector4f CPointCloudScene::getNormalAt(pcl::index_t vIndex) const
 {
 	_ASSERTE(vIndex < m_pPointCloudScene->size());
 	return { m_pPointCloudScene->points[vIndex].normal_x, m_pPointCloudScene->points[vIndex].normal_y, m_pPointCloudScene->points[vIndex].normal_z, 0.0 };
@@ -42,7 +42,7 @@ Eigen::Vector4f CPointCloudRetouchScene::getNormalAt(pcl::index_t vIndex) const
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector3i CPointCloudRetouchScene::getColorAt(pcl::index_t vIndex) const
+Eigen::Vector3i CPointCloudScene::getColorAt(pcl::index_t vIndex) const
 {
 	_ASSERTE(vIndex < m_pPointCloudScene->size());
 	return __extractRgba(m_pPointCloudScene->points[vIndex].rgb);
@@ -50,7 +50,7 @@ Eigen::Vector3i CPointCloudRetouchScene::getColorAt(pcl::index_t vIndex) const
 
 //*****************************************************************
 //FUNCTION: 
-std::pair<Eigen::Vector3f, Eigen::Vector3f> CPointCloudRetouchScene::getBoundingBox(const std::vector<pcl::index_t>& vIndices) const
+std::pair<Eigen::Vector3f, Eigen::Vector3f> CPointCloudScene::getBoundingBox(const std::vector<pcl::index_t>& vIndices) const
 {
 	Eigen::Vector3f Min{ FLT_MAX, FLT_MAX, FLT_MAX };
 	Eigen::Vector3f Max{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
@@ -84,7 +84,7 @@ std::pair<Eigen::Vector3f, Eigen::Vector3f> CPointCloudRetouchScene::getBounding
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> CPointCloudRetouchScene::getPointsInBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Matrix3f& vRotationMatrix) const
+std::vector<pcl::index_t> CPointCloudScene::getPointsInBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Matrix3f& vRotationMatrix) const
 {
 	std::vector<pcl::index_t> TempPoints;
 	for (auto Index = 0; Index < m_pPointCloudScene->size(); Index++)
@@ -107,7 +107,7 @@ std::vector<pcl::index_t> CPointCloudRetouchScene::getPointsInBox(const std::pai
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector3i CPointCloudRetouchScene::__extractRgba(float vRgba) const
+Eigen::Vector3i CPointCloudScene::__extractRgba(float vRgba) const
 {
 	union ColorLayout
 	{

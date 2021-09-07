@@ -24,7 +24,7 @@ void  CNormalComplexity::initV(const hiveConfig::CHiveConfig* vFeatureConfig)
 //FUNCTION: 
 double CNormalComplexity::generateFeatureV(const std::vector<pcl::index_t>& vDeterminantPointSet, const std::vector<pcl::index_t>& vValidationSet, pcl::index_t vClusterCenter)
 {
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 	
 	if (vDeterminantPointSet.empty() || vValidationSet.empty())
 		return 0.0;
@@ -62,7 +62,7 @@ std::string CNormalComplexity::outputDebugInfosV(pcl::index_t vIndex) const
 //FUNCTION: 
 bool CNormalComplexity::precomputeSceneCloudNormalComplexity()
 {
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 	auto NumPoints = CloudScene.getNumPoint();
 	std::vector<double> Temp(NumPoints);
 
@@ -97,7 +97,7 @@ double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputP
 	}
 	else
 	{
-		const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+		const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 
 		pcl::Indices Neighborhood;
 		std::vector<float> DistanceSet;
@@ -135,7 +135,7 @@ double CNormalComplexity::__calcSinglePointNormalComplexity(pcl::index_t vInputP
 //FUNCTION: 
 void CNormalComplexity::__buildSearchTree()
 {
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 
 	const pcl::PointCloud<pcl::PointXYZ>::Ptr pPointCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	CloudScene.dumpPointCloud(*pPointCloud);

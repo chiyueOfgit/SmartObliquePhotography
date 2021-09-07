@@ -99,7 +99,7 @@ TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchScene)
 {
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(g_CloudPath, *pCloud);
-	CPointCloudRetouchScene Scene;
+	CPointCloudScene Scene;
 
 	Scene.init(pCloud);
 	ASSERT_EQ(Scene.getNumPoint(), 189235);
@@ -109,13 +109,13 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitSceneWithErrorPtr)
 {
 	//空指针
 	{
-		CPointCloudRetouchScene Scene;
+		CPointCloudScene Scene;
 		EXPECT_ANY_THROW(Scene.init(nullptr););
 	}
 
 	//未定义的乱指针
 	{
-		CPointCloudRetouchScene Scene;
+		CPointCloudScene Scene;
 		PointCloud_t::Ptr pCloud;
 		EXPECT_ANY_THROW(Scene.init(pCloud));
 	}
@@ -239,7 +239,7 @@ TEST_F(CTestInitPointCloudRetouch, ResetPointCloudRetouchManager)
 	EXPECT_EQ(pManager->getBackgroundMarker().getClusterConfig(), nullptr);
 	EXPECT_EQ(pManager->getLitterMarker().getClusterConfig(), nullptr);
 	EXPECT_EQ(pManager->getLabelSet().getSize(), 0);
-	EXPECT_EQ(pManager->getRetouchScene().getNumPoint(), 0);
+	EXPECT_EQ(pManager->getScene().getNumPoint(), 0);
 	EXPECT_EQ(pManager->getNumCluster(), 0);
 	EXPECT_EQ(pManager->addAndGetTimestamp(), 1);
 	EXPECT_EQ(pManager->getStatusQueue().size(), 0);
@@ -261,7 +261,7 @@ TEST_F(CTestInitPointCloudRetouch, ReInitPointCloudRetouchManager)
 	EXPECT_EQ(pManager->addAndGetTimestamp(), 1);
 	EXPECT_EQ(pManager->getStatusQueue().size(), 1);
 	EXPECT_EQ(pManager->getLabelSet().getSize(), pCloud->size());
-	EXPECT_EQ(pManager->getRetouchScene().getNumPoint(), pCloud->size());
+	EXPECT_EQ(pManager->getScene().getNumPoint(), pCloud->size());
 	EXPECT_EQ(pManager->getConfig()->getSubconfigAt(0)->getSubconfigType(), std::string("POINT_CLOUD_RETOUCN_CONFIG"));
 	EXPECT_EQ(pManager->getOutlierConfig()->getName(), std::string("Outlier"));
 }

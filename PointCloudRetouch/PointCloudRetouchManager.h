@@ -38,7 +38,7 @@ namespace hiveObliquePhotography
 			void clearMark();
 			bool executePreprocessor(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc, const Eigen::Vector3d& vViewPos);
 			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel);
-			bool executeOutlierDetector(EPointLabel vTo);
+			bool executeOutlierDetector(EPointLabel vTargetLabel);
 			void executeHoleRepairerSetRegion(const std::vector<pcl::index_t>& vHoleRegion);
 			void executeHoleRepairerSetInput(const std::vector<pcl::index_t>& vInput);
 			void executeHoleRepairer(std::vector<pcl::PointSurfel>& voNewPoints);
@@ -61,20 +61,20 @@ namespace hiveObliquePhotography
 			bool dumpColorFeatureMainColors(std::vector<Eigen::Vector3i>& vMainColors) const;
 			bool dumpColorFeatureNearestPoints(std::vector<pcl::index_t>& vNearestPoints) const;
 			
-			const auto& getRetouchScene() const { return m_Scene; }
+			const auto& getScene() const { return m_Scene; }
 			const auto& getPrecomputeManager() const { return m_pPrecomputeManager; }
 
 #ifdef _UNIT_TEST
 			void reset4UnitTest() { __reset(); }
-			const auto& getOutlierConfig() const { return m_pOutlierConfig; }
-			const auto& getClusterConfig(bool vIsLitter) const { return vIsLitter ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig(); }
-			const auto& getClusterSet() const { return m_PointClusterSet; }
-			const auto& getLabelSet() const { return m_PointLabelSet; }
-			const auto& getLitterMarker() const { return m_LitterMarker; }
-			const auto& getBackgroundMarker() const { return m_BackgroundMarker; }
+			const auto& getOutlierConfig() const       { return m_pOutlierConfig; }
+			const auto& getClusterSet() const		   { return m_PointClusterSet; }
+			const auto& getLabelSet() const			   { return m_PointLabelSet; }
+			const auto& getLitterMarker() const		   { return m_LitterMarker; }
+			const auto& getBackgroundMarker() const    { return m_BackgroundMarker; }
 			const auto& getNeighborhoodBuilder() const { return m_pNeighborhoodBuilder; }
-			const auto& getStatusQueue() const { return m_StatusQueue; }
-			const auto& getConfig() const { return m_pConfig; }
+			const auto& getStatusQueue() const		   { return m_StatusQueue; }
+			const auto& getConfig() const			   { return m_pConfig; }
+			const auto& getClusterConfig(bool vIsLitter) const { return vIsLitter ? m_BackgroundMarker.getClusterConfig() : m_LitterMarker.getClusterConfig(); }
 			CPointCluster* generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel)
 			{
 				return __generateInitialCluster(vUserMarkedRegion, vPvMatrix, vHardnessFunc, vTargetLabel);
@@ -89,7 +89,7 @@ namespace hiveObliquePhotography
 
 			CPointClusterSet         m_PointClusterSet;
 			CPointLabelSet           m_PointLabelSet;
-			CPointCloudRetouchScene  m_Scene;
+			CPointCloudScene         m_Scene;
 			CRetouchTask             m_LitterMarker;
 			CRetouchTask             m_BackgroundMarker;
 			CInitialClusterCreator   m_InitialClusterCreator;
