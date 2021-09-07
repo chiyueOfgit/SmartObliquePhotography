@@ -7,7 +7,6 @@ _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 const float SurfelRadius = 5.0f;	//magic raidus
 const float DistanceThreshold = 0.05f;	//magic distance
-const bool VerticalReverse = false;	//垂直翻转
 
 //*****************************************************************
 //FUNCTION: 
@@ -17,7 +16,7 @@ hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(Po
 	__buildKdTree(m_pCloud);
 
 	Eigen::Matrix<Eigen::Vector3i, -1, -1> Texture;
-	Texture.resize(vResolution.x(), vResolution.y());
+	Texture.resize(vResolution.y(), vResolution.x());
 	CImage<Eigen::Vector3i> ResultTexture;
 
 	for (auto& Face : m_Mesh.m_Faces)
@@ -27,10 +26,7 @@ hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(Po
 		{
 			auto Candidates = executeIntersection(TexelInfo);
 			auto TexelColor = calcTexelColor(Candidates, TexelInfo);
-			auto Y = TexelInfo.TexelPos.y();
-			if (VerticalReverse)
-				Y = vResolution.y() - 1 - Y;
-			Texture(Y, TexelInfo.TexelPos.x()) = TexelColor;
+			Texture(TexelInfo.TexelPos.y(), TexelInfo.TexelPos.x()) = TexelColor;
 		}
 	}
 	ResultTexture.fillColor(vResolution.y(), vResolution.x(), Texture.data());
@@ -88,8 +84,8 @@ std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelIn
 
 		float DistanceToCenter = (HitPos - SurfelPos).norm();
 		float DistanceToTexel = (HitPos - RayOrigin).norm();
-		//距离反比的半径or固定半径
-		if (DistanceToCenter < SurfelRadius/* / DistanceToTexel*/)
+		//固定半径
+		if (DistanceToCenter <= SurfelRadius)
 			Candidates.push_back({ HitPos, Index });
 	}
 
@@ -214,7 +210,7 @@ Eigen::Vector3f CRayCastingBaker::__calcRayDirection(const STexelInfo& vInfo)	//
 //FUNCTION: 
 std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vector3f& vRayOrigin, const Eigen::Vector3f& vRayDirection)
 {
-	//暂时用仅光线起点的半径搜索
+	//暂用仅光线起点的半径搜索
 	const float Radius = 100.0f;	//to config or calculate
 	Eigen::Matrix<float, 1, 3, Eigen::RowMajor> SearchPos = vRayOrigin;
 	flann::Matrix Query(SearchPos.data(), SearchPos.rows(), SearchPos.cols());
