@@ -549,7 +549,7 @@ void CQTInterface::onActionOpenMesh()
     {
         Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
         auto Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
-        auto Texture = SceneReconstruction::hiveBakeColorTexture(Mesh, m_pCloud, { 512, 512 });
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(Mesh, m_pCloud, { 2048, 2048 });
 
         {
             const auto Width = Texture.getWidth();
