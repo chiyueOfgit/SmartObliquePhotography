@@ -5,8 +5,8 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
-const float SurfelRadius = 5.0f;	//magic raidus
-const float DistanceThreshold = 0.05f;	//magic distance
+const float SurfelRadius = 0.5f;	//magic raidus
+const float DistanceThreshold = 0.2f;	//magic distance
 
 //*****************************************************************
 //FUNCTION: 
@@ -116,8 +116,8 @@ Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInf
 		if ((Intersection - Min).dot(Intersection - Max) <= 0)
 		{
 			auto& Point = m_pCloud->points[SurfelIndex];
-			
-			float Weight = 1.0f - (Intersection - Point.getVector3fMap()).norm() / SurfelRadius;
+			float Distance = (Intersection - Point.getVector3fMap()).norm() / SurfelRadius;
+			float Weight = std::exp(-Distance * Distance * 20);
 			CulledCandidates.emplace_back(Eigen::Vector3i{ Point.r, Point.g, Point.b }.cast<float>(), Weight);
 		}
 

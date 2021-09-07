@@ -54,7 +54,8 @@ TEST(Test_LoadMeshModel, DeathTest_LoadUnsupportedMesh)
 {
 	auto* pMeshLoader = hiveDesignPattern::hiveGetOrCreateProduct<IMeshLoader>(hiveUtility::hiveGetFileSuffix(g_UnsupportedFilePath));
 	CMesh Mesh;
-	EXPECT_EQ(pMeshLoader->loadDataFromFile(Mesh, g_UnsupportedFilePath), false);
+	EXPECT_EQ(pMeshLoader, nullptr);	//后缀不对创不出来
+	//EXPECT_EQ(pMeshLoader->loadDataFromFile(Mesh, g_UnsupportedFilePath), false);
 }
 
 TEST(Test_SaveMeshModel, SaveOBJMesh)
@@ -64,7 +65,7 @@ TEST(Test_SaveMeshModel, SaveOBJMesh)
 	CMesh Mesh;
 	pMeshLoader->loadDataFromFile(Mesh, g_ValidOBJFilePath);
 
-	auto* pMeshSaver = hiveDesignPattern::hiveGetOrCreateProduct<IMeshSaver>(FileSuffix);
+	auto* pMeshSaver = hiveDesignPattern::hiveGetOrCreateProduct<IMeshSaver>(FileSuffix + "_Save");
 	EXPECT_NO_THROW(pMeshSaver->saveDataToFileV(Mesh, g_ValidSaveOBJFilePath));
 	EXPECT_EQ(hiveUtility::hiveLocateFile(g_ValidSaveOBJFilePath).empty(), false);
 	EXPECT_EQ(hiveUtility::hiveLocateFile(g_ValidSaveMTLFilePath).empty(), false);
@@ -81,7 +82,7 @@ TEST(Test_SaveMeshModel, SaveIncompleteOBJMesh)
 	CMesh Mesh;
 	pMeshLoader->loadDataFromFile(Mesh, g_ValidIncompleteOBJFilePath);
 
-	auto* pMeshSaver = hiveDesignPattern::hiveGetOrCreateProduct<IMeshSaver>(FileSuffix);
+	auto* pMeshSaver = hiveDesignPattern::hiveGetOrCreateProduct<IMeshSaver>(FileSuffix + "_Save");
 	EXPECT_NO_THROW(pMeshSaver->saveDataToFileV(Mesh, g_ValidIncompleteSaveOBJFilePath));
 	EXPECT_EQ(hiveUtility::hiveLocateFile(g_ValidIncompleteSaveOBJFilePath).empty(), false);
 	EXPECT_EQ(hiveUtility::hiveLocateFile(g_ValidIncompleteSaveMTLFilePath).empty(), false);
