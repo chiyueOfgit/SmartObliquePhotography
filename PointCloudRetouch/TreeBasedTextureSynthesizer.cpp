@@ -53,7 +53,9 @@ void CTreeBasedTextureSynthesizer<Scalar_t, Channel>::execute(const Texture_t& v
 				constexpr std::pair<int, int> Offset[] = { { 0, 0 }, { 0, 1 }, { 1, 0 }, { 1, 1 } };
 				for (auto [i, k] : Offset)
 				{
-					auto& Item = To(2 * RowId + i, 2 * ColId + k);
+					auto Row = __wrap(To.rows(), 2 * RowId + i);
+					auto Col = __wrap(To.cols(), 2 * ColId + k);
+					auto& Item = To(Row, Col);
 					if (!__isAvailable(Item))
 						Item = From(RowId, ColId);
 				}
@@ -256,8 +258,7 @@ auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighbor
 			{
 				auto RowIdWithOffset = __wrap(vTexture.rows(), vRowId + i);
 				auto ColIdWithOffset = __wrap(vTexture.cols(), vColId + k);
-				if (__isAvailable(vTexture(RowIdWithOffset, ColIdWithOffset)))
-					FeatureCols.push_back(vTexture(RowIdWithOffset, ColIdWithOffset));
+				FeatureCols.push_back(vTexture(RowIdWithOffset, ColIdWithOffset));
 			}
 
 	Feature.resize(Channel, FeatureCols.size());
@@ -265,14 +266,7 @@ auto CTreeBasedTextureSynthesizer<Scalar_t, Channel>::__buildFeatureWithNeighbor
 	for (auto It = 0; auto& Col : FeatureCols)
 		Feature.col(It++) = Col;
 
-	//for (int i = 0; i < Feature.cols(); i++)
-	//{
-	//	for (int k = 0; k < Channel; k++)
-	//		std::cout << Feature(k, i) << " ";
-	//	std::cout << std::endl;
-	//}
-	//std::cout << std::endl;
-
+	auto Map = Eigen::Map<Feature_t>(Feature.data(), Feature.size());
 	return Eigen::Map<Feature_t>(Feature.data(), Feature.size());
 }
 
