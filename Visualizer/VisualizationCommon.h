@@ -14,6 +14,13 @@ namespace hiveObliquePhotography
 			MainView,
 			SideView
 		};
+
+		enum EVisualFlag : uint32_t
+		{
+			ShowCloud = 0x1,
+			ShowUserCloud = 0x2,
+			ShowMesh = 0x4,
+		};
 		
 		template <typename T>
 		T NormalDistribution(T vX, T vDelta = 1)

@@ -90,6 +90,7 @@
    <addaction name="actionRepairHole"/>
    <addaction name="actionSetting"/>
    <addaction name="actionInstructions"/>
+   <addaction name="actionOpenMesh"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="resourceSpaceDockWidget">
@@ -404,6 +405,18 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>RepairHole</string>
+   </property>
+  </action>
+  <action name="actionOpenMesh">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/open.png</normaloff>:/QTInterface/Icon/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>OpenMesh</string>
+   </property>
+   <property name="toolTip">
+    <string>OpenMesh</string>
    </property>
   </action>
  </widget>

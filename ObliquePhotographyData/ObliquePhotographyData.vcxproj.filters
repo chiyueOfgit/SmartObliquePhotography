@@ -57,6 +57,18 @@
     <ClInclude Include="Mesh.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="MeshLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshOBJSaver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshOBJLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="TextureLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -102,6 +114,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="TextureSaver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshLoader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshSaver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshOBJSaver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshOBJLoader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

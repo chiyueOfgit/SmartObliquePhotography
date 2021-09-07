@@ -36,7 +36,13 @@
 
 #include "pcl/io/pcd_io.h"
 #include "pcl/io/ply_io.h"
-#include "Mesh.h"
+
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_STATIC
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
@@ -81,6 +87,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
     QObject::connect(m_UI.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
     QObject::connect(m_UI.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
+    QObject::connect(m_UI.actionOpenMesh, SIGNAL(triggered()), this, SLOT(onActionOpenMesh()));
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
     QObject::connect(m_UI.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
     QObject::connect(m_UI.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
@@ -301,7 +308,7 @@ void CQTInterface::onActionAreaPicking()
 
 void CQTInterface::onActionOpen()
 {
-    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud"), QString::fromStdString(m_DirectoryOpenPath), tr("PointCloud Files(*.pcd *.ply)"));
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud or Mesh"), QString::fromStdString(m_DirectoryOpenPath), tr("PointCloud Files(*.pcd *.ply);;" "OBJ files(*.obj)"));
     std::vector<std::string> FilePathSet;
     bool FileOpenSuccessFlag = true;
 
@@ -366,13 +373,6 @@ void CQTInterface::onActionOpen()
             CQTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
         }
     }
-
-    auto Mesh = SceneReconstruction::hiveTestMesh();
-    auto pVisualizer = Visualization::hiveGetPCLVisualizer();
-    pVisualizer->removeAllPointClouds();
-    pVisualizer->addTextureMesh(Mesh);
-    pVisualizer->resetCamera();
-    pVisualizer->updateCamera();
 }
 
 void CQTInterface::onActionSave()
@@ -540,6 +540,41 @@ void CQTInterface::onActionSetting()
         _SAFE_DELETE(m_pDisplayOptionsSettingDialog);
 }
 
+void CQTInterface::onActionOpenMesh()
+{
+    auto MeshPath = QFileDialog::getOpenFileName(this, tr("Open Mesh"), QString::fromStdString(m_DirectoryOpenPath), tr("OBJ files(*.obj)")).toStdString();
+
+    // test load mesh
+    if (hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
+    {
+        Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+        auto Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(Mesh, m_pCloud, { 2048, 2048 });
+
+        {
+            const auto Width = Texture.getWidth();
+            const auto Height = Texture.getHeight();
+            const auto BytesPerPixel = 3;
+            auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+            for (auto i = 0; i < Height; i++)
+                for (auto k = 0; k < Width; k++)
+                {
+                    auto Offset = ((Height - 1 - i) * Width + k) * BytesPerPixel;
+                    ResultImage[Offset] = Texture.getColor(i, k)[0];
+                    ResultImage[Offset + 1] = Texture.getColor(i, k)[1];
+                    ResultImage[Offset + 2] = Texture.getColor(i, k)[2];
+                }
+
+            stbi_write_png("TestColor.png", Width, Height, BytesPerPixel, ResultImage, 0);
+            stbi_image_free(ResultImage);
+        }
+        //Visualization::hiveAddTextureMesh(Mesh);
+        //std::vector<std::size_t> PointLabel;
+        //PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+        //Visualization::hiveRefreshVisualizer(PointLabel, true);
+    }
+}
+
 void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
 {
     Visualization::hiveResetVisualizer(m_pCloud, true);
@@ -547,7 +582,6 @@ void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
     std::vector<std::size_t> PointLabel;
     PointCloudRetouch::hiveDumpPointLabel(PointLabel);
     Visualization::hiveRefreshVisualizer(PointLabel);
-
 }
 
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)

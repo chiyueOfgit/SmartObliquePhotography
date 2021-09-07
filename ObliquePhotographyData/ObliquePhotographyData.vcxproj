@@ -165,6 +165,10 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshLoader.h" />
+    <ClInclude Include="MeshOBJLoader.h" />
+    <ClInclude Include="MeshOBJSaver.h" />
+    <ClInclude Include="MeshSaver.h" />
     <ClInclude Include="ObliquePhotographyDataCommon.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ObliquePhotographyDataExport.h" />
@@ -182,6 +186,10 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshLoader.cpp" />
+    <ClCompile Include="MeshOBJLoader.cpp" />
+    <ClCompile Include="MeshOBJSaver.cpp" />
+    <ClCompile Include="MeshSaver.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

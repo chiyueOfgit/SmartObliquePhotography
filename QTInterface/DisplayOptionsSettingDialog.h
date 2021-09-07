@@ -22,7 +22,7 @@ namespace hiveObliquePhotography::QTInterface
 			m_pUi->ColorFeatureCheckBox->setChecked(m_ColorStatus);
 			m_pUi->NormalFeatureCheckBox->setChecked(m_NormalStatus);
 
-			char* FileName = "./Config/NormalFeature/PointCloudRetouchConfig.xml";
+			char* FileName = const_cast<char*>("./Config/NormalFeature/PointCloudRetouchConfig.xml");
 			std::ifstream out(FileName);
 			if (!out.is_open())
 				return;

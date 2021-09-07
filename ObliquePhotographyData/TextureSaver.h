@@ -1,15 +1,14 @@
 #pragma once
+#include "Image.h"
 
 namespace hiveObliquePhotography
 {
-	using Scalar_t = int;
-	constexpr int Channel = 3;
 	class ITextureSaver :public hiveDesignPattern::IProduct
 	{
-
+	public:
 		ITextureSaver() = default;
-		~ITextureSaver() override = default;
+		~ITextureSaver() = default;
 
-		virtual void saveDate2FileV(const Eigen::Matrix<Scalar_t,Channel,1> &vTextureData, const std::string &vFilePath) = 0;
+		virtual void saveDate2FileV(const CImage<Eigen::Vector3i> &vTextureData, const std::string &vFilePath) = 0;
 	};
 }

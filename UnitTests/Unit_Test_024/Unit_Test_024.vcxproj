@@ -52,9 +52,6 @@
     <ProjectReference Include="..\..\ObliquePhotographyData_Lib\ObliquePhotographyData_Lib.vcxproj">
       <Project>{3757d1fb-eddb-4d14-803b-4d692a7d175b}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\PointCloudRetouch_Lib\PointCloudRetouch_Lib.vcxproj">
-      <Project>{87879ac2-2e99-42c7-8ff9-a456d9350873}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\SceneReconstruction_lib\SceneReconstruction_lib.vcxproj">
       <Project>{15649c30-750a-4939-9bee-f09d0e010785}</Project>
     </ProjectReference>
@@ -110,7 +107,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalOptions>/WHOLEARCHIVE:PointCloudRetouch_Lib.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/WHOLEARCHIVE:ObliquePhotographyData_Lib.lib /WHOLEARCHIVE:SceneReconstruction_Lib.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,13 +137,14 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalIncludeDirectories>../../PointCloudRetouch;../../visualizer;../../Visualization/include;../../SceneReconstruction;../../ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalOptions>/WHOLEARCHIVE:PointCloudRetouch_Lib.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/WHOLEARCHIVE:ObliquePhotographyData_Lib.lib /WHOLEARCHIVE:SceneReconstruction_Lib.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

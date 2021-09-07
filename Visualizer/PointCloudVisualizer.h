@@ -29,6 +29,8 @@ namespace hiveObliquePhotography
 
 			void run();
 
+			void setVisualFlag(int Flag) { _ASSERTE(Flag >= 0); m_VisualFlag = Flag; }
+
 			std::vector<PointCloud_t::Ptr> getUserCloudSet() { return m_UserCloudSet; }
 			void addUserPointCloud(PointCloud_t::Ptr vCloud) { m_UserCloudSet.push_back(vCloud); }
 			void removeAllUserPointCloud() { m_UserCloudSet.clear(); }
@@ -36,6 +38,8 @@ namespace hiveObliquePhotography
 			int addUserColoredPointsAsNewCloud(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, const Eigen::Vector3f& vDeltaPos = { 0.0f, 0.0f, 0.0f }, double vPointSize = 3.0);
 			void removeUserColoredPoints(int vId);
 			void removeAllUserColoredPoints() { m_UserColoredPoints.clear(); }
+			void addTextureMesh(const pcl::TextureMesh& vMesh) { m_MeshSet.push_back({ "", vMesh}); }
+			void removeAllTextureMesh() { m_MeshSet.clear(); }
 			void jumpToThreeView(EView vViewType);
 			void showBoundingBox();
 		
@@ -48,6 +52,8 @@ namespace hiveObliquePhotography
 			PointCloud_t::Ptr m_pSceneCloud = nullptr;
 			std::pair<Eigen::Vector3f, Eigen::Vector3f> m_AabbBox;
 
+			std::vector<std::pair<std::string, pcl::TextureMesh>> m_MeshSet;
+
 			std::vector<PointCloud_t::Ptr> m_UserCloudSet;
 
 			Eigen::Vector2d m_WindowSize;
@@ -58,6 +64,8 @@ namespace hiveObliquePhotography
 
 			std::tuple<int, int, int> m_LitterColor = { 255, 0, 0 };
 			std::tuple<int, int, int> m_BackgroundColor = { 0, 0, 255 };
+
+			uint32_t m_VisualFlag = EVisualFlag::ShowCloud | EVisualFlag::ShowUserCloud | EVisualFlag::ShowMesh;
 
 			friend class hiveDesignPattern::CSingleton<CPointCloudVisualizer>;
 			friend class CInteractionCallback;

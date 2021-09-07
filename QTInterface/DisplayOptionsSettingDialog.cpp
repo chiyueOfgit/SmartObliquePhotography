@@ -26,14 +26,14 @@ void CDisplayOptionsSettingDialog::onActionNormalFeatureCheckBox()
 
 void CDisplayOptionsSettingDialog::onActionOK()
 {
-	char * FileName = "";
+	char* FileName = (char*)"";
 	if (m_pUi->ColorFeatureCheckBox->isChecked())
 	{
-		FileName = "./Config/ColorFeature/PointCloudRetouchConfig.xml";
+		FileName = const_cast<char*>("./Config/ColorFeature/PointCloudRetouchConfig.xml");
 	}
 	else if (m_pUi->NormalFeatureCheckBox->isChecked())
 	{
-		FileName = "./Config/NormalFeature/PointCloudRetouchConfig.xml";
+		FileName = const_cast<char*>("./Config/NormalFeature/PointCloudRetouchConfig.xml");
 	}
 	
 	if (FileName != "")
