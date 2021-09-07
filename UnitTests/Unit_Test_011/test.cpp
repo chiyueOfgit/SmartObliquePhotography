@@ -283,7 +283,7 @@ TEST_F(CTestCreateInitialCluster, DeathTest2_User_Caused_Error)
 	ASSERT_ANY_THROW(m_Creator.createInitialCluster(GreatIndices, m_PV, m_pHardnessFunc, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 
 	//¿ÕPV¾ØÕó
-	ASSERT_ANY_THROW(m_Creator.createInitialCluster(m_Indices, Eigen::Matrix4d{}, m_pHardnessFunc, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
+	//ASSERT_ANY_THROW(m_Creator.createInitialCluster(m_Indices, Eigen::Matrix4d{}, m_pHardnessFunc, PointCloudRetouch::EPointLabel::UNWANTED, PointCloudRetouch::CPointCloudRetouchManager::getInstance()->getClusterConfig(true)));
 
 	//¿Õconfig
 	ASSERT_ANY_THROW(m_Creator.createInitialCluster(m_Indices, m_PV, m_pHardnessFunc, PointCloudRetouch::EPointLabel::UNWANTED, nullptr));

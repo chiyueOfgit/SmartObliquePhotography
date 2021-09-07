@@ -55,8 +55,7 @@ std::vector<STexelInfo> CRayCastingBaker::findTexelsPerFace(const SFace& vFace, 
 				if ((BarycentricCoord.array() >= 0).all())
 				{
 					auto WorldPos = __calcTexelPosInWorld(VertexA.xyz(), VertexB.xyz(), VertexC.xyz(), BarycentricCoord);
-					STexelInfo TexelInfo({ X, Y }, WorldPos, vFace);
-					ResultSet.push_back(TexelInfo);
+					ResultSet.emplace_back(Eigen::Vector2i{ X, Y }, WorldPos, vFace);
 				}
 			}
 
@@ -67,26 +66,29 @@ std::vector<STexelInfo> CRayCastingBaker::findTexelsPerFace(const SFace& vFace, 
 //FUNCTION: 
 std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelInfo& vInfo)
 {
-	std::vector<SCandidateInfo> Candidates;
-
 	auto RayOrigin = vInfo.TexelPosInWorld;
 	auto RayDirection = __calcRayDirection(vInfo);
 
-	auto CulledPoints = __cullPointsByRay(RayOrigin, RayDirection);
-	for (auto Index : CulledPoints)
+	std::vector<SCandidateInfo> Candidates;
+	for (auto Index : __cullPointsByRay(RayOrigin, RayDirection))
 	{
 		auto& TestPoint = m_pCloud->points[Index];
-		Eigen::Vector3f SurfelPos{ TestPoint.x, TestPoint.y, TestPoint.z };
-		Eigen::Vector3f SurfelNormal{ TestPoint.normal_x, TestPoint.normal_y, TestPoint.normal_z };
-		float Depth = (SurfelPos - RayOrigin).dot(SurfelNormal) / RayDirection.dot(SurfelNormal);
+		Eigen::Vector3f SurfelPos = TestPoint.getVector3fMap();
+		Eigen::Vector3f SurfelNormal = TestPoint.getNormalVector3fMap();
 
+		float DotNormal = SurfelNormal.dot(RayDirection);
+		if (abs(DotNormal) < 1e-3f)
+			continue;
+
+		float Depth = SurfelNormal.dot(SurfelPos - RayOrigin) / DotNormal;
 		auto HitPos = RayOrigin + Depth * RayDirection;
-
+		
 		float DistanceToCenter = (HitPos - SurfelPos).norm();
-		float DistanceToTexel = (HitPos - RayOrigin).norm();
+		//float DistanceToTexel = (HitPos - RayOrigin).norm();
+		
 		//固定半径
 		if (DistanceToCenter <= SurfelRadius)
-			Candidates.push_back({ HitPos, Index });
+			Candidates.emplace_back(HitPos, Index);
 	}
 
 	return Candidates;
@@ -111,22 +113,23 @@ Eigen::Vector3i CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInf
 	//交点剔除, 计算权重
 	const auto Min = RayOrigin + (NearestSigenedDistance - DistanceThreshold) * RayDirection;
 	const auto Max = RayOrigin + (NearestSigenedDistance + DistanceThreshold) * RayDirection;
-	std::vector<std::pair<Eigen::Vector3f, float>> CulledCandidates;
+	std::vector<std::pair<Eigen::Vector3i, float>> CulledCandidates;
 	for (const auto& [Intersection, SurfelIndex] : vCandidates)
 		if ((Intersection - Min).dot(Intersection - Max) <= 0)
 		{
 			auto& Point = m_pCloud->points[SurfelIndex];
 			float Distance = (Intersection - Point.getVector3fMap()).norm() / SurfelRadius;
-			float Weight = std::exp(-Distance * Distance * 20);
-			CulledCandidates.emplace_back(Eigen::Vector3i{ Point.r, Point.g, Point.b }.cast<float>(), Weight);
-		}
+			float Weight = std::exp(-Distance * Distance * 20); //TODO: magic number
 
+			CulledCandidates.emplace_back(Point.getRGBVector3i(), Weight);
+		}
+	
 	//加权平均
-	Eigen::Vector3f WeightedColor{ 0.0f, 0.0f, 0.0f };
 	float SumWeight = 0.0f;
+	Eigen::Vector3f WeightedColor = Eigen::Vector3f::Zero();
 	for (auto& [Color, Weight] : CulledCandidates)
 	{
-		WeightedColor += Weight * Color;
+		WeightedColor += Weight * Color.cast<float>();
 		SumWeight += Weight;
 	}
 
