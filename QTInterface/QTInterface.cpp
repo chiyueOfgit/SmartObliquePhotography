@@ -559,7 +559,7 @@ void CQTInterface::onActionOpenMesh()
             for (auto i = 0; i < Height; i++)
                 for (auto k = 0; k < Width; k++)
                 {
-                    auto Offset = (i * Width + k) * BytesPerPixel;
+                    auto Offset = ((Height - 1 - i) * Width + k) * BytesPerPixel;
                     ResultImage[Offset] = Texture.getColor(i, k)[0];
                     ResultImage[Offset + 1] = Texture.getColor(i, k)[1];
                     ResultImage[Offset + 2] = Texture.getColor(i, k)[2];

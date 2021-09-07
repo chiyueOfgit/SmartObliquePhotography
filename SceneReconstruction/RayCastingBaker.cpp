@@ -6,7 +6,7 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 const float SurfelRadius = 5.0f;	//magic raidus
-const bool VerticalReverse = true;	//垂直翻转
+const bool VerticalReverse = false;	//垂直翻转
 
 //*****************************************************************
 //FUNCTION: 
@@ -26,9 +26,10 @@ hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(Po
 		{
 			auto Candidates = executeIntersection(TexelInfo);
 			auto TexelColor = calcTexelColor(Candidates, TexelInfo);
+			auto Y = TexelInfo.TexelPos.y();
 			if (VerticalReverse)
-				TexelInfo.TexelPos.y() = vResolution.y() - TexelInfo.TexelPos.y();
-			Texture(TexelInfo.TexelPos.y(), TexelInfo.TexelPos.x()) = TexelColor;
+				Y = vResolution.y() - 1 - Y;
+			Texture(Y, TexelInfo.TexelPos.x()) = TexelColor;
 		}
 	}
 	ResultTexture.fillColor(vResolution.y(), vResolution.x(), Texture.data());
@@ -47,8 +48,8 @@ std::vector<STexelInfo> CRayCastingBaker::findTexelsPerFace(const SFace& vFace, 
 
 	auto Box = __calcBoxInTextureCoord(VertexA.uv(), VertexB.uv(), VertexC.uv());
 
-	for(int X = Box.first.x() * vResolution.x() - 1; X < Box.second.x() * vResolution.x() + 1; X++)
-		for(int Y = Box.first.y() * vResolution.y() - 1; Y < Box.second.y() * vResolution.y() + 1; Y++)
+	for (int X = Box.first.x() * vResolution.x() - 1; X < Box.second.x() * vResolution.x() + 1; X++)
+		for (int Y = Box.first.y() * vResolution.y() - 1; Y < Box.second.y() * vResolution.y() + 1; Y++)
 			if (X >= 0 && X < vResolution.x() && Y >= 0 && Y < vResolution.y())
 			{
 				Eigen::Vector2f CenterUV = { (X + 0.5f) / vResolution.x(), (Y + 0.5f) / vResolution.y() };
@@ -225,7 +226,7 @@ Eigen::Vector3f CRayCastingBaker::__calcRayDirection(const STexelInfo& vInfo)	//
 std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vector3f& vRayOrigin, const Eigen::Vector3f& vRayDirection)
 {
 	//暂时用仅光线起点的半径搜索
-	const float Radius = 10000.0f;	//to config or calculate
+	const float Radius = 100.0f;	//to config or calculate
 	Eigen::Matrix<float, 1, 3, Eigen::RowMajor> SearchPos = vRayOrigin;
 	flann::Matrix Query(SearchPos.data(), SearchPos.rows(), SearchPos.cols());
 	std::vector<std::vector<pcl::index_t>> Indices;
