@@ -20,7 +20,7 @@
 // 
 //  * executeIntersection: 测试执行光线投射后与点云面片相交结果是否正确
 //  * TestExecuteIntersection_1: 测试点云点在面片法线一侧的相交情况
-//  * TestExecuteIntersection_2: 测试点云点在面片法线两侧的相交情况
+//  * TestExecuteIntersection_2: 测试点云点在面片两侧的相交情况
 // 
 //  * calcTexelColor: 
 // 

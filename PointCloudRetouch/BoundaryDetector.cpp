@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "BoundaryDetector.h"
+
+#include <omp.h>
+
 #include "map"
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -28,9 +31,10 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vec
 			_THROW_RUNTIME_ERROR("Index is out of range");
 
 	std::vector<pcl::index_t> BoundarySet;
+	const std::size_t NumThread = std::thread::hardware_concurrency();
+	std::vector<std::vector<pcl::index_t>> ThreadResults(NumThread);
 
-	std::mutex Mutex;
-#pragma omp parallel for
+#pragma omp parallel for num_threads(NumThread)
 	for(int m = 0;m < vioBoundarySet.size();m++)
 	{
 		auto Index = vioBoundarySet[m];
@@ -85,12 +89,14 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vec
 		}
 		if (Sum == 1)
 		{
-			Mutex.lock();
-	        BoundarySet.push_back(Index);
-			Mutex.unlock();
+			auto ThreadId = omp_get_thread_num();
+			ThreadResults[ThreadId].push_back(Index);
 		}
 	}
-
+	for(auto& IndexSet: ThreadResults)
+	{
+		BoundarySet.insert(BoundarySet.end(), IndexSet.begin(), IndexSet.end());
+	}
 	auto TempSet = BoundarySet;
 	vioBoundarySet.swap(TempSet) ;
 	
