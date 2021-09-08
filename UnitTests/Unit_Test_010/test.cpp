@@ -147,7 +147,7 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitSceneWithNegativeSize)
 	EXPECT_EQ(LabelSet.getSize(), 0);
 }
 
-//FIXME: 这个测试用例为什么要注释掉？是不需要还是通不过？
+//FIXME-010: 这个测试用例为什么要注释掉？是不需要还是通不过？
 //TEST(Test_InitPointCloudRetouch, CreateNeighborhoodBuilder)
 //{
 //	PointCloud_t::Ptr pCloud(new PointCloud_t);
@@ -190,7 +190,7 @@ TEST(Test_InitPointCloudRetouch, InitRetouchTask)
 }
 
 TEST(Test_InitPointCloudRetouch, DeathTest_InitRetouchTaskWithErrorConfig)
-{//FIXME: 整个这个测试非常粗糙，我给你了一个存在的xml文件，但你期待得到的配置，我在xml文件中都不定义，那该怎么办？
+{//FIXME-010: 整个这个测试非常粗糙，我给你了一个存在的xml文件，但你期待得到的配置，我在xml文件中都不定义，那该怎么办？
 	//空Config
 	{
 		CRetouchTask Task;
@@ -202,7 +202,7 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitRetouchTaskWithErrorConfig)
 
 	//错Config
 	{
-		const std::string OtherConfigPath = "OtherConfig";  //FIXME: OtherConfig是什么意思？
+		const std::string OtherConfigPath = "OtherConfig";  //FIXME-010: OtherConfig是什么意思？
 
 		hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 		hiveConfig::hiveParseConfig(OtherConfigPath, hiveConfig::EConfigType::XML, pConfig);
@@ -215,7 +215,7 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitRetouchTaskWithErrorConfig)
 }
 
 TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchManager)
-{//FIXME：为什么运行这个测试用例还会启动一个绘制窗口？
+{//FIXME-010：为什么运行这个测试用例还会启动一个绘制窗口？
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::PointSurfel t;
 	pCloud->push_back(t);
