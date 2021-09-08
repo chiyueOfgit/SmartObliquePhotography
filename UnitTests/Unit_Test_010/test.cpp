@@ -95,12 +95,13 @@ protected:
 
 };
 
-TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchScene)
+TEST(Test_InitPointCloudRetouch, InitPointCloudScene)
 {
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::io::loadPCDFile(g_CloudPath, *pCloud);
 	CPointCloudScene Scene;
 
+	ASSERT_EQ(Scene.getNumPoint(), 0);
 	Scene.init(pCloud);
 	ASSERT_EQ(Scene.getNumPoint(), 189235);
 }
@@ -146,6 +147,7 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitSceneWithNegativeSize)
 	EXPECT_EQ(LabelSet.getSize(), 0);
 }
 
+//FIXME: 这个测试用例为什么要注释掉？是不需要还是通不过？
 //TEST(Test_InitPointCloudRetouch, CreateNeighborhoodBuilder)
 //{
 //	PointCloud_t::Ptr pCloud(new PointCloud_t);
@@ -172,6 +174,7 @@ TEST(Test_InitPointCloudRetouch, InitRetouchTask)
 		{
 			CRetouchTask LitterMarker;
 
+			ASSERT_EQ(LitterMarker.getExpander(), nullptr);
 			LitterMarker.init(pSubConfig);
 			ASSERT_NE(LitterMarker.getExpander(), nullptr);
 		}
@@ -179,6 +182,7 @@ TEST(Test_InitPointCloudRetouch, InitRetouchTask)
 		{
 			CRetouchTask BackgroundMarker;
 
+			ASSERT_EQ(BackgroundMarker.getExpander(), nullptr);
 			BackgroundMarker.init(pSubConfig);
 			ASSERT_NE(BackgroundMarker.getExpander(), nullptr);
 		}
@@ -186,7 +190,7 @@ TEST(Test_InitPointCloudRetouch, InitRetouchTask)
 }
 
 TEST(Test_InitPointCloudRetouch, DeathTest_InitRetouchTaskWithErrorConfig)
-{
+{//FIXME: 整个这个测试非常粗糙，我给你了一个存在的xml文件，但你期待得到的配置，我在xml文件中都不定义，那该怎么办？
 	//空Config
 	{
 		CRetouchTask Task;
@@ -198,7 +202,7 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitRetouchTaskWithErrorConfig)
 
 	//错Config
 	{
-		const std::string OtherConfigPath = "OtherConfig";
+		const std::string OtherConfigPath = "OtherConfig";  //FIXME: OtherConfig是什么意思？
 
 		hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 		hiveConfig::hiveParseConfig(OtherConfigPath, hiveConfig::EConfigType::XML, pConfig);
@@ -211,7 +215,7 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitRetouchTaskWithErrorConfig)
 }
 
 TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchManager)
-{
+{//FIXME：为什么运行这个测试用例还会启动一个绘制窗口？
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
 	pcl::PointSurfel t;
 	pCloud->push_back(t);
