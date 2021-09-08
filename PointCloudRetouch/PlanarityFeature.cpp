@@ -25,7 +25,7 @@ double CPlanarityFeature::generateFeatureV(const std::vector<pcl::index_t>& vDet
 	if (vDeterminantPointSet.empty() || vValidationSet.empty())
 		return 0.0;
 
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 	
 	const pcl::PointCloud<pcl::PointXYZ>::Ptr pDeterminantCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	CloudScene.dumpPointCloud(vDeterminantPointSet, *pDeterminantCloud);
@@ -55,7 +55,7 @@ double CPlanarityFeature::evaluateFeatureMatchFactorV(pcl::index_t vInputPoint)
 	if (m_Plane.squaredNorm() < 0.5f)
 		return 0.0;
 	
-	const auto& Point = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto& Point = CPointCloudRetouchManager::getInstance()->getScene();
 	const auto Distance = abs(m_Plane.dot(Point.getPositionAt(vInputPoint)));
 	const auto NormalDot = abs(m_Plane.dot(Point.getNormalAt(vInputPoint)));
 

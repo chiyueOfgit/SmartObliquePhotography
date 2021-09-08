@@ -203,7 +203,7 @@ void CHoleRepairer::__generatePlaneLattices(const Eigen::Vector4f& vPlane, const
 void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t>& vIndices, SPlaneInfos& vioPlaneInfos, std::vector<std::vector<SLattice>>& vioPlaneLattices)
 {
 	_ASSERTE(!vioPlaneLattices.empty());
-	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
 	Eigen::Matrix3f RotationMatrix = std::get<0>(vioPlaneInfos.BoundingBox);
 	Eigen::Vector2i Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
 	auto X = vioPlaneInfos.AxisOrder[0], Y = vioPlaneInfos.AxisOrder[1];
@@ -259,7 +259,7 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 void CHoleRepairer::__fillLatticesOriginInfos(const Eigen::Vector3f& vPlaneNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices)
 {
 	_ASSERTE(!vioPlaneLattices.empty());
-	auto Scene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
 
 	Eigen::Vector2i Resolution = { vioPlaneLattices.front().size(), vioPlaneLattices.size() };
 	for (int Y = 0; Y < Resolution.y(); Y++)
@@ -423,7 +423,7 @@ Eigen::Vector4f CHoleRepairer::__calculatePlaneByIndices(const std::vector<pcl::
 	pcl::PointCloud<pcl::PointXYZ>::Ptr BoundaryCloud(new pcl::PointCloud<pcl::PointXYZ>);
 	for(auto Index: vIndices)
 	{
-		auto TempPos = CPointCloudRetouchManager::getInstance()->getRetouchScene().getPositionAt(Index);
+		auto TempPos = CPointCloudRetouchManager::getInstance()->getScene().getPositionAt(Index);
 		Eigen::Vector3f Pos{ TempPos.x(), TempPos.y(), TempPos.z() };
 		Pos = vRotationMatrix * Pos;
 		pcl::PointXYZ TempPoint;

@@ -19,8 +19,8 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 	m_ExpandPoints.clear();
 	CPointCloudRetouchManager* pManager = CPointCloudRetouchManager::getInstance();
 	const auto ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
-	std::vector<std::atomic_flag> TraversedFlag(pManager->getRetouchScene().getNumPoint());
-	std::deque ExpandedFlag(pManager->getRetouchScene().getNumPoint(), false);
+	std::vector<std::atomic_flag> TraversedFlag(pManager->getScene().getNumPoint());
+	std::deque ExpandedFlag(pManager->getScene().getNumPoint(), false);
 
 #ifdef _UNIT_TEST
 	hiveCommon::CCPUTimer Timer;

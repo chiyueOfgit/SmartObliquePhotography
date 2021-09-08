@@ -24,7 +24,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 			++Iter;
 	}
 	
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 
 	auto [MinPos, MaxPos] = __computeBoundingBoxOnNdc(vioPointSet, vPvMatrix);
 
@@ -182,7 +182,7 @@ void CPointSetPreprocessor::cullByDepth(std::vector<pcl::index_t>& vioPointSet, 
 //FUNCTION:
 void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc)
 {	
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 	
 	vioPointSet.erase(std::remove_if(vioPointSet.begin(), vioPointSet.end(), 
 		[&](auto vIndex)
@@ -200,7 +200,7 @@ void CPointSetPreprocessor::cullBySdf(std::vector<pcl::index_t>& vioPointSet, co
 std::pair<Eigen::Vector2d, Eigen::Vector2d> CPointSetPreprocessor::__computeBoundingBoxOnNdc(const std::vector<pcl::index_t>& vPointSet, const Eigen::Matrix4d& vPvMatrix)
 {
 	//TODO: 用PvMatrix从物体空间转Ndc这个过程可以提出来
-	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getRetouchScene();
+	const auto& CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 	
 	Eigen::Vector2d MinPos(DBL_MAX, DBL_MAX);
 	Eigen::Vector2d MaxPos(-DBL_MAX, -DBL_MAX);

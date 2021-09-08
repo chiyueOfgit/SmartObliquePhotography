@@ -76,7 +76,7 @@ TEST_F(TestOutlierDetector, FunctionTest_Test1)
 {
 	initTest(TESTMODEL_DIR + std::string("Test009_Model/test1.pcd"));
 	pcl::Indices InputIndices;
-	for (int i = 0; i < pManager->getRetouchScene().getNumPoint(); i++)
+	for (int i = 0; i < pManager->getScene().getNumPoint(); i++)
 		InputIndices.push_back(i);
 	auto pOutlierDetector = hiveDesignPattern::hiveGetOrCreateProduct<COutlierDetector>(KEYWORD::OUTLIER_DETECTOR);
     pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
@@ -99,7 +99,7 @@ TEST_F(TestOutlierDetector, FunctionTest_Test2)
 {
 	initTest(TESTMODEL_DIR + std::string("Test009_Model/test2.pcd"));
 	pcl::Indices InputIndices;
-	for (int i = 0; i < pManager->getRetouchScene().getNumPoint(); i++)
+	for (int i = 0; i < pManager->getScene().getNumPoint(); i++)
 		InputIndices.push_back(i);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(KEYWORD::OUTLIER_DETECTOR));
 	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
@@ -122,7 +122,7 @@ TEST_F(TestOutlierDetector, FunctionTest_Test3)
 {
 	initTest(TESTMODEL_DIR + std::string("Test009_Model/test3.pcd"));
 	pcl::Indices InputIndices;
-	for (int i = 0; i < pManager->getRetouchScene().getNumPoint(); i++)
+	for (int i = 0; i < pManager->getScene().getNumPoint(); i++)
 		InputIndices.push_back(i);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(KEYWORD::OUTLIER_DETECTOR));
 	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());

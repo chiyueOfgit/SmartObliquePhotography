@@ -27,7 +27,7 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vec
 		return;
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	for (auto CurrentIndex : vioBoundarySet)
-		if (CurrentIndex < 0 || CurrentIndex >= pManager->getRetouchScene().getNumPoint())
+		if (CurrentIndex < 0 || CurrentIndex >= pManager->getScene().getNumPoint())
 			_THROW_RUNTIME_ERROR("Index is out of range");
 
 	std::vector<pcl::index_t> BoundarySet;
@@ -38,8 +38,8 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vec
 	for(int m = 0;m < vioBoundarySet.size();m++)
 	{
 		auto Index = vioBoundarySet[m];
-		auto HomoCenterPosition = pManager->getRetouchScene().getPositionAt(Index);
-		auto HomoCenterNormal = pManager->getRetouchScene().getNormalAt(Index);
+		auto HomoCenterPosition = pManager->getScene().getPositionAt(Index);
+		auto HomoCenterNormal = pManager->getScene().getNormalAt(Index);
 		Eigen::Vector3f CenterPosition{ HomoCenterPosition.x(), HomoCenterPosition.y(), HomoCenterPosition.z() };
 		Eigen::Vector3f CenterNormal{ HomoCenterNormal.x(), HomoCenterNormal.y(), HomoCenterNormal.z() };
 		CenterNormal.normalize();
@@ -50,7 +50,7 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vec
 		//FitNormalÔÝÊ±ÓÃCenterNormal´úÌæ
 		Eigen::Vector3f FitNormal = CenterNormal;
 		
-		auto HomoStandardPos = pManager->getRetouchScene().getPositionAt(NeighborSet[1]);
+		auto HomoStandardPos = pManager->getScene().getPositionAt(NeighborSet[1]);
 		Eigen::Vector3f StandardPos{ HomoStandardPos.x(), HomoStandardPos.y(), HomoStandardPos.z() };
 		auto StandardProjectivePos = __calcProjectivePoint(CenterPosition, FitNormal, StandardPos);
 		Eigen::Vector3f StandardVector = StandardProjectivePos - CenterPosition;
@@ -60,7 +60,7 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vec
 		int Sum = 0;
 		for(int i = 1;i < NeighborSet.size();i++)
 		{
-			auto HomoNeighborPos = pManager->getRetouchScene().getPositionAt(NeighborSet[i]);
+			auto HomoNeighborPos = pManager->getScene().getPositionAt(NeighborSet[i]);
 			if(pManager->getLabelAt(NeighborSet[i]) == EPointLabel::DISCARDED)
 				continue;
 			Eigen::Vector3f NeighborPos{ HomoNeighborPos.x(), HomoNeighborPos.y(), HomoNeighborPos.z() };
@@ -218,10 +218,10 @@ void CBoundaryDetector::__findNearestBoundaryPoint(pcl::index_t vSeed, std::vect
 {
 	std::map<float, pcl::index_t> DistanceMap;
 	auto pManager = CPointCloudRetouchManager::getInstance();
-	auto SeedPos = pManager->getRetouchScene().getPositionAt(vSeed);
+	auto SeedPos = pManager->getScene().getPositionAt(vSeed);
 	for(auto Index: vTotalSet)
 	{
-		auto TempPos = pManager->getRetouchScene().getPositionAt(Index);
+		auto TempPos = pManager->getScene().getPositionAt(Index);
 		if ((SeedPos - TempPos).norm() < vTolerance)
 			DistanceMap.insert(std::make_pair((SeedPos - TempPos).norm(), Index));
 	}
@@ -255,8 +255,8 @@ bool CBoundaryDetector::__isClosedHoleBoundary(std::vector<pcl::index_t>& vHoleB
 		if (i == NeighborSet.size())
 			break;
 	}
-	auto BeginPos = pManager->getRetouchScene().getPositionAt(OrderedSet[0]);
-	auto EndPos = pManager->getRetouchScene().getPositionAt(OrderedSet[OrderedSet.size() - 1]);
+	auto BeginPos = pManager->getScene().getPositionAt(OrderedSet[0]);
+	auto EndPos = pManager->getScene().getPositionAt(OrderedSet[OrderedSet.size() - 1]);
 	if ((BeginPos - EndPos).norm() <= DistanceTolerance)
 		return true;
 	else

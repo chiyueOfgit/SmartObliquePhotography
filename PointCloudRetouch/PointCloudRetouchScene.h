@@ -7,11 +7,11 @@ namespace hiveObliquePhotography
 	{
 		class INeighborhoodBuilder;
 
-		class CPointCloudRetouchScene 
+		class CPointCloudScene 
 		{
 		public:
-			CPointCloudRetouchScene();
-			~CPointCloudRetouchScene();
+			CPointCloudScene();
+			~CPointCloudScene();
 
 			void init(PointCloud_t::Ptr vPointCloudScene);
 			void reset() { m_pPointCloudScene = nullptr; }

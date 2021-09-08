@@ -354,13 +354,13 @@ void CPointCloudRetouchManager::recoverMarkedPoints2Undetermined(EPointLabel vLa
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::executeOutlierDetector(EPointLabel vTo)
+bool CPointCloudRetouchManager::executeOutlierDetector(EPointLabel vTargetLabel)
 {
 	std::vector<pcl::index_t> Indices;
 	dumpIndicesByLabel(Indices, EPointLabel::UNDETERMINED);
 	dumpIndicesByLabel(Indices, EPointLabel::KEPT);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
-	return pOutlierDetector->execute<COutlierDetector>(Indices, vTo, m_pOutlierConfig);
+	return pOutlierDetector->execute<COutlierDetector>(Indices, vTargetLabel, m_pOutlierConfig);
 }
 
 //*****************************************************************

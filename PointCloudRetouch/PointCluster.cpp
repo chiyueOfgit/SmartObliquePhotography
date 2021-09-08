@@ -11,7 +11,7 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 	if (m_FeatureSet.empty() || m_FeatureWeightSet.empty())
 		_THROW_RUNTIME_ERROR("Point cluster is not uninitialized");
 	
-	if (vInputPoint < 0 || vInputPoint > CPointCloudRetouchManager::getInstance()->getRetouchScene().getNumPoint())
+	if (vInputPoint < 0 || vInputPoint > CPointCloudRetouchManager::getInstance()->getScene().getNumPoint())
 		_THROW_RUNTIME_ERROR("Index is out of range");
 	
 	double Probability = 0.0;
