@@ -13,6 +13,18 @@ namespace hiveObliquePhotography
 			SFace OriginFace;
 		};
 
+		struct STexelSampleInfo
+		{
+			Eigen::Vector2i TexelPos;
+			std::vector<SSampleInfo> SamplePosSetInWorld;
+		};
+
+		struct SSampleInfo
+		{
+			Eigen::Vector3f SamplePosInWorld;
+			SFace OriginFace;
+		};
+
 		struct SCandidateInfo
 		{
 			Eigen::Vector3f Pos;
@@ -27,7 +39,9 @@ namespace hiveObliquePhotography
 
 			virtual CImage<Eigen::Vector3i> bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution) override;
 			std::vector<STexelInfo> findTexelsPerFace(const SFace& vFace, Eigen::Vector2i vResolution);
+			std::vector<STexelSampleInfo> findSamplesPerFace(const SFace& vFace, Eigen::Vector2i vResolution);
 			std::vector<SCandidateInfo> executeIntersection(const STexelInfo& vInfo);
+			std::vector<SCandidateInfo> executeIntersection(const SSampleInfo& vInfo);
 			Eigen::Vector3i calcTexelColor(const std::vector<SCandidateInfo>& vCandidates, const STexelInfo& vInfo);
 		    
 #ifdef _UNIT_TEST

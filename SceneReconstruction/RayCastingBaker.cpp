@@ -19,7 +19,7 @@ hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(Po
 	Texture.resize(vResolution.y(), vResolution.x());
 	CImage<Eigen::Vector3i> ResultTexture;
 
-	for (auto& Face : m_Mesh.m_Faces)
+	/*for (auto& Face : m_Mesh.m_Faces)
 	{
 		auto TexelInfos = findTexelsPerFace(Face, vResolution);
 		for (auto& TexelInfo : TexelInfos)
@@ -27,6 +27,21 @@ hiveObliquePhotography::CImage<Eigen::Vector3i> CRayCastingBaker::bakeTexture(Po
 			auto Candidates = executeIntersection(TexelInfo);
 			auto TexelColor = calcTexelColor(Candidates, TexelInfo);
 			Texture(TexelInfo.TexelPos.y(), TexelInfo.TexelPos.x()) = TexelColor;
+		}
+	}*/
+
+	for (auto& Face : m_Mesh.m_Faces)
+	{
+		auto TexelSampleInfoSet = findSamplesPerFace(Face, vResolution);
+		for (auto& PerTexel : TexelSampleInfoSet)
+		{
+			for (auto& SampleInfo : PerTexel.SamplePosSetInWorld)
+			{
+				auto Candidates = executeIntersection(SampleInfo);
+				auto TexelColor = calcTexelColor(Candidates, SampleInfo);
+			}
+            //TODO£ºTexel»ìºÏÑÕÉ«
+			Texture(PerTexel.TexelPos.y(), PerTexel.TexelPos.x()) = TexelColor;
 		}
 	}
 	ResultTexture.fillColor(vResolution.y(), vResolution.x(), Texture.data());
@@ -62,6 +77,33 @@ std::vector<STexelInfo> CRayCastingBaker::findTexelsPerFace(const SFace& vFace, 
 	return ResultSet;
 }
 
+std::vector<STexelSampleInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace, Eigen::Vector2i vResolution)
+{
+	std::vector<STexelSampleInfo> ResultSet;
+
+	/*auto& VertexA = m_Mesh.m_Vertices[vFace.a];
+	auto& VertexB = m_Mesh.m_Vertices[vFace.b];
+	auto& VertexC = m_Mesh.m_Vertices[vFace.c];
+
+	auto Box = __calcBoxInTextureCoord(VertexA.uv(), VertexB.uv(), VertexC.uv());
+
+	for (int X = Box.first.x() * vResolution.x() - 1; X < Box.second.x() * vResolution.x() + 1; X++)
+		for (int Y = Box.first.y() * vResolution.y() - 1; Y < Box.second.y() * vResolution.y() + 1; Y++)
+			if (X >= 0 && X < vResolution.x() && Y >= 0 && Y < vResolution.y())
+			{
+				Eigen::Vector2f CenterUV = { (X + 0.5f) / vResolution.x(), (Y + 0.5f) / vResolution.y() };
+
+				auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), CenterUV);
+				if ((BarycentricCoord.array() >= 0).all())
+				{
+					auto WorldPos = __calcTexelPosInWorld(VertexA.xyz(), VertexB.xyz(), VertexC.xyz(), BarycentricCoord);
+					ResultSet.emplace_back(Eigen::Vector2i{ X, Y }, WorldPos, vFace);
+				}
+			}*/
+
+	return ResultSet;
+}
+
 //*****************************************************************
 //FUNCTION: 
 std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelInfo& vInfo)
@@ -92,6 +134,11 @@ std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const STexelIn
 	}
 
 	return Candidates;
+}
+
+std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const SSampleInfo& vInfo)
+{
+
 }
 
 //*****************************************************************
