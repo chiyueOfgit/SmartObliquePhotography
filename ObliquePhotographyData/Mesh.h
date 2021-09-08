@@ -18,9 +18,9 @@ namespace hiveObliquePhotography
 		DataType u;
 		DataType v;
 
-		Eigen::Vector3f xyz() { return { x, y, z }; }
-		Eigen::Vector3f normal() { return { nx, ny, nz }; }
-		Eigen::Vector2f uv() { return { u, v }; }
+		Eigen::Vector3f xyz() const { return { x, y, z }; }
+		Eigen::Vector3f normal() const { return { nx, ny, nz }; }
+		Eigen::Vector2f uv() const { return { u, v }; }
 	};
 
 	struct SFace
