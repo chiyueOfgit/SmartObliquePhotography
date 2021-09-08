@@ -6,8 +6,10 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
-const float SurfelRadius = 0.5f;	//magic raidus
-const float DistanceThreshold = 0.2f;	//magic distance
+//TODO: magic number
+constexpr float SurfelRadius = 0.5f;
+constexpr float DistanceThreshold = 0.2f;
+constexpr float SampleInterval = 0.2f;
 
 //*****************************************************************
 //FUNCTION: 
@@ -17,8 +19,6 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 	__buildKdTree(m_pCloud);
 
 	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(vResolution.y(), vResolution.x());
-	CImage<std::array<int, 3>> ResultTexture;
-
 	for (const auto& Face : m_Mesh.m_Faces)
 		for (const auto& PerTexel : findSamplesPerFace(Face, vResolution))
 		{
@@ -37,10 +37,13 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 				AverageColor[1] += G;
 				AverageColor[2] += B;
 			}
-			for (auto& i : AverageColor)
-				i /= TexelColorSet.size();
+			if (!TexelColorSet.empty())
+				for (auto& i : AverageColor)
+					i /= TexelColorSet.size();
 			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = AverageColor;
 		}
+	
+	CImage<std::array<int, 3>> ResultTexture;
 	ResultTexture.fillColor(vResolution.y(), vResolution.x(), Texture.data());
 	return ResultTexture;
 }
@@ -59,12 +62,14 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 		for (auto k = FromCoord.y(); k < ToCoord.y(); ++k)
 			if (i >= 0 && i < vResolution.x() && k >= 0 && k < vResolution.y())
 			{
-				STexelInfo TexelSampleInfo(Eigen::Vector2i{ i, k }, {});
+				STexelInfo TexelSampleInfo{ .TexelCoord= { i, k }, .RaySet = {} };
 				//TexelSampleInfo.SamplePosSetInWorld.reserve(间隔0.2对应的数目);
 				std::pair FromSample = { (i + 0.0f) / vResolution.x(), (k + 0.0f) / vResolution.y() };
 				std::pair ToSample = { (i + 1.0f) / vResolution.x(), (k + 1.0f) / vResolution.y() };
-				for (const auto& [u, v] : hiveMath::hiveGenerateJitterSamples(FromSample, ToSample, 0.2f))
+				//for (const auto& [u, v] : hiveMath::hiveGenerateJitterSamples(FromSample, ToSample, SampleInterval))
 				{
+					auto u = (i + 0.5f) / vResolution.x();
+					auto v = (i + 0.5f) / vResolution.x();
 					auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), {u, v});
 					if ((BarycentricCoord.array() >= 0).all())
 						TexelSampleInfo.RaySet.push_back(__calcRay(vFace, BarycentricCoord));
