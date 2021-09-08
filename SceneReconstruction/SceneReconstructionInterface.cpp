@@ -36,7 +36,7 @@ pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(cons
 
 //*****************************************************************
 //FUNCTION: 
-RECONSTRUCTION_DECLSPEC hiveObliquePhotography::CImage<Eigen::Vector3i> hiveObliquePhotography::SceneReconstruction::hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, Eigen::Vector2i vResolution)
+RECONSTRUCTION_DECLSPEC hiveObliquePhotography::CImage<std::array<int, 3>> hiveObliquePhotography::SceneReconstruction::hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, Eigen::Vector2i vResolution)
 {
 	auto pBaker = hiveDesignPattern::hiveCreateProduct<CRayCastingBaker>(KEYWORD::RAYCASTING_TEXTUREBAKER, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
 	return pBaker->bakeTexture(vSceneCloud, vResolution);
