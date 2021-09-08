@@ -69,7 +69,7 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 				//for (const auto& [u, v] : hiveMath::hiveGenerateJitterSamples(FromSample, ToSample, SampleInterval))
 				{
 					auto u = (i + 0.5f) / vResolution.x();
-					auto v = (i + 0.5f) / vResolution.x();
+					auto v = (k + 0.5f) / vResolution.y();
 					auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), {u, v});
 					if ((BarycentricCoord.array() >= 0).all())
 						TexelSampleInfo.RaySet.push_back(__calcRay(vFace, BarycentricCoord));
