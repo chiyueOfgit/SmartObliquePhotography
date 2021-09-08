@@ -169,7 +169,7 @@ TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
 	
 	SRay TestRay{ {48.0f, 0.0f, 48.0f},{0.0f, 1.0f, 0.0f}};
 	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
-	EXPECT_EQ(CandidateSet.size(), 3);
+	ASSERT_EQ(CandidateSet.size(), 3);
 	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.SurfelIndex < vB.SurfelIndex; });
 	Eigen::Vector3f IntersectionOne{ 48.0f, 2.0f, 48.0f };
 	Eigen::Vector3f IntersectionTwo{ 48.0f, 3.0f, 48.0f };
@@ -188,7 +188,7 @@ TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
 
 	SRay TestRay{ {1.5f, 0.0f, 1.5f},{0.0f, 1.0f, 0.0f} };
 	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
-	EXPECT_EQ(CandidateSet.size(), 2);
+	ASSERT_EQ(CandidateSet.size(), 2);
 	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.SurfelIndex < vB.SurfelIndex; });
 	Eigen::Vector3f IntersectionOne{ 1.5f, 2.0f, 1.5f };
 	Eigen::Vector3f IntersectionTwo{ 1.5f, -2.0f, 1.5f };
@@ -215,7 +215,7 @@ TEST_F(TestCastingTextureBaker, PlaneTextureBakingTest)
 	unsigned char* GtData = stbi_load(PNGFilePath.c_str(), &Resolution.x(), &Resolution.y(), &Channels, 0);
 	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)
 	{
-		Eigen::Vector3i GtColor{ GtData[i * 3], GtData[i * 3 + 1], GtData[i * 3 + 2] };
+		std::array<int, 3> GtColor{ GtData[i * 3], GtData[i * 3 + 1], GtData[i * 3 + 2] };
 		auto Color = Texture.getColor(i / Resolution.x(), i % Resolution.x());
 		EXPECT_EQ(Color, GtColor);
 	}
