@@ -70,7 +70,7 @@ protected:
 		return pBaker;
 	}
 
-	void _saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<Eigen::Vector3i>& vTexture, bool vIsReverse)
+	void _saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<std::array<int, 3>>& vTexture, bool vIsReverse)
 	{
 		const auto Width = vTexture.getWidth();
 		const auto Height = vTexture.getHeight();
@@ -126,31 +126,29 @@ TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
 		{
 			auto& Resolution = ResolutionList[0];
 			int NumTexels = Resolution.x() * Resolution.y();
-			auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
+			auto TexelInfos = m_pTextureBaker->findSamplesPerFace(Face, Resolution);
 			ASSERT_TRUE(!TexelInfos.empty());
 			EXPECT_NEAR(TexelInfos.size(), NumTexels * ((float)1 / 8), NumTexels * 0.1);
 			NumWholeTexels[0] += TexelInfos.size();
 
 			for (auto& Texel : TexelInfos)
 			{
-				Eigen::Vector2f PointUV = { (Texel.TexelPos.x() + 0.5f) / Resolution.x(), (Texel.TexelPos.y() + 0.5f) / Resolution.y() };
-				Eigen::Vector2f FacesUV[3];
-				for (int i = 0; i < 3; i++)
-					FacesUV[i] = { Vertices[Texel.OriginFace[i]].u, Vertices[Texel.OriginFace[i]].v };
-
+				Eigen::Vector2f PointUV = { (Texel.TexelCoord.x() + 0.5f) / Resolution.x(), (Texel.TexelCoord.y() + 0.5f) / Resolution.y() };
 				Eigen::Vector2f DeltaPos = { PointUV.x() * 100.0f, -PointUV.y() * 100.0f };
 				Eigen::Vector2f BeginPos{ -50.0f, 50.0f };
-
 				Eigen::Vector3f TexelPosInPlane = { BeginPos.x() + DeltaPos.x(), 0.0f, BeginPos.y() + DeltaPos.y() };
-				const float ErrorScope = 1.0f;
-				for (int i = 0; i < 3; i++)
-					ASSERT_NEAR(Texel.TexelPosInWorld.data()[i], TexelPosInPlane.data()[i], ErrorScope);
+                const float ErrorScope = 1.0f;
+				for (auto& Ray : Texel.RaySet)
+				{
+                   for (int i = 0; i < 3; i++)
+					  ASSERT_NEAR(Ray.Origin.data()[i], TexelPosInPlane.data()[i], ErrorScope);
+				}
 			}
 		}
 
 		{
 			auto& Resolution = ResolutionList[1];
-			auto TexelInfos = m_pTextureBaker->findTexelsPerFace(Face, Resolution);
+			auto TexelInfos = m_pTextureBaker->findSamplesPerFace(Face, Resolution);
 			NumWholeTexels[1] += TexelInfos.size();
 		}	
 	}
@@ -169,18 +167,18 @@ TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
 	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
 	m_pTextureBaker->setPointCloud(pCloud);
 	
-	STexelInfo TestTexel{ {98,98},{48.0f, 0.0f, 48.0f},m_Mesh.m_Faces[2] };
-	auto CandidateSet = m_pTextureBaker->executeIntersection(TestTexel);
+	SRay TestRay{ {48.0f, 0.0f, 48.0f},{0.0f, 1.0f, 0.0f}};
+	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
 	EXPECT_EQ(CandidateSet.size(), 3);
-	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.PointIndex < vB.PointIndex; });
+	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.SurfelIndex < vB.SurfelIndex; });
 	Eigen::Vector3f IntersectionOne{ 48.0f, 2.0f, 48.0f };
 	Eigen::Vector3f IntersectionTwo{ 48.0f, 3.0f, 48.0f };
-	EXPECT_EQ(CandidateSet[0].PointIndex, 0);
-	EXPECT_EQ(CandidateSet[0].Pos, IntersectionOne);
-	EXPECT_EQ(CandidateSet[1].PointIndex, 1);
-	EXPECT_EQ(CandidateSet[1].Pos, IntersectionTwo);
-	EXPECT_EQ(CandidateSet[2].PointIndex, 2);
-	EXPECT_EQ(CandidateSet[2].Pos, IntersectionOne);
+	EXPECT_EQ(CandidateSet[0].SurfelIndex, 0);
+	EXPECT_EQ(CandidateSet[0].Intersection, IntersectionOne);
+	EXPECT_EQ(CandidateSet[1].SurfelIndex, 1);
+	EXPECT_EQ(CandidateSet[1].Intersection, IntersectionTwo);
+	EXPECT_EQ(CandidateSet[2].SurfelIndex, 2);
+	EXPECT_EQ(CandidateSet[2].Intersection, IntersectionOne);
 }
 
 TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
@@ -188,16 +186,16 @@ TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
 	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
 	m_pTextureBaker->setPointCloud(pCloud);
 
-	STexelInfo TestTexel{ {51,51},{1.5f, 0.0f, 1.5f},m_Mesh.m_Faces[3] };
-	auto CandidateSet = m_pTextureBaker->executeIntersection(TestTexel);
+	SRay TestRay{ {1.5f, 0.0f, 1.5f},{0.0f, 1.0f, 0.0f} };
+	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
 	EXPECT_EQ(CandidateSet.size(), 2);
-	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.PointIndex < vB.PointIndex; });
+	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.SurfelIndex < vB.SurfelIndex; });
 	Eigen::Vector3f IntersectionOne{ 1.5f, 2.0f, 1.5f };
 	Eigen::Vector3f IntersectionTwo{ 1.5f, -2.0f, 1.5f };
-	EXPECT_EQ(CandidateSet[0].PointIndex, 3);
-	EXPECT_EQ(CandidateSet[0].Pos, IntersectionOne);
-	EXPECT_EQ(CandidateSet[1].PointIndex, 4);
-	EXPECT_EQ(CandidateSet[1].Pos, IntersectionTwo);
+	EXPECT_EQ(CandidateSet[0].SurfelIndex, 3);
+	EXPECT_EQ(CandidateSet[0].Intersection, IntersectionOne);
+	EXPECT_EQ(CandidateSet[1].SurfelIndex, 4);
+	EXPECT_EQ(CandidateSet[1].Intersection, IntersectionTwo);
 }
 
 TEST_F(TestCastingTextureBaker, TestCalcTexelColor)
@@ -218,7 +216,7 @@ TEST_F(TestCastingTextureBaker, PlaneTextureBakingTest)
 	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)
 	{
 		Eigen::Vector3i GtColor{ GtData[i * 3], GtData[i * 3 + 1], GtData[i * 3 + 2] };
-		Eigen::Vector3i Color = Texture.getColor(i / Resolution.x(), i % Resolution.x());
+		auto Color = Texture.getColor(i / Resolution.x(), i % Resolution.x());
 		EXPECT_EQ(Color, GtColor);
 	}
 
