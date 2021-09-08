@@ -22,13 +22,24 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 	for (const auto& Face : m_Mesh.m_Faces)
 		for (const auto& PerTexel : findSamplesPerFace(Face, vResolution))
 		{
+			std::vector<std::array<int, 3>> TexelColorSet;
+			TexelColorSet.reserve(PerTexel.RaySet.size());
 			for (const auto& Ray : PerTexel.RaySet)
 			{
 				auto Candidates = executeIntersection(Ray);
-				auto TexelColor = calcTexelColor(Candidates, Ray);
+				TexelColorSet.push_back(calcTexelColor(Candidates, Ray));
 			}
-            //TODO£ºTexel»ìºÏÑÕÉ«
-			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = TexelColor;
+
+			std::array AverageColor = { 0 ,0 ,0 };
+			for (const auto& [R, G, B] : TexelColorSet)
+			{
+				AverageColor[0] += R;
+				AverageColor[1] += G;
+				AverageColor[2] += B;
+			}
+			for (auto& i : AverageColor)
+				i /= TexelColorSet.size();
+			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = AverageColor;
 		}
 	ResultTexture.fillColor(vResolution.y(), vResolution.x(), Texture.data());
 	return ResultTexture;
