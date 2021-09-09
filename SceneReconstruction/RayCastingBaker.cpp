@@ -259,3 +259,22 @@ std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vecto
 	_ASSERTE(!Indices.empty());
 	return Indices[0];
 }
+
+//*****************************************************************
+//FUNCTION: 
+std::array<int, 3> CRayCastingBaker::__mixSamplesColor(const std::vector<std::array<int, 3>>& vColorSet) const
+{
+	std::array AverageColor = { 0 ,0 ,0 };
+	if (!vColorSet.empty())
+	{
+		for (const auto& [R, G, B] : vColorSet)
+		{
+			AverageColor[0] += R;
+			AverageColor[1] += G;
+			AverageColor[2] += B;
+		}
+		for (auto& i : AverageColor)
+			i /= vColorSet.size();
+	}
+	return AverageColor;
+}
