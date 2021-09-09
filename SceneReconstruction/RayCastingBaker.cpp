@@ -30,18 +30,7 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 				auto Candidates = executeIntersection(Ray);
 				TexelColorSet.push_back(calcTexelColor(Candidates, Ray));
 			}
-
-			std::array AverageColor = { 0 ,0 ,0 };
-			for (const auto& [R, G, B] : TexelColorSet)
-			{
-				AverageColor[0] += R;
-				AverageColor[1] += G;
-				AverageColor[2] += B;
-			}
-			if (!TexelColorSet.empty())
-				for (auto& i : AverageColor)
-					i /= TexelColorSet.size();
-			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = AverageColor;
+			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = __mixSamplesColor(TexelColorSet);
 		}
 	
 	CImage<std::array<int, 3>> ResultTexture;
@@ -239,4 +228,23 @@ std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vecto
 	m_KdTree.first->radiusSearch(Query, Indices, Distances, Radius, {});
 	_ASSERTE(!Indices.empty());
 	return Indices[0];
+}
+
+//*****************************************************************
+//FUNCTION: 
+std::array<int, 3> CRayCastingBaker::__mixSamplesColor(const std::vector<std::array<int, 3>>& vColorSet) const
+{
+	std::array AverageColor = { 0 ,0 ,0 };
+	if (!vColorSet.empty())
+	{
+		for (const auto& [R, G, B] : vColorSet)
+		{
+			AverageColor[0] += R;
+			AverageColor[1] += G;
+			AverageColor[2] += B;
+		}
+		for (auto& i : AverageColor)
+			i /= vColorSet.size();
+	}
+	return AverageColor;
 }

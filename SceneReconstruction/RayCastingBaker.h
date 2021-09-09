@@ -45,7 +45,8 @@ namespace hiveObliquePhotography
 			Eigen::Vector3f __calcBarycentricCoord(const Eigen::Vector2f& vPointA, const Eigen::Vector2f& vPointB, const Eigen::Vector2f& vPointC, const Eigen::Vector2f& vPointP) const;
 			SRay __calcRay(const SFace& vFace, const Eigen::Vector3f& vBarycentricCoord) const;
 			std::vector<pcl::index_t> __cullPointsByRay(const Eigen::Vector3f& vRayOrigin, const Eigen::Vector3f& vRayDirection) const;
-
+			std::array<int, 3> __mixSamplesColor(const std::vector<std::array<int, 3>>& vColorSet) const;
+			
 			PointCloud_t::Ptr m_pCloud = nullptr;
 
 			std::pair<flann::Index<flann::L2<float>>*, Eigen::Matrix<float, -1, -1, Eigen::RowMajor>> m_KdTree;
