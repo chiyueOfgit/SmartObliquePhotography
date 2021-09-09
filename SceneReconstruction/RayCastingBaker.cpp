@@ -8,9 +8,9 @@ _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 //TODO: magic number
 constexpr float SurfelRadius = 2.0f;
-constexpr float SearchRadius = 10.0f;
+constexpr float SearchRadius = 5.0f;
 constexpr float DistanceThreshold = 0.2f;
-constexpr float SampleInterval = 0.01f;
+constexpr int SampleNumber = 8;
 
 //*****************************************************************
 //FUNCTION: 
@@ -20,9 +20,6 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 	__buildKdTree(m_pCloud);
 
 	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(vResolution.y(), vResolution.x());
-	for (int i = 0; i < Texture.rows(); i++)
-		for (int k = 0; k < Texture.cols(); k++)
-			Texture(i, k) = { 255, 255, 255 };
 	for (const auto& Face : m_Mesh.m_Faces)
 		for (const auto& PerTexel : findSamplesPerFace(Face, vResolution))
 		{
@@ -33,21 +30,7 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 				auto Candidates = executeIntersection(Ray);
 				TexelColorSet.push_back(calcTexelColor(Candidates, Ray));
 			}
-
-			std::array AverageColor = { 0 ,0 ,0 };
-			for (const auto& [R, G, B] : TexelColorSet)
-			{
-				AverageColor[0] += R;
-				AverageColor[1] += G;
-				AverageColor[2] += B;
-			}
-			if (!TexelColorSet.empty())
-			{
-				for (auto& i : AverageColor)
-					i /= TexelColorSet.size();
-				Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = AverageColor;
-			}
-
+			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = __mixSamplesColor(TexelColorSet);
 		}
 	
 	CImage<std::array<int, 3>> ResultTexture;
@@ -69,33 +52,25 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 		for (auto k = FromCoord.y(); k < ToCoord.y(); ++k)
 			if (i >= 0 && i < vResolution.x() && k >= 0 && k < vResolution.y())
 			{
-				STexelInfo TexelSampleInfo{ .TexelCoord= { i, k }, .RaySet = {} };
-				//TexelSampleInfo.SamplePosSetInWorld.reserve(间隔0.2对应的数目);
-				std::pair FromSample = { (i + 0.0f) / vResolution.x(), (k + 0.0f) / vResolution.y() };
-				std::pair ToSample = { (i + 1.0f) / vResolution.x(), (k + 1.0f) / vResolution.y() };
-				const int NumRandomSample = 4;
-				auto SampleU = hiveMath::hiveGenerateRandomRealSet<float>(FromSample.first, ToSample.first, NumRandomSample);
-				auto SampleV = hiveMath::hiveGenerateRandomRealSet<float>(FromSample.second, ToSample.second, NumRandomSample);
-				for (int i = 0; i < NumRandomSample; i++)
+				std::vector<Eigen::Vector2f> SampleSet;
+				SampleSet.reserve(SampleNumber);
+				SampleSet.emplace_back((i + 0.5f) / vResolution.x(), (k + 0.5f) / vResolution.y());
+
+				auto USampleSet = hiveMath::hiveGenerateRandomRealSet((i + 0.0f) / vResolution.x(), (i + 1.0f) / vResolution.x(), SampleNumber - 1);
+				auto VSampleSet = hiveMath::hiveGenerateRandomRealSet((k + 0.0f) / vResolution.y(), (k + 1.0f) / vResolution.y(), SampleNumber - 1);
+				for (int m = 0; m < SampleNumber - 1; ++m)
+					SampleSet.emplace_back(USampleSet[m], VSampleSet[m]);
+
+				std::vector<SRay> RaySet;
+				RaySet.reserve(SampleNumber);
+				for (const auto& Sample : SampleSet)
 				{
-					auto u = SampleU[i];
-					auto v = SampleV[i];
-					//auto u = (i + 0.5f) / vResolution.x();
-					//auto v = (k + 0.5f) / vResolution.y();
-					auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), {u, v});
+					auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), Sample);
 					if ((BarycentricCoord.array() >= 0).all())
-						TexelSampleInfo.RaySet.push_back(__calcRay(vFace, BarycentricCoord));
+						RaySet.push_back(__calcRay(vFace, BarycentricCoord));
 				}
-				//中心必测试
-				{
-					auto u = (i + 0.5f) / vResolution.x();
-					auto v = (k + 0.5f) / vResolution.y();
-					auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), { u, v });
-					if ((BarycentricCoord.array() >= 0).all())
-						TexelSampleInfo.RaySet.push_back(__calcRay(vFace, BarycentricCoord));
-				}
-				if (!TexelSampleInfo.RaySet.empty())
-					ResultSet.push_back(std::move(TexelSampleInfo));
+				if (!RaySet.empty())
+					ResultSet.emplace_back(Eigen::Vector2i{ i, k }, RaySet);
 			}
 
 	return ResultSet;
@@ -171,15 +146,6 @@ std::array<int, 3> CRayCastingBaker::calcTexelColor(const std::vector<SCandidate
 	}
 
 	Eigen::Vector3i Color = (WeightedColor / SumWeight).cast<int>();
-	
-	//if ((Color.x() || Color.y() || Color.z()) == 0)
-	//{
-	//	std::string Info;
-	//	Info += _FORMAT_STR3("\nWeihgtedColor: %1% %2% %3%", std::to_string(WeightedColor.x()), std::to_string(WeightedColor.y()), std::to_string(WeightedColor.z()));
-	//	Info += _FORMAT_STR1("\nSumWewight: %1%\n", std::to_string(SumWeight));
-	//	hiveEventLogger::hiveOutputEvent(Info);
-	//}
-
 	return { Color.x(), Color.y(), Color.z() };
 }
 
@@ -272,6 +238,7 @@ std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vecto
 //FUNCTION: 
 std::array<int, 3> CRayCastingBaker::__mixSamplesColor(const std::vector<std::array<int, 3>>& vColorSet) const
 {
+	//k-means?
 	std::array AverageColor = { 0 ,0 ,0 };
 	if (!vColorSet.empty())
 	{
