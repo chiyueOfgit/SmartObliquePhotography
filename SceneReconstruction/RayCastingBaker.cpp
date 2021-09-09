@@ -8,6 +8,7 @@ _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 //TODO: magic number
 constexpr float SurfelRadius = 5.0f;
+constexpr float SearchRadius = 10.0f;
 constexpr float DistanceThreshold = 0.2f;
 constexpr float SampleInterval = 0.2f;
 
@@ -56,8 +57,8 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 	
 	std::vector<STexelInfo> ResultSet;
 	auto [Min, Max] = __calcBoxInTextureCoord(VertexA.uv(), VertexB.uv(), VertexC.uv());
-	const Eigen::Vector2i FromCoord = { Min.x() * vResolution.x() - 1 , Min.y() * vResolution.y() - 1 };
-	const Eigen::Vector2i ToCoord = { Max.x() * vResolution.x() + 1 , Max.y() * vResolution.y() + 1 };
+	const Eigen::Vector2i FromCoord = { Min.x() * vResolution.x() , Min.y() * vResolution.y() };
+	const Eigen::Vector2i ToCoord = { Max.x() * vResolution.x() , Max.y() * vResolution.y() };
 	for (auto i = FromCoord.x(); i < ToCoord.x(); ++i)
 		for (auto k = FromCoord.y(); k < ToCoord.y(); ++k)
 			if (i >= 0 && i < vResolution.x() && k >= 0 && k < vResolution.y())
@@ -74,7 +75,8 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 					if ((BarycentricCoord.array() >= 0).all())
 						TexelSampleInfo.RaySet.push_back(__calcRay(vFace, BarycentricCoord));
 				}
-				ResultSet.push_back(std::move(TexelSampleInfo));
+				if (!TexelSampleInfo.RaySet.empty())
+					ResultSet.push_back(std::move(TexelSampleInfo));
 			}
 
 	return ResultSet;
@@ -228,7 +230,7 @@ SRay CRayCastingBaker::__calcRay(const SFace& vFace, const Eigen::Vector3f& vBar
 std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vector3f& vRayOrigin, const Eigen::Vector3f& vRayDirection) const
 {
 	//暂用仅光线起点的半径搜索
-	const float Radius = 100.0f;	//to config or calculate
+	const float Radius = SearchRadius;	//to config or calculate
 	Eigen::Matrix<float, 1, 3, Eigen::RowMajor> SearchPos = vRayOrigin;
 	flann::Matrix Query(SearchPos.data(), SearchPos.rows(), SearchPos.cols());
 	std::vector<std::vector<pcl::index_t>> Indices;
