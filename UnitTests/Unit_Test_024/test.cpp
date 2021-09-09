@@ -98,130 +98,130 @@ protected:
 	CRayCastingBaker* m_pTextureBaker = nullptr;
 };
 
-//TEST_F(TestCastingTextureBaker, TestBakeEffect)
-//{
-//	const auto ModelPath = TESTMODEL_DIR + std::string("/Test024_Model/scu/Tile16.obj");
-//	const auto CloudPath = TESTMODEL_DIR + std::string("/Test024_Model/scu/Tile16.pcd");
-//
-//	m_Mesh = _loadMesh(ModelPath);
-//	m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ CloudPath });
-//	m_pTextureBaker = _createBaker(m_Mesh);
-//
-//	Eigen::Vector2i Resolution = { 512, 512 };
-//	auto Texture = m_pTextureBaker->bakeTexture(m_pCloud, Resolution);
-//	_saveTexture("Test.png", Texture, true);
-//}
-
-TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
+TEST_F(TestCastingTextureBaker, TestBakeEffect)
 {
-	//8 faces plane
-	m_Mesh = _loadMesh(PlaneMeshPath);
+	const auto ModelPath = TESTMODEL_DIR + std::string("/Test024_Model/scu/Tile16.obj");
+	const auto CloudPath = TESTMODEL_DIR + std::string("/Test024_Model/scu/Tile16.pcd");
+
+	m_Mesh = _loadMesh(ModelPath);
+	m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ CloudPath });
 	m_pTextureBaker = _createBaker(m_Mesh);
 
-	std::vector<Eigen::Vector2i> ResolutionList = { {512, 512}, {10, 10} };
-	std::vector<int> NumWholeTexels(ResolutionList.size(), 0);
-	auto& Vertices = m_Mesh.m_Vertices;
-	for (auto& Face : m_Mesh.m_Faces)
-	{
-		{
-			auto& Resolution = ResolutionList[0];
-			int NumTexels = Resolution.x() * Resolution.y();
-			auto TexelInfos = m_pTextureBaker->findSamplesPerFace(Face, Resolution);
-			ASSERT_TRUE(!TexelInfos.empty());
-			EXPECT_NEAR(TexelInfos.size(), NumTexels * ((float)1 / 8), NumTexels * 0.1);
-			NumWholeTexels[0] += TexelInfos.size();
-
-			for (auto& Texel : TexelInfos)
-			{
-				Eigen::Vector2f PointUV = { (Texel.TexelCoord.x() + 0.5f) / Resolution.x(), (Texel.TexelCoord.y() + 0.5f) / Resolution.y() };
-				Eigen::Vector2f DeltaPos = { PointUV.x() * 100.0f, -PointUV.y() * 100.0f };
-				Eigen::Vector2f BeginPos{ -50.0f, 50.0f };
-				Eigen::Vector3f TexelPosInPlane = { BeginPos.x() + DeltaPos.x(), 0.0f, BeginPos.y() + DeltaPos.y() };
-                const float ErrorScope = 1.0f;
-				for (auto& Ray : Texel.RaySet)
-				{
-                   for (int i = 0; i < 3; i++)
-					  ASSERT_NEAR(Ray.Origin.data()[i], TexelPosInPlane.data()[i], ErrorScope);
-				}
-			}
-		}
-
-		{
-			auto& Resolution = ResolutionList[1];
-			auto TexelInfos = m_pTextureBaker->findSamplesPerFace(Face, Resolution);
-			NumWholeTexels[1] += TexelInfos.size();
-		}	
-	}
-
-	//总处理纹素要接近总纹素数
-	for (int i = 0; i < ResolutionList.size(); i++)
-	{
-		auto& Resolution = ResolutionList[i];
-		int NumTexels = Resolution.x() * Resolution.y();
-		EXPECT_NEAR(NumWholeTexels[i], NumTexels, NumTexels * 0.2);
-	}
+	Eigen::Vector2i Resolution = { 512, 512 };
+	auto Texture = m_pTextureBaker->bakeTexture(m_pCloud, Resolution);
+	_saveTexture("Test.png", Texture, true);
 }
 
-TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
-{
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
-	m_pTextureBaker->setPointCloud(pCloud);
-	
-	SRay TestRay{ {48.0f, 0.0f, 48.0f},{0.0f, 1.0f, 0.0f}};
-	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
-	ASSERT_EQ(CandidateSet.size(), 3);
-	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.SurfelIndex < vB.SurfelIndex; });
-	Eigen::Vector3f IntersectionOne{ 48.0f, 2.0f, 48.0f };
-	Eigen::Vector3f IntersectionTwo{ 48.0f, 3.0f, 48.0f };
-	EXPECT_EQ(CandidateSet[0].SurfelIndex, 0);
-	EXPECT_EQ(CandidateSet[0].Intersection, IntersectionOne);
-	EXPECT_EQ(CandidateSet[1].SurfelIndex, 1);
-	EXPECT_EQ(CandidateSet[1].Intersection, IntersectionTwo);
-	EXPECT_EQ(CandidateSet[2].SurfelIndex, 2);
-	EXPECT_EQ(CandidateSet[2].Intersection, IntersectionOne);
-}
-
-TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
-{
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
-	m_pTextureBaker->setPointCloud(pCloud);
-
-	SRay TestRay{ {1.5f, 0.0f, 1.5f},{0.0f, 1.0f, 0.0f} };
-	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
-	ASSERT_EQ(CandidateSet.size(), 2);
-	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.SurfelIndex < vB.SurfelIndex; });
-	Eigen::Vector3f IntersectionOne{ 1.5f, 2.0f, 1.5f };
-	Eigen::Vector3f IntersectionTwo{ 1.5f, -2.0f, 1.5f };
-	EXPECT_EQ(CandidateSet[0].SurfelIndex, 3);
-	EXPECT_EQ(CandidateSet[0].Intersection, IntersectionOne);
-	EXPECT_EQ(CandidateSet[1].SurfelIndex, 4);
-	EXPECT_EQ(CandidateSet[1].Intersection, IntersectionTwo);
-}
-
-TEST_F(TestCastingTextureBaker, TestCalcTexelColor)
-{
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
-	m_pTextureBaker->bakeTexture(pCloud, { 512, 512 });
-}
-
-TEST_F(TestCastingTextureBaker, PlaneTextureBakingTest)
-{
-	auto PNGFilePath = TESTMODEL_DIR + std::string("Test024_Model/100RG.png");
-	Eigen::Vector2i Resolution{ 10, 10 };
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("Test024_Model/100RGPointCloud.ply") });
-	
-	auto Texture = m_pTextureBaker->bakeTexture(pCloud, Resolution);
-	int Channels = 3;
-	unsigned char* GtData = stbi_load(PNGFilePath.c_str(), &Resolution.x(), &Resolution.y(), &Channels, 0);
-	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)
-	{
-		std::array<int, 3> GtColor{ GtData[i * 3], GtData[i * 3 + 1], GtData[i * 3 + 2] };
-		auto Color = Texture.getColor(i / Resolution.x(), i % Resolution.x());
-		EXPECT_EQ(Color, GtColor);
-	}
-
-	_saveTexture("Test.png", Texture, false);
-}
+//TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
+//{
+//	//8 faces plane
+//	m_Mesh = _loadMesh(PlaneMeshPath);
+//	m_pTextureBaker = _createBaker(m_Mesh);
+//
+//	std::vector<Eigen::Vector2i> ResolutionList = { {512, 512}, {10, 10} };
+//	std::vector<int> NumWholeTexels(ResolutionList.size(), 0);
+//	auto& Vertices = m_Mesh.m_Vertices;
+//	for (auto& Face : m_Mesh.m_Faces)
+//	{
+//		{
+//			auto& Resolution = ResolutionList[0];
+//			int NumTexels = Resolution.x() * Resolution.y();
+//			auto TexelInfos = m_pTextureBaker->findSamplesPerFace(Face, Resolution);
+//			ASSERT_TRUE(!TexelInfos.empty());
+//			EXPECT_NEAR(TexelInfos.size(), NumTexels * ((float)1 / 8), NumTexels * 0.1);
+//			NumWholeTexels[0] += TexelInfos.size();
+//
+//			for (auto& Texel : TexelInfos)
+//			{
+//				Eigen::Vector2f PointUV = { (Texel.TexelCoord.x() + 0.5f) / Resolution.x(), (Texel.TexelCoord.y() + 0.5f) / Resolution.y() };
+//				Eigen::Vector2f DeltaPos = { PointUV.x() * 100.0f, -PointUV.y() * 100.0f };
+//				Eigen::Vector2f BeginPos{ -50.0f, 50.0f };
+//				Eigen::Vector3f TexelPosInPlane = { BeginPos.x() + DeltaPos.x(), 0.0f, BeginPos.y() + DeltaPos.y() };
+//                const float ErrorScope = 1.0f;
+//				for (auto& Ray : Texel.RaySet)
+//				{
+//                   for (int i = 0; i < 3; i++)
+//					  ASSERT_NEAR(Ray.Origin.data()[i], TexelPosInPlane.data()[i], ErrorScope);
+//				}
+//			}
+//		}
+//
+//		{
+//			auto& Resolution = ResolutionList[1];
+//			auto TexelInfos = m_pTextureBaker->findSamplesPerFace(Face, Resolution);
+//			NumWholeTexels[1] += TexelInfos.size();
+//		}	
+//	}
+//
+//	//总处理纹素要接近总纹素数
+//	for (int i = 0; i < ResolutionList.size(); i++)
+//	{
+//		auto& Resolution = ResolutionList[i];
+//		int NumTexels = Resolution.x() * Resolution.y();
+//		EXPECT_NEAR(NumWholeTexels[i], NumTexels, NumTexels * 0.2);
+//	}
+//}
+//
+//TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
+//{
+//	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
+//	m_pTextureBaker->setPointCloud(pCloud);
+//	
+//	SRay TestRay{ {48.0f, 0.0f, 48.0f},{0.0f, 1.0f, 0.0f}};
+//	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
+//	ASSERT_EQ(CandidateSet.size(), 3);
+//	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.SurfelIndex < vB.SurfelIndex; });
+//	Eigen::Vector3f IntersectionOne{ 48.0f, 2.0f, 48.0f };
+//	Eigen::Vector3f IntersectionTwo{ 48.0f, 3.0f, 48.0f };
+//	EXPECT_EQ(CandidateSet[0].SurfelIndex, 0);
+//	EXPECT_EQ(CandidateSet[0].Intersection, IntersectionOne);
+//	EXPECT_EQ(CandidateSet[1].SurfelIndex, 1);
+//	EXPECT_EQ(CandidateSet[1].Intersection, IntersectionTwo);
+//	EXPECT_EQ(CandidateSet[2].SurfelIndex, 2);
+//	EXPECT_EQ(CandidateSet[2].Intersection, IntersectionOne);
+//}
+//
+//TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
+//{
+//	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
+//	m_pTextureBaker->setPointCloud(pCloud);
+//
+//	SRay TestRay{ {1.5f, 0.0f, 1.5f},{0.0f, 1.0f, 0.0f} };
+//	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
+//	ASSERT_EQ(CandidateSet.size(), 2);
+//	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.SurfelIndex < vB.SurfelIndex; });
+//	Eigen::Vector3f IntersectionOne{ 1.5f, 2.0f, 1.5f };
+//	Eigen::Vector3f IntersectionTwo{ 1.5f, -2.0f, 1.5f };
+//	EXPECT_EQ(CandidateSet[0].SurfelIndex, 3);
+//	EXPECT_EQ(CandidateSet[0].Intersection, IntersectionOne);
+//	EXPECT_EQ(CandidateSet[1].SurfelIndex, 4);
+//	EXPECT_EQ(CandidateSet[1].Intersection, IntersectionTwo);
+//}
+//
+//TEST_F(TestCastingTextureBaker, TestCalcTexelColor)
+//{
+//	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
+//	m_pTextureBaker->bakeTexture(pCloud, { 512, 512 });
+//}
+//
+//TEST_F(TestCastingTextureBaker, PlaneTextureBakingTest)
+//{
+//	auto PNGFilePath = TESTMODEL_DIR + std::string("Test024_Model/100RG.png");
+//	Eigen::Vector2i Resolution{ 10, 10 };
+//	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("Test024_Model/100RGPointCloud.ply") });
+//	
+//	auto Texture = m_pTextureBaker->bakeTexture(pCloud, Resolution);
+//	int Channels = 3;
+//	unsigned char* GtData = stbi_load(PNGFilePath.c_str(), &Resolution.x(), &Resolution.y(), &Channels, 0);
+//	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)
+//	{
+//		std::array<int, 3> GtColor{ GtData[i * 3], GtData[i * 3 + 1], GtData[i * 3 + 2] };
+//		auto Color = Texture.getColor(i / Resolution.x(), i % Resolution.x());
+//		EXPECT_EQ(Color, GtColor);
+//	}
+//
+//	_saveTexture("Test.png", Texture, false);
+//}
 
 //TEST_F(TestCastingTextureBaker, Generator)
 //{

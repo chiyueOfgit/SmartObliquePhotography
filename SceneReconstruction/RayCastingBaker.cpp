@@ -8,9 +8,9 @@ _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 //TODO: magic number
 constexpr float SurfelRadius = 5.0f;
-constexpr float SearchRadius = 10.0f;
+constexpr float SearchRadius = 100.0f;
 constexpr float DistanceThreshold = 0.2f;
-constexpr float SampleInterval = 0.2f;
+constexpr float SampleInterval = 0.01f;
 
 //*****************************************************************
 //FUNCTION: 
@@ -20,6 +20,9 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 	__buildKdTree(m_pCloud);
 
 	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(vResolution.y(), vResolution.x());
+	for (int i = 0; i < Texture.rows(); i++)
+		for (int k = 0; k < Texture.cols(); k++)
+			Texture(i, k) = { 255, 255, 255 };
 	for (const auto& Face : m_Mesh.m_Faces)
 		for (const auto& PerTexel : findSamplesPerFace(Face, vResolution))
 		{
@@ -39,9 +42,12 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 				AverageColor[2] += B;
 			}
 			if (!TexelColorSet.empty())
+			{
 				for (auto& i : AverageColor)
 					i /= TexelColorSet.size();
-			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = AverageColor;
+				Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = AverageColor;
+			}
+
 		}
 	
 	CImage<std::array<int, 3>> ResultTexture;
@@ -57,8 +63,8 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 	
 	std::vector<STexelInfo> ResultSet;
 	auto [Min, Max] = __calcBoxInTextureCoord(VertexA.uv(), VertexB.uv(), VertexC.uv());
-	const Eigen::Vector2i FromCoord = { Min.x() * vResolution.x() , Min.y() * vResolution.y() };
-	const Eigen::Vector2i ToCoord = { Max.x() * vResolution.x() , Max.y() * vResolution.y() };
+	const Eigen::Vector2i FromCoord = { Min.x() * vResolution.x() - 1, Min.y() * vResolution.y() - 1 };
+	const Eigen::Vector2i ToCoord = { Max.x() * vResolution.x() + 1, Max.y() * vResolution.y() + 1 };
 	for (auto i = FromCoord.x(); i < ToCoord.x(); ++i)
 		for (auto k = FromCoord.y(); k < ToCoord.y(); ++k)
 			if (i >= 0 && i < vResolution.x() && k >= 0 && k < vResolution.y())
@@ -67,10 +73,15 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 				//TexelSampleInfo.SamplePosSetInWorld.reserve(间隔0.2对应的数目);
 				std::pair FromSample = { (i + 0.0f) / vResolution.x(), (k + 0.0f) / vResolution.y() };
 				std::pair ToSample = { (i + 1.0f) / vResolution.x(), (k + 1.0f) / vResolution.y() };
-				//for (const auto& [u, v] : hiveMath::hiveGenerateJitterSamples(FromSample, ToSample, SampleInterval))
+				const int NumRandomSample = 4;
+				auto SampleU = hiveMath::hiveGenerateRandomRealSet<float>(FromSample.first, ToSample.first, NumRandomSample);
+				auto SampleV = hiveMath::hiveGenerateRandomRealSet<float>(FromSample.second, ToSample.second, NumRandomSample);
+				for (int i = 0; i < NumRandomSample; i++)
 				{
-					auto u = (i + 0.5f) / vResolution.x();
-					auto v = (k + 0.5f) / vResolution.y();
+					auto u = SampleU[i];
+					auto v = SampleV[i];
+					//auto u = (i + 0.5f) / vResolution.x();
+					//auto v = (k + 0.5f) / vResolution.y();
 					auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), {u, v});
 					if ((BarycentricCoord.array() >= 0).all())
 						TexelSampleInfo.RaySet.push_back(__calcRay(vFace, BarycentricCoord));
@@ -153,6 +164,14 @@ std::array<int, 3> CRayCastingBaker::calcTexelColor(const std::vector<SCandidate
 
 	Eigen::Vector3i Color = (WeightedColor / SumWeight).cast<int>();
 	
+	//if ((Color.x() || Color.y() || Color.z()) == 0)
+	//{
+	//	std::string Info;
+	//	Info += _FORMAT_STR3("\nWeihgtedColor: %1% %2% %3%", std::to_string(WeightedColor.x()), std::to_string(WeightedColor.y()), std::to_string(WeightedColor.z()));
+	//	Info += _FORMAT_STR1("\nSumWewight: %1%\n", std::to_string(SumWeight));
+	//	hiveEventLogger::hiveOutputEvent(Info);
+	//}
+
 	return { Color.x(), Color.y(), Color.z() };
 }
 
