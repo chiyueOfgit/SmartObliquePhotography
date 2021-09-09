@@ -7,8 +7,8 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 //TODO: magic number
-constexpr float SurfelRadius = 5.0f;
-constexpr float SearchRadius = 100.0f;
+constexpr float SurfelRadius = 2.0f;
+constexpr float SearchRadius = 10.0f;
 constexpr float DistanceThreshold = 0.2f;
 constexpr float SampleInterval = 0.01f;
 
@@ -83,6 +83,14 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 					//auto u = (i + 0.5f) / vResolution.x();
 					//auto v = (k + 0.5f) / vResolution.y();
 					auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), {u, v});
+					if ((BarycentricCoord.array() >= 0).all())
+						TexelSampleInfo.RaySet.push_back(__calcRay(vFace, BarycentricCoord));
+				}
+				//ÖÐÐÄ±Ø²âÊÔ
+				{
+					auto u = (i + 0.5f) / vResolution.x();
+					auto v = (k + 0.5f) / vResolution.y();
+					auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), { u, v });
 					if ((BarycentricCoord.array() >= 0).all())
 						TexelSampleInfo.RaySet.push_back(__calcRay(vFace, BarycentricCoord));
 				}
