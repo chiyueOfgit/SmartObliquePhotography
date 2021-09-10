@@ -336,7 +336,7 @@ void CQTInterface::onActionOpen()
         auto config = m_pPointCloudRetouchConfig->getSubconfigAt(0);
         auto num = config->getNumSubconfig();
 
-        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
+        PointCloudRetouch::hiveInit(m_pCloud, hiveGetTileSet(), m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_pCloud, true);
         //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         CQTInterface::__initialVTKWidget();
@@ -434,7 +434,7 @@ void CQTInterface::onActionStartRepairHole()
         hiveSavePointCloudScene(*pCloud, CloudSavedPath);
         
         m_pCloud = hiveInitPointCloudScene({ CloudSavedPath });
-        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
+        PointCloudRetouch::hiveInit(m_pCloud, hiveGetTileSet(), m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_pCloud, true);
         __initialVTKWidget();
 
@@ -527,7 +527,7 @@ void CQTInterface::onActionSetting()
         m_pDisplayOptionsSettingDialog->exec();
 
         __parseConfigFile();
-        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
+        PointCloudRetouch::hiveInit(m_pCloud, hiveGetTileSet(), m_pPointCloudRetouchConfig);
 
         Visualization::hiveRemoveAllShapes();
         Visualization::hiveCancelAllHighlighting();
