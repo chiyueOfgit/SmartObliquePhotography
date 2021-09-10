@@ -7,13 +7,13 @@ namespace hiveObliquePhotography
 	{
 		class CPointCluster;
 
-		class CPointClusterExpander : public IPointClusterExpanderBase
+		class CPointClusterExpander : public IPointClusterExpander
 		{
 		public:
 			CPointClusterExpander() = default;
 			~CPointClusterExpander() = default;
 
-			virtual void runV(const CPointCluster* vCluster);
+			virtual void runV(const CPointCluster* vCluster) override;
 
 #ifdef _UNIT_TEST
 			std::queue<pcl::index_t> initExpandingCandidateQueue(const CPointCluster* vCluster) { return __initExpandingCandidateQueue(vCluster); }

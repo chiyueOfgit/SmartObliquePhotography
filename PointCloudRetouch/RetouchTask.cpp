@@ -83,7 +83,7 @@ bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster) const
 	else if (_IS_STR_IDENTICAL(m_pPointClusterExpander->getProductSig(), std::string("CLUSTER_EXPANDER")))
 		m_pPointClusterExpander->execute<CPointClusterExpander>(vUserSpecifiedCluster);
 
-	return m_pPointClusterExpander->getExpandPoints().size();  //FIXME-010：不要强制去把一个整型转换为bool，可读性不好
+	return m_pPointClusterExpander->getExpandedPointSet().size();  //FIXME-010：不要强制去把一个整型转换为bool，可读性不好
 //FIMXE：返回值有点奇怪，如果聚类没有被扩展，会返回一个false？
 }
 
@@ -93,5 +93,5 @@ bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster) const
 //FIXME-010: execute()调用为什么不返回被扩展出来的点，而要把execute()和这个函数分开？
 void CRetouchTask::dumpTaskMarkedPoints(std::vector<pcl::index_t>& voMarkedPoints) const
 {
-	voMarkedPoints = m_pPointClusterExpander->getExpandPoints();
+	voMarkedPoints = m_pPointClusterExpander->getExpandedPointSet();
 }

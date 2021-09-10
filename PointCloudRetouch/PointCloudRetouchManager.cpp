@@ -177,7 +177,7 @@ bool CPointCloudRetouchManager::dumpPointLabel(std::vector<std::size_t>& voPoint
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::dumpPointLabelAt(std::size_t& voPointLabel, std::uint32_t vIndex) const
+bool CPointCloudRetouchManager::dumpPointLabelAt(std::size_t& voPointLabel, std::uint32_t vIndex) const  //FIXME-014：就为了一个有效性检查，有必要搞这么复杂的函数吗？
 {
 	auto NumPoints = m_Scene.getNumPoint();
 	if (vIndex < NumPoints)
@@ -384,7 +384,7 @@ bool CPointCloudRetouchManager::undo()
 //FUNCTION: 
 void CPointCloudRetouchManager::recordCurrentStatus()
 {
-	m_StatusQueue.push_back(std::make_pair(m_PointLabelSet, m_Timestamp));
+	m_StatusQueue.push_back(std::make_pair(m_PointLabelSet, m_Timestamp));  //FIXME-014：每次调用这个函数的时候，m_Timestamp更新了吗？
 	if (m_StatusQueue.size() > 10)
 		m_StatusQueue.pop_front();
 }

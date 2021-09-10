@@ -43,9 +43,11 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 	return Neighborhood;
 }
 
-std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed) const
+//*****************************************************************
+//FUNCTION: 
+std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed) const  //FIXME-014：两个buildNeighborhood()函数copy/paste的吧，改不了这个习惯吗？
 {
-	if (!m_pPointCloudScene)
+	if (!m_pPointCloudScene)  //FIXME-014: 不要用抛异常的方式来处理无效参数
 		_THROW_RUNTIME_ERROR("PointCloud pointer is uninitialized");
 
 	if (vSeed < 0 || vSeed >= m_pPointCloudScene->size())

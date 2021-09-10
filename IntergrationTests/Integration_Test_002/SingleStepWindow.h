@@ -24,7 +24,7 @@ private:
     hiveObliquePhotography::Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
     hiveConfig::CHiveConfig* m_pPointCloudRetouchConfig = nullptr;
     std::vector<std::size_t> m_PointLabel;
-    std::vector<pcl::index_t> m_ExpandPoints;
+    std::vector<pcl::index_t> m_ExpandedPointSet;
 
     QDockWidget* m_pPointPickingDockWidget = nullptr;
 

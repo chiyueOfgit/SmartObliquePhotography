@@ -8,7 +8,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //FUNCTION: 
 double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 {
-	if (m_FeatureSet.empty() || m_FeatureWeightSet.empty())
+	if (m_FeatureSet.empty() || m_FeatureWeightSet.empty())   //FIXME-014: 这里不要抛异常来处理
 		_THROW_RUNTIME_ERROR("Point cluster is not uninitialized");
 	
 	if (vInputPoint < 0 || vInputPoint > CPointCloudRetouchManager::getInstance()->getScene().getNumPoint())
@@ -18,16 +18,12 @@ double CPointCluster::evaluateProbability(pcl::index_t vInputPoint) const
 	double SumWeight = 0.0;
 	for (auto i = 0; i < m_FeatureSet.size(); i++)
 	{
-		if (m_FeatureWeightSet[i] == 0)
-			continue;
+		if (m_FeatureWeightSet[i] == 0) continue;
 		
 		Probability += m_FeatureWeightSet[i] * m_FeatureSet[i]->evaluateFeatureMatchFactorV(vInputPoint);
 		SumWeight += m_FeatureWeightSet[i];
 	}
-	if (SumWeight != 0)
-		Probability /= SumWeight;
-	else
-		Probability = 0;
+	Probability = (SumWeight != 0) ? Probability / SumWeight : 0;
 
 	_ASSERTE((Probability >= 0) && (Probability <= 1));
 	return Probability;

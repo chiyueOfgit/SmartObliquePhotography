@@ -359,12 +359,12 @@ TEST(Color_Feature_BaseTest_5, Test_5)
 	
 	pFunc(SmallHardnessColorNum);
 	pManager->executeMarker(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::UNWANTED);
-	auto SmallHardnessExpandPointsNumber = pManager->getLitterMarker().getExpander()->getExpandPoints().size();
+	auto SmallHardnessExpandPointsNumber = pManager->getLitterMarker().getExpander()->getExpandedPointSet().size();
 
 	Hardness = 0.7;
 	pFunc(LargeHardnessColorNum);
 	pManager->executeMarker(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::UNWANTED);
-	auto LargeHardnessExpandPointsNumber = pManager->getLitterMarker().getExpander()->getExpandPoints().size();
+	auto LargeHardnessExpandPointsNumber = pManager->getLitterMarker().getExpander()->getExpandedPointSet().size();
 
 	//生长范围只和主颜色数量相关，与硬度非直接关系	fixme: 实现更大区域(可能更平缓)找出更多主颜色
 	if (SmallHardnessColorNum < LargeHardnessColorNum)
