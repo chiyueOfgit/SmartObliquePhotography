@@ -94,8 +94,6 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	
 	_ASSERTE(vPointLabel.size() == m_NumPoints);
 
-	const std::string CloudName = "Cloud2Show";
-
 	auto PointSize = *CVisualizationConfig::getInstance()->getAttribute<double>(POINT_SHOW_SIZE);
 	if (m_VisualFlag & EVisualFlag::ShowCloud)
 	{
@@ -151,8 +149,8 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			}
 
 			pcl::visualization::PointCloudColorHandlerRGBAField<VisualPoint_t> RGBAColor(pCloud2Show);
-			m_pPCLVisualizer->addPointCloud<VisualPoint_t>(pCloud2Show, RGBAColor, CloudName + std::to_string(WhichTile));
-			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, CloudName + std::to_string(WhichTile));
+			m_pPCLVisualizer->addPointCloud<VisualPoint_t>(pCloud2Show, RGBAColor, m_CloudName + std::to_string(WhichTile));
+			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, m_CloudName + std::to_string(WhichTile));
 
 			for (int i = 0; i < m_UserColoredPoints.size(); i++)
 			{
@@ -222,6 +220,13 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	m_pPCLVisualizer->updateCamera();
 
 	RECORD_TIME_END(œ‘ æ)
+}
+
+void CPointCloudVisualizer::setPointRenderSize(double vSize)
+{
+	for (int i = 0; i < m_TileSet.size(); i++)
+		m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, vSize, m_CloudName + std::to_string(i));
+	m_pPCLVisualizer->updateCamera();
 }
 
 //*****************************************************************

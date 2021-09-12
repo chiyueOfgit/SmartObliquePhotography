@@ -19,6 +19,11 @@ void hiveObliquePhotography::Visualization::hiveRefreshVisualizer(const std::vec
 	CPointCloudVisualizer::getInstance()->refresh(vPointLabel, vResetCamera);
 }
 
+void hiveObliquePhotography::Visualization::hiveSetPointRenderSize(double vSize)
+{
+	CPointCloudVisualizer::getInstance()->setPointRenderSize(vSize);
+}
+
 void hiveObliquePhotography::Visualization::hiveRunVisualizerLoop()
 {
 	CPointCloudVisualizer::getInstance()->run();

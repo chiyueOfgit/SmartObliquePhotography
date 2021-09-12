@@ -158,7 +158,7 @@ void CQTInterface::__initialSlider(const QStringList& vFilePathList)
             m_PointSize = m_pPointSizeSlider->value();
             auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute(Visualization::POINT_SHOW_SIZE, static_cast<double>(m_PointSize));
             if (OverwriteSuccess)
-                Visualization::hiveGetPCLVisualizer()->updateCamera();
+                Visualization::hiveSetPointRenderSize(m_PointSize);
         }
     );
 

@@ -13,6 +13,8 @@ namespace hiveObliquePhotography
 
 		VISUALIZATION_DECLSPEC void hiveRefreshVisualizer(const std::vector<std::size_t>& vPointLabel, bool vResetCamera = false);
 
+		VISUALIZATION_DECLSPEC void hiveSetPointRenderSize(double vSize);
+
 		VISUALIZATION_DECLSPEC void hiveRunVisualizerLoop();
 
 		VISUALIZATION_DECLSPEC void hiveSetVisualFlag(int vFlag);

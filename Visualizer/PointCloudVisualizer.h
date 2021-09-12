@@ -27,6 +27,8 @@ namespace hiveObliquePhotography
 
 			void refresh(const std::vector<std::size_t>& vPointLabel, bool vResetCamera = false);
 
+			void setPointRenderSize(double vSize);
+
 			void run();
 
 			void setVisualFlag(int Flag) { _ASSERTE(Flag >= 0); m_VisualFlag = Flag; }
@@ -63,6 +65,8 @@ namespace hiveObliquePhotography
 			std::vector<SHighlightPoints> m_UserColoredPoints;
 
 			std::vector<Eigen::Vector3i> m_MainColors;
+
+			const std::string m_CloudName = "Cloud2Show";
 
 			std::tuple<int, int, int> m_LitterColor = { 255, 0, 0 };
 			std::tuple<int, int, int> m_BackgroundColor = { 0, 0, 255 };
