@@ -177,6 +177,31 @@ bool CPointCloudRetouchManager::dumpPointLabel(std::vector<std::size_t>& voPoint
 
 //*****************************************************************
 //FUNCTION: 
+bool CPointCloudRetouchManager::dumpLastChangedTileLabel(bool vIsLitterMode, std::size_t& voTile, std::vector<std::size_t>& voTileLabel)
+{
+	std::vector<pcl::index_t> ExpandPoints;
+	if (vIsLitterMode)
+		m_LitterMarker.dumpTaskMarkedPoints(ExpandPoints);
+	else
+		m_BackgroundMarker.dumpTaskMarkedPoints(ExpandPoints);
+
+	if (!ExpandPoints.empty())
+	{
+		voTile = m_Scene.getTileIndexByPoint(ExpandPoints.front());
+		auto Offset = m_Scene.getTileOffset(voTile);
+		auto NumPoints = m_Scene.getTileNumPoints(voTile);
+
+		voTileLabel.clear();
+		for (int i = 0; i < NumPoints; i++)
+			voTileLabel.push_back(static_cast<std::size_t>(m_PointLabelSet.getLabelAt(i + Offset)));
+		return true;
+	}
+	else
+		return false;
+}
+
+//*****************************************************************
+//FUNCTION: 
 bool CPointCloudRetouchManager::dumpPointLabelAt(std::size_t& voPointLabel, std::uint32_t vIndex) const
 {
 	auto NumPoints = m_Scene.getNumPoint();
@@ -324,6 +349,8 @@ std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::inde
 	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vType, vPara);
 }
 
+//*****************************************************************
+//FUNCTION: 
 std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed)
 {
 	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed);

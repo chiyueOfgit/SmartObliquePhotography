@@ -49,7 +49,17 @@ Eigen::Vector3i CPointCloudScene::getColorAt(pcl::index_t vIndex) const
 	return __extractRgba(__getPoint(vIndex).rgb);
 }
 
-PointCloud_t::PointType CPointCloudScene::__getPoint(pcl::index_t vIndex) const
+//*****************************************************************
+//FUNCTION: 
+std::size_t CPointCloudScene::getTileIndexByPoint(pcl::index_t vIndex) const
+{
+	std::size_t WhichTile = 0;
+	while (WhichTile + 1 < m_TileSet.size() && m_TileSet[WhichTile + 1].first <= vIndex)
+		WhichTile++;
+	return WhichTile;
+}
+
+inline PointCloud_t::PointType CPointCloudScene::__getPoint(pcl::index_t vIndex) const
 {
 	std::size_t WhichTile = 0;
 	while (WhichTile + 1 < m_TileSet.size() && m_TileSet[WhichTile + 1].first <= vIndex)

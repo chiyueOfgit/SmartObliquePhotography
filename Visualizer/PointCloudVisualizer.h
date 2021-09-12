@@ -26,6 +26,7 @@ namespace hiveObliquePhotography
 			void reset(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt = true);
 
 			void refresh(const std::vector<std::size_t>& vPointLabel, bool vResetCamera = false);
+			void refresh(std::size_t vWhichTile, const std::vector<std::size_t>& vPointLabel);
 
 			void setPointRenderSize(double vSize);
 
