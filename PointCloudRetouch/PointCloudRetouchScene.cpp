@@ -18,9 +18,9 @@ void CPointCloudScene::init(const std::vector<PointCloud_t::Ptr>& vTileSet)
 {
 	m_NumPoints = 0;
 	m_TileSet.clear();
-	for (int Offset = 0; auto pCloud : vTileSet)
+	for (int Offset = 0; const auto& pCloud : vTileSet)
 	{
-		m_TileSet.push_back({ Offset, pCloud });
+		m_TileSet.emplace_back(Offset, pCloud);
 		Offset += pCloud->size();
 		m_NumPoints += pCloud->size();
 	}
@@ -100,9 +100,7 @@ std::vector<pcl::index_t> CPointCloudScene::getPointsInBox(const std::pair<Eigen
 		
 		int i = 0;
 		for (i = 0; i < 3; i++)
-		{
 			if (Pos.data()[i] < vBox.first.data()[i] || Pos.data()[i] > vBox.second.data()[i]) break;
-		}
 		if (i == 3) PointsInBox.push_back(Index);
 	}
 	return PointsInBox;

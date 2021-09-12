@@ -6,7 +6,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 INeighborhoodBuilder::~INeighborhoodBuilder()
 {
-
+	delete m_pPointLabelSet;
 }
 
 //*****************************************************************
