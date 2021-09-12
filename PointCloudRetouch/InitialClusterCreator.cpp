@@ -13,7 +13,6 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 //FUNCTION: 
 CPointCluster* CInitialClusterCreator::createInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig *vClusterConfig)
 {
-
 	CPointCluster* pInitialCluster = new CPointCluster;
 	auto CloudScene = CPointCloudRetouchManager::getInstance()->getScene();
 	for (auto CurrentIndex : vUserMarkedRegion)

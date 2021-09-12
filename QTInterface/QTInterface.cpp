@@ -158,11 +158,7 @@ void CQTInterface::__initialSlider(const QStringList& vFilePathList)
             m_PointSize = m_pPointSizeSlider->value();
             auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute(Visualization::POINT_SHOW_SIZE, static_cast<double>(m_PointSize));
             if (OverwriteSuccess)
-            {
-                std::vector<std::size_t> PointLabel;
-                PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-                Visualization::hiveRefreshVisualizer(PointLabel);
-            }
+                Visualization::hiveGetPCLVisualizer()->updateCamera();
         }
     );
 
