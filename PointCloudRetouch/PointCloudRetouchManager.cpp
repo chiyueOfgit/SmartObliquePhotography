@@ -384,7 +384,7 @@ bool CPointCloudRetouchManager::undo()
 //FUNCTION: 
 void CPointCloudRetouchManager::recordCurrentStatus()
 {
-	m_StatusQueue.push_back(std::make_pair(m_PointLabelSet, m_Timestamp));
+	m_StatusQueue.emplace_back(m_PointLabelSet, m_Timestamp);
 	if (m_StatusQueue.size() > 10)
 		m_StatusQueue.pop_front();
 }

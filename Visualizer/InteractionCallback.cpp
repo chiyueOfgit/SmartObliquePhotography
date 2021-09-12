@@ -274,6 +274,28 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		if (PickedIndices.empty())
 			return;
 
+		Eigen::Vector3f PickWorldPos{};
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->singlePick(m_PosX, m_PosY, PickWorldPos.x(), PickWorldPos.y(), PickWorldPos.z());
+		int WhichTile = 0;
+		for(; WhichTile < m_pVisualizer->m_TileBoxSet.size(); WhichTile++)
+		{
+			auto& Box = m_pVisualizer->m_TileBoxSet[WhichTile];
+			bool Flag = true;
+			for (int i = 0; i < 3 && Flag; i++)
+			{
+				if (PickWorldPos.data()[i] < Box.first.data()[i])
+					Flag = false;
+				if (PickWorldPos.data()[i] > Box.second.data()[i])
+					Flag = false;
+			}
+			if (Flag)
+				break;
+		}
+
+		if (WhichTile < m_pVisualizer->m_TileSet.size())
+			for (auto& Index : PickedIndices)
+				Index += m_pVisualizer->m_OffsetSet[WhichTile];
+
 		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
 			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);

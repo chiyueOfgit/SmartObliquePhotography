@@ -6,7 +6,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 INeighborhoodBuilder::~INeighborhoodBuilder()
 {
-
+	delete m_pPointLabelSet;
 }
 
 //*****************************************************************
@@ -52,7 +52,7 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 
 std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed) const
 {
-	if (!m_TileSet.empty())
+	if (m_TileSet.empty())
 		_THROW_RUNTIME_ERROR("PointCloud pointer is uninitialized");
 
 	if (vSeed < 0 || vSeed >= m_NumPoints)

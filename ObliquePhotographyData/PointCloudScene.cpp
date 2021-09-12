@@ -5,7 +5,6 @@
 #include <string>
 #include "PointCloudLoader.h"
 #include "PointCloudSaver.h"
-#include <filesystem>
 
 using namespace hiveObliquePhotography;
 
@@ -17,11 +16,9 @@ CPointCloudScene::~CPointCloudScene()
 std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
 {
 	if (vFileNameSet.empty()) return {};
-	
-	//_ASSERTE(m_PointCloudTileMap.empty());
 
 	std::vector<std::string> LoadedFileSet;
-	std::vector<PointCloud_t::Ptr> m_TileSet;
+	std::vector<PointCloud_t::Ptr> TileSet;
 	for (const auto& FileName : vFileNameSet)
 	{
 		std::string LowerFileName = hiveUtility::hiveLocateFile(FileName);
@@ -49,7 +46,7 @@ std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std
 			catch (...) { }
 
 			if(!pTile) continue;
-			m_TileSet.push_back(pTile);
+			TileSet.push_back(pTile);
 			LoadedFileSet.emplace_back(LowerFileName);
 		}
 		else
@@ -57,7 +54,7 @@ std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load tile [%1%] due to unknown format.", FileName));
 		}
 	}
-	return m_TileSet;
+	return TileSet;
 }
 
 //*****************************************************************

@@ -56,6 +56,8 @@ namespace hiveObliquePhotography
 			std::vector<VisualCloud_t::Ptr> m_TileSet;
 			std::vector<std::size_t> m_OffsetSet;
 			std::size_t m_NumPoints;
+			std::vector<std::pair<Eigen::Vector3f, Eigen::Vector3f>> m_TileBoxSet;
+
 			//std::pair<Eigen::Vector3f, Eigen::Vector3f> m_AABB;
 			std::vector<Eigen::Vector3d> m_TileCenter;
 			
