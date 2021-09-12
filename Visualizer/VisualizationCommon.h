@@ -6,7 +6,7 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
-		using VisualPoint_t = pcl::PointXYZRGB;
+		using VisualPoint_t = pcl::PointXYZRGBA;
 		using VisualCloud_t = pcl::PointCloud<VisualPoint_t>;
 		using RetouchPoint_t = pcl::PointXYZRGBNormal;
 		using RetouchCloud_t = pcl::PointCloud<RetouchPoint_t>;
