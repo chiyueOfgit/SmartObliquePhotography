@@ -32,5 +32,6 @@ namespace hiveObliquePhotography
 
 		//TODO: È¨ÏÞÂÔ´ó
 		RETOUCH_DECLSPEC void hiveEraseMark(const std::vector<pcl::index_t>& vPoints);
+		RETOUCH_DECLSPEC void hiveTagLabel(const std::vector<pcl::index_t>& vPoints, bool vIsLitterMarker);	//only for perform
 	}
 }

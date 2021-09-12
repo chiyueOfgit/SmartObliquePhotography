@@ -162,3 +162,14 @@ void hiveObliquePhotography::PointCloudRetouch::hiveRepairHole(std::vector<pcl::
 {
 	CPointCloudRetouchManager::getInstance()->executeHoleRepairer(voNewPoints);
 }
+
+void hiveObliquePhotography::PointCloudRetouch::hiveTagLabel(const std::vector<pcl::index_t>& vPoints, bool vIsLitterMarker)	//only for perform
+{
+	EPointLabel AimLabel;
+	if (vIsLitterMarker)
+		AimLabel = EPointLabel::UNWANTED;
+	else
+		AimLabel = EPointLabel::KEPT;
+	for (auto Index : vPoints)
+		CPointCloudRetouchManager::getInstance()->tagPointLabel(Index, AimLabel, 0, 0);
+}
