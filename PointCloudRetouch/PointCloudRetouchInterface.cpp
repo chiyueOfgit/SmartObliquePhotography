@@ -8,12 +8,12 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveInit(PointCloud_t::Ptr vPointCloud, const std::vector<PointCloud_t::Ptr>& vTileSet, const hiveConfig::CHiveConfig* vConfig)
+bool hiveObliquePhotography::PointCloudRetouch::hiveInit(const std::vector<PointCloud_t::Ptr>& vTileSet, const hiveConfig::CHiveConfig* vConfig)
 {
-	_ASSERTE(vPointCloud && vConfig);
+	_ASSERTE(!vTileSet.empty() && vConfig);
 	if (_access(KEYWORD::TEMP_FOLDER.c_str(), 0) == -1)
 		_mkdir(KEYWORD::TEMP_FOLDER.c_str());
-	return CPointCloudRetouchManager::getInstance()->init(vPointCloud, vTileSet, vConfig);
+	return CPointCloudRetouchManager::getInstance()->init(vTileSet, vConfig);
 }
 
 //*****************************************************************

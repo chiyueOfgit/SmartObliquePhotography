@@ -11,16 +11,17 @@ INeighborhoodBuilder::~INeighborhoodBuilder()
 
 //*****************************************************************
 //FUNCTION: 
-bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, PointCloud_t::Ptr vPointCloudScene, const CPointLabelSet* vPointLabelSet, const std::vector<PointCloud_t::Ptr>& vTileSet)
+bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, const std::vector<PointCloud_t::Ptr>& vTileSet, const CPointLabelSet* vPointLabelSet)
 {
-	_ASSERTE(vPointCloudScene && vPointLabelSet);
-	m_pPointCloudScene = vPointCloudScene;
-	m_pPointLabelSet = vPointLabelSet;
+	_ASSERTE(!vTileSet.empty() && vPointLabelSet);
 	m_TileSet = vTileSet;
+	m_pPointLabelSet = vPointLabelSet;
+	m_NumPoints = 0;
 	for (int i = 0, Offset = 0; i < m_TileSet.size(); i++)
 	{
 		m_OffsetSet.push_back(Offset);
 		Offset += m_TileSet[i]->size();
+		m_NumPoints += m_TileSet[i]->size();
 	}
 
 	reset();
@@ -33,10 +34,10 @@ bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vCon
 //FUNCTION: 
 std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara) const
 {
-	if (!m_pPointCloudScene)
+	if (m_TileSet.empty())
 		_THROW_RUNTIME_ERROR("PointCloud pointer is uninitialized");
 
-	if (vSeed <0 || vSeed >= m_pPointCloudScene->size())
+	if (vSeed <0 || vSeed >= m_NumPoints)
 		_THROW_RUNTIME_ERROR("Seed index is out of range");
 
 	std::vector<pcl::index_t> Neighborhood;
@@ -51,10 +52,10 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 
 std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t vSeed) const
 {
-	if (!m_pPointCloudScene)
+	if (!m_TileSet.empty())
 		_THROW_RUNTIME_ERROR("PointCloud pointer is uninitialized");
 
-	if (vSeed < 0 || vSeed >= m_pPointCloudScene->size())
+	if (vSeed < 0 || vSeed >= m_NumPoints)
 		_THROW_RUNTIME_ERROR("Seed index is out of range");
 
 	std::vector<pcl::index_t> Neighborhood;

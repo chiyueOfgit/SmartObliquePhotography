@@ -293,7 +293,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		{
 			for (auto Index : NearestPoints)
 			{
-				auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
+				int WhichTile = 0;
+				while (WhichTile + 1 < m_pVisualizer->m_TileSet.size() && m_pVisualizer->m_OffsetSet[WhichTile + 1] <= Index)
+					WhichTile++;
+
+				auto& Point = m_pVisualizer->m_TileSet[WhichTile]->points[Index - m_pVisualizer->m_OffsetSet[WhichTile]];
 				Eigen::Vector3f CameraPos2Point = { float(Camera.pos[0] - Point.x), float(Camera.pos[1] - Point.y), float(Camera.pos[2] - Point.z) };
 				Eigen::Vector3i Color{ Point.r, Point.g, Point.b };
 				m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 0.01f * CameraPos2Point, 30.0);

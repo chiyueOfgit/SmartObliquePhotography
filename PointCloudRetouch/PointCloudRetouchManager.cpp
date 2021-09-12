@@ -12,14 +12,14 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const std::vector<PointCloud_t::Ptr>& vTileSet, const hiveConfig::CHiveConfig* vConfig)
+bool CPointCloudRetouchManager::init(const std::vector<PointCloud_t::Ptr>& vTileSet, const hiveConfig::CHiveConfig* vConfig)
 {
-	_ASSERTE(vPointCloud && vConfig);
+	_ASSERTE(!vTileSet.empty() && vConfig);
 
 	bool Status = __reset();
 	_ASSERTE(Status);
 
-	m_Scene.init(vPointCloud);
+	m_Scene.init(vTileSet);
 	m_PointLabelSet.init(m_Scene.getNumPoint());
 	m_pConfig = vConfig;
 
@@ -68,7 +68,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const std::v
 		{
 			std::optional<std::string> NeighborhoodBuilderSig = pConfig->getAttribute<std::string>("SIG");
 			_ASSERTE(NeighborhoodBuilderSig.has_value());
-			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), pConfig, vPointCloud, &m_PointLabelSet, vTileSet);
+			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), pConfig, vTileSet, &m_PointLabelSet);
 			_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating neighborhood builder [%1%].", NeighborhoodBuilderSig.value()), false);
 			continue;
 		}

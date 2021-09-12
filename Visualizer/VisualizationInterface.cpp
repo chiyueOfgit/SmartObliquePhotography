@@ -4,14 +4,14 @@
 
 using namespace hiveObliquePhotography::Visualization;
 
-void hiveObliquePhotography::Visualization::hiveInitVisualizer(RetouchCloud_t::Ptr vPointCloud, bool vIsInQt)
+void hiveObliquePhotography::Visualization::hiveInitVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt)
 {
-	CPointCloudVisualizer::getInstance()->init<RetouchCloud_t>(vPointCloud, vIsInQt);
+	CPointCloudVisualizer::getInstance()->init(vTileSet, vIsInQt);
 }
 
-void hiveObliquePhotography::Visualization::hiveResetVisualizer(RetouchCloud_t::Ptr vPointCloud, bool vIsInQt)
+void hiveObliquePhotography::Visualization::hiveResetVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt)
 {
-	CPointCloudVisualizer::getInstance()->reset<RetouchCloud_t>(vPointCloud, vIsInQt);
+	CPointCloudVisualizer::getInstance()->reset(vTileSet, vIsInQt);
 }
 
 void hiveObliquePhotography::Visualization::hiveRefreshVisualizer(const std::vector<std::size_t>& vPointLabel, bool vResetCamera)
@@ -34,7 +34,7 @@ int hiveObliquePhotography::Visualization::hiveHighlightPointSet(const std::vect
 	if (!vPointSet.empty())
 	{
 		auto MaxIter = std::max_element(vPointSet.begin(), vPointSet.end());
-		_ASSERTE(MaxIter != vPointSet.end() && *MaxIter < CPointCloudVisualizer::getInstance()->m_pSceneCloud->size());
+		_ASSERTE(MaxIter != vPointSet.end() && *MaxIter < CPointCloudVisualizer::getInstance()->m_NumPoints);
 	}
 	_ASSERTE(vColor.x() >= 0 && vColor.y() >= 0 && vColor.z() >= 0);
 

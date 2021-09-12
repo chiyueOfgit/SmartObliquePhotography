@@ -5,7 +5,7 @@ namespace hiveObliquePhotography
 {
 	namespace PointCloudRetouch
 	{
-		RETOUCH_DECLSPEC bool hiveInit(PointCloud_t::Ptr vPointCloud, const std::vector<PointCloud_t::Ptr>& vTileSet, const hiveConfig::CHiveConfig* vConfig);
+		RETOUCH_DECLSPEC bool hiveInit(const std::vector<PointCloud_t::Ptr>& vTileSet, const hiveConfig::CHiveConfig* vConfig);
 		RETOUCH_DECLSPEC bool hiveUndo();
 		RETOUCH_DECLSPEC bool hivePreprocessSelected(std::vector<pcl::index_t>& vioSelected, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc, const Eigen::Vector3d& vViewPos);
 		RETOUCH_DECLSPEC bool hiveMarkBackground(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc);

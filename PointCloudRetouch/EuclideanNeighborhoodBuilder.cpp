@@ -31,11 +31,12 @@ std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pc
 	int WhichTile = 0;
 	while (WhichTile + 1 < m_OffsetSet.size() && m_OffsetSet[WhichTile + 1] <= vSeed)
 		WhichTile++;
+	vSeed -= m_OffsetSet[WhichTile];
 
 	if (vType == "NEAREST")
-		m_TreeSet[WhichTile]->nearestKSearch(m_pPointCloudScene->points[vSeed], static_cast<int>(vPara), Neighborhood, Distance);
+		m_TreeSet[WhichTile]->nearestKSearch(m_TileSet[WhichTile]->points[vSeed], static_cast<int>(vPara), Neighborhood, Distance);
 	else if (vType == "RADIUS")
-		m_TreeSet[WhichTile]->radiusSearch(m_pPointCloudScene->points[vSeed], vPara, Neighborhood, Distance);
+		m_TreeSet[WhichTile]->radiusSearch(m_TileSet[WhichTile]->points[vSeed], vPara, Neighborhood, Distance);
 	//发生NRVO
 	for (auto& Index : Neighborhood)
 		Index += m_OffsetSet[WhichTile];
@@ -49,11 +50,12 @@ std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pc
 	int WhichTile = 0;
 	while (WhichTile + 1 < m_OffsetSet.size() && m_OffsetSet[WhichTile + 1] <= vSeed)
 		WhichTile++;
+	vSeed -= m_OffsetSet[WhichTile];
 
 	if (m_SearchMode == "NEAREST")
-		m_TreeSet[WhichTile]->nearestKSearch(m_pPointCloudScene->points[vSeed], m_NearestN, Neighborhood, Distance);
+		m_TreeSet[WhichTile]->nearestKSearch(m_TileSet[WhichTile]->points[vSeed], m_NearestN, Neighborhood, Distance);
 	else if (m_SearchMode == "RADIUS")
-		m_TreeSet[WhichTile]->radiusSearch(m_pPointCloudScene->points[vSeed], m_Radius, Neighborhood, Distance);
+		m_TreeSet[WhichTile]->radiusSearch(m_TileSet[WhichTile]->points[vSeed], m_Radius, Neighborhood, Distance);
 	//发生NRVO
 	for (auto& Index : Neighborhood)
 		Index += m_OffsetSet[WhichTile];
