@@ -105,7 +105,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 				for (auto& Point : NewPoints)
 				{
 					if (Point.r == 0 && Point.g == 0 && Point.b == 0)
-						Point.rgba = -1;
+						Point.rgb = -1;
 					RepairCloud->push_back(Point);
 				}
 

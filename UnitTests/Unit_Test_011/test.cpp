@@ -39,7 +39,7 @@ protected:
 				Point.y = Radius * sin(radians(Angle));
 				Point.z = 0.0f;
 				Point.curvature = Radius;
-				Point.rgba = -1;
+				Point.rgb = -1;
 				m_pCloud->push_back(Point);
 			}
 		}

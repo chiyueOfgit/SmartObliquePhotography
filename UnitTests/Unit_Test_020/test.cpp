@@ -75,7 +75,7 @@ protected:
 				for (auto& Point : TempPoints)
 				{
 					if (Point.r == 0 && Point.g == 0 && Point.b == 0)
-						Point.rgba = -1;
+						Point.rgb = -1;
 					else
 					{
 						//×¢ÊÍÈ¡Ïû¸ßÁÁ

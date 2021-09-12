@@ -109,7 +109,7 @@ std::vector<pcl::index_t> CPointCloudScene::getPointsInBox(const std::pair<Eigen
 //*****************************************************************
 //FUNCTION: 
 Eigen::Vector3i CPointCloudScene::__extractRgba(float vRgba) const
-{//FIXME-010: 函数名说要提取rgba，但返回的是rgb，故意的吗？
+{//FIXME-010: 函数名说要提取rgb，但返回的是rgb，故意的吗？
 	union ColorLayout
 	{
 		struct
@@ -119,10 +119,10 @@ Eigen::Vector3i CPointCloudScene::__extractRgba(float vRgba) const
 			std::uint8_t r;
 			std::uint8_t a;
 		};
-		float rgba;
+		float rgb;
 	};
 	ColorLayout Color;  
-	Color.rgba = vRgba;    //FIXME-010：这种颜色的转化方法很奇怪，给个说明文档
+	Color.rgb = vRgba;    //FIXME-010：这种颜色的转化方法很奇怪，给个说明文档
 
 	Eigen::Vector3i Rgb;
 	Rgb.x() = Color.r;

@@ -96,13 +96,13 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			case 1:
 			{
 				unsigned char KeptHighlightColor[4] = { std::get<2>(m_BackgroundColor), std::get<1>(m_BackgroundColor), std::get<0>(m_BackgroundColor), 255 };
-				std::memcpy(&pCloud2Show->points[i].rgba, KeptHighlightColor, sizeof(KeptHighlightColor));
+				std::memcpy(&pCloud2Show->points[i].rgb, KeptHighlightColor, sizeof(KeptHighlightColor));
 				break;
 			}
 			case 2:
 			{
 				unsigned char UnwantedHighlightColor[4] = { std::get<2>(m_LitterColor), std::get<1>(m_LitterColor), std::get<0>(m_LitterColor), 255 };	//gbr
-				std::memcpy(&pCloud2Show->points[i].rgba, UnwantedHighlightColor, sizeof(UnwantedHighlightColor));
+				std::memcpy(&pCloud2Show->points[i].rgb, UnwantedHighlightColor, sizeof(UnwantedHighlightColor));
 				break;
 			}
 			case 3:
@@ -111,7 +111,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			case 4:
 			{
 				unsigned char StandardWhite[4] = { 255, 255, 255, 255 };
-				std::memcpy(&pCloud2Show->points[i].rgba, StandardWhite, sizeof(StandardWhite));
+				std::memcpy(&pCloud2Show->points[i].rgb, StandardWhite, sizeof(StandardWhite));
 				break;
 			}
 			}
@@ -125,12 +125,12 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 						if (Index < m_pSceneCloud->size())
 						{
 							unsigned char UserColor[4] = { Record.Color.z(), Record.Color.y(), Record.Color.x(), 255 };
-							std::memcpy(&pCloud2Show->points[Index].rgba, UserColor, sizeof(UserColor));
+							std::memcpy(&pCloud2Show->points[Index].rgb, UserColor, sizeof(UserColor));
 						}
 		}
 
-		pcl::visualization::PointCloudColorHandlerRGBAField<PointCloud_t::PointType> RGBAColor(pCloud2Show);
-		m_pPCLVisualizer->addPointCloud(pCloud2Show, RGBAColor, "Cloud2Show");
+		pcl::visualization::PointCloudColorHandlerRGBField<PointCloud_t::PointType> RGBColor(pCloud2Show);
+		m_pPCLVisualizer->addPointCloud(pCloud2Show, RGBColor, "Cloud2Show");
 		m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "Cloud2Show");
 
 		for (int i = 0; i < m_UserColoredPoints.size(); i++)
