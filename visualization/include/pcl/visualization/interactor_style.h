@@ -293,6 +293,20 @@ namespace pcl
             return result;
         }
 
+        inline int
+        singlePick(float vPosX, float vPosY, float& vX, float& vY, float& vZ)
+        {
+            auto picking = PointPickingCallback::New();
+            picking->x_ = vPosX;
+            picking->y_ = vPosY;
+
+            auto iren = this->GetInteractor();
+            iren->SetEventPosition(vPosX, vPosY);
+
+            int result = picking->performSinglePick(iren, vX, vY, vZ);
+            return result;
+        }
+
         inline void switchMode(bool vPick);
     	
        protected:

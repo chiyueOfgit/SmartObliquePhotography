@@ -31,26 +31,28 @@ void CPointCloudVisualizer::init(const std::vector<RetouchCloud_t::Ptr>& vTileSe
 	m_UserCloudSet.clear();
 
 	m_TileSet.resize(vTileSet.size());
+	m_TileBoxSet.resize(vTileSet.size());
 	m_NumPoints = 0;
-	m_AABB.first = { FLT_MAX, FLT_MAX, FLT_MAX };
-	m_AABB.second = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
-	for (int i = 0, Offset = 0; i < m_TileSet.size(); i++)
+
+	for (int WhichTile = 0, Offset = 0; WhichTile < m_TileSet.size(); WhichTile++)
 	{
 		m_OffsetSet.push_back(Offset);
-		m_TileSet[i].reset(new VisualCloud_t);
-		pcl::copyPointCloud(*vTileSet[i], *m_TileSet[i]);
-		m_NumPoints += m_TileSet[i]->size();
-		Offset += m_TileSet[i]->size();
+		m_TileSet[WhichTile].reset(new VisualCloud_t);
+		pcl::copyPointCloud(*vTileSet[WhichTile], *m_TileSet[WhichTile]);
+		m_NumPoints += m_TileSet[WhichTile]->size();
+		Offset += m_TileSet[WhichTile]->size();
 
-		for (auto& Point : *m_TileSet[i])
+		m_TileBoxSet[WhichTile].first = { FLT_MAX, FLT_MAX, FLT_MAX };
+		m_TileBoxSet[WhichTile].second = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+		for (auto& Point : *m_TileSet[WhichTile])
 		{
 			Eigen::Vector3f Pos{ Point.x, Point.y, Point.z };
 			for (int i = 0; i < 3; i++)
 			{
-				if (Pos.data()[i] < m_AABB.first.data()[i])
-					m_AABB.first.data()[i] = Pos.data()[i];
-				if (Pos.data()[i] > m_AABB.second.data()[i])
-					m_AABB.second.data()[i] = Pos.data()[i];
+				if (Pos.data()[i] < m_TileBoxSet[WhichTile].first.data()[i])
+					m_TileBoxSet[WhichTile].first.data()[i] = Pos.data()[i];
+				if (Pos.data()[i] > m_TileBoxSet[WhichTile].second.data()[i])
+					m_TileBoxSet[WhichTile].second.data()[i] = Pos.data()[i];
 			}
 		}
 	}
@@ -277,8 +279,8 @@ void CPointCloudVisualizer::removeUserColoredPoints(int vId)
 //FUNCTION: 
 void CPointCloudVisualizer::jumpToThreeView(EView vViewType)
 {
-	Eigen::Vector3f MinCoord = m_AABB.first;
-	Eigen::Vector3f MaxCoord = m_AABB.second;
+	Eigen::Vector3f MinCoord = m_TileBoxSet[0].first;
+	Eigen::Vector3f MaxCoord = m_TileBoxSet[0].second;
 	auto Offset = MaxCoord - MinCoord;
 	int MinDis = INT_MAX; int MaxDis = -INT_MAX;
 	int MinDirection = -1; int MaxDirection = -1; int MidDirection = -1;
@@ -363,8 +365,8 @@ void CPointCloudVisualizer::jumpToThreeView(EView vViewType)
 //FUNCTION: 
 void CPointCloudVisualizer::showBoundingBox()
 {
-	Eigen::Vector3f MinCoord = m_AABB.first;
-	Eigen::Vector3f MaxCoord = m_AABB.second;
+	Eigen::Vector3f MinCoord = m_TileBoxSet[0].first;
+	Eigen::Vector3f MaxCoord = m_TileBoxSet[0].second;
 	
 	Eigen::Vector3f Vertex1{ MaxCoord.x(), MinCoord.y(), MinCoord.z() };  pcl::PointXYZ Point1(Vertex1.x(), Vertex1.y(), Vertex1.z());
 	Eigen::Vector3f Vertex2{ MaxCoord.x(), MaxCoord.y(), MinCoord.z() };  pcl::PointXYZ Point2(Vertex2.x(), Vertex2.y(), Vertex2.z());
