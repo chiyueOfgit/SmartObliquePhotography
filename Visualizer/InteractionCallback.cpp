@@ -114,7 +114,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			}
 		}
 
-		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_MAIN_VIEW).value())
+		/*if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_MAIN_VIEW).value())
 		{
 			m_pVisualizer->jumpToThreeView(EView::MainView);
 		}
@@ -129,7 +129,8 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SHOW_BOUNDING_BOX).value())
 		{
 			m_pVisualizer->showBoundingBox();
-		}
+		}*/
+
 		
 		if (RefreshFlag)
 		{
@@ -165,6 +166,29 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	m_PosY = vEvent.getY();
 
 	m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value());
+
+	if (m_MousePressStatus[0])
+	{
+		std::vector<Eigen::Vector3d> TileCenter = m_pVisualizer->getTileCenter();
+		auto ScenceName = m_pVisualizer->getName();
+		pcl::visualization::Camera Camera;
+		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+		Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+		Eigen::Vector3d CameraFocal{ Camera.focal[0], Camera.focal[1], Camera.focal[2] };
+		Eigen::Vector3d Eye = CameraPos + (CameraFocal - CameraPos).normalized() * Camera.clip[0];
+
+		for (int i = 0; i < TileCenter.size(); i++)
+		{
+			double Distance = (Eye - TileCenter[i]).norm();
+			if (Distance < 40)
+				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3.0, ScenceName + std::to_string(i));
+			else if (Distance > 100)
+				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1.0, ScenceName + std::to_string(i));
+			else
+				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2.0, ScenceName + std::to_string(i));
+		}
+		m_pVisualizer->m_pPCLVisualizer->updateCamera();
+	}
 
 	if (m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value() && m_MousePressStatus[0])
 	{
