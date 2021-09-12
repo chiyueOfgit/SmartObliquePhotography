@@ -18,7 +18,7 @@ std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std
 {
 	if (vFileNameSet.empty()) return {};
 	
-	_ASSERTE(m_PointCloudTileMap.empty());
+	//_ASSERTE(m_PointCloudTileMap.empty());
 
 	std::vector<std::string> LoadedFileSet;
 	std::vector<PointCloud_t::Ptr> m_TileSet;
