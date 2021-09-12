@@ -20,6 +20,11 @@ namespace hiveObliquePhotography
 			Eigen::Vector4f getNormalAt(pcl::index_t vIndex) const;
 			Eigen::Vector3i getColorAt(pcl::index_t vIndex) const;
 			
+			std::size_t getTileIndexByPoint(pcl::index_t vIndex) const;
+
+			std::size_t getTileOffset(std::size_t vTileIndex) const { return m_TileSet[vTileIndex].first; }
+			std::size_t getTileNumPoints(std::size_t vTileIndex) const { return m_TileSet[vTileIndex].second->size(); }
+
 			std::size_t getNumPoint() const { return m_NumPoints; }
 
 			std::pair<Eigen::Vector3f, Eigen::Vector3f> getBoundingBox(const std::vector<pcl::index_t>& vIndices) const;

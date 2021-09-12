@@ -15,7 +15,6 @@ namespace hiveObliquePhotography
 		private:
 			std::pair<Eigen::Vector2d, Eigen::Vector2d> __computeBoundingBoxOnNdc(const std::vector<pcl::index_t>& vPointSet, const Eigen::Matrix4d& vPvMatrix);
 
-
 		};
 	}
 }

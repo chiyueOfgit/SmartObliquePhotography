@@ -237,12 +237,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && Button == pcl::visualization::MouseEvent::RightButton && PressStatus)
 	{
-		{
-			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-			m_pVisualizer->refresh(PointLabel);
-		}
-
+		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
+		m_pVisualizer->m_pPCLVisualizer->updateCamera();
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
 
 		//reset
@@ -352,9 +348,10 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		if (m_IsRefreshImmediately)
 		{
+			std::size_t Tile = 0;
 			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-			m_pVisualizer->refresh(PointLabel);
+			PointCloudRetouch::hiveDumpLastChangedTileLabel(m_UnwantedMode, Tile, PointLabel);
+			m_pVisualizer->refresh(Tile, PointLabel);
 		}
 
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
