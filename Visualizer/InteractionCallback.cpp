@@ -167,7 +167,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value());
 
-	if (m_MousePressStatus[0])
+	/*if (m_MousePressStatus[0])
 	{
 		std::vector<Eigen::Vector3d> TileCenter = m_pVisualizer->getTileCenter();
 		auto ScenceName = m_pVisualizer->getName();
@@ -188,7 +188,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2.0, ScenceName + std::to_string(i));
 		}
 		m_pVisualizer->m_pPCLVisualizer->updateCamera();
-	}
+	}*/
 
 	if (m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value() && m_MousePressStatus[0])
 	{
