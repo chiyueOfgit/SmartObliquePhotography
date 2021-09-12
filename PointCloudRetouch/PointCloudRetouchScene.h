@@ -13,14 +13,14 @@ namespace hiveObliquePhotography
 			CPointCloudScene();
 			~CPointCloudScene();
 
-			void init(PointCloud_t::Ptr vPointCloudScene);
-			void reset() { m_pPointCloudScene = nullptr; }
+			void init(const std::vector<PointCloud_t::Ptr>& vPointCloudScene);
+			void reset() { m_pPointCloudScene.clear(); }
 
 			Eigen::Vector4f getPositionAt(pcl::index_t vIndex) const;
 			Eigen::Vector4f getNormalAt(pcl::index_t vIndex) const;
 			Eigen::Vector3i getColorAt(pcl::index_t vIndex) const;
 			
-			std::size_t getNumPoint() const { return m_pPointCloudScene ? m_pPointCloudScene->size() : 0; }
+			std::size_t getNumPoint() const { int Num = 0; for (auto pCloud : m_pPointCloudScene) Num += pCloud.second->size(); return Num; }
 
 			std::pair<Eigen::Vector3f, Eigen::Vector3f> getBoundingBox(const std::vector<pcl::index_t>& vIndices) const;
 			std::vector<pcl::index_t> getPointsInBox(const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Matrix3f& vRotationMatrix) const;
@@ -47,7 +47,7 @@ namespace hiveObliquePhotography
 		private:
 			Eigen::Vector3i __extractRgba(float vRgba) const;
 
-			PointCloud_t::Ptr m_pPointCloudScene = nullptr;
+			std::vector<std::pair<int, PointCloud_t::Ptr>> m_pPointCloudScene;
 		};
 	}
 }

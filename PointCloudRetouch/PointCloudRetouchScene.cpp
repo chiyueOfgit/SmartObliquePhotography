@@ -14,22 +14,21 @@ CPointCloudScene::~CPointCloudScene()
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudScene::init(PointCloud_t::Ptr vPointCloudScene)
+void CPointCloudScene::init(const std::vector<PointCloud_t::Ptr>& vPointCloudScene)
 {
-	//_ASSERTE(vPointCloudScene);
-
-//FIXME-010：程序的逻辑允许两次init()吗？如果不允许，就要保证调用init()的时候，m_pPointCloudScene为空
-
-	if (vPointCloudScene == nullptr)   //FIXME-010: 为什么这里对参数有效性检查不用_ASSERTE，而要用抛出异常的方式？初始化失败返回false就好，为什么要抛异常？
-		throw "vPointCloudScene is nullptr or undefined!";
-
-	m_pPointCloudScene = vPointCloudScene;
+	for (int Offset = 0; auto pCloud : vPointCloudScene)
+	{
+		m_pPointCloudScene.push_back({ Offset, pCloud });
+		Offset += pCloud->size();
+	}
 }
 
 //*****************************************************************
 //FUNCTION: 
 Eigen::Vector4f CPointCloudScene::getPositionAt(pcl::index_t vIndex) const
 {
+	int WhichTile = 0;
+	while (WhichTile < m_pPointCloudScene.size() && WhichTile)
 	_ASSERTE(vIndex < m_pPointCloudScene->size());  //FIXME-010: 首先要对m_pPointCloudScene的有效性做检查
 	return { m_pPointCloudScene->points[vIndex].x, m_pPointCloudScene->points[vIndex].y, m_pPointCloudScene->points[vIndex].z, 1.0 };
 }

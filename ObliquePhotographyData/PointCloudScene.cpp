@@ -16,14 +16,12 @@ CPointCloudScene::~CPointCloudScene()
 
 //*****************************************************************
 //FUNCTION: 
-PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
+std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
 {
-	if (vFileNameSet.empty()) return nullptr;
+	if (vFileNameSet.empty()) return {};
 	
 	clear();
-	m_pPointCloudScene.reset(new PointCloud_t);
-	
-	_ASSERTE(m_pPointCloudScene->empty() && m_PointCloudTileMap.empty());
+	_ASSERTE(m_PointCloudTileMap.empty());
 
 	std::vector<std::string> LoadedFileSet;
 	
@@ -56,7 +54,6 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 			if(!pTile) continue;
 			m_TileSet.push_back(pTile);
 			m_PointCloudTileMap.emplace(FileName, pTile);
-			*m_pPointCloudScene += *pTile;
 			LoadedFileSet.emplace_back(LowerFileName);
 		}
 		else
@@ -64,7 +61,7 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load tile [%1%] due to unknown format.", FileName));
 		}
 	}
-	return m_pPointCloudScene;
+	return m_TileSet;
 }
 
 //*****************************************************************
@@ -88,5 +85,4 @@ bool CPointCloudScene::saveScene(PointCloud_t& vPointCloud, std::string vFileNam
 void CPointCloudScene::clear()
 {
 	m_PointCloudTileMap.clear();
-	m_pPointCloudScene.reset();
 }
