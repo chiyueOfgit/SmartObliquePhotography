@@ -405,7 +405,7 @@ void CPointCloudRetouchManager::executeHoleRepairerSetInput(const std::vector<pc
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudRetouchManager::executeHoleRepairer(std::vector<pcl::PointSurfel>& voNewPoints)
+void CPointCloudRetouchManager::executeHoleRepairer(std::vector<pcl::PointXYZRGBNormal>& voNewPoints)
 {
 	m_HoleRepairer.repairHole(voNewPoints);
 }

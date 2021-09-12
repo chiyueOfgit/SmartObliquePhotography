@@ -13,7 +13,7 @@ void CEuclideanNeighborhoodBuilder::__extraInitV(const hiveConfig::CHiveConfig* 
 	m_TreeSet.resize(m_TileSet.size());
 	for (int i = 0; i < m_TileSet.size(); i++)
 	{
-		m_TreeSet[i].reset(new pcl::search::KdTree<pcl::PointSurfel>);
+		m_TreeSet[i].reset(new pcl::search::KdTree<pcl::PointXYZRGBNormal>);
 		m_TreeSet[i]->setInputCloud(m_TileSet[i]);
 	}
 

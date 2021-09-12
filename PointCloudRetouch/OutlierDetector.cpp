@@ -20,7 +20,7 @@ void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vTargetLabe
 		if (CurrentIndex < 0 || CurrentIndex >= pManager->getScene().getNumPoint())
 			_THROW_RUNTIME_ERROR("Index is out of range");
 	
-	PointCloud_t::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
+	pcl::PointCloud<pcl::PointSurfel>::Ptr pCloud(new pcl::PointCloud<pcl::PointSurfel>);
 	for (auto Index : vInputIndices)  //FIXME:到这里你实际已经对整个点云做了三次遍历了，第一次获得UNDETERMINED的点的索引，第二次获得KEPT的点的索引，这里是
 									  //      第三次遍历。不能在CPointCloudRetouchManager里设计个函数，直接只遍历一次，返回一个PointCloud_t::Ptr吗？
 	{
@@ -44,7 +44,7 @@ void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vTargetLabe
 		pCloud->push_back(TempPoint);
 	}
 
-	PointCloud_t::Ptr pResultCloud(new pcl::PointCloud<pcl::PointSurfel>);
+	pcl::PointCloud<pcl::PointSurfel>::Ptr pResultCloud(new pcl::PointCloud<pcl::PointSurfel>);
 	pcl::RadiusOutlierRemoval<pcl::PointSurfel> RadiusOutlier;     //FIXME: 从include的文件来看，pcl提供了多种去除离群点的方法，为什么选当前这种，有过测试吗？
 	RadiusOutlier.setInputCloud(pCloud);
 	RadiusOutlier.setRadiusSearch(vConfig->getAttribute<float>("SEARCH_RADIUS").value());

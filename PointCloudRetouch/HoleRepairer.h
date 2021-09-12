@@ -33,9 +33,9 @@ namespace hiveObliquePhotography
 
 			void setHoleRegion(const std::vector<pcl::index_t>& vHoleRegion);
 			void setInput(const std::vector<pcl::index_t>& vInputIndices) { m_Input = vInputIndices; }
-			void repairHole(std::vector<pcl::PointSurfel>& voNewPoints);
+			void repairHole(std::vector<pcl::PointXYZRGBNormal>& voNewPoints);
 
-			void repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints);
+			void repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointXYZRGBNormal>& voNewPoints);
 
 #ifdef _UNIT_TEST
 			Eigen::Vector4f calcPlane(const std::vector<pcl::index_t>& vIndices, Eigen::Matrix3f& vRotationMatrix) { return __calculatePlaneByIndices(vIndices, vRotationMatrix); }
@@ -54,7 +54,7 @@ namespace hiveObliquePhotography
 			void __fillLatticesOriginInfos(const Eigen::Vector3f& vPlaneNormal, std::vector<std::vector<SLattice>>& vioPlaneLattices);
 			void  __fixTextureColorAndHeight(std::vector<std::vector<SLattice>>& vioPlaneLattices, int vKernelSize);
 			void __inputHeightCorrection(std::vector<std::vector<SLattice>>& vInput, const std::vector<std::vector<SLattice>>& vBoundary);
-			void __generateNewPointsFromLattices(const Eigen::Vector3f& vPlaneNormal, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints);
+			void __generateNewPointsFromLattices(const Eigen::Vector3f& vPlaneNormal, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointXYZRGBNormal>& voNewPoints);
 
 			Eigen::Vector4f __calculatePlaneByIndices(const std::vector<pcl::index_t>& vIndices, Eigen::Matrix3f& vRotationMatrix);
 			std::vector<std::size_t> __calcAxisOrder(const Eigen::Vector4f& vPlane);

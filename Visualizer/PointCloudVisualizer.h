@@ -30,7 +30,7 @@ namespace hiveObliquePhotography
 				m_UserColoredPoints.clear();
 				m_UserCloudSet.clear();
 
-				m_pSceneCloud.reset(new PointCloud_t);
+				m_pSceneCloud.reset(new VisualCloud_t);
 				pcl::copyPointCloud(*vPointCloud, *m_pSceneCloud);
 
 				std::vector<Eigen::Vector3f> PositionSet;
@@ -63,7 +63,7 @@ namespace hiveObliquePhotography
 				init<TPointCloud>(vPointCloud, vIsInQt);
 				if (vPointCloud != nullptr)
 				{
-					m_pSceneCloud.reset(new PointCloud_t);
+					m_pSceneCloud.reset(new VisualCloud_t);
 					pcl::copyPointCloud(*vPointCloud, *m_pSceneCloud);
 				}
 			}
@@ -92,7 +92,7 @@ namespace hiveObliquePhotography
 			pcl::visualization::PCLVisualizer* m_pPCLVisualizer = nullptr;
 			CInteractionCallback* m_pCallback = nullptr;
 
-			PointCloud_t::Ptr m_pSceneCloud = nullptr;
+			VisualCloud_t::Ptr m_pSceneCloud = nullptr;
 			std::pair<Eigen::Vector3f, Eigen::Vector3f> m_AabbBox;
 
 			std::vector<std::pair<std::string, pcl::TextureMesh>> m_MeshSet;

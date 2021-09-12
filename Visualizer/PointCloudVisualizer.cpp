@@ -36,9 +36,9 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	auto PointSize = *CVisualizationConfig::getInstance()->getAttribute<double>(POINT_SHOW_SIZE);
 	if (m_VisualFlag & EVisualFlag::ShowCloud)
 	{
-		PointCloud_t::Ptr pCloud2Show(new PointCloud_t);
+		VisualCloud_t::Ptr pCloud2Show(new VisualCloud_t);
 		pCloud2Show->resize(m_pSceneCloud->size());
-		std::memcpy(pCloud2Show->data(), m_pSceneCloud->data(), m_pSceneCloud->size() * sizeof(PointCloud_t::PointType));
+		std::memcpy(pCloud2Show->data(), m_pSceneCloud->data(), m_pSceneCloud->size() * sizeof(VisualCloud_t::PointType));
 
 		for (int i = 0; i < m_pSceneCloud->size(); i++)
 		{
@@ -83,7 +83,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 						}
 		}
 
-		pcl::visualization::PointCloudColorHandlerRGBAField<PointCloud_t::PointType> RGBAColor(pCloud2Show);
+		pcl::visualization::PointCloudColorHandlerRGBAField<VisualCloud_t::PointType> RGBAColor(pCloud2Show);
 		m_pPCLVisualizer->addPointCloud(pCloud2Show, RGBAColor, "Cloud2Show");
 		m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "Cloud2Show");
 
@@ -92,7 +92,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			auto& Record = m_UserColoredPoints[i];
 			if (Record.IsNewCloud)
 			{
-				PointCloud_t::Ptr pUserPoints(new PointCloud_t);
+				VisualCloud_t::Ptr pUserPoints(new VisualCloud_t);
 
 				for (auto Index : Record.PointSet)
 				{
@@ -116,7 +116,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	{
 		for (int i = 0; i < m_UserCloudSet.size(); i++)
 		{
-			PointCloud_t::Ptr TempCloud(new PointCloud_t);
+			VisualCloud_t::Ptr TempCloud(new VisualCloud_t);
 			pcl::copyPointCloud(*m_UserCloudSet[i], *TempCloud);
 			m_pPCLVisualizer->addPointCloud(TempCloud, "UserCloud" + std::to_string(i));
 			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "UserCloud" + std::to_string(i));

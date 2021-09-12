@@ -27,7 +27,7 @@ namespace hiveObliquePhotography
 
 		VISUALIZATION_DECLSPEC void hiveAddTextureMesh(const pcl::TextureMesh& vMesh);
 
-		VISUALIZATION_DECLSPEC void hiveDumpUserCloudSet(std::vector<PointCloud_t::Ptr>& voCloudSet);
+		VISUALIZATION_DECLSPEC void hiveDumpUserCloudSet(std::vector<RetouchCloud_t::Ptr>& voCloudSet);
 
 		VISUALIZATION_DECLSPEC pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
 
