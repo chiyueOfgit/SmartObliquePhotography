@@ -1,4 +1,6 @@
 #pragma once
+#include "InteractionCallback.h"
+#include "VisualizationConfig.h"
 
 namespace hiveObliquePhotography
 {
@@ -21,9 +23,50 @@ namespace hiveObliquePhotography
 		public:
 			~CPointCloudVisualizer();
 
-			void init(PointCloud_t::Ptr vPointCloud, bool vIsInQt = true);
+			template<class TPointCloud>
+			void init(TPointCloud::Ptr vPointCloud, bool vIsInQt = true)
+			{
+				_ASSERTE(vPointCloud);
+				m_UserColoredPoints.clear();
+				m_UserCloudSet.clear();
 
-			void reset(PointCloud_t::Ptr vPointCloud = nullptr, bool vIsInQt = true);
+				m_pSceneCloud.reset(new PointCloud_t);
+				pcl::copyPointCloud(*vPointCloud, *m_pSceneCloud);
+
+				std::vector<Eigen::Vector3f> PositionSet;
+				for (auto Point : *vPointCloud)
+					PositionSet.push_back(Point.getVector3fMap());
+				m_AabbBox = calcAABB(PositionSet);
+
+				m_pPCLVisualizer = new pcl::visualization::PCLVisualizer("Visualizer", !vIsInQt);
+				m_pCallback = new CInteractionCallback(m_pPCLVisualizer);
+				m_pPCLVisualizer->setBackgroundColor(0.2, 0.2, 0.2);
+				m_pPCLVisualizer->setShowFPS(false);
+
+				auto OptionLitterColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(LITTER_HIGHLIGHT_COLOR);
+				auto OptionBackgroundColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(BACKGROUND_HIGHLIGHT_COLOR);
+				if (OptionLitterColor.has_value() && OptionBackgroundColor.has_value())
+				{
+					m_LitterColor = OptionLitterColor.value();
+					m_BackgroundColor = OptionBackgroundColor.value();
+				}
+			}
+
+			template<class TPointCloud>
+			void reset(TPointCloud::Ptr vPointCloud = nullptr, bool vIsInQt = true)
+			{
+				m_pPCLVisualizer->removeAllPointClouds();
+				delete m_pPCLVisualizer;
+				delete m_pCallback;
+				m_UserColoredPoints.clear();
+				m_UserCloudSet.clear();
+				init<TPointCloud>(vPointCloud, vIsInQt);
+				if (vPointCloud != nullptr)
+				{
+					m_pSceneCloud.reset(new PointCloud_t);
+					pcl::copyPointCloud(*vPointCloud, *m_pSceneCloud);
+				}
+			}
 
 			void refresh(const std::vector<std::size_t>& vPointLabel, bool vResetCamera = false);
 

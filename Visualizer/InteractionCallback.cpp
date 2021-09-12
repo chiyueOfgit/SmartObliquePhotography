@@ -97,7 +97,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 
 		if (KeyString == "r")
 		{
-			std::vector<pcl::PointSurfel> NewPoints;
+			std::vector<Point_t> NewPoints;
 			PointCloudRetouch::hiveRepairHole(NewPoints);
 			if (!NewPoints.empty())
 			{
