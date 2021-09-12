@@ -348,10 +348,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		if (m_IsRefreshImmediately)
 		{
-			std::size_t Tile = 0;
 			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpLastChangedTileLabel(m_UnwantedMode, Tile, PointLabel);
-			m_pVisualizer->refresh(Tile, PointLabel);
+			PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
+			m_pVisualizer->refresh(WhichTile, PointLabel);
 		}
 
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
@@ -386,23 +385,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			if (PickedIndices.empty())
 				return;
 
-	/*		if (m_pVisualizationConfig->getAttribute<bool>(AREA_PICK_CULLING).value())
-				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double { return -1; }, ViewPos);*/
-			//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-
 			if (!m_pVisualizationConfig->getAttribute<bool>(REPAIR_MODE).value())
 			{
-				//auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
-				//{
-				//	static int i = 0;
-				//	return i++ % 2 ? 1.0 : 0.0;
-				//};
-
-				//if (m_UnwantedMode)
-				//	PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, pRandomHardness);
-				//else
-				//	PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, pRandomHardness);
-
 				Eigen::Vector3f PickWorldPos{};
 				m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->singlePick(m_PosX, m_PosY, PickWorldPos.x(), PickWorldPos.y(), PickWorldPos.z());
 				int WhichTile = 0;
@@ -426,10 +410,9 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 						Index += m_pVisualizer->m_OffsetSet[WhichTile];
 
 				PointCloudRetouch::hiveTagLabel(PickedIndices, m_UnwantedMode);
-				std::size_t Tile = 0;
 				std::vector<std::size_t> PointLabel;
-				PointCloudRetouch::hiveDumpLastChangedTileLabel(m_UnwantedMode, Tile, PointLabel);
-				m_pVisualizer->refresh(Tile, PointLabel);
+				PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
+				m_pVisualizer->refresh(WhichTile, PointLabel);
 			}
 			else
 			{

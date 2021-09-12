@@ -177,23 +177,15 @@ bool CPointCloudRetouchManager::dumpPointLabel(std::vector<std::size_t>& voPoint
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::dumpLastChangedTileLabel(bool vIsLitterMode, std::size_t& voTile, std::vector<std::size_t>& voTileLabel)
+bool CPointCloudRetouchManager::dumpTileLabel(std::size_t vTile, std::vector<std::size_t>& voTileLabel)
 {
-	std::vector<pcl::index_t> ExpandPoints;
-	if (vIsLitterMode)
-		m_LitterMarker.dumpTaskMarkedPoints(ExpandPoints);
-	else
-		m_BackgroundMarker.dumpTaskMarkedPoints(ExpandPoints);
-
-	if (!ExpandPoints.empty())
+	if (vTile <= m_Scene.getNumTile())
 	{
-		voTile = m_Scene.getTileIndexByPoint(ExpandPoints.front());
-		auto Offset = m_Scene.getTileOffset(voTile);
-		auto NumPoints = m_Scene.getTileNumPoints(voTile);
-
 		voTileLabel.clear();
-		for (int i = 0; i < NumPoints; i++)
-			voTileLabel.push_back(static_cast<std::size_t>(m_PointLabelSet.getLabelAt(i + Offset)));
+		auto Start = m_Scene.getTileOffset(vTile);
+		auto End = m_Scene.getTileNumPoints(vTile) + Start;
+		for (auto i = Start; i < End; i++)
+			voTileLabel.push_back(static_cast<std::size_t>(m_PointLabelSet.getLabelAt(i)));
 		return true;
 	}
 	else

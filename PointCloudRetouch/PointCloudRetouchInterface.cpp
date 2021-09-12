@@ -80,9 +80,9 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointLabel(std::vector<s
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveDumpLastChangedTileLabel(bool vIsLitterMode, std::size_t& voTile, std::vector<std::size_t>& voTileLabel)
+bool hiveObliquePhotography::PointCloudRetouch::hiveDumpTileLabel(std::size_t vTile, std::vector<std::size_t>& voTileLabel)
 {
-	return CPointCloudRetouchManager::getInstance()->dumpLastChangedTileLabel(vIsLitterMode, voTile, voTileLabel);
+	return CPointCloudRetouchManager::getInstance()->dumpTileLabel(vTile, voTileLabel);
 }
 
 void hiveObliquePhotography::PointCloudRetouch::hiveDumpExpandResult(std::vector<pcl::index_t>& voExpandPoints, bool vIsLitterMarker)

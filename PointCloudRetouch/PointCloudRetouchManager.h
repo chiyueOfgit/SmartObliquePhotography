@@ -27,7 +27,7 @@ namespace hiveObliquePhotography
 				m_PointLabelSet.tagPointLabel(vPoint, vTargetLabel, vClusterIndex, vClusterBelongingProbability);
 			}
 			bool dumpPointLabel(std::vector<std::size_t>& voPointLabel) const;
-			bool dumpLastChangedTileLabel(bool vIsLitterMode, std::size_t& voTile, std::vector<std::size_t>& voTileLabel);
+			bool dumpTileLabel(std::size_t vTile, std::vector<std::size_t>& voTileLabel);
 			bool dumpPointLabelAt(std::size_t& voPointLabel, std::uint32_t vIndex) const;
 
 			void dumpExpandPoints(std::vector<int>& voExpandPoints, bool vIsLitterMarker) 
