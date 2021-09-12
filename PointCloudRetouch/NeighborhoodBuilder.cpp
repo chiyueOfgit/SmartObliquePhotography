@@ -11,11 +11,17 @@ INeighborhoodBuilder::~INeighborhoodBuilder()
 
 //*****************************************************************
 //FUNCTION: 
-bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, PointCloud_t::Ptr vPointCloudScene, const CPointLabelSet* vPointLabelSet)
+bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, PointCloud_t::Ptr vPointCloudScene, const CPointLabelSet* vPointLabelSet, const std::vector<PointCloud_t::Ptr>& vTileSet)
 {
 	_ASSERTE(vPointCloudScene && vPointLabelSet);
 	m_pPointCloudScene = vPointCloudScene;
 	m_pPointLabelSet = vPointLabelSet;
+	m_TileSet = vTileSet;
+	for (int i = 0, Offset = 0; i < m_TileSet.size(); i++)
+	{
+		m_OffsetSet.push_back(Offset);
+		Offset += m_TileSet[i]->size();
+	}
 
 	reset();
 

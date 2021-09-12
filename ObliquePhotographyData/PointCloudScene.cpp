@@ -54,6 +54,7 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 			catch (...) { }
 
 			if(!pTile) continue;
+			m_TileSet.push_back(pTile);
 			m_PointCloudTileMap.emplace(FileName, pTile);
 			*m_pPointCloudScene += *pTile;
 			LoadedFileSet.emplace_back(LowerFileName);

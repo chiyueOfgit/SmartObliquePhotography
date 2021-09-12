@@ -6,7 +6,10 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
-		using PointCloud_t = pcl::PointCloud<pcl::PointXYZRGBNormal>;
+		using VisualPoint_t = pcl::PointXYZRGBA;
+		using VisualCloud_t = pcl::PointCloud<VisualPoint_t>;
+		using RetouchPoint_t = pcl::PointXYZRGBNormal;
+		using RetouchCloud_t = pcl::PointCloud<RetouchPoint_t>;
 
 		enum class EView : int
 		{

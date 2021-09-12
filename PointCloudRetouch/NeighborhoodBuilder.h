@@ -13,13 +13,16 @@ namespace hiveObliquePhotography
 			INeighborhoodBuilder() = default;
 			virtual ~INeighborhoodBuilder();
 
-			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, PointCloud_t::Ptr vPointCloudScene, const CPointLabelSet* vPointLabelSet);
+			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, PointCloud_t::Ptr vPointCloudScene, const CPointLabelSet* vPointLabelSet, const std::vector<PointCloud_t::Ptr>& vTileSet);
 
 			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara) const;
 			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed) const;
 			void reset();
 
 		protected:
+			std::vector<std::size_t> m_OffsetSet;
+			std::vector<PointCloud_t::Ptr> m_TileSet;
+
 			PointCloud_t::Ptr m_pPointCloudScene = nullptr;
 
 		private:

@@ -4,14 +4,14 @@
 
 using namespace hiveObliquePhotography::Visualization;
 
-void hiveObliquePhotography::Visualization::hiveInitVisualizer(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
+void hiveObliquePhotography::Visualization::hiveInitVisualizer(RetouchCloud_t::Ptr vPointCloud, bool vIsInQt)
 {
-	CPointCloudVisualizer::getInstance()->init(vPointCloud, vIsInQt);
+	CPointCloudVisualizer::getInstance()->init<RetouchCloud_t>(vPointCloud, vIsInQt);
 }
 
-void hiveObliquePhotography::Visualization::hiveResetVisualizer(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
+void hiveObliquePhotography::Visualization::hiveResetVisualizer(RetouchCloud_t::Ptr vPointCloud, bool vIsInQt)
 {
-	CPointCloudVisualizer::getInstance()->reset(vPointCloud, vIsInQt);
+	CPointCloudVisualizer::getInstance()->reset<RetouchCloud_t>(vPointCloud, vIsInQt);
 }
 
 void hiveObliquePhotography::Visualization::hiveRefreshVisualizer(const std::vector<std::size_t>& vPointLabel, bool vResetCamera)
@@ -62,7 +62,7 @@ void hiveObliquePhotography::Visualization::hiveAddTextureMesh(const pcl::Textur
 	CPointCloudVisualizer::getInstance()->addTextureMesh(vMesh);
 }
 
-void hiveObliquePhotography::Visualization::hiveDumpUserCloudSet(std::vector<PointCloud_t::Ptr>& voCloudSet)
+void hiveObliquePhotography::Visualization::hiveDumpUserCloudSet(std::vector<RetouchCloud_t::Ptr>& voCloudSet)
 {
 	voCloudSet = CPointCloudVisualizer::getInstance()->getUserCloudSet();
 }

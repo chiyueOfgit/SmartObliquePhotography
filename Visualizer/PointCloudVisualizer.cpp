@@ -1,9 +1,6 @@
 #include "pch.h"
 #include "PointCloudVisualizer.h"
-#include "InteractionCallback.h"
 #include "PointCloudRetouchInterface.h"
-#include "VisualizationConfig.h"
-#include <tuple>
 
 #define RECORD_TIME_BEGIN clock_t StartTime, FinishTime;\
 StartTime = clock();
@@ -25,49 +22,6 @@ CPointCloudVisualizer::~CPointCloudVisualizer()
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudVisualizer::init(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
-{
-	_ASSERTE(vPointCloud);
-	m_UserColoredPoints.clear();
-	m_UserCloudSet.clear();
-
-	m_pSceneCloud = vPointCloud;
-
-	std::vector<Eigen::Vector3f> PositionSet;
-	for(auto Point: *vPointCloud)
-		PositionSet.push_back(Point.getVector3fMap());
-	m_AabbBox = calcAABB(PositionSet);
-	
-	m_pPCLVisualizer = new pcl::visualization::PCLVisualizer("Visualizer", !vIsInQt);
-	m_pCallback = new CInteractionCallback(m_pPCLVisualizer);
-	m_pPCLVisualizer->setBackgroundColor(0.2, 0.2, 0.2);
-	m_pPCLVisualizer->setShowFPS(false);
-
-	auto OptionLitterColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(LITTER_HIGHLIGHT_COLOR);
-	auto OptionBackgroundColor = CVisualizationConfig::getInstance()->getAttribute<std::tuple<int, int, int>>(BACKGROUND_HIGHLIGHT_COLOR);
-	if (OptionLitterColor.has_value() && OptionBackgroundColor.has_value())
-	{
-		m_LitterColor = OptionLitterColor.value();
-		m_BackgroundColor = OptionBackgroundColor.value();
-	}
-}
-
-//*****************************************************************
-//FUNCTION: 
-void CPointCloudVisualizer::reset(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
-{
-	m_pPCLVisualizer->removeAllPointClouds();
-	delete m_pPCLVisualizer;
-	delete m_pCallback;
-	m_UserColoredPoints.clear();
-	m_UserCloudSet.clear();
-	init(vPointCloud, vIsInQt);
-	if (vPointCloud != nullptr)
-		m_pSceneCloud = vPointCloud;
-}
-
-//*****************************************************************
-//FUNCTION: 
 void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel, bool vResetCamera)
 {
 	RECORD_TIME_BEGIN
@@ -82,9 +36,9 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	auto PointSize = *CVisualizationConfig::getInstance()->getAttribute<double>(POINT_SHOW_SIZE);
 	if (m_VisualFlag & EVisualFlag::ShowCloud)
 	{
-		PointCloud_t::Ptr pCloud2Show(new PointCloud_t);
+		VisualCloud_t::Ptr pCloud2Show(new VisualCloud_t);
 		pCloud2Show->resize(m_pSceneCloud->size());
-		std::memcpy(pCloud2Show->data(), m_pSceneCloud->data(), m_pSceneCloud->size() * sizeof(PointCloud_t::PointType));
+		std::memcpy(pCloud2Show->data(), m_pSceneCloud->data(), m_pSceneCloud->size() * sizeof(VisualPoint_t));
 
 		for (int i = 0; i < m_pSceneCloud->size(); i++)
 		{
@@ -96,13 +50,13 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			case 1:
 			{
 				unsigned char KeptHighlightColor[4] = { std::get<2>(m_BackgroundColor), std::get<1>(m_BackgroundColor), std::get<0>(m_BackgroundColor), 255 };
-				std::memcpy(&pCloud2Show->points[i].rgb, KeptHighlightColor, sizeof(KeptHighlightColor));
+				std::memcpy(&pCloud2Show->points[i].rgba, KeptHighlightColor, sizeof(KeptHighlightColor));
 				break;
 			}
 			case 2:
 			{
 				unsigned char UnwantedHighlightColor[4] = { std::get<2>(m_LitterColor), std::get<1>(m_LitterColor), std::get<0>(m_LitterColor), 255 };	//gbr
-				std::memcpy(&pCloud2Show->points[i].rgb, UnwantedHighlightColor, sizeof(UnwantedHighlightColor));
+				std::memcpy(&pCloud2Show->points[i].rgba, UnwantedHighlightColor, sizeof(UnwantedHighlightColor));
 				break;
 			}
 			case 3:
@@ -111,7 +65,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			case 4:
 			{
 				unsigned char StandardWhite[4] = { 255, 255, 255, 255 };
-				std::memcpy(&pCloud2Show->points[i].rgb, StandardWhite, sizeof(StandardWhite));
+				std::memcpy(&pCloud2Show->points[i].rgba, StandardWhite, sizeof(StandardWhite));
 				break;
 			}
 			}
@@ -125,12 +79,12 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 						if (Index < m_pSceneCloud->size())
 						{
 							unsigned char UserColor[4] = { Record.Color.z(), Record.Color.y(), Record.Color.x(), 255 };
-							std::memcpy(&pCloud2Show->points[Index].rgb, UserColor, sizeof(UserColor));
+							std::memcpy(&pCloud2Show->points[Index].rgba, UserColor, sizeof(UserColor));
 						}
 		}
 
-		pcl::visualization::PointCloudColorHandlerRGBField<PointCloud_t::PointType> RGBColor(pCloud2Show);
-		m_pPCLVisualizer->addPointCloud(pCloud2Show, RGBColor, "Cloud2Show");
+		pcl::visualization::PointCloudColorHandlerRGBAField<VisualPoint_t> RGBAColor(pCloud2Show);
+		m_pPCLVisualizer->addPointCloud<VisualPoint_t>(pCloud2Show, RGBAColor, "Cloud2Show");
 		m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "Cloud2Show");
 
 		for (int i = 0; i < m_UserColoredPoints.size(); i++)
@@ -138,11 +92,11 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			auto& Record = m_UserColoredPoints[i];
 			if (Record.IsNewCloud)
 			{
-				PointCloud_t::Ptr pUserPoints(new PointCloud_t);
+				VisualCloud_t::Ptr pUserPoints(new VisualCloud_t);
 
 				for (auto Index : Record.PointSet)
 				{
-					PointCloud_t::PointType TempPoint = m_pSceneCloud->points[Index];
+					VisualPoint_t TempPoint = m_pSceneCloud->points[Index];
 					TempPoint.x += Record.DeltaPos.x();
 					TempPoint.y += Record.DeltaPos.y();
 					TempPoint.z += Record.DeltaPos.z();
@@ -152,7 +106,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 					pUserPoints->push_back(TempPoint);
 				}
 
-				m_pPCLVisualizer->addPointCloud<PointCloud_t::PointType>(pUserPoints, "UserPoints" + std::to_string(i));
+				m_pPCLVisualizer->addPointCloud<VisualPoint_t>(pUserPoints, "UserPoints" + std::to_string(i));
 				m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, Record.PointSize, "UserPoints" + std::to_string(i));
 			}
 		}
@@ -162,7 +116,9 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	{
 		for (int i = 0; i < m_UserCloudSet.size(); i++)
 		{
-			m_pPCLVisualizer->addPointCloud<pcl::PointXYZRGBNormal>(m_UserCloudSet[i], "UserCloud" + std::to_string(i));
+			VisualCloud_t::Ptr TempCloud(new VisualCloud_t);
+			pcl::copyPointCloud(*m_UserCloudSet[i], *TempCloud);
+			m_pPCLVisualizer->addPointCloud<VisualPoint_t>(TempCloud, "UserCloud" + std::to_string(i));
 			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "UserCloud" + std::to_string(i));
 		}
 	}
