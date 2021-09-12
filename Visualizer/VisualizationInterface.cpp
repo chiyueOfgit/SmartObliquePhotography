@@ -62,7 +62,7 @@ void hiveObliquePhotography::Visualization::hiveAddTextureMesh(const pcl::Textur
 	CPointCloudVisualizer::getInstance()->addTextureMesh(vMesh);
 }
 
-void hiveObliquePhotography::Visualization::hiveDumpUserCloudSet(std::vector<PointCloud_t::Ptr>& voCloudSet)
+void hiveObliquePhotography::Visualization::hiveDumpUserCloudSet(std::vector<RetouchCloud_t::Ptr>& voCloudSet)
 {
 	voCloudSet = CPointCloudVisualizer::getInstance()->getUserCloudSet();
 }

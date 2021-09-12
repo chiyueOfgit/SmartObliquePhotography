@@ -116,7 +116,9 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	{
 		for (int i = 0; i < m_UserCloudSet.size(); i++)
 		{
-			m_pPCLVisualizer->addPointCloud<pcl::PointXYZRGB>(m_UserCloudSet[i], "UserCloud" + std::to_string(i));
+			PointCloud_t::Ptr TempCloud(new PointCloud_t);
+			pcl::copyPointCloud(*m_UserCloudSet[i], *TempCloud);
+			m_pPCLVisualizer->addPointCloud(TempCloud, "UserCloud" + std::to_string(i));
 			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "UserCloud" + std::to_string(i));
 		}
 	}

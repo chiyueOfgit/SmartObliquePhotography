@@ -74,8 +74,8 @@ namespace hiveObliquePhotography
 
 			void setVisualFlag(int Flag) { _ASSERTE(Flag >= 0); m_VisualFlag = Flag; }
 
-			std::vector<PointCloud_t::Ptr> getUserCloudSet() { return m_UserCloudSet; }
-			void addUserPointCloud(PointCloud_t::Ptr vCloud) { m_UserCloudSet.push_back(vCloud); }
+			std::vector<RetouchCloud_t::Ptr> getUserCloudSet() { return m_UserCloudSet; }
+			void addUserPointCloud(RetouchCloud_t::Ptr vCloud) { m_UserCloudSet.push_back(vCloud); }
 			void removeAllUserPointCloud() { m_UserCloudSet.clear(); }
 			int addUserColoredPoints(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor);
 			int addUserColoredPointsAsNewCloud(const std::vector<pcl::index_t>& vPointSet, const Eigen::Vector3i& vColor, const Eigen::Vector3f& vDeltaPos = { 0.0f, 0.0f, 0.0f }, double vPointSize = 3.0);
@@ -97,7 +97,7 @@ namespace hiveObliquePhotography
 
 			std::vector<std::pair<std::string, pcl::TextureMesh>> m_MeshSet;
 
-			std::vector<PointCloud_t::Ptr> m_UserCloudSet;
+			std::vector<RetouchCloud_t::Ptr> m_UserCloudSet;
 
 			Eigen::Vector2d m_WindowSize;
 
