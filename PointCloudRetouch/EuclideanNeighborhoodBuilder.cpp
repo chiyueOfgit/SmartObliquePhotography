@@ -10,7 +10,7 @@ _REGISTER_NORMAL_PRODUCT(CEuclideanNeighborhoodBuilder, KEYWORD::EUCLIDEAN_NEIGH
 //FUNCTION: 
 void CEuclideanNeighborhoodBuilder::__extraInitV(const hiveConfig::CHiveConfig* vConfig)
 {
-	m_pTree.reset(new pcl::search::KdTree<pcl::PointSurfel>);
+	m_pTree.reset(new pcl::search::KdTree<PointCloud_t::PointType>);
 	m_pTree->setInputCloud(m_pPointCloudScene);
 
 	m_SearchMode = *vConfig->getAttribute<std::string>("SEARCH_MODE");

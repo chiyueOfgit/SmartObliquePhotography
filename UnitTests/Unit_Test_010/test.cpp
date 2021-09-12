@@ -217,7 +217,7 @@ TEST(Test_InitPointCloudRetouch, DeathTest_InitRetouchTaskWithErrorConfig)
 TEST(Test_InitPointCloudRetouch, InitPointCloudRetouchManager)
 {//FIXME-010：为什么运行这个测试用例还会启动一个绘制窗口？
 	PointCloud_t::Ptr pCloud(new PointCloud_t);
-	pcl::PointSurfel t;
+	pcl::PointXYZRGBNormal t;
 	pCloud->push_back(t);
 	hiveConfig::CHiveConfig* pConfig = new CPointCloudRetouchConfig;
 	hiveConfig::hiveParseConfig(g_ConfigPath, hiveConfig::EConfigType::XML, pConfig);

@@ -142,7 +142,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 
 				for (auto Index : Record.PointSet)
 				{
-					pcl::PointSurfel TempPoint = m_pSceneCloud->points[Index];
+					PointCloud_t::PointType TempPoint = m_pSceneCloud->points[Index];
 					TempPoint.x += Record.DeltaPos.x();
 					TempPoint.y += Record.DeltaPos.y();
 					TempPoint.z += Record.DeltaPos.z();
@@ -152,7 +152,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 					pUserPoints->push_back(TempPoint);
 				}
 
-				m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(pUserPoints, "UserPoints" + std::to_string(i));
+				m_pPCLVisualizer->addPointCloud<PointCloud_t::PointType>(pUserPoints, "UserPoints" + std::to_string(i));
 				m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, Record.PointSize, "UserPoints" + std::to_string(i));
 			}
 		}
@@ -162,7 +162,7 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 	{
 		for (int i = 0; i < m_UserCloudSet.size(); i++)
 		{
-			m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(m_UserCloudSet[i], "UserCloud" + std::to_string(i));
+			m_pPCLVisualizer->addPointCloud<pcl::PointXYZRGBNormal>(m_UserCloudSet[i], "UserCloud" + std::to_string(i));
 			m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "UserCloud" + std::to_string(i));
 		}
 	}

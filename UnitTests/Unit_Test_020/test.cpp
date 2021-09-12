@@ -69,7 +69,7 @@ protected:
 
 			for (auto& Indices : m_BoundaryIndices)
 			{
-				std::vector<pcl::PointSurfel> TempPoints;
+				std::vector<pcl::PointXYZRGBNormal> TempPoints;
 				m_Repairer.repairHoleByBoundaryAndInput(Indices, m_InputIndices, TempPoints);
 				PointCloud_t::Ptr TempCloud(new PointCloud_t);
 				for (auto& Point : TempPoints)
@@ -96,7 +96,7 @@ protected:
 
 				//add lattices
 				const int PointSize = 3;
-				m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
+				m_pPCLVisualizer->addPointCloud<pcl::PointXYZRGBNormal>(TempCloud, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
 				m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
 				//add box line
 				_drawBox(std::make_pair(std::get<1>(TempBox), std::get<2>(TempBox)));
@@ -199,7 +199,7 @@ protected:
 		return AxisOrder;
 	}
 
-	bool _isInBox(const pcl::PointSurfel& vPoint, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
+	bool _isInBox(const pcl::PointXYZRGBNormal& vPoint, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
 	{
 		Eigen::Vector3f Pos;
 		Pos.x() = vPoint.x;

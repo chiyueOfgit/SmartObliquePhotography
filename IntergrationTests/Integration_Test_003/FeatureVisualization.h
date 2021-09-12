@@ -34,7 +34,7 @@ namespace hiveObliquePhotography
             std::string m_DirectoryOpenPath = "../Models";
             size_t m_SceneIndex = -1;
             int m_PointSize = 3;
-            pcl::PointCloud<pcl::PointSurfel>::Ptr m_pCloud = nullptr;
+            pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr m_pCloud = nullptr;
             QDockWidget* m_pPointPickingDockWidget = nullptr;
 
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;

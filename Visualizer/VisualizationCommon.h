@@ -6,7 +6,7 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
-		using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+		using PointCloud_t = pcl::PointCloud<pcl::PointXYZRGBNormal>;
 
 		enum class EView : int
 		{

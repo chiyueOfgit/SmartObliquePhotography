@@ -39,4 +39,4 @@
 
 #include "PointCloudRetouchCommon.h"
 
-using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+using PointCloud_t = pcl::PointCloud<pcl::PointXYZRGBNormal>;

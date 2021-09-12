@@ -25,7 +25,7 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointCloudtoSave(PointCl
 	CPointCloudRetouchManager::getInstance()->dumpIndicesByLabel(PointIndices, EPointLabel::UNDETERMINED);
 	for (auto Index : PointIndices)
 	{
-		pcl::PointSurfel TempPoint;
+		PointCloud_t::PointType TempPoint;
 		auto Pos = CPointCloudRetouchManager::getInstance()->getScene().getPositionAt(Index);
 		TempPoint.x = Pos.x();
 		TempPoint.y = Pos.y();
@@ -151,7 +151,7 @@ void hiveObliquePhotography::PointCloudRetouch::hiveRepairHoleSetReferenceRegion
 	CPointCloudRetouchManager::getInstance()->executeHoleRepairerSetInput(vReferenceRegion);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveRepairHole(std::vector<pcl::PointSurfel>& voNewPoints)
+void hiveObliquePhotography::PointCloudRetouch::hiveRepairHole(std::vector<pcl::PointXYZRGBNormal>& voNewPoints)
 {
 	CPointCloudRetouchManager::getInstance()->executeHoleRepairer(voNewPoints);
 }

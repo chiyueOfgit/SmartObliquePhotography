@@ -34,7 +34,7 @@ protected:
 
 			for (float Radius = RadiusStep; Radius - m_CircleRadius <= Epsilon; Radius += RadiusStep)
 			{
-				pcl::PointSurfel Point;
+				pcl::PointXYZRGBNormal Point;
 				Point.x = Radius * cos(radians(Angle));
 				Point.y = Radius * sin(radians(Angle));
 				Point.z = 0.0f;
@@ -56,7 +56,7 @@ protected:
 		PointCloudRetouch::hiveInit(m_pCloud, m_pConfig);
 
 		m_pVisualizer.reset(new pcl::visualization::PCLVisualizer);
-		m_pVisualizer->addPointCloud<pcl::PointSurfel>(m_pCloud, "Cloud2Show");
+		m_pVisualizer->addPointCloud<pcl::PointXYZRGBNormal>(m_pCloud, "Cloud2Show");
 		m_pVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "Cloud2Show");
 		m_pVisualizer->loadCameraParameters(CameraPath);
 		m_pVisualizer->updateCamera();

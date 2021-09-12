@@ -7,7 +7,7 @@ using namespace hiveObliquePhotography;
 
 //*****************************************************************
 //FUNCTION: 
-pcl::PointCloud<pcl::PointSurfel>::Ptr hiveObliquePhotography::hiveInitPointCloudScene(const std::vector<std::string>& vFileNameSet)
+pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr hiveObliquePhotography::hiveInitPointCloudScene(const std::vector<std::string>& vFileNameSet)
 {
 	_ASSERTE(!vFileNameSet.empty());
 
