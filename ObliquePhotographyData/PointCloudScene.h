@@ -9,18 +9,9 @@ namespace hiveObliquePhotography
 
 		std::vector<PointCloud_t::Ptr> loadScene(const std::vector<std::string>& vFileNameSet);
 		bool saveScene(PointCloud_t& vPointCloud, std::string vFileName);
-		
-		std::size_t getNumTiles() const { return m_PointCloudTileMap.size(); }
-		
-		auto getTileSet() const { return m_TileSet; }
-
-		void clear();
 
 	private:
 		CPointCloudScene() = default;
-
-		std::vector<PointCloud_t::Ptr> m_TileSet;
-		std::map<std::string, PointCloud_t::Ptr> m_PointCloudTileMap;
 
 	friend class hiveDesignPattern::CSingleton<CPointCloudScene>;
 	};

@@ -324,19 +324,19 @@ void CQTInterface::onActionOpen()
     if (FilePathSet.empty())
         return;
 
-    m_TileSet = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
+    m_TileSet = hiveInitPointCloudScene(FilePathSet);
 
     if (m_TileSet.empty())
         FileOpenSuccessFlag = false;
 
     if (FileOpenSuccessFlag)
     {
-        m_DirectoryOpenPath = CQTInterface::__getDirectory(FilePathSet.back());
+        m_DirectoryOpenPath = __getDirectory(FilePathSet.back());
 
         auto config = m_pPointCloudRetouchConfig->getSubconfigAt(0);
         auto num = config->getNumSubconfig();
 
-        PointCloudRetouch::hiveInit(hiveGetTileSet(), m_pPointCloudRetouchConfig);
+        PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_TileSet, true);
         CQTInterface::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
@@ -433,7 +433,7 @@ void CQTInterface::onActionStartRepairHole()
         hiveSavePointCloudScene(*pCloud, CloudSavedPath);
         
         m_TileSet = hiveInitPointCloudScene({ CloudSavedPath });
-        PointCloudRetouch::hiveInit(hiveGetTileSet(), m_pPointCloudRetouchConfig);
+        PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_TileSet, true);
         __initialVTKWidget();
 
@@ -526,7 +526,7 @@ void CQTInterface::onActionSetting()
         m_pDisplayOptionsSettingDialog->exec();
 
         __parseConfigFile();
-        PointCloudRetouch::hiveInit(hiveGetTileSet(), m_pPointCloudRetouchConfig);
+        PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
 
         Visualization::hiveRemoveAllShapes();
         Visualization::hiveCancelAllHighlighting();

@@ -10,9 +10,7 @@
 using namespace hiveObliquePhotography;
 
 CPointCloudScene::~CPointCloudScene()
-{
-	clear();
-}
+{}
 
 //*****************************************************************
 //FUNCTION: 
@@ -20,11 +18,10 @@ std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std
 {
 	if (vFileNameSet.empty()) return {};
 	
-	clear();
 	_ASSERTE(m_PointCloudTileMap.empty());
 
 	std::vector<std::string> LoadedFileSet;
-	
+	std::vector<PointCloud_t::Ptr> m_TileSet;
 	for (const auto& FileName : vFileNameSet)
 	{
 		std::string LowerFileName = hiveUtility::hiveLocateFile(FileName);
@@ -53,7 +50,6 @@ std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std
 
 			if(!pTile) continue;
 			m_TileSet.push_back(pTile);
-			m_PointCloudTileMap.emplace(FileName, pTile);
 			LoadedFileSet.emplace_back(LowerFileName);
 		}
 		else
@@ -78,11 +74,4 @@ bool CPointCloudScene::saveScene(PointCloud_t& vPointCloud, std::string vFileNam
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to save tile [%1%] due to unknown format.", vFileName));
 	}
 	return true;
-}
-
-//*****************************************************************
-//FUNCTION: 
-void CPointCloudScene::clear()
-{
-	m_PointCloudTileMap.clear();
 }

@@ -38,8 +38,3 @@ void hiveObliquePhotography::hiveLoadMeshModel(hiveObliquePhotography::CMesh& vo
 		catch (...) {}
 	}
 }
-
-std::vector<PointCloud_t::Ptr> hiveObliquePhotography::hiveGetTileSet()
-{
-	return CPointCloudScene::getInstance()->getTileSet();
-}
