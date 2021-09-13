@@ -3,7 +3,7 @@ QT内存管理
 ###### 2021.09.13
 
 ## 要点
-1. QObject 的构造函数通常需要 Parent 指针，默认为 NULL
+1. QObject 的构造函数通常需要 Parent 指针，默认为 NULL  
     a. Parent 指针不为空：  
     把当前的对象实例加入父指针指定的QObject及其派生类，当一个QObject被delete或者调用了它的析构函数时，所有加入的children也会全部被析构  
     b. Parent 指针为 NULL：  
