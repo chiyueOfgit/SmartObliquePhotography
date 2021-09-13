@@ -403,6 +403,9 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vPlan
 				TempPoint.x = RealPos.x();
 				TempPoint.y = RealPos.y();
 				TempPoint.z = RealPos.z();
+				TempPoint.normal_x = vPlaneNormal.x();
+				TempPoint.normal_y = vPlaneNormal.y();
+				TempPoint.normal_z = vPlaneNormal.z();
 				TempPoint.r = Lattice.Color.x();
 				TempPoint.g = Lattice.Color.y();
 				TempPoint.b = Lattice.Color.z();
