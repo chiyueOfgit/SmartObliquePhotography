@@ -360,7 +360,7 @@ bool CPointCloudRetouchManager::executeOutlierDetector(EPointLabel vTargetLabel)
 	dumpIndicesByLabel(Indices, EPointLabel::UNDETERMINED);
 	dumpIndicesByLabel(Indices, EPointLabel::KEPT);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
-	return pOutlierDetector->execute<COutlierDetector>(Indices, vTargetLabel, m_pOutlierConfig);
+	return pOutlierDetector->execute<COutlierDetector>(Indices, vTargetLabel, m_pOutlierConfig->getAttribute<float>("SEARCH_RADIUS").value(), m_pOutlierConfig->getAttribute<int>("MIN_NEIGHBORS_IN_RADIUS").value(), m_pOutlierConfig->getAttribute<bool>("POINT_FILTER_CONDITION").value());
 }
 
 //*****************************************************************

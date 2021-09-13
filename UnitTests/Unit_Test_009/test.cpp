@@ -68,19 +68,23 @@ TEST_F(TestOutlierDetector, DeathTest_InvalidInput)
 	pcl::Indices InputIndices;
 	InputIndices.push_back(INT_MAX);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>("OUTLIER_DETECTOR"));
-	EXPECT_ANY_THROW(pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig()));
-	
+	auto DevMulThresh = pManager->getOutlierConfig()->getAttribute<float>("DEV_MUL_THRESH").value();
+	auto MinK = pManager->getOutlierConfig()->getAttribute<int>("MIN_K").value();
+	auto PointFilterCondition = pManager->getOutlierConfig()->getAttribute<bool>("POINT_FILTER_CONDITION").value();
+	EXPECT_ANY_THROW(pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, DevMulThresh, MinK , PointFilterCondition));
 }
 
 TEST_F(TestOutlierDetector, FunctionTest_Test1)
-{
+{ 
 	initTest(TESTMODEL_DIR + std::string("Test009_Model/test1.pcd"));
 	pcl::Indices InputIndices;
 	for (int i = 0; i < pManager->getScene().getNumPoint(); i++)
 		InputIndices.push_back(i);
 	auto pOutlierDetector = hiveDesignPattern::hiveGetOrCreateProduct<COutlierDetector>(KEYWORD::OUTLIER_DETECTOR);
-    pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
-	
+	auto DevMulThresh = pManager->getOutlierConfig()->getAttribute<float>("DEV_MUL_THRESH").value();
+	auto MinK = pManager->getOutlierConfig()->getAttribute<int>("MIN_K").value();
+	auto PointFilterCondition = pManager->getOutlierConfig()->getAttribute<bool>("POINT_FILTER_CONDITION").value();
+	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, DevMulThresh, MinK, PointFilterCondition );
 	pcl::Indices OutlierIndices;
 	pManager->dumpIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
 
@@ -93,6 +97,10 @@ TEST_F(TestOutlierDetector, FunctionTest_Test1)
 		std::inserter(Interaction, Interaction.begin()));
 	
 	GTEST_ASSERT_EQ(Interaction.size(), GroundTruth.size());
+
+	double runTime;
+	runTime = pOutlierDetector->getRunTime();
+	std::cout << "Run time is" <<runTime<< std::endl;
 }
 
 TEST_F(TestOutlierDetector, FunctionTest_Test2)
@@ -102,7 +110,10 @@ TEST_F(TestOutlierDetector, FunctionTest_Test2)
 	for (int i = 0; i < pManager->getScene().getNumPoint(); i++)
 		InputIndices.push_back(i);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(KEYWORD::OUTLIER_DETECTOR));
-	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
+	auto DevMulThresh = pManager->getOutlierConfig()->getAttribute<float>("DEV_MUL_THRESH").value();
+	auto MinK = pManager->getOutlierConfig()->getAttribute<int>("MIN_K").value();
+	auto PointFilterCondition = pManager->getOutlierConfig()->getAttribute<bool>("POINT_FILTER_CONDITION").value();
+	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, DevMulThresh , MinK , PointFilterCondition);
 
 	pcl::Indices OutlierIndices;
 	pManager->dumpIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);
@@ -125,7 +136,10 @@ TEST_F(TestOutlierDetector, FunctionTest_Test3)
 	for (int i = 0; i < pManager->getScene().getNumPoint(); i++)
 		InputIndices.push_back(i);
 	auto pOutlierDetector = dynamic_cast<COutlierDetector*>(hiveDesignPattern::hiveGetOrCreateProduct<IPointClassifier>(KEYWORD::OUTLIER_DETECTOR));
-	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, pManager->getOutlierConfig());
+	auto DevMulThresh = pManager->getOutlierConfig()->getAttribute<float>("DEV_MUL_THRESH").value();
+	auto MinK = pManager->getOutlierConfig()->getAttribute<int>("MIN_K").value();
+	auto PointFilterCondition = pManager->getOutlierConfig()->getAttribute<bool>("POINT_FILTER_CONDITION").value();
+	pOutlierDetector->execute<COutlierDetector>(InputIndices, EPointLabel::UNWANTED, DevMulThresh, MinK, PointFilterCondition);
 
 	pcl::Indices OutlierIndices;
 	pManager->dumpIndicesByLabel(OutlierIndices, EPointLabel::UNWANTED);

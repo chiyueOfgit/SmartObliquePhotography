@@ -4,6 +4,7 @@
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/conditional_removal.h>
 #include "PointCloudRetouchManager.h"
+#include "common/CpuTimer.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -11,7 +12,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(COutlierDetector, KEYWORD::OUTLIER_DETECTOR)
 
 //*****************************************************************
 //FUNCTION: 
-void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vTargetLabel, const hiveConfig::CHiveConfig* vConfig)  //FIXME: 实际从vConfig就拿三个值，还不如直接把这三个字作为参数传进来，这样就不依赖CHiveConfig了，你的测试用例也会变得更简单
+void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vTargetLabel,const float DEV_MUL_THRESH,const int MIN_K, const bool POINT_FILTER_CONDITION)  //FIXME: 实际从vConfig就拿三个值，还不如直接把这三个值作为参数传进来，这样就不依赖CHiveConfig了，你的测试用例也会变得更简单
 {
 	if (vInputIndices.empty()) return;
 
@@ -44,13 +45,24 @@ void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vTargetLabe
 		pCloud->push_back(TempPoint);
 	}
 
+#ifdef _UNIT_TEST
+	hiveCommon::CCPUTimer Timer;
+	Timer.start();
+#endif // _UNIT_TEST
+
+
 	PointCloud_t::Ptr pResultCloud(new pcl::PointCloud<pcl::PointSurfel>);
-	pcl::RadiusOutlierRemoval<pcl::PointSurfel> RadiusOutlier;     //FIXME: 从include的文件来看，pcl提供了多种去除离群点的方法，为什么选当前这种，有过测试吗？
-	RadiusOutlier.setInputCloud(pCloud);
-	RadiusOutlier.setRadiusSearch(vConfig->getAttribute<float>("SEARCH_RADIUS").value());
-	RadiusOutlier.setMinNeighborsInRadius(vConfig->getAttribute<int>("MIN_NEIGHBORS_IN_RADIUS").value());
-	RadiusOutlier.setNegative(vConfig->getAttribute<bool>("POINT_FILTER_CONDITION").value());
-	RadiusOutlier.filter(*pResultCloud);
+	pcl::StatisticalOutlierRemoval<pcl::PointSurfel> StatisticalOutlier;     //FIXME: 从include的文件来看，pcl提供了多种去除离群点的方法，为什么选当前这种，有过测试吗？
+	StatisticalOutlier.setInputCloud(pCloud);
+	StatisticalOutlier.setMeanK(MIN_K);
+	StatisticalOutlier.setStddevMulThresh(DEV_MUL_THRESH);
+	StatisticalOutlier.setNegative(POINT_FILTER_CONDITION);
+	StatisticalOutlier.filter(*pResultCloud);
+
+#ifdef _UNIT_TEST
+	Timer.stop();
+	m_RunTime = Timer.getElapsedTimeInMS();
+#endif //_UNIT_TEST
 
 	for (auto& Point : pResultCloud->points)
 	   pManager->tagPointLabel(Point.curvature, vTargetLabel, 0, 0);
