@@ -27,6 +27,8 @@
 #include "common/DesignPatternInterface.h"
 #include "common/UtilityInterface.h"
 #include "common/HiveConfig.h"
+#include "common/CommonMicro.h"
+#include "common/CommonInterface.h"
 
 #include "SceneReconstructionCommon.h"
 

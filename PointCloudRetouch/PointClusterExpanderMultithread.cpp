@@ -1,9 +1,9 @@
 #include "pch.h"
-#include "PointCluster.h"
 #include "PointClusterExpanderMultithread.h"
-#include "PointCloudRetouchManager.h"
-#include "common/CpuTimer.h"
 #include <tbb/parallel_for_each.h>
+#include "common/CpuTimer.h"
+#include "PointCluster.h"
+#include "PointCloudRetouchManager.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -11,12 +11,12 @@ _REGISTER_NORMAL_PRODUCT(CPointClusterExpanderMultithread, KEYWORD::CLUSTER_EXPA
 
 //*****************************************************************
 //FUNCTION: 
-void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
+void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)  //FIXME-014：这个函数copy/paste得很爽吧，连被注释的代码都一起copy/paste过来了
 {
 	if (vCluster == nullptr || vCluster->getCoreRegion().size() == 0)
 		_THROW_RUNTIME_ERROR("Expander input error");
 
-	m_ExpandPoints.clear();
+	m_ExpandedPointSet.clear();
 	CPointCloudRetouchManager* pManager = CPointCloudRetouchManager::getInstance();
 	const auto ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
 	std::vector<std::atomic_flag> TraversedFlag(pManager->getScene().getNumPoint());
@@ -47,11 +47,9 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 				if (OldClusterIndex == 0 ||
 					__isReassigned2CurrentCluster(CurrentProbability, vCluster->getClusterIndex(), pManager->getClusterBelongingProbabilityAt(vCandidate), OldClusterIndex))
 				{
-					if (static_cast<EPointLabel>(CandidateLabel) != EPointLabel::DISCARDED)
-					    pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
+					if (static_cast<EPointLabel>(CandidateLabel) != EPointLabel::DISCARDED) pManager->tagPointLabel(vCandidate, vCluster->getLabel(), vCluster->getClusterIndex(), CurrentProbability);
 					ExpandedFlag.at(vCandidate) = true;
-					for (auto e : pManager->buildNeighborhood(vCandidate))
-						vFeeder.add(e);
+					for (auto e : pManager->buildNeighborhood(vCandidate)) vFeeder.add(e);
 				}
 			}
 			else
@@ -67,7 +65,7 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)
 	for (size_t i = 0; i < ExpandedFlag.size(); i++)
 	{
 		if (ExpandedFlag.at(i))
-			m_ExpandPoints.push_back(i);
+			m_ExpandedPointSet.push_back(i);
 	}
 	
 #ifdef _UNIT_TEST

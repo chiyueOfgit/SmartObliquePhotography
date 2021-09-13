@@ -61,7 +61,7 @@ namespace hiveObliquePhotography
 			bool dumpColorFeatureMainColors(std::vector<Eigen::Vector3i>& vMainColors) const;
 			bool dumpColorFeatureNearestPoints(std::vector<pcl::index_t>& vNearestPoints) const;
 			
-			const auto& getScene() const { return m_Scene; }
+			const auto& getScene() const { return m_Scene; }  //FIXME-014: 能不暴露m_Scene给外面吗？
 			const auto& getPrecomputeManager() const { return m_pPrecomputeManager; }
 
 #ifdef _UNIT_TEST
@@ -85,7 +85,7 @@ namespace hiveObliquePhotography
 		private:
 			CPointCloudRetouchManager() {};
 
-			std::uint32_t m_Timestamp = 0;
+			std::uint32_t m_Timestamp = 0;  //FIXME-014：这个变量实际有用吗？
 
 			CPointClusterSet         m_PointClusterSet;
 			CPointLabelSet           m_PointLabelSet;

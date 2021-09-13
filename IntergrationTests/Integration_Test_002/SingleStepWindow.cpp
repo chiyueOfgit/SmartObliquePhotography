@@ -170,8 +170,8 @@ void CSingleStepWindow::__onActionShow()
 
         if (m_WindowUI.actionMark->isChecked())
         {
-            PointCloudRetouch::hiveDumpExpandResult(m_ExpandPoints, m_pVisualizationConfig->getAttribute<bool>(Visualization::UNWANTED_MODE).value());
-            _ASSERTE(!m_ExpandPoints.empty());
+            PointCloudRetouch::hiveDumpExpandResult(m_ExpandedPointSet, m_pVisualizationConfig->getAttribute<bool>(Visualization::UNWANTED_MODE).value());
+            _ASSERTE(!m_ExpandedPointSet.empty());
             CurrentPoint = 0;
             {
                 m_WindowUI.actionMark->setChecked(false);
@@ -180,13 +180,13 @@ void CSingleStepWindow::__onActionShow()
         }
 
         std::vector<int> SingleStepPoints;
-        int End = CurrentPoint + CSingleStepConfig::getInstance()->getAttribute<float>(STEP_RATIO).value() * 0.01f * m_ExpandPoints.size();
-        if (End > m_ExpandPoints.size())
-            End = m_ExpandPoints.size();
+        int End = CurrentPoint + CSingleStepConfig::getInstance()->getAttribute<float>(STEP_RATIO).value() * 0.01f * m_ExpandedPointSet.size();
+        if (End > m_ExpandedPointSet.size())
+            End = m_ExpandedPointSet.size();
         while (CurrentPoint < End)
-            SingleStepPoints.push_back(m_ExpandPoints[CurrentPoint++]);
+            SingleStepPoints.push_back(m_ExpandedPointSet[CurrentPoint++]);
 
-        float ChangeRate = (float)CurrentPoint / m_ExpandPoints.size();
+        float ChangeRate = (float)CurrentPoint / m_ExpandedPointSet.size();
 
         Visualization::hiveHighlightPointSet(SingleStepPoints, 
             {
@@ -195,7 +195,7 @@ void CSingleStepWindow::__onActionShow()
             m_BeginColor.z() + (int)(DeltaColor.z() * ChangeRate)
             });
 
-        if (CurrentPoint == m_ExpandPoints.size())
+        if (CurrentPoint == m_ExpandedPointSet.size())
             PointCloudRetouch::hiveDumpPointLabel(m_PointLabel);
         Visualization::hiveRefreshVisualizer(m_PointLabel);
     }

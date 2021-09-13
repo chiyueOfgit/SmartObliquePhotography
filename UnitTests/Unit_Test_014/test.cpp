@@ -1,5 +1,6 @@
 #include "pch.h"
-
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
 #include "PointCloudRetouchConfig.h"
 #include "PointCloudRetouchInterface.h"
 #include "PointCloudRetouchManager.h"
@@ -8,10 +9,6 @@
 #include "PointClusterExpander.h"
 #include "VisualizationInterface.h"
 #include "PointCloudVisualizer.h"
-
-#include "pcl/io/pcd_io.h"
-#include "pcl/io/ply_io.h"
-
 
 //测试用例列表：
 //  * DeathTest_EmptyInput:尝试输入空的集合；
@@ -30,7 +27,7 @@ const std::string Slice2CameraPath = TESTMODEL_DIR + std::string("Test014_Model/
 const std::string Slice2WindowInfo = TESTMODEL_DIR + std::string("Test014_Model/WindowInfo.txt");
 const std::string Slice2ModelPath = TESTMODEL_DIR + std::string("General/Tile_1_L19_M3.ply");
 
-class TestExpander : public testing::Test
+class TEST_ClusterExpander : public testing::Test
 {
 public:
 	hiveConfig::CHiveConfig* pConfig = nullptr;
@@ -88,7 +85,7 @@ void loadWindowInfo(const std::string& vPath, std::vector<double>& voWindowInfos
 	File.close();
 }
 
-TEST_F(TestExpander, NoRepeatIndex)
+TEST_F(TEST_ClusterExpander, NoRepeatIndex)
 {
 	CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
 
@@ -105,7 +102,7 @@ TEST_F(TestExpander, NoRepeatIndex)
 	ASSERT_EQ(Sum, 0);
 }
 
-TEST_F(TestExpander, EmptyInput)
+TEST_F(TEST_ClusterExpander, EmptyInput)
 {
 	CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
 
@@ -115,7 +112,7 @@ TEST_F(TestExpander, EmptyInput)
 	EXPECT_ANY_THROW(pPointClusterExpanderMultithread->execute<CPointClusterExpanderMultithread>(UserSpecifiedCluster));
 }
 
-TEST_F(TestExpander, NullptrInput)
+TEST_F(TEST_ClusterExpander, NullptrInput)
 {
 	CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
 	CPointCluster* UserSpecifiedCluster = nullptr;
@@ -187,7 +184,7 @@ TEST(TestExpander_2, MultithreadvsSinglethread)
 	pManager->executeMarker(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::KEPT);
 	
 	double SinglethreadRunTime = pManager->getBackgroundMarker().getExpander()->getRunTime();
-	auto SinglethreadExpander = pManager->getBackgroundMarker().getExpander()->getExpandPoints();
+	auto SinglethreadExpander = pManager->getBackgroundMarker().getExpander()->getExpandedPointSet();
 
 	pManager->destroy();
 	pManager = CPointCloudRetouchManager::getInstance();
@@ -196,7 +193,7 @@ TEST(TestExpander_2, MultithreadvsSinglethread)
 	pManager->executeMarker(PickedIndices, ProjectionMatrix * ViewMatrix, HardnessFunc, EPointLabel::KEPT);
 
 	double MultithreadRunTime = pManager->getBackgroundMarker().getExpander()->getRunTime();
-	auto MultithreadExpander = pManager->getBackgroundMarker().getExpander()->getExpandPoints();
+	auto MultithreadExpander = pManager->getBackgroundMarker().getExpander()->getExpandedPointSet();
 
 	SYSTEM_INFO SystemInfo;
 	GetSystemInfo(&SystemInfo);

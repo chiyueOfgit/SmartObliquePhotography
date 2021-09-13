@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "EuclideanNeighborhoodBuilder.h"
-#include "PointCloudRetouchManager.h"
+#include "PointCloudRetouchManager.h"   //FIXME-014: 用到这个头文件了吗？
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -20,8 +20,11 @@ void CEuclideanNeighborhoodBuilder::__extraInitV(const hiveConfig::CHiveConfig* 
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed, std::string& vType, float vPara) const
-{
+std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed, std::string& vType, float vPara) const  //FIXME-014：两个_buildNeighborhoodV()函数copy/paste的吧，有必要做两个虚函数吗？
+{//FIXME-014：输入参数vType为什么不加const修饰，你要改它吗？
+//FIXME-014：为什么vType要用字符串？大小写敏感吗？传入了非法字符串怎么办？
+//FIXME-014：为什么不对m_pTree做有效性检查？
+//FIXME-014: 为什么在基类采用了工厂模式后，这里还要vType这个参数？
 	std::vector<pcl::index_t> Neighborhood;
 	std::vector<float> Distance;
 	if (vType == "NEAREST")
