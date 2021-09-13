@@ -141,8 +141,8 @@ void CNormalComplexity::__buildSearchTree()
 	CloudScene.dumpPointCloud(*pPointCloud);
 
 	if (pPointCloud->isOrganized())
-		m_pTree.reset(new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
+		m_pTree = std::make_shared<pcl::search::OrganizedNeighbor<pcl::PointXYZ>>();
 	else
-		m_pTree.reset(new pcl::search::KdTree<pcl::PointXYZ>(false));
+		m_pTree = std::make_shared<pcl::search::KdTree<pcl::PointXYZ>>();
 	m_pTree->setInputCloud(pPointCloud);
 }

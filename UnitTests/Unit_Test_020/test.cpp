@@ -42,9 +42,9 @@ protected:
 
 		m_pRetouchConfig = new CPointCloudRetouchConfig;
 		ASSERT_EQ(hiveConfig::hiveParseConfig(RetouchConfigFile, hiveConfig::EConfigType::XML, m_pRetouchConfig), hiveConfig::EParseResult::SUCCEED);
-		m_pCloud.reset(new PointCloud_t);
-		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ DataPath + ModelNames[m_TestNumber] + ".ply" });
-		hiveInit(m_pCloud, m_pRetouchConfig);
+		m_pCloud = std::make_shared<PointCloud_t>();
+		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ DataPath + ModelNames[m_TestNumber] + ".ply" }).front();
+		hiveInit({ m_pCloud }, m_pRetouchConfig);
 
 		m_pHoleRepairerConfig = new CPointCloudRetouchConfig;
 		ASSERT_EQ(hiveConfig::hiveParseConfig(HoleRepairerConfigFile, hiveConfig::EConfigType::XML, m_pHoleRepairerConfig), hiveConfig::EParseResult::SUCCEED);
@@ -58,10 +58,10 @@ protected:
 			m_InputIndices = _loadIndices(DataPath + ModelNames[m_TestNumber] + "_input.txt");
 		ASSERT_TRUE(!m_InputIndices.empty());
 
-		if (ENABLE_VISUALIZER)
+		if constexpr (ENABLE_VISUALIZER)
 		{
 			m_pVisualizer = hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance();
-			m_pVisualizer->init(m_pCloud, false);
+			m_pVisualizer->init({ m_pCloud }, false);
 			std::vector<std::size_t> Label;
 			hiveDumpPointLabel(Label);
 			m_pVisualizer->refresh(Label);
@@ -106,7 +106,7 @@ protected:
 
 	void TearDown() override
 	{
-		if (ENABLE_VISUALIZER)
+		if constexpr (ENABLE_VISUALIZER)
 		{
 			if (m_pVisualizer)
 				m_pVisualizer->run();

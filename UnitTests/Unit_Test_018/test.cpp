@@ -35,10 +35,10 @@ protected:
 		m_pRetouchConfig = new CPointCloudRetouchConfig;
 		ASSERT_EQ(hiveConfig::hiveParseConfig(RetouchConfigFile, hiveConfig::EConfigType::XML, m_pRetouchConfig), hiveConfig::EParseResult::SUCCEED);
 
-		m_pCloud.reset(new PointCloud_t);
-		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ DataPath + ModelNames[m_TestNumber] + ".ply" });
+		m_pCloud = std::make_shared<PointCloud_t>();
+		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ DataPath + ModelNames[m_TestNumber] + ".ply" }).front();
 		m_pManager = CPointCloudRetouchManager::getInstance();
-		m_pManager->init(m_pCloud, m_pRetouchConfig);
+		m_pManager->init({ m_pCloud }, m_pRetouchConfig);
 
 		//∂¡»ÎÀ˘”–groundtruth
 		for (int i = 1; hiveUtility::hiveLocateFile(DataPath + ModelNames[m_TestNumber] + std::to_string(i) + ".txt") != ""; i++)

@@ -40,7 +40,7 @@ void CPointCloudVisualizer::init(const std::vector<RetouchCloud_t::Ptr>& vTileSe
 		AABB.first = { DBL_MAX, DBL_MAX, DBL_MAX };
 	    AABB.second = { -DBL_MAX, -DBL_MAX, -DBL_MAX };
 		m_OffsetSet.push_back(Offset);
-		m_TileSet[WhichTile].reset(new VisualCloud_t);
+		m_TileSet[WhichTile] = std::make_shared<VisualCloud_t>();
 		pcl::copyPointCloud(*vTileSet[WhichTile], *m_TileSet[WhichTile]);
 		m_NumPoints += m_TileSet[WhichTile]->size();
 		Offset += m_TileSet[WhichTile]->size();

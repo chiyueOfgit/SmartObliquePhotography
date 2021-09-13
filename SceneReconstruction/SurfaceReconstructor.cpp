@@ -11,7 +11,7 @@ bool ISurfaceReconstructor::onProductCreatedV(const hiveConfig::CHiveConfig* vCo
 {
 	_ASSERTE(vConfig && vPointCloudScene);
 	m_pConfig = vConfig;
-	m_pSceneCloud.reset(new pcl::PointCloud<pcl::PointNormal>);
+	m_pSceneCloud = std::make_shared<pcl::PointCloud<pcl::PointNormal>>();
 	pcl::copyPointCloud(*vPointCloudScene, *m_pSceneCloud);
 	return true;
 }
