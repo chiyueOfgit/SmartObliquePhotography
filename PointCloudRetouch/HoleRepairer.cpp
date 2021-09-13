@@ -390,6 +390,10 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vPlan
 
 	const float K = 1.0f, B = 0.0f;	//线性系数
 
+	Eigen::Vector3f PointNormal = vPlaneNormal;
+	if (PointNormal.z() < 0)
+		PointNormal = -PointNormal;
+
 	std::vector<pcl::PointXYZRGBNormal> NewPoints;
 	for (int X = 0; X < Resolution.x(); X++)
 	{
@@ -403,6 +407,9 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vPlan
 				TempPoint.x = RealPos.x();
 				TempPoint.y = RealPos.y();
 				TempPoint.z = RealPos.z();
+				TempPoint.normal_x = PointNormal.x();
+				TempPoint.normal_y = PointNormal.y();
+				TempPoint.normal_z = PointNormal.z();
 				TempPoint.r = Lattice.Color.x();
 				TempPoint.g = Lattice.Color.y();
 				TempPoint.b = Lattice.Color.z();

@@ -24,6 +24,7 @@ namespace hiveObliquePhotography
 
 			std::size_t getTileOffset(std::size_t vTileIndex) const { return m_TileSet[vTileIndex].first; }
 			std::size_t getTileNumPoints(std::size_t vTileIndex) const { return m_TileSet[vTileIndex].second->size(); }
+			std::size_t getNumTile() const { return m_TileSet.size(); }
 
 			std::size_t getNumPoint() const { return m_NumPoints; }
 
