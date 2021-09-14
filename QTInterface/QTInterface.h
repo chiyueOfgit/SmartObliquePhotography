@@ -53,7 +53,7 @@ namespace hiveObliquePhotography
             QMdiSubWindow* m_pAreaPickingSetting = nullptr;
             CInstructionsDialog* m_pInstructionsDialog = nullptr;
             CDisplayOptionsSettingDialog* m_pDisplayOptionsSettingDialog = nullptr;
-            vtkSmartPointer<vtkOrientationMarkerWidget> m_Axes;
+            vtkSmartPointer<vtkOrientationMarkerWidget> m_pAxes;
         	
             Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
             hiveConfig::CHiveConfig* m_pPointCloudRetouchConfig = nullptr;

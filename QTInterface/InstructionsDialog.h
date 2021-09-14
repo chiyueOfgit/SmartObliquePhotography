@@ -18,6 +18,7 @@ namespace hiveObliquePhotography
 				: QDialog(vParent),
 				m_pUi(std::make_shared<Ui::CInstructionsDialog>())
 			{
+				this->setAttribute(Qt::WA_DeleteOnClose);
 				m_pUi->setupUi(this);
 			}
 

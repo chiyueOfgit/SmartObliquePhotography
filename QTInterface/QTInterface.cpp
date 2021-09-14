@@ -128,14 +128,14 @@ void CQTInterface::__initialMessageDockWidget()
 
 void CQTInterface::__initialDockWidgetTitleBar(QDockWidget* vParentWidget, const std::string& vTitleBarText)
 {
-    auto BackgroundColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR");
-    auto FontColor = *CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_FONTCOLOR");
-    auto FontSize = *CQInterfaceConfig::getInstance()->getAttribute<int>("DOCKWIDGETTITLEBAR_FONTSIZE");
+    auto BackgroundColor = CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_BACKGROUNDCOLOR").value();
+    auto FontColor = CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int, int, int>>("DOCKWIDGETTITLEBAR_FONTCOLOR").value();
+    auto FontSize = CQInterfaceConfig::getInstance()->getAttribute<int>("DOCKWIDGETTITLEBAR_FONTSIZE").value();
 
-    QTDockWidgetTitleBar* dockWidgetTitleBar = new QTDockWidgetTitleBar(vParentWidget);
-    dockWidgetTitleBar->setAttr(QColor(std::get<0>(BackgroundColor), std::get<1>(BackgroundColor), std::get<2>(BackgroundColor), std::get<3>(BackgroundColor)),
+    QTDockWidgetTitleBar* pDockWidgetTitleBar = new QTDockWidgetTitleBar(vParentWidget);
+    pDockWidgetTitleBar->setAttr(QColor(std::get<0>(BackgroundColor), std::get<1>(BackgroundColor), std::get<2>(BackgroundColor), std::get<3>(BackgroundColor)),
         QColor(std::get<0>(FontColor), std::get<1>(FontColor), std::get<2>(FontColor), std::get<3>(FontColor)), FontSize, QString::fromStdString(vTitleBarText));
-    vParentWidget->setTitleBarWidget(dockWidgetTitleBar);
+    vParentWidget->setTitleBarWidget(pDockWidgetTitleBar);
 }
 
 void CQTInterface::__initialSlider(const QStringList& vFilePathList)
@@ -151,7 +151,7 @@ void CQTInterface::__initialSlider(const QStringList& vFilePathList)
     m_pPointSizeSlider->setSingleStep(1);
     m_pPointSizeSlider->setTickInterval(1);
     m_pPointSizeSlider->setTickPosition(QSlider::TicksAbove);
-    m_pPointSizeSlider->setValue(*m_pVisualizationConfig->getAttribute<double>(Visualization::POINT_SHOW_SIZE));
+    m_pPointSizeSlider->setValue(m_pVisualizationConfig->getAttribute<double>(Visualization::POINT_SHOW_SIZE).value());
 
     connect(m_pPointSizeSlider, &QSlider::valueChanged, [&]()
         {
@@ -159,15 +159,15 @@ void CQTInterface::__initialSlider(const QStringList& vFilePathList)
             auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute(Visualization::POINT_SHOW_SIZE, static_cast<double>(m_PointSize));
             if (OverwriteSuccess)
             {
-                std::vector<std::size_t> PointLabel;
-                PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-                Visualization::hiveRefreshVisualizer(PointLabel);
+                std::vector<std::size_t> PointLabelSet;
+                PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+                Visualization::hiveRefreshVisualizer(PointLabelSet);
             }
         }
     );
 
     pSubWindow->setWidget(m_pPointSizeSlider);
-    pSubWindow->resize(200, 50);                // magic
+    pSubWindow->resize(200, 50);
     pSubWindow->setWindowFlag(Qt::FramelessWindowHint);
     pSubWindow->show();
 }
@@ -187,12 +187,12 @@ bool CQTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
 {
     const auto& FileName = CQTInterface::__getFileName(vFilePath);
 
-    QStandardItem* StandardItem = new QStandardItem(QString::fromStdString(FileName));
-    StandardItem->setCheckable(true);
-    StandardItem->setCheckState(Qt::Checked);
-    StandardItem->setEditable(false);
+    QStandardItem* pStandardItem = new QStandardItem(QString::fromStdString(FileName));
+    pStandardItem->setCheckable(true);
+    pStandardItem->setCheckState(Qt::Checked);
+    pStandardItem->setEditable(false);
     m_pResourceSpaceStandardItemModels->removeRow(0);
-    m_pResourceSpaceStandardItemModels->appendRow(StandardItem);
+    m_pResourceSpaceStandardItemModels->appendRow(pStandardItem);
 
     m_CurrentCloud = FileName;
     CQTInterface::__messageDockWidgetOutputText(QString::fromStdString(vFilePath + " is opened."));
@@ -240,9 +240,9 @@ void CQTInterface::onActionPointPicking()
         {
             m_pPointPickingDockWidget->close();
 
-            std::vector<std::size_t> PointLabel;
-            PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-            Visualization::hiveRefreshVisualizer(PointLabel);
+            std::vector<std::size_t> PointLabelSet;
+            PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+            Visualization::hiveRefreshVisualizer(PointLabelSet);
             CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
         }
 
@@ -265,7 +265,6 @@ void CQTInterface::onActionAreaPicking()
                     m_pAreaPickingSetting = new QMdiSubWindow(m_UI.VTKWidget);
                     m_pAreaPickingSetting->resize({ 200, 50 });
                     QPoint ParentPoint = m_UI.VTKWidget->pos();
-                    QPoint p1 = m_UI.VTKWidget->mapToGlobal(ParentPoint);
                     m_pAreaPickingSetting->move(m_UI.VTKWidget->width() - m_pAreaPickingSetting->width(), 0);
                     m_pAreaPickingCullingBox = new QCheckBox;
                     m_pAreaPickingCullingBox->setChecked(m_pVisualizationConfig->getAttribute<bool>(Visualization::AREA_PICK_CULLING).value());
@@ -288,9 +287,9 @@ void CQTInterface::onActionAreaPicking()
                 if (m_pPointPickingDockWidget)
                     m_pPointPickingDockWidget->close();
 
-                std::vector<std::size_t> PointLabel;
-                PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-                Visualization::hiveRefreshVisualizer(PointLabel);
+                std::vector<std::size_t> PointLabelSet;
+                PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+                Visualization::hiveRefreshVisualizer(PointLabelSet);
                 CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to area picking mode."));
 
             }
@@ -332,9 +331,6 @@ void CQTInterface::onActionOpen()
     if (FileOpenSuccessFlag)
     {
         m_DirectoryOpenPath = CQTInterface::__getDirectory(FilePathSet.back());
-
-        auto config = m_pPointCloudRetouchConfig->getSubconfigAt(0);
-        auto num = config->getNumSubconfig();
 
         PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_pCloud, true);
@@ -395,17 +391,15 @@ void CQTInterface::onActionSave()
     else
         __messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
 
-    CMesh Mesh;
+    /*CMesh Mesh;
     SceneReconstruction::hiveSurfaceReconstruction(m_pCloud, Mesh);
-    pcl::io::savePLYFileBinary("Temp/TestPoisson.ply", Mesh.toPolMesh());
+    pcl::io::savePLYFileBinary("Temp/TestPoisson.ply", Mesh.toPolMesh());*/
 }
 
 void CQTInterface::onActionRubber()
 {
     if (m_pVisualizationConfig)
-    {
         m_pVisualizationConfig->overwriteAttribute("RUBBER_MODE", m_UI.actionRubber->isChecked());
-    }
 }
 
 void CQTInterface::onActionBrush()
@@ -418,9 +412,9 @@ void CQTInterface::onActionOutlierDetection()
     if (m_pCloud)
     {
         PointCloudRetouch::hiveMarkIsolatedAreaAsLitter();
-        std::vector<std::size_t> PointLabel;
-        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-        Visualization::hiveRefreshVisualizer(PointLabel);
+        std::vector<std::size_t> PointLabelSet;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+        Visualization::hiveRefreshVisualizer(PointLabelSet);
     }
 }
 
@@ -463,9 +457,9 @@ void CQTInterface::onActionStartRepairHole()
                 _SAFE_DELETE(m_pAreaPickingSetting);
         }
 
-        std::vector<std::size_t> PointLabel;
-        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-        Visualization::hiveRefreshVisualizer(PointLabel, true);
+        std::vector<std::size_t> PointLabelSet;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+        Visualization::hiveRefreshVisualizer(PointLabelSet, true);
 
         __messageDockWidgetOutputText(QString::fromStdString("Start hole repair."));
     }
@@ -479,9 +473,9 @@ void CQTInterface::onActionDiscardAndRecover()
     else
         PointCloudRetouch::hiveDisplayLitter();
 
-    std::vector<std::size_t> PointLabel;
-    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-    Visualization::hiveRefreshVisualizer(PointLabel);
+    std::vector<std::size_t> PointLabelSet;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+    Visualization::hiveRefreshVisualizer(PointLabelSet);
 }
 
 void CQTInterface::onActionDeleteLitter()
@@ -489,9 +483,9 @@ void CQTInterface::onActionDeleteLitter()
     PointCloudRetouch::hiveRecoverLitterMark();
     Visualization::hiveRemoveAllShapes();
     Visualization::hiveCancelAllHighlighting();
-    std::vector<std::size_t> PointLabel;
-    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-    Visualization::hiveRefreshVisualizer(PointLabel);
+    std::vector<std::size_t> PointLabelSet;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+    Visualization::hiveRefreshVisualizer(PointLabelSet);
 }
 
 void CQTInterface::onActionDeleteBackground()
@@ -499,9 +493,9 @@ void CQTInterface::onActionDeleteBackground()
     PointCloudRetouch::hiveRecoverBackgroundMark();
     Visualization::hiveRemoveAllShapes();
     Visualization::hiveCancelAllHighlighting();
-    std::vector<std::size_t> PointLabel;
-    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-    Visualization::hiveRefreshVisualizer(PointLabel);
+    std::vector<std::size_t> PointLabelSet;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+    Visualization::hiveRefreshVisualizer(PointLabelSet);
 }
 
 void CQTInterface::onActionPrecompute()
@@ -532,9 +526,9 @@ void CQTInterface::onActionSetting()
         Visualization::hiveRemoveAllShapes();
         Visualization::hiveCancelAllHighlighting();
 
-        std::vector<std::size_t> PointLabel;
-        PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-        Visualization::hiveRefreshVisualizer(PointLabel);
+        std::vector<std::size_t> PointLabelSet;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+        Visualization::hiveRefreshVisualizer(PointLabelSet);
     }
     else
         _SAFE_DELETE(m_pDisplayOptionsSettingDialog);
@@ -579,9 +573,9 @@ void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
 {
     Visualization::hiveResetVisualizer(m_pCloud, true);
     __initialVTKWidget();
-    std::vector<std::size_t> PointLabel;
-    PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-    Visualization::hiveRefreshVisualizer(PointLabel);
+    std::vector<std::size_t> PointLabelSet;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+    Visualization::hiveRefreshVisualizer(PointLabelSet);
 }
 
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)
@@ -599,46 +593,46 @@ void CQTInterface::keyPressEvent(QKeyEvent* vEvent)
 
 void CQTInterface::closeEvent(QCloseEvent* vEvent)
 {
-    QDialog* ExitDialog = new QDialog(this);
-    ExitDialog->setWindowFlag(Qt::FramelessWindowHint);
-    ExitDialog->deleteLater();
-    ExitDialog->resize(200, 100);
-    QLabel* Label = new QLabel(ExitDialog);
-    Label->setText("Are you sure?");
+    QDialog* pExitDialog = new QDialog(this);
+    pExitDialog->setWindowFlag(Qt::FramelessWindowHint);
+    pExitDialog->deleteLater();
+    pExitDialog->resize(200, 100);
+    QLabel* pLabel = new QLabel(pExitDialog);
+    pLabel->setText("Are you sure?");
 
-    Label->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    QPushButton* YesButton = new QPushButton(ExitDialog);
-    QPushButton* NoButton = new QPushButton(ExitDialog);
-    YesButton->setStyleSheet("QPushButton{color: black;min-width:75px;max-width:75px;min-height:20px;border:1px solid white;border-radius:5px;}"
+    pLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    QPushButton* pYesButton = new QPushButton(pExitDialog);
+    QPushButton* pNoButton = new QPushButton(pExitDialog);
+    pYesButton->setStyleSheet("QPushButton{color: black;min-width:75px;max-width:75px;min-height:20px;border:1px solid white;border-radius:5px;}"
         "QPushButton:hover{background-color: #2292DD;border-color: #000000;color:rgb(255, 255, 255);}"
         "QPushButton:pressed{background-color: #111111;border-color: #333333;color: blue;}");
-    NoButton->setStyleSheet("QPushButton{color: black;min-width:75px;max-width:75px;min-height:20px;border:1px solid white;border-radius:5px;}"
+    pNoButton->setStyleSheet("QPushButton{color: black;min-width:75px;max-width:75px;min-height:20px;border:1px solid white;border-radius:5px;}"
         "QPushButton:hover{background-color: #2292DD;border-color: #000000;color:rgb(255, 255, 255);}"
         "QPushButton:pressed{background-color: #111111;border-color: #333333;color: blue;}");
-    YesButton->setText("Yes");
-    NoButton->setText("No");
-    YesButton->setMaximumWidth(100);
-    NoButton->setMaximumWidth(100);
+    pYesButton->setText("Yes");
+    pNoButton->setText("No");
+    pYesButton->setMaximumWidth(100);
+    pNoButton->setMaximumWidth(100);
 
-    QObject::connect(YesButton, &QPushButton::clicked, [=]()
+    QObject::connect(pYesButton, &QPushButton::clicked, [=]()
         {
-            ExitDialog->done(1);
+            pExitDialog->done(1);
         });
-    QObject::connect(NoButton, &QPushButton::clicked, [=]()
+    QObject::connect(pNoButton, &QPushButton::clicked, [=]()
         {
-            ExitDialog->done(0);
+            pExitDialog->done(0);
         });
 
-    QHBoxLayout* hLayout = new QHBoxLayout();
-    hLayout->setSpacing(5);
-    hLayout->addStretch();
-    hLayout->addWidget(YesButton);
-    hLayout->addWidget(NoButton);
-    QVBoxLayout* v = new QVBoxLayout();
-    v->addWidget(Label);
-    v->addItem(hLayout);
-    ExitDialog->setLayout(v);
-    if (1 == ExitDialog->exec())
+    QHBoxLayout* pHBoxLayout = new QHBoxLayout();
+    pHBoxLayout->setSpacing(5);
+    pHBoxLayout->addStretch();
+    pHBoxLayout->addWidget(pYesButton);
+    pHBoxLayout->addWidget(pNoButton);
+    QVBoxLayout* pVBoxLayout = new QVBoxLayout();
+    pVBoxLayout->addWidget(pLabel);
+    pVBoxLayout->addItem(pHBoxLayout);
+    pExitDialog->setLayout(pVBoxLayout);
+    if (pExitDialog->exec() == 1)
     {
         vEvent->accept();
     }
@@ -650,13 +644,13 @@ void CQTInterface::closeEvent(QCloseEvent* vEvent)
 
 void CQTInterface::__addAxesToView(vtkRenderWindowInteractor* vInteractor, double vX, double vY, double vXWide, double vYWide)
 {
-    vtkSmartPointer<vtkAxesActor> Axes = vtkSmartPointer<vtkAxesActor>::New();
+    vtkSmartPointer<vtkAxesActor> pAxes = vtkSmartPointer<vtkAxesActor>::New();
 
-    m_Axes = vtkSmartPointer<vtkOrientationMarkerWidget>::New();
-    m_Axes->SetOutlineColor(0.9300, 0.5700, 0.1300);
-    m_Axes->SetOrientationMarker(Axes);
-    m_Axes->SetInteractor(vInteractor);
-    m_Axes->SetViewport(vX, vY, vXWide, vYWide);
-    m_Axes->SetEnabled(true);
-    m_Axes->InteractiveOn();
+    m_pAxes = vtkSmartPointer<vtkOrientationMarkerWidget>::New();
+    m_pAxes->SetOutlineColor(0.9300, 0.5700, 0.1300);
+    m_pAxes->SetOrientationMarker(pAxes);
+    m_pAxes->SetInteractor(vInteractor);
+    m_pAxes->SetViewport(vX, vY, vXWide, vYWide);
+    m_pAxes->SetEnabled(true);
+    m_pAxes->InteractiveOn();
 }

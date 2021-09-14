@@ -51,9 +51,7 @@ void CInstructionsDialog::__setLabelText()
 	auto RichTextFont = CQInterfaceConfig::getInstance()->getAttribute<std::tuple<int, int>>("INSTRUCTIONS_FONT_STYLE").value();
 	m_pUi->RichText->setFont(QFont("Microsoft YaHe", std::get<0>(RichTextFont), std::get<1>(RichTextFont)));
 	for (auto Line : m_LabelText)
-	{
 		m_pUi->RichText->append(QString(Line.c_str()));
-	}
 	m_pUi->RichText->moveCursor(QTextCursor::Start);
 }
 

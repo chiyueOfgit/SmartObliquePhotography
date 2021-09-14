@@ -8,6 +8,7 @@ QTDockWidgetTitleBar::QTDockWidgetTitleBar(QWidget *parent)
 	//m_pMinPix = style()->standardPixmap(QStyle::SP_TitleBarMinButton);
 	m_pClosePix = style()->standardPixmap(QStyle::SP_TitleBarCloseButton);
 	m_pFloatPix = style()->standardPixmap(QStyle::SP_TitleBarNormalButton);
+	this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 QTDockWidgetTitleBar::~QTDockWidgetTitleBar()
@@ -16,49 +17,49 @@ QTDockWidgetTitleBar::~QTDockWidgetTitleBar()
 
 QSize QTDockWidgetTitleBar::minimumSizeHint() const
 {
-	QDockWidget* DockWidget = qobject_cast<QDockWidget*>(parentWidget());
+	QDockWidget* pDockWidget = qobject_cast<QDockWidget*>(parentWidget());
 
-	Q_ASSERT(DockWidget != 0);
+	Q_ASSERT(pDockWidget != 0);
 
-	QSize result(100, 30);
+	QSize Result(100, 30);
 
-	if (DockWidget->features() & QDockWidget::DockWidgetVerticalTitleBar)
+	if (pDockWidget->features() & QDockWidget::DockWidgetVerticalTitleBar)
 	{
-		result.transpose();
+		Result.transpose();
 	}
 
-	return result;
+	return Result;
 }
 
 void QTDockWidgetTitleBar::paintEvent(QPaintEvent* vEvent)
 {
-	QPainter painter(this);
-	QRect rect = this->rect();
-	QDockWidget* DockWidget = qobject_cast<QDockWidget*>(parentWidget());
+	QPainter Painter(this);
+	QRect Rect = this->rect();
+	QDockWidget* pDockWidget = qobject_cast<QDockWidget*>(parentWidget());
 
-	Q_ASSERT(DockWidget != 0);
+	Q_ASSERT(pDockWidget != 0);
 
-	if (DockWidget->features() & QDockWidget::DockWidgetVerticalTitleBar)
+	if (pDockWidget->features() & QDockWidget::DockWidgetVerticalTitleBar)
 	{
-		QSize size = rect.size();
-		size.transpose();
-		rect.setSize(size);
+		QSize RectSize = Rect.size();
+		RectSize.transpose();
+		Rect.setSize(RectSize);
 
-		painter.translate(rect.left(), rect.top() + rect.width());
-		painter.rotate(-90);
-		painter.translate(-rect.left(), -rect.top());
+		Painter.translate(Rect.left(), Rect.top() + Rect.width());
+		Painter.rotate(-90);
+		Painter.translate(-Rect.left(), -Rect.top());
 	}
 
-	painter.fillRect(rect.left(), rect.top(), rect.width(), rect.height(), m_pBackgroundColor);
-	painter.drawPixmap(rect.topRight() - QPoint(m_pClosePix.width() + 10, -10), m_pClosePix);
-	painter.drawPixmap(rect.topRight() - QPoint(m_pFloatPix.width() + 10 + m_pClosePix.width() + 10, -10), m_pFloatPix);
-	painter.drawPixmap(rect.topRight() - QPoint(m_pMinPix.width() + 10 + m_pFloatPix.width() + 10 + m_pClosePix.width() + 10, -7), m_pMinPix);
+	Painter.fillRect(Rect.left(), Rect.top(), Rect.width(), Rect.height(), m_pBackgroundColor);
+	Painter.drawPixmap(Rect.topRight() - QPoint(m_pClosePix.width() + 10, -10), m_pClosePix);
+	Painter.drawPixmap(Rect.topRight() - QPoint(m_pFloatPix.width() + 10 + m_pClosePix.width() + 10, -10), m_pFloatPix);
+	Painter.drawPixmap(Rect.topRight() - QPoint(m_pMinPix.width() + 10 + m_pFloatPix.width() + 10 + m_pClosePix.width() + 10, -7), m_pMinPix);
 
-	QFont font1("Microsoft YaHei", m_pFontSize, false, false);
-	painter.setFont(font1);
-	painter.setPen(m_pFontSize);
-	painter.setPen(m_pFontColor);
-	painter.drawText(rect.left() + 5, 20, m_pTitleBarText);
+	QFont Font("Microsoft YaHei", m_pFontSize, false, false);
+	Painter.setFont(Font);
+	Painter.setPen(m_pFontSize);
+	Painter.setPen(m_pFontColor);
+	Painter.drawText(Rect.left() + 5, 20, m_pTitleBarText);
 }
 
 void QTDockWidgetTitleBar::mousePressEvent(QMouseEvent* vEvent)

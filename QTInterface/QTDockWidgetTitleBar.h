@@ -17,7 +17,7 @@ class QTDockWidgetTitleBar : public QWidget
 	Q_OBJECT
 
 public:
-	QTDockWidgetTitleBar(QWidget *parent = Q_NULLPTR);
+	QTDockWidgetTitleBar(QWidget* parent = Q_NULLPTR);
 	~QTDockWidgetTitleBar();
 
 	void setAttr(QColor vBackgroundColor, QColor vFontColor, int vFontSize, QString vTitleBarText);
