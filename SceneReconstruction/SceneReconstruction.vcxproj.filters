@@ -16,6 +16,12 @@
     <ClCompile Include="RayCastingBaker.cpp">
       <Filter>Texture</Filter>
     </ClCompile>
+    <ClCompile Include="MeshParameterization.cpp">
+      <Filter>Parameterization</Filter>
+    </ClCompile>
+    <ClCompile Include="ArapParameterization.cpp">
+      <Filter>Parameterization</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -37,6 +43,12 @@
       <Filter>Texture</Filter>
     </ClInclude>
     <ClInclude Include="..\ObliquePhotographyData\Image.h" />
+    <ClInclude Include="MeshParameterization.h">
+      <Filter>Parameterization</Filter>
+    </ClInclude>
+    <ClInclude Include="ArapParameterization.h">
+      <Filter>Parameterization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -47,6 +59,9 @@
     </Filter>
     <Filter Include="Texture">
       <UniqueIdentifier>{50215ff1-c831-44a3-a056-d0f737e11622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parameterization">
+      <UniqueIdentifier>{44113bd4-25fd-460b-bc13-bad6d9d16ab1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
