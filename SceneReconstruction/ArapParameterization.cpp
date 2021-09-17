@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "ArapParameterization.h"
 
 using namespace hiveObliquePhotography::SceneReconstruction;
@@ -6,11 +6,6 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 _REGISTER_NORMAL_PRODUCT(CArapParameterization, KEYWORD::ARAP_MESH_PARAMETERIZATION)
 
 using namespace hiveObliquePhotography::SceneReconstruction;
-
-CArapParameterization::CArapParameterization()
-{
-	m_VertexInfoTable.resize(m_Mesh.m_Vertices.size());
-}
 
 //*****************************************************************
 //FUNCTION: 
@@ -26,16 +21,44 @@ Eigen::MatrixXd CArapParameterization::execute()
 //FUNCTION: 
 void CArapParameterization::buildHalfEdge()
 {
-	
+	m_VertexInfoTable.resize(m_Mesh.m_Vertices.size());
+	std::vector<bool> Flag(m_Mesh.m_Vertices.size(), false);
+	for(auto& Face:m_Mesh.m_Faces)
+	{
+		for(int i = 0; i < 3; i++)
+		{
+			SHalfEdge HalfEdge;
+			HalfEdge.VertexRef = Face[i];
+			auto Index = m_HalfEdgeTable.size();
+			m_VertexInfoTable[Face[i]].push_back(Index);
+			HalfEdge.Prev = Index + ((i == 0) ? (2) : (-1));
+			HalfEdge.Next = Index + ((i == 2) ? (-2) : (1));
+			m_HalfEdgeTable.push_back(HalfEdge);
+			if(Flag[Face[i]] && Flag[Face[(i + 1) % 3]])
+			{
+				HalfEdge.Twin = __findTwinRef(HalfEdge);
+			}
+			Flag[Face[i]] = true;
+			Flag[Face[(i + 1) % 3]] = true;
+		}
+	}
 }
 
 //*****************************************************************
 //FUNCTION: 
 std::vector<bool> CArapParameterization::findBoundaryPoint()
 {
-	std::vector<bool> BoundaryStatus(m_Mesh.m_Vertices.size(), true);
-	BoundaryStatus[2] = false;
-	return BoundaryStatus;
+	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
+	for(auto& HalfEdge:m_HalfEdgeTable)
+	{
+		if(HalfEdge.Twin < 0)
+		{
+			OutPutSet[HalfEdge.VertexRef] = true;
+			OutPutSet[m_HalfEdgeTable[HalfEdge.Next].VertexRef] = true;
+		}
+	}
+	
+	return OutPutSet;
 }
 
 //*****************************************************************
@@ -59,7 +82,7 @@ Eigen::SparseMatrix<double, Eigen::ColMajor, int> CArapParameterization::__calcT
 	Eigen::SparseMatrix<double, Eigen::ColMajor, int> TutteMatrix(NumVertices, NumVertices);
 	for (int VertexId = 0; VertexId < NumVertices; VertexId++)
 	{
-		if (vBoundaryStatus[VertexId])	//ÊÇ±ß½ç
+		if (vBoundaryStatus[VertexId])	//ï¿½Ç±ß½ï¿½
 			TutteMatrix.insert(VertexId, VertexId) = 1.0;
 		else
 		{
@@ -68,12 +91,12 @@ Eigen::SparseMatrix<double, Eigen::ColMajor, int> CArapParameterization::__calcT
 			for (auto Face : FaceSet)
 				for (int i = 0; i < 3; i++)
 					Neighbors[Face[i]] = true;
-			auto NumNeighbors = Neighbors.size() - 1;	//¼õÈ¥×Ô¼º
+			auto NumNeighbors = Neighbors.size() - 1;	//ï¿½ï¿½È¥ï¿½Ô¼ï¿½
 			
 			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NumNeighbors;
 			
 			for (auto Pair : Neighbors)
-				if (Pair.first != VertexId && !vBoundaryStatus[Pair.first])	//²»Îª×Ô¼ºÇÒ²»Îª±ß½ç
+				if (Pair.first != VertexId && !vBoundaryStatus[Pair.first])	//ï¿½ï¿½Îªï¿½Ô¼ï¿½ï¿½Ò²ï¿½Îªï¿½ß½ï¿½
 					TutteMatrix.insert(VertexId, Pair.first) = 1.0;
 		}
 	}
@@ -118,7 +141,7 @@ Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMa
 	Solver.factorize(CompressMatrix);
 	_ASSERTE(Solver.info() == Eigen::Success);
 	auto Solution = Solver.solve(vVector);
-	_ASSERTE(solverA.info() == Eigen::Success);
+	_ASSERTE(Solver.info() == Eigen::Success);
 	return Solution;
 }
 
@@ -146,10 +169,19 @@ Eigen::MatrixXd CArapParameterization::__switch2UVMatrix(const CMesh& vMesh, con
 
 	return UVMatrix;
 }
+//*****************************************************************
+//FUNCTION: 
+int CArapParameterization::__findTwinRef(SHalfEdge& vHalfEdge)
+{
+	auto Source = m_HalfEdgeTable[vHalfEdge.Next].VertexRef;
+	for(auto Index:m_VertexInfoTable[Source])
+		if (m_HalfEdgeTable[m_HalfEdgeTable[Index].Next].VertexRef == vHalfEdge.VertexRef)
+			return Index;
+}
 
 //*****************************************************************
 //FUNCTION: 
 Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, Eigen::MatrixXd& vInitialUV)
 {
-	
+	return {};
 }

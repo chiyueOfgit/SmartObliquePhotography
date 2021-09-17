@@ -44,11 +44,11 @@ protected:
 
 	CArapParameterization* _createProduct(const hiveObliquePhotography::CMesh& vMesh)
 	{
-		auto pParameterization =  hiveDesignPattern::hiveCreateProduct<CArapParameterization>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
+		auto pParameterization =  hiveDesignPattern::hiveCreateProduct<IMeshParameterization>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
 		EXPECT_NE(pParameterization, nullptr);
 		if (!pParameterization)
 			std::cerr << "create baker error." << std::endl;
-		return pParameterization;
+		return dynamic_cast<CArapParameterization*>(pParameterization);
 	}
 
 	hiveObliquePhotography::CMesh m_Mesh;
@@ -60,7 +60,18 @@ protected:
 
 TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 {
+	int Sum = 0;
+	m_pMeshParameterization->buildHalfEdge();
 	auto PointSet = m_pMeshParameterization->findBoundaryPoint();
+	for(auto Flag: PointSet)
+	{
+		if(Flag)
+		{
+			Sum++;
+		}
+	}
+	EXPECT_EQ(Sum, 8);
+	int i = 0;
 	EXPECT_EQ(PointSet.size(), 9);
 	auto UV = m_pMeshParameterization->execute();
 
