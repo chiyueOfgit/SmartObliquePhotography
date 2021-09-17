@@ -17,7 +17,7 @@ CMesh::CMesh(const pcl::TextureMesh& vTexMesh)
 
 //*****************************************************************
 //FUNCTION: 
-pcl::PolygonMesh CMesh::toPolMesh()
+pcl::PolygonMesh CMesh::toPolMesh() const
 {
 	pcl::PolygonMesh PolMesh;
 	__fillCloud(m_Vertices, PolMesh.cloud);
@@ -28,7 +28,7 @@ pcl::PolygonMesh CMesh::toPolMesh()
 
 //*****************************************************************
 //FUNCTION: 
-pcl::TextureMesh CMesh::toTexMesh(const pcl::TexMaterial& vMaterial)
+pcl::TextureMesh CMesh::toTexMesh(const pcl::TexMaterial& vMaterial) const
 {
 	pcl::TextureMesh TexMesh;
 	__fillCloud(m_Vertices, TexMesh.cloud);
@@ -45,7 +45,7 @@ pcl::TextureMesh CMesh::toTexMesh(const pcl::TexMaterial& vMaterial)
 	return TexMesh;
 }
 
-std::vector<SFace> CMesh::findFacesByVertex(IndexType vVertex)
+std::vector<SFace> CMesh::findFacesByVertex(IndexType vVertex) const
 {
 	std::vector<SFace> Faces;
 	_ASSERTE(vVertex < m_Vertices.size());
@@ -59,9 +59,29 @@ std::vector<SFace> CMesh::findFacesByVertex(IndexType vVertex)
 	return Faces;
 }
 
+std::pair<Eigen::Vector3f, Eigen::Vector3f> CMesh::calcAABB() const
+{
+	Eigen::Vector3f Min{ FLT_MAX, FLT_MAX, FLT_MAX };
+	Eigen::Vector3f Max{ -FLT_MAX, -FLT_MAX, -FLT_MAX };
+	auto update = [&](const Eigen::Vector3f& vPos)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (vPos.data()[i] < Min.data()[i])
+				Min.data()[i] = vPos.data()[i];
+			if (vPos.data()[i] > Max.data()[i])
+				Max.data()[i] = vPos.data()[i];
+		}
+	};
+
+	for (auto& Vertex : m_Vertices)
+		update(Vertex.xyz());
+	return { Min, Max };
+}
+
 //*****************************************************************
 //FUNCTION: 
-void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::PolygonMesh& vPolMesh)
+void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::PolygonMesh& vPolMesh) const
 {
 	auto OffsetTable = __getOffsetTable(vPolMesh.cloud.fields);
 	__copyAttributes(vVertices, vPolMesh.cloud.data, OffsetTable, vPolMesh.cloud.point_step);
@@ -69,7 +89,7 @@ void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::PolygonMe
 
 //*****************************************************************
 //FUNCTION: 
-void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::TextureMesh& vTexMesh)
+void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::TextureMesh& vTexMesh) const
 {
 	auto OffsetTable = __getOffsetTable(vTexMesh.cloud.fields);
 	__copyAttributes(vVertices, vTexMesh.cloud.data, OffsetTable, vTexMesh.cloud.point_step);
@@ -87,7 +107,7 @@ void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::TextureMe
 
 //*****************************************************************
 //FUNCTION: 
-std::map<std::uint32_t, std::uint32_t> CMesh::__getOffsetTable(const std::vector<pcl::PCLPointField>& vVertexAttributes)
+std::map<std::uint32_t, std::uint32_t> CMesh::__getOffsetTable(const std::vector<pcl::PCLPointField>& vVertexAttributes) const
 {
 	std::map<std::uint32_t, std::uint32_t> OffsetTable;
 	for (auto& VertexAttribute : vVertexAttributes)
@@ -111,7 +131,7 @@ std::map<std::uint32_t, std::uint32_t> CMesh::__getOffsetTable(const std::vector
 
 //*****************************************************************
 //FUNCTION: 
-void CMesh::__copyAttributes(std::vector<SVertex>& vVertices, const std::vector<uint8_t>& vData, const std::map<uint32_t, uint32_t>& vOffsetTable, int vPointStep)
+void CMesh::__copyAttributes(std::vector<SVertex>& vVertices, const std::vector<uint8_t>& vData, const std::map<uint32_t, uint32_t>& vOffsetTable, int vPointStep) const
 {
 	vVertices.resize(vData.size() / vPointStep);
 	for (int i = 0; i < vVertices.size(); i++)
@@ -127,7 +147,7 @@ void CMesh::__copyAttributes(std::vector<SVertex>& vVertices, const std::vector<
 
 //*****************************************************************
 //FUNCTION: 
-void CMesh::__fillFaces(std::vector<SFace>& vFaces, const std::vector<pcl::Vertices>& vFaceData)
+void CMesh::__fillFaces(std::vector<SFace>& vFaces, const std::vector<pcl::Vertices>& vFaceData) const
 {
 	_ASSERTE(vFaceData[0].vertices.size() == 3);
 	for (auto& Face : vFaceData)
@@ -136,7 +156,7 @@ void CMesh::__fillFaces(std::vector<SFace>& vFaces, const std::vector<pcl::Verti
 
 //*****************************************************************
 //FUNCTION: 
-void CMesh::__fillCloud(const std::vector<SVertex>& vVertices, pcl::PCLPointCloud2& vCloud)
+void CMesh::__fillCloud(const std::vector<SVertex>& vVertices, pcl::PCLPointCloud2& vCloud) const
 {
 	vCloud.width = vVertices.size();
 	vCloud.height = 1;
@@ -166,7 +186,7 @@ void CMesh::__fillCloud(const std::vector<SVertex>& vVertices, pcl::PCLPointClou
 
 //*****************************************************************
 //FUNCTION: 
-void CMesh::__fillPolygons(const std::vector<SFace>& vFaces, std::vector<pcl::Vertices>& vPolygons)
+void CMesh::__fillPolygons(const std::vector<SFace>& vFaces, std::vector<pcl::Vertices>& vPolygons) const
 {
 	for (int i = 0; i < vFaces.size(); i++)
 	{

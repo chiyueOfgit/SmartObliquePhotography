@@ -1,6 +1,8 @@
 #pragma once
 #include "MeshParameterization.h"
-#include <Eigen/src/SparseCore/SparseMatrix.h>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
+#include <Eigen/SparseCholesky>
 
 namespace hiveObliquePhotography
 {
@@ -27,14 +29,15 @@ namespace hiveObliquePhotography
 			~CArapParameterization() = default;
 
 			void buildHalfEdge();
-			std::vector<int> findBoundaryPoint();
+			std::vector<bool> findBoundaryPoint();	//需要每顶点是否是边界，直接访问
 			
-			Eigen::MatrixXd calcInitialUV(const CMesh& vMesh);
+			Eigen::MatrixXd calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
 
 		private:
-			void __fillTutteSolveMatrix(Eigen::SparseMatrix<double, Eigen::ColMajor, int>& vMatrix, const CMesh& vMesh);
-			void __fillTutteSolveVectors(Eigen::VectorXd& vVectorU, Eigen::VectorXd& vVectorV, const CMesh& vMesh);
-			Eigen::VectorXd __solveTutteEmbedding(const Eigen::SparseMatrix<double, Eigen::ColMajor, int>& vMatrix, const Eigen::VectorXd& vVector);
+			Eigen::SparseMatrix<double, Eigen::ColMajor, int> __calcTutteSolveMatrix(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
+			void __fillTutteSolveVectors(Eigen::VectorXd& vVectorX, Eigen::VectorXd& vVectorY, const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
+			Eigen::VectorXd __solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor, int>& vMatrix, const Eigen::VectorXd& vVector);
+			Eigen::MatrixXd __switch2UVMatrix(const CMesh& vMesh, const Eigen::VectorXd& vX, const Eigen::VectorXd& vY);
 
 			Eigen::MatrixXd __solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, Eigen::MatrixXd& vInitialUV);
 
