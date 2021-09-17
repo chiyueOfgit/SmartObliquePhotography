@@ -90,10 +90,10 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 					auto FirstPartition = FaceStr.find('/');
 					auto SecondPartition = FaceStr.find_last_of('/');
 					auto Vp = FaceStr.substr(0, FirstPartition);
-					auto Vt = FaceStr.substr(FirstPartition + 1, SecondPartition - FirstPartition - 1);
-					auto Vn = FaceStr.substr(SecondPartition + 1, FaceStr.length());
+					auto Vn = FaceStr.substr(FirstPartition + 1, SecondPartition - FirstPartition - 1);
+					auto Vt = FaceStr.substr(SecondPartition + 1, FaceStr.length());
 
-					int i = 0;
+					FixedLine += Vp + "/" + Vt + "/" + Vn + " ";
 				}
 			}
 
