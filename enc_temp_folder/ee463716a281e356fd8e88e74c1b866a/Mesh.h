@@ -21,14 +21,6 @@ namespace hiveObliquePhotography
 		Eigen::Vector3f xyz() const { return { x, y, z }; }
 		Eigen::Vector3f normal() const { return { nx, ny, nz }; }
 		Eigen::Vector2f uv() const { return { u, v }; }
-
-		DataType operator[](int i) const
-		{
-			if (i >= 0 && i < sizeof(SVertex) / sizeof(DataType))
-				return *(reinterpret_cast<const DataType*>(this) + i);
-			else
-				return ;
-		}
 	};
 
 	struct SFace

@@ -33,7 +33,7 @@ protected:
 		pcl::io::loadOBJFile(vPath, TexMesh1);
 		pcl::io::loadPolygonFileOBJ(vPath, TexMesh2);
 		TexMesh2.tex_materials = TexMesh1.tex_materials;
-		hiveObliquePhotography::CMesh Mesh(TexMesh2);
+		hiveObliquePhotography::CMesh Mesh(TexMesh1);
 		bool EmptyFlag = Mesh.m_Vertices.empty() || Mesh.m_Faces.empty();
 		EXPECT_FALSE(EmptyFlag);
 		if (EmptyFlag)
@@ -50,7 +50,6 @@ protected:
 		return pParameterization;
 	}
 
-
 	hiveObliquePhotography::CMesh m_Mesh;
 
 	CArapParameterization* m_pMeshParameterization = nullptr;
@@ -60,6 +59,14 @@ protected:
 TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 {
 	auto PointSet = m_pMeshParameterization->findBoundaryPoint();
-	EXPECT_EQ(PointSet.size(), 8);
-	
+	EXPECT_EQ(PointSet.size(), 9);
+	auto UV = m_pMeshParameterization->execute();
+
+	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
+	for (int Row = 0; Row < UV.rows(); Row++)
+	{
+		m_Mesh.m_Vertices[Row].u = UV.row(Row)(0);
+		m_Mesh.m_Vertices[Row].v = UV.row(Row)(1);
+	}
+	int i = 0;
 }

@@ -33,7 +33,9 @@ void CArapParameterization::buildHalfEdge()
 //FUNCTION: 
 std::vector<bool> CArapParameterization::findBoundaryPoint()
 {
-	return {};
+	std::vector<bool> BoundaryStatus(m_Mesh.m_Vertices.size(), true);
+	BoundaryStatus[2] = false;
+	return BoundaryStatus;
 }
 
 //*****************************************************************
