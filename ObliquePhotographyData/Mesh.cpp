@@ -81,6 +81,22 @@ std::pair<Eigen::Vector3f, Eigen::Vector3f> CMesh::calcAABB() const
 
 //*****************************************************************
 //FUNCTION: 
+void CMesh::calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const
+{
+	auto AABB = calcAABB();
+	std::vector<std::pair<IndexType, DataType>> AxisAndWidth;
+	for (int i = 0; i < 3; i++)
+		AxisAndWidth.push_back({i, AABB.second.data()[i] - AABB.first.data()[i] });
+
+	std::sort(AxisAndWidth.begin(), AxisAndWidth.end(), [&](std::pair<IndexType, DataType> vLeft, std::pair<IndexType, DataType> vRight) { return vLeft.second < vRight.second; });
+	
+	vHeight = AxisAndWidth[0].first;
+
+	vUV = { AxisAndWidth[1].first, AxisAndWidth[2].first };
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::PolygonMesh& vPolMesh) const
 {
 	auto OffsetTable = __getOffsetTable(vPolMesh.cloud.fields);

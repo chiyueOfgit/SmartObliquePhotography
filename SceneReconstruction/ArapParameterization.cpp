@@ -88,12 +88,15 @@ void CArapParameterization::__fillTutteSolveVectors(Eigen::VectorXd& vVectorX, E
 	auto NumVertices = vMesh.m_Vertices.size();
 	vVectorX.resize(NumVertices);
 	vVectorY.resize(NumVertices);
+	std::pair<int, int> XYAxis;
+	int HeightAxis;
+	vMesh.calcModelPlaneAxis(XYAxis, HeightAxis);
 	for (int VertexId = 0; VertexId < NumVertices; VertexId++)
 	{
 		if (vBoundaryStatus[VertexId])
 		{
-			vVectorX(VertexId) = vMesh.m_Vertices[VertexId].x;
-			vVectorY(VertexId) = vMesh.m_Vertices[VertexId].y;
+			vVectorX(VertexId) = vMesh.m_Vertices[VertexId][XYAxis.first];
+			vVectorY(VertexId) = vMesh.m_Vertices[VertexId][XYAxis.second];
 		}
 		else
 		{
@@ -126,9 +129,12 @@ Eigen::MatrixXd CArapParameterization::__switch2UVMatrix(const CMesh& vMesh, con
 	_ASSERTE(vX.size() == vMesh.m_Vertices.size() && vX.size() == vY.size());
 	Eigen::MatrixXd UVMatrix(vMesh.m_Vertices.size(), 2);
 	auto BoundingBox = vMesh.calcAABB();
-	float WidthU = BoundingBox.second.x() - BoundingBox.first.x();
-	float HeightV = BoundingBox.second.y() - BoundingBox.first.y();
-	float BeginX = BoundingBox.first.x(), BeginY = BoundingBox.first.y();
+	std::pair<int, int> XYAxis;
+	int HeightAxis;
+	vMesh.calcModelPlaneAxis(XYAxis, HeightAxis);
+	float WidthU = BoundingBox.second.data()[XYAxis.first] - BoundingBox.first.data()[XYAxis.first];
+	float HeightV = BoundingBox.second.data()[XYAxis.second] - BoundingBox.first.data()[XYAxis.second];
+	float BeginX = BoundingBox.first.data()[XYAxis.first], BeginY = BoundingBox.first.data()[XYAxis.second];
 
 	for (int VertexId = 0; VertexId < vX.size(); VertexId++)
 	{

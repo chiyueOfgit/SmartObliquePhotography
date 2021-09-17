@@ -22,12 +22,12 @@ namespace hiveObliquePhotography
 		Eigen::Vector3f normal() const { return { nx, ny, nz }; }
 		Eigen::Vector2f uv() const { return { u, v }; }
 
-		DataType operator[](int i) const
+		DataType operator[](IndexType i) const
 		{
 			if (i >= 0 && i < sizeof(SVertex) / sizeof(DataType))
 				return *(reinterpret_cast<const DataType*>(this) + i);
 			else
-				return ;
+				return -1;
 		}
 	};
 
@@ -37,9 +37,9 @@ namespace hiveObliquePhotography
 		IndexType b;
 		IndexType c;
 
-		IndexType operator[](int i) const
+		IndexType operator[](IndexType i) const
 		{
-			if (i >= 0 && i < 3)
+			if (i >= 0 && i < sizeof(SFace) / sizeof(IndexType))
 				return *(reinterpret_cast<const IndexType*>(this) + i);
 			else
 				return -1;
@@ -58,6 +58,7 @@ namespace hiveObliquePhotography
 
 		std::vector<SFace> findFacesByVertex(IndexType vVertex) const;
 		std::pair<Eigen::Vector3f, Eigen::Vector3f> calcAABB() const;
+		void calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const;
 
 		std::vector<SVertex> m_Vertices;
 		std::vector<SFace> m_Faces;
