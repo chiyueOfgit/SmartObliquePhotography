@@ -70,5 +70,5 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 		}
 	}
 	EXPECT_EQ(Sum, 8);
-	
+	int i = 0;
 }
