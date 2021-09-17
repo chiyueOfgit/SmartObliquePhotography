@@ -45,6 +45,20 @@ pcl::TextureMesh CMesh::toTexMesh(const pcl::TexMaterial& vMaterial)
 	return TexMesh;
 }
 
+std::vector<SFace> CMesh::findFacesByVertex(IndexType vVertex)
+{
+	std::vector<SFace> Faces;
+	_ASSERTE(vVertex < m_Vertices.size());
+	for (auto& Face : m_Faces)
+		for (int i = 0; i < 3; i++)	//Èý½ÇÐÎÃæÆ¬
+			if (i == vVertex)
+			{
+				Faces.push_back(Face);
+				break;
+			}
+	return Faces;
+}
+
 //*****************************************************************
 //FUNCTION: 
 void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::PolygonMesh& vPolMesh)

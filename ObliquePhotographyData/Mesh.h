@@ -31,23 +31,10 @@ namespace hiveObliquePhotography
 
 		IndexType operator[](int i) const
 		{
-			IndexType Temp;
-			switch (i)
-			{
-			case 0:
-				Temp = a;
-				break;
-			case 1:
-				Temp = b;
-				break;
-			case 2:
-				Temp = c;
-				break;
-			default:
-				Temp = -1;
-				break;
-			}
-			return Temp;
+			if (i >= 0 && i < 3)
+				return *(reinterpret_cast<const IndexType*>(this) + i);
+			else
+				return -1;
 		}
 	};
 
@@ -60,6 +47,8 @@ namespace hiveObliquePhotography
 
 		pcl::PolygonMesh toPolMesh();
 		pcl::TextureMesh toTexMesh(const pcl::TexMaterial& vMaterial);
+
+		std::vector<SFace> findFacesByVertex(IndexType vVertex);
 
 		std::vector<SVertex> m_Vertices;
 		std::vector<SFace> m_Faces;

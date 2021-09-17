@@ -27,6 +27,7 @@ namespace hiveObliquePhotography
 
 			void buildHalfEdge();
 			std::vector<int> findBoundaryPoint();
+			
 		private:
 			std::vector<SVertexInfo> m_VertexInfoTable;
 			std::vector<SHalfEdge> m_HalfEdgeTable;
