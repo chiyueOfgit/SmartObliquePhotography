@@ -28,6 +28,8 @@ namespace hiveObliquePhotography
 			CArapParameterization();
 			~CArapParameterization() = default;
 
+			Eigen::MatrixXd execute();
+
 			void buildHalfEdge();
 			std::vector<bool> findBoundaryPoint();	//需要每顶点是否是边界，直接访问
 			

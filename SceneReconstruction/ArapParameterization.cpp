@@ -14,6 +14,16 @@ CArapParameterization::CArapParameterization()
 
 //*****************************************************************
 //FUNCTION: 
+Eigen::MatrixXd CArapParameterization::execute()
+{
+	auto BoundaryStatus = findBoundaryPoint();
+	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
+	
+	return InitialUV;
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CArapParameterization::buildHalfEdge()
 {
 	
