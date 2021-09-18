@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "ArapParameterization.h"
+#include <igl/arap.h>
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -13,8 +14,8 @@ Eigen::MatrixXd CArapParameterization::execute()
 {
 	auto BoundaryStatus = findBoundaryPoint();
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
-	
-	return InitialUV;
+	auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
+	return UV;
 }
 
 //*****************************************************************
@@ -184,7 +185,18 @@ int CArapParameterization::__findTwinRef(SHalfEdge& vHalfEdge)
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, Eigen::MatrixXd& vInitialUV)
+Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, const Eigen::MatrixXd& vInitialUV)
 {
-	return {};
+	igl::ARAPData arap_data;
+	arap_data.with_dynamics = true;
+	Eigen::VectorXi Boundary = Eigen::VectorXi::Zero(0);
+	Eigen::MatrixXd BoundaryCoord = Eigen::MatrixXd::Zero(0, 0);
+	arap_data.max_iter = 100;
+
+	// 2 means 2d
+	igl::arap_precomputation(vVertexPos, vFaces, 2, Boundary, arap_data);
+	auto UV = vInitialUV;
+	igl::arap_solve(BoundaryCoord, arap_data, UV);
+	
+	return UV;
 }

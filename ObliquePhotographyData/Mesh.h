@@ -60,6 +60,9 @@ namespace hiveObliquePhotography
 		std::pair<Eigen::Vector3f, Eigen::Vector3f> calcAABB() const;
 		void calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const;
 
+		Eigen::MatrixXd getVerticesMatrix() const;
+		Eigen::MatrixXi getFacesMatrix() const;
+
 		std::vector<SVertex> m_Vertices;
 		std::vector<SFace> m_Faces;
 

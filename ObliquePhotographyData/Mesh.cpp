@@ -97,6 +97,32 @@ void CMesh::calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const
 
 //*****************************************************************
 //FUNCTION: 
+Eigen::MatrixXd CMesh::getVerticesMatrix() const
+{
+	Eigen::MatrixXd VerticesMatrix(m_Vertices.size(), 3);
+	for (int i = 0; i < m_Vertices.size(); i++)
+	{
+		auto& Vertex = m_Vertices[i];
+		VerticesMatrix.row(i) = Eigen::Vector3d(Vertex.x, Vertex.y, Vertex.z);
+	}
+	return VerticesMatrix;
+}
+
+//*****************************************************************
+//FUNCTION: 
+Eigen::MatrixXi CMesh::getFacesMatrix() const
+{
+	Eigen::MatrixXi FacesMatrix(m_Faces.size(), 3);
+	for (int i = 0; i < m_Faces.size(); i++)
+	{
+		auto& Face = m_Faces[i];
+		FacesMatrix.row(i) = Eigen::Vector3i(Face.a, Face.b, Face.c);
+	}
+	return FacesMatrix;
+}
+
+//*****************************************************************
+//FUNCTION: 
 void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::PolygonMesh& vPolMesh) const
 {
 	auto OffsetTable = __getOffsetTable(vPolMesh.cloud.fields);
