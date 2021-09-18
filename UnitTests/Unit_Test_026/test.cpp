@@ -14,14 +14,14 @@
 using namespace hiveObliquePhotography::SceneReconstruction;
 
 const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Plane/Plane100.obj");
-//const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Tile16.obj");
+const auto ScuMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Scu/Tile16.obj");
 
 class TestArapParameterization : public testing::Test
 {
 protected:
 	void SetUp() override
 	{
-		m_Mesh = _loadMesh(PlaneMeshPath);
+		m_Mesh = _loadMesh(ScuMeshPath);
 		m_pMeshParameterization = _createProduct(m_Mesh);
 	}
 
@@ -107,7 +107,7 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 					auto Vn = FaceStr.substr(FirstPartition + 1, SecondPartition - FirstPartition - 1);
 					auto Vt = FaceStr.substr(SecondPartition + 1, FaceStr.length());
 
-					FixedLine += Vp + "/" + Vt + "/" + "1" + " ";
+					FixedLine += Vp + "/" + Vt + "/" + Vn + " ";
 				}
 				FileLines += FixedLine;
 			}

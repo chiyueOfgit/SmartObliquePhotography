@@ -15,7 +15,7 @@ Eigen::MatrixXd CArapParameterization::execute()
 	buildHalfEdge();
 	auto BoundaryStatus = findBoundaryPoint();
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
-	auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
+	//auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
 	return InitialUV;
 }
 
@@ -85,6 +85,7 @@ Eigen::SparseMatrix<double, Eigen::ColMajor, int> CArapParameterization::__build
 {
 	auto NumVertices = m_Mesh.m_Vertices.size();
 	Eigen::SparseMatrix<double, Eigen::ColMajor, int> TutteMatrix(NumVertices, NumVertices);
+	TutteMatrix.reserve(Eigen::VectorXi::Constant(NumVertices, 0));
 	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
 		if (vBoundaryStatus[VertexId]) //boundary
@@ -142,9 +143,10 @@ Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMa
 	Eigen::SimplicialLDLT<Eigen::SparseMatrix<double, Eigen::ColMajor>> Solver;
 	Solver.analyzePattern(CompressMatrix);
 	Solver.factorize(CompressMatrix);
-	_ASSERTE(Solver.info() == Eigen::Success);
+	_ASSERTE(Solver.info() == Eigen::Success);	//fixme: NumericalIssue
 	auto Solution = Solver.solve(vVector);
 	_ASSERTE(Solver.info() == Eigen::Success);
+	auto Info = Solver.info();
 	return Solution;
 }
 
