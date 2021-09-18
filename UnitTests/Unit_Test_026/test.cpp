@@ -14,6 +14,7 @@
 using namespace hiveObliquePhotography::SceneReconstruction;
 
 const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Plane/Plane100.obj");
+//const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Tile16.obj");
 
 class TestArapParameterization : public testing::Test
 {
@@ -72,7 +73,7 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 	}
 	EXPECT_EQ(Sum, 8);
 	int i = 0;
-	EXPECT_EQ(PointSet.size(), 9);
+	/*EXPECT_EQ(PointSet.size(), 9);
 	auto UV = m_pMeshParameterization->execute();
 
 	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
@@ -112,6 +113,6 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 
 
 
-	}
+	}*/
 
 }

@@ -36,7 +36,7 @@ namespace hiveObliquePhotography
 			Eigen::MatrixXd __switch2UVMatrix(const CMesh& vMesh, const Eigen::VectorXd& vX, const Eigen::VectorXd& vY);
 
 			Eigen::MatrixXd __solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, Eigen::MatrixXd& vInitialUV);
-			int __findTwinRef(SHalfEdge& vHalfEdge);
+			int __findTwinRef(int vStartIndex, int vEndIndex);
 
 			std::vector<std::vector<int>> m_VertexInfoTable;
 			std::vector<SHalfEdge> m_HalfEdgeTable;
