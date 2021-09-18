@@ -48,16 +48,19 @@ void CArapParameterization::buildHalfEdge()
 //FUNCTION: 
 std::vector<bool> CArapParameterization::findBoundaryPoint()
 {
-	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
-	for(auto& HalfEdge:m_HalfEdgeTable)
-	{
-		if(HalfEdge.Twin < 0)
-		{
-			OutPutSet[HalfEdge.VertexRef] = true;
-			OutPutSet[m_HalfEdgeTable[HalfEdge.Next].VertexRef] = true;
-		}
-	}
-	
+	//std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
+	//for(auto& HalfEdge:m_HalfEdgeTable)
+	//{
+	//	if(HalfEdge.Twin < 0)
+	//	{
+	//		OutPutSet[HalfEdge.VertexRef] = true;
+	//		OutPutSet[m_HalfEdgeTable[HalfEdge.Next].VertexRef] = true;
+	//	}
+	//}
+	//
+
+	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), true);
+	OutPutSet[2] = false;
 	return OutPutSet;
 }
 

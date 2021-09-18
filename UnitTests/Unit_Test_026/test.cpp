@@ -60,21 +60,21 @@ protected:
 
 TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 {
-	int Sum = 0;
-	m_pMeshParameterization->buildHalfEdge();
-	auto PointSet = m_pMeshParameterization->findBoundaryPoint();
-	for(auto Flag: PointSet)
-	{
-		if(Flag)
-		{
-			Sum++;
-		}
-	}
-	EXPECT_EQ(Sum, 8);
-	int i = 0;
-	EXPECT_EQ(PointSet.size(), 9);
-	auto UV = m_pMeshParameterization->execute();
+	//int Sum = 0;
+	//m_pMeshParameterization->buildHalfEdge();
+	//auto PointSet = m_pMeshParameterization->findBoundaryPoint();
+	//for(auto Flag: PointSet)
+	//{
+	//	if(Flag)
+	//	{
+	//		Sum++;
+	//	}
+	//}
+	//EXPECT_EQ(Sum, 8);
+	//int i = 0;
+	//EXPECT_EQ(PointSet.size(), 9);
 
+	auto UV = m_pMeshParameterization->execute();
 	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
 	for (int Row = 0; Row < UV.rows(); Row++)
 	{
@@ -82,12 +82,14 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 		m_Mesh.m_Vertices[Row].v = UV.row(Row)(1);
 	}
 
-	pcl::io::saveOBJFile("Plane.obj", m_Mesh.toTexMesh(m_Material));
-	std::fstream ObjFile("Plane.obj");
-	if (ObjFile.is_open())
+	std::string ObjName = "Plane.obj";
+	pcl::io::saveOBJFile(ObjName, m_Mesh.toTexMesh(m_Material));
+	std::ifstream ObjFileIn(ObjName);
+	if (ObjFileIn.is_open())
 	{
 		std::string Line;
-		while (std::getline(ObjFile, Line))
+		std::string FileLines;
+		while (std::getline(ObjFileIn, Line))
 		{
 			if (Line[0] == 'f')
 			{
@@ -106,12 +108,16 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 
 					FixedLine += Vp + "/" + Vt + "/" + Vn + " ";
 				}
+				FileLines += FixedLine;
 			}
-
+			else
+				FileLines += Line;
+			FileLines += "\n";
 		}
 
+		ObjFileIn.close();
 
-
+		std::ofstream ObjFileOut(ObjName);
+		ObjFileOut << FileLines;
 	}
-
 }
