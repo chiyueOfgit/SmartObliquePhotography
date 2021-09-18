@@ -29,22 +29,24 @@ Eigen::MatrixXd CArapParameterization::execute()
 void CArapParameterization::buildHalfEdge()
 {
 	m_VertexInfoTable.resize(m_Mesh.m_Vertices.size());
+	m_HalfEdgeTable.clear();
+	m_HalfEdgeTable.reserve(m_Mesh.m_Vertices.size() * 3);
 	std::vector<bool> Flag(m_Mesh.m_Vertices.size(), false);
-	for(auto& Face:m_Mesh.m_Faces)
+	for(auto& Face : m_Mesh.m_Faces)
 	{
 		for(int i = 0; i < 3; i++)
 		{
 			SHalfEdge HalfEdge;
-			HalfEdge.VertexRef = Face[i];
+			HalfEdge._VertexId = Face[i];
 			auto Index = m_HalfEdgeTable.size();
 			m_VertexInfoTable[Face[i]].push_back(Index);
-			HalfEdge.Prev = Index + ((i == 0) ? (2) : (-1));
-			HalfEdge.Next = Index + ((i == 2) ? (-2) : (1));
+			HalfEdge._Prev = Index + ((i == 0) ? (2) : (-1));
+			HalfEdge._Next = Index + ((i == 2) ? (-2) : (1));
 			if(Flag[Face[i]] && Flag[Face[(i + 1) % 3]])
 			{
-				HalfEdge.Twin = __findTwinRef(Face[i], Face[(i + 1) % 3]);
-				if( HalfEdge.Twin >= 0 )
-				    m_HalfEdgeTable[HalfEdge.Twin].Twin = Index;
+				HalfEdge._Conj = __findTwinRef(Face[i], Face[(i + 1) % 3]);
+				if( HalfEdge._Conj >= 0 )
+				    m_HalfEdgeTable[HalfEdge._Conj]._Conj = Index;
 			}
 			m_HalfEdgeTable.push_back(HalfEdge);
 		}
@@ -62,13 +64,13 @@ std::vector<bool> CArapParameterization::findBoundaryPoint()
 	std::set<int> BoundarySet;
 	for(auto& HalfEdge : m_HalfEdgeTable)
 	{
-		if(HalfEdge.Twin < 0)
+		if(HalfEdge._Conj < 0)
 		{
-			OutPutSet[HalfEdge.VertexRef] = true;
-			OutPutSet[m_HalfEdgeTable[HalfEdge.Next].VertexRef] = true;
+			OutPutSet[HalfEdge._VertexId] = true;
+			OutPutSet[m_HalfEdgeTable[HalfEdge._Next]._VertexId] = true;
 
-			BoundarySet.insert(HalfEdge.VertexRef);
-			BoundarySet.insert(m_HalfEdgeTable[HalfEdge.Next].VertexRef);
+			BoundarySet.insert(HalfEdge._VertexId);
+			BoundarySet.insert(m_HalfEdgeTable[HalfEdge._Next]._VertexId);
 		}
 	}
 
@@ -188,7 +190,7 @@ Eigen::MatrixXd CArapParameterization::__switch2UVMatrix(const CMesh& vMesh, con
 //FUNCTION: 
 int CArapParameterization::__findTwinRef(int vStartIndex, int vEndIndex)
 {
-	for(auto EdgeIndex:m_VertexInfoTable[vEndIndex])
+	for(auto EdgeIndex : m_VertexInfoTable[vEndIndex])
 		if (m_HalfEdgeTable[m_HalfEdgeTable[EdgeIndex].Next].VertexRef == vStartIndex)
 			return EdgeIndex;
 	return -1;

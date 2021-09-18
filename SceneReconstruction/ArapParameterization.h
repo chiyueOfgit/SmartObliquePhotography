@@ -10,16 +10,16 @@ namespace hiveObliquePhotography
 	{
 		struct SHalfEdge
 		{
-			int VertexRef;
-			int Prev;
-			int Next;
-			int Twin = -1;
+			int _VertexId;
+			int _Prev;
+			int _Next;
+			int _Conj = -1;
 		};
 
 		struct SVertexInfo
 		{
+			std::vector<int> _InEdgeSet;
 			bool _IsBoundary;
-			std::vector<int> _Neighborhood;
 		};
 		
 		class CArapParameterization : public IMeshParameterization
