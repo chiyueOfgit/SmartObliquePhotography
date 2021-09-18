@@ -33,14 +33,17 @@ void CArapParameterization::buildHalfEdge()
 			m_VertexInfoTable[Face[i]].push_back(Index);
 			HalfEdge.Prev = Index + ((i == 0) ? (2) : (-1));
 			HalfEdge.Next = Index + ((i == 2) ? (-2) : (1));
-			m_HalfEdgeTable.push_back(HalfEdge);
 			if(Flag[Face[i]] && Flag[Face[(i + 1) % 3]])
 			{
-				HalfEdge.Twin = __findTwinRef(HalfEdge);
+				HalfEdge.Twin = __findTwinRef(Face[i], Face[(i + 1) % 3]);
+				if( HalfEdge.Twin >= 0 )
+				    m_HalfEdgeTable[HalfEdge.Twin].Twin = Index;
 			}
-			Flag[Face[i]] = true;
-			Flag[Face[(i + 1) % 3]] = true;
+			m_HalfEdgeTable.push_back(HalfEdge);
 		}
+		Flag[Face[0]] = true;
+		Flag[Face[1]] = true;
+		Flag[Face[2]] = true;
 	}
 }
 
@@ -171,12 +174,12 @@ Eigen::MatrixXd CArapParameterization::__switch2UVMatrix(const CMesh& vMesh, con
 }
 //*****************************************************************
 //FUNCTION: 
-int CArapParameterization::__findTwinRef(SHalfEdge& vHalfEdge)
+int CArapParameterization::__findTwinRef(int vStartIndex, int vEndIndex)
 {
-	auto Source = m_HalfEdgeTable[vHalfEdge.Next].VertexRef;
-	for(auto Index:m_VertexInfoTable[Source])
-		if (m_HalfEdgeTable[m_HalfEdgeTable[Index].Next].VertexRef == vHalfEdge.VertexRef)
-			return Index;
+	for(auto EdgeIndex:m_VertexInfoTable[vEndIndex])
+		if (m_HalfEdgeTable[m_HalfEdgeTable[EdgeIndex].Next].VertexRef == vStartIndex)
+			return EdgeIndex;
+	return -1;
 }
 
 //*****************************************************************
