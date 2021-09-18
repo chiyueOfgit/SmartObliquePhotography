@@ -84,7 +84,7 @@ std::vector<bool> CArapParameterization::findBoundaryPoint()
 //FUNCTION: 
 Eigen::MatrixXd CArapParameterization::calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus)
 {
-	auto TutteMatrix = __buildTutteSolveMatrix(m_HalfEdgeTable, vBoundaryStatus);
+	auto TutteMatrix = __buildTutteSolveMatrix(m_VertexInfoTable);
 	Eigen::VectorXd VectorX, VectorY;
 	__fillTutteSolveVectors(VectorX, VectorY, vMesh, vBoundaryStatus);
 	auto X = __solveSparseMatrix(TutteMatrix, VectorX);
@@ -95,28 +95,23 @@ Eigen::MatrixXd CArapParameterization::calcInitialUV(const CMesh& vMesh, const s
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet, const std::vector<bool>& vBoundaryStatus)
+Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutteSolveMatrix(const std::vector<SVertexInfo>& vVertexInfoSet)
 {
-	auto NumVertices = m_Mesh.m_Vertices.size();
+	auto NumVertices = vVertexInfoSet.size();
 	Eigen::SparseMatrix<double, Eigen::ColMajor> TutteMatrix(NumVertices, NumVertices);
 	TutteMatrix.reserve(Eigen::VectorXd::Zero(NumVertices));
 	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
-		if (vBoundaryStatus[VertexId]) //boundary
+		if (vVertexInfoSet[VertexId]._IsBoundary)
 			TutteMatrix.insert(VertexId, VertexId) = 1.0;
-		else //interior
+		else
 		{
-			const auto& NeighborHalfEdgeSet = m_VertexInfoTable[VertexId];
+			const auto& NeighborVertexSet = vVertexInfoSet[VertexId]._Neighborhood;
 			
-			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NeighborHalfEdgeSet.size();
-
-			std::set<int> NeighborVertexSet;
-			for (auto i : NeighborHalfEdgeSet)
-				NeighborVertexSet.insert(vHalfEdgeSet[vHalfEdgeSet[i].Next].VertexRef);
-
-			for (auto NextVertexId : NeighborVertexSet)
-				if (!vBoundaryStatus[NextVertexId])
-					TutteMatrix.insert(VertexId, NextVertexId) = 1.0;
+			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NeighborVertexSet.size();
+			for (auto NeighborVertexId : NeighborVertexSet)
+				if (!vVertexInfoSet[NeighborVertexId]._IsBoundary)
+					TutteMatrix.insert(VertexId, NeighborVertexId) = 1.0;
 		}
 	}
 
