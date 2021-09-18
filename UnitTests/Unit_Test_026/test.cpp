@@ -14,6 +14,7 @@
 using namespace hiveObliquePhotography::SceneReconstruction;
 
 const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Plane/Plane100.obj");
+//const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Tile16.obj");
 
 class TestArapParameterization : public testing::Test
 {
