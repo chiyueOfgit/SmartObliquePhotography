@@ -107,7 +107,7 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 					auto Vn = FaceStr.substr(FirstPartition + 1, SecondPartition - FirstPartition - 1);
 					auto Vt = FaceStr.substr(SecondPartition + 1, FaceStr.length());
 
-					FixedLine += Vp + "/" + Vt + "/" + Vn + " ";
+					FixedLine += Vp + "/" + Vt + "/" + "1" + " ";
 				}
 				FileLines += FixedLine;
 			}

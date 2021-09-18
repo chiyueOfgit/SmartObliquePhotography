@@ -12,10 +12,11 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 //FUNCTION: 
 Eigen::MatrixXd CArapParameterization::execute()
 {
+	buildHalfEdge();
 	auto BoundaryStatus = findBoundaryPoint();
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
 	auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
-	return UV;
+	return InitialUV;
 }
 
 //*****************************************************************
@@ -52,19 +53,16 @@ void CArapParameterization::buildHalfEdge()
 //FUNCTION: 
 std::vector<bool> CArapParameterization::findBoundaryPoint()
 {
-	//std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
-	//for(auto& HalfEdge:m_HalfEdgeTable)
-	//{
-	//	if(HalfEdge.Twin < 0)
-	//	{
-	//		OutPutSet[HalfEdge.VertexRef] = true;
-	//		OutPutSet[m_HalfEdgeTable[HalfEdge.Next].VertexRef] = true;
-	//	}
-	//}
-	//
+	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
+	for(auto& HalfEdge : m_HalfEdgeTable)
+	{
+		if(HalfEdge.Twin < 0)
+		{
+			OutPutSet[HalfEdge.VertexRef] = true;
+			OutPutSet[m_HalfEdgeTable[HalfEdge.Next].VertexRef] = true;
+		}
+	}
 
-	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), true);
-	OutPutSet[2] = false;
 	return OutPutSet;
 }
 
@@ -72,7 +70,7 @@ std::vector<bool> CArapParameterization::findBoundaryPoint()
 //FUNCTION: 
 Eigen::MatrixXd CArapParameterization::calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus)
 {
-	auto TutteMatrix = __calcTutteSolveMatrix(vMesh, vBoundaryStatus);
+	auto TutteMatrix = __buildTutteSolveMatrix(m_HalfEdgeTable, vBoundaryStatus);
 	Eigen::VectorXd VectorX, VectorY;
 	__fillTutteSolveVectors(VectorX, VectorY, vMesh, vBoundaryStatus);
 	auto X = __solveSparseMatrix(TutteMatrix, VectorX);
@@ -83,22 +81,26 @@ Eigen::MatrixXd CArapParameterization::calcInitialUV(const CMesh& vMesh, const s
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::SparseMatrix<double, Eigen::ColMajor, int> CArapParameterization::__buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet)
+Eigen::SparseMatrix<double, Eigen::ColMajor, int> CArapParameterization::__buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet, const std::vector<bool>& vBoundaryStatus)
 {
-	auto NumVertices = vHalfEdgeSet.size();
+	auto NumVertices = m_Mesh.m_Vertices.size();
 	Eigen::SparseMatrix<double, Eigen::ColMajor, int> TutteMatrix(NumVertices, NumVertices);
 	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
-		if (vHalfEdgeSet[VertexId].Twin < 0) //boundary
+		if (vBoundaryStatus[VertexId]) //boundary
 			TutteMatrix.insert(VertexId, VertexId) = 1.0;
 		else //interior
 		{
 			const auto& NeighborHalfEdgeSet = m_VertexInfoTable[VertexId];
 			
-			TutteMatrix.insert(VertexId, VertexId) = -NeighborHalfEdgeSet.size();
+			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NeighborHalfEdgeSet.size();
 			for (auto i : NeighborHalfEdgeSet)
-				if (vHalfEdgeSet[i].Twin >= 0)
-					TutteMatrix.insert(VertexId, vHalfEdgeSet[i].Next) = 1.0;
+			{
+				auto NextVertexId = vHalfEdgeSet[vHalfEdgeSet[i].Next].VertexRef;
+				if (vHalfEdgeSet[i].Twin >= 0 && !vBoundaryStatus[NextVertexId])
+					TutteMatrix.insert(VertexId, NextVertexId) = 1.0;
+			}
+
 		}
 	}
 
