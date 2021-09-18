@@ -2,6 +2,10 @@
 #include "ArapParameterization.h"
 #include <set>
 #include <igl/arap.h>
+#include <fstream>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/set.hpp>
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -55,14 +59,23 @@ void CArapParameterization::buildHalfEdge()
 std::vector<bool> CArapParameterization::findBoundaryPoint()
 {
 	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
+	std::set<int> BoundarySet;
 	for(auto& HalfEdge : m_HalfEdgeTable)
 	{
 		if(HalfEdge.Twin < 0)
 		{
 			OutPutSet[HalfEdge.VertexRef] = true;
 			OutPutSet[m_HalfEdgeTable[HalfEdge.Next].VertexRef] = true;
+
+			BoundarySet.insert(HalfEdge.VertexRef);
+			BoundarySet.insert(m_HalfEdgeTable[HalfEdge.Next].VertexRef);
 		}
 	}
+
+	std::ofstream file("BoundaryPoints");
+	boost::archive::text_oarchive oa(file);
+	oa& BOOST_SERIALIZATION_NVP(BoundarySet);
+	file.close();
 
 	return OutPutSet;
 }
