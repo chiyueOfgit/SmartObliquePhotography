@@ -76,28 +76,22 @@ Eigen::MatrixXd CArapParameterization::calcInitialUV(const CMesh& vMesh, const s
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::SparseMatrix<double, Eigen::ColMajor, int> CArapParameterization::__calcTutteSolveMatrix(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus)
+Eigen::SparseMatrix<double, Eigen::ColMajor, int> CArapParameterization::__buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet)
 {
-	auto NumVertices = vMesh.m_Vertices.size();
+	auto NumVertices = vHalfEdgeSet.size();
 	Eigen::SparseMatrix<double, Eigen::ColMajor, int> TutteMatrix(NumVertices, NumVertices);
-	for (int VertexId = 0; VertexId < NumVertices; VertexId++)
+	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
-		if (vBoundaryStatus[VertexId])	//�Ǳ߽�
+		if (vHalfEdgeSet[VertexId].Twin < 0) //boundary
 			TutteMatrix.insert(VertexId, VertexId) = 1.0;
-		else
+		else //interior
 		{
-			auto FaceSet = vMesh.findFacesByVertex(VertexId);
-			std::map<int, bool> Neighbors;
-			for (auto Face : FaceSet)
-				for (int i = 0; i < 3; i++)
-					Neighbors[Face[i]] = true;
-			auto NumNeighbors = Neighbors.size() - 1;	//��ȥ�Լ�
+			const auto& NeighborHalfEdgeSet = m_VertexInfoTable[VertexId];
 			
-			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NumNeighbors;
-			
-			for (auto Pair : Neighbors)
-				if (Pair.first != VertexId && !vBoundaryStatus[Pair.first])	//��Ϊ�Լ��Ҳ�Ϊ�߽�
-					TutteMatrix.insert(VertexId, Pair.first) = 1.0;
+			TutteMatrix.insert(VertexId, VertexId) = -NeighborHalfEdgeSet.size();
+			for (auto i : NeighborHalfEdgeSet)
+				if (vHalfEdgeSet[i].Twin >= 0)
+					TutteMatrix.insert(VertexId, vHalfEdgeSet[i].Next) = 1.0;
 		}
 	}
 

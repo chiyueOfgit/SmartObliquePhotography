@@ -30,7 +30,7 @@ namespace hiveObliquePhotography
 			Eigen::MatrixXd calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
 
 		private:
-			Eigen::SparseMatrix<double, Eigen::ColMajor, int> __calcTutteSolveMatrix(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
+			Eigen::SparseMatrix<double, Eigen::ColMajor, int> __buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet);
 			void __fillTutteSolveVectors(Eigen::VectorXd& vVectorX, Eigen::VectorXd& vVectorY, const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
 			Eigen::VectorXd __solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor, int>& vMatrix, const Eigen::VectorXd& vVector);
 			Eigen::MatrixXd __switch2UVMatrix(const CMesh& vMesh, const Eigen::VectorXd& vX, const Eigen::VectorXd& vY);
