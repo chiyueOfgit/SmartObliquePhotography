@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "ArapParameterization.h"
+#include <set>
 #include <igl/arap.h>
 
 using namespace hiveObliquePhotography::SceneReconstruction;
@@ -81,11 +82,11 @@ Eigen::MatrixXd CArapParameterization::calcInitialUV(const CMesh& vMesh, const s
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::SparseMatrix<double, Eigen::ColMajor, int> CArapParameterization::__buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet, const std::vector<bool>& vBoundaryStatus)
+Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet, const std::vector<bool>& vBoundaryStatus)
 {
 	auto NumVertices = m_Mesh.m_Vertices.size();
-	Eigen::SparseMatrix<double, Eigen::ColMajor, int> TutteMatrix(NumVertices, NumVertices);
-	TutteMatrix.reserve(Eigen::VectorXi::Constant(NumVertices, 0));
+	Eigen::SparseMatrix<double, Eigen::ColMajor> TutteMatrix(NumVertices, NumVertices);
+	TutteMatrix.reserve(Eigen::VectorXd::Zero(NumVertices));
 	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
 		if (vBoundaryStatus[VertexId]) //boundary
@@ -95,13 +96,14 @@ Eigen::SparseMatrix<double, Eigen::ColMajor, int> CArapParameterization::__build
 			const auto& NeighborHalfEdgeSet = m_VertexInfoTable[VertexId];
 			
 			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NeighborHalfEdgeSet.size();
-			for (auto i : NeighborHalfEdgeSet)
-			{
-				auto NextVertexId = vHalfEdgeSet[vHalfEdgeSet[i].Next].VertexRef;
-				if (vHalfEdgeSet[i].Twin >= 0 && !vBoundaryStatus[NextVertexId])
-					TutteMatrix.insert(VertexId, NextVertexId) = 1.0;
-			}
 
+			std::set<int> NeighborVertexSet;
+			for (auto i : NeighborHalfEdgeSet)
+				NeighborVertexSet.insert(vHalfEdgeSet[vHalfEdgeSet[i].Next].VertexRef);
+
+			for (auto NextVertexId : NeighborVertexSet)
+				if (!vBoundaryStatus[NextVertexId])
+					TutteMatrix.insert(VertexId, NextVertexId) = 1.0;
 		}
 	}
 
@@ -135,7 +137,7 @@ void CArapParameterization::__fillTutteSolveVectors(Eigen::VectorXd& vVectorX, E
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor, int>& vMatrix, const Eigen::VectorXd& vVector)
+Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor>& vMatrix, const Eigen::VectorXd& vVector)
 {
 	auto CompressMatrix = vMatrix;
 	CompressMatrix.makeCompressed();
