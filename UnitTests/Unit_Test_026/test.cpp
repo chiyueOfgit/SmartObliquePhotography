@@ -16,13 +16,14 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Plane/Plane100.obj");
 const auto ScuMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Scu/Tile16.obj");
 const auto StoneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/LI_Rock_Pavers.obj");
+const auto MountainMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/mountain.obj");
 
 class TestArapParameterization : public testing::Test
 {
 protected:
 	void SetUp() override
 	{
-		m_Mesh = _loadObj(PlaneMeshPath);
+		m_Mesh = _loadObj(StoneMeshPath);
 		m_pMeshParameterization = _createProduct(m_Mesh);
 	}
 
@@ -54,6 +55,8 @@ protected:
 			std::string Line;
 			std::vector<Eigen::Vector3f> Normals;
 			std::vector<Eigen::Vector2f> TexCoords;
+			std::string NumberRegex = "(-?\\d+.?\\d+e?-?\\d*)";
+			std::string SpaceRegex = " +";
 			while (std::getline(ObjFileIn, Line))
 			{
 				if (Line[0] == '#')
@@ -64,7 +67,7 @@ protected:
 				if (Line.substr(0, 2) == "v ")
 				{
 					std::smatch Result;
-					std::regex VertexRegex("(-?\\d+.?\\d+) +(-?\\d+.?\\d+) +(-?\\d+.?\\d+)");
+					std::regex VertexRegex(NumberRegex + SpaceRegex + NumberRegex + SpaceRegex + NumberRegex);
 					std::regex_search(Line, Result, VertexRegex);
 					_ASSERTE(Result.size() == 4);
 					hiveObliquePhotography::SVertex Vertex;
@@ -76,7 +79,7 @@ protected:
 				if (Line.substr(0, 2) == "vt")
 				{
 					std::smatch Result;
-					std::regex VertexRegex("(-?\\d+.?\\d+) +(-?\\d+.?\\d+)");
+					std::regex VertexRegex(NumberRegex + SpaceRegex + NumberRegex);
 					std::regex_search(Line, Result, VertexRegex);
 					_ASSERTE(Result.size() == 3);
 					Eigen::Vector2f TexCoord;
@@ -87,7 +90,7 @@ protected:
 				if (Line.substr(0, 2) == "vn")
 				{
 					std::smatch Result;
-					std::regex VertexRegex("(-?\\d+.?\\d+) +(-?\\d+.?\\d+) +(-?\\d+.?\\d+)");
+					std::regex VertexRegex(NumberRegex + SpaceRegex + NumberRegex + SpaceRegex + NumberRegex);
 					std::regex_search(Line, Result, VertexRegex);
 					_ASSERTE(Result.size() == 4);
 					Eigen::Vector3f Normal;
