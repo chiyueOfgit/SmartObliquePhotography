@@ -15,7 +15,7 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Plane/Plane100.obj");
 const auto ScuMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Scu/Tile16.obj");
-const auto StoneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/LI_Rock_Pavers.obj");
+const auto StoneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/LI_Rock_Pavers.obj");
 
 class TestArapParameterization : public testing::Test
 {
@@ -33,9 +33,9 @@ protected:
 
 	hiveObliquePhotography::CMesh _loadMesh(const std::string& vPath)
 	{
-		pcl::TextureMesh TexMesh;
+		pcl::PolygonMesh TexMesh;
 		pcl::io::loadOBJFile(vPath, TexMesh);
-		m_Material = TexMesh.tex_materials[0];
+		//m_Material = TexMesh.tex_materials[0];
 		hiveObliquePhotography::CMesh Mesh(TexMesh);
 		bool EmptyFlag = Mesh.m_Vertices.empty() || Mesh.m_Faces.empty();
 		EXPECT_FALSE(EmptyFlag);
@@ -151,6 +151,16 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 	//int Sum = 0;
 	//m_pMeshParameterization->buildHalfEdge();
 	//auto PointSet = m_pMeshParameterization->findBoundaryPoint();
+	//for(auto Flag: PointSet)
+	//{
+	//	if(Flag)
+	//	{
+	//		Sum++;
+	//	}
+	//}
+	//EXPECT_EQ(Sum, 8);
+	//int i = 0;
+	//EXPECT_EQ(PointSet.size(), 9);
 
 	auto UV = m_pMeshParameterization->execute();
 	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
