@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <Eigen/SparseCholesky>
+#include <set>
 
 namespace hiveObliquePhotography
 {
@@ -37,7 +38,8 @@ namespace hiveObliquePhotography
 
 			Eigen::MatrixXd __solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, const Eigen::MatrixXd& vInitialUV);
 			int __findTwinRef(int vStartIndex, int vEndIndex);
-
+			void __findValidBoundary(std::set<int>& vBoundarySet, std::set<int>& voValidBoundary);
+			
 			std::vector<SHalfEdge> m_HalfEdgeTable;
 			std::vector<std::vector<int>> m_VertexInfoTable;
 		};

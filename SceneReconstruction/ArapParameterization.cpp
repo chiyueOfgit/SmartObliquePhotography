@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "ArapParameterization.h"
-#include <set>
+
 #include <igl/arap.h>
 
 #include <fstream>	//remove
@@ -82,21 +82,22 @@ std::vector<bool> CArapParameterization::findBoundaryPoint()
 {
 	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
 	std::set<int> BoundarySet;
+	std::set<int> ValidSet;
 	for(auto& HalfEdge : m_HalfEdgeTable)
 	{
 		if(HalfEdge._Conj < 0)
 		{
-			OutPutSet[HalfEdge._VertexId] = true;
-			OutPutSet[m_HalfEdgeTable[HalfEdge._Next]._VertexId] = true;
-
 			BoundarySet.insert(HalfEdge._VertexId);
 			BoundarySet.insert(m_HalfEdgeTable[HalfEdge._Next]._VertexId);
 		}
 	}
-
+	__findValidBoundary(BoundarySet, ValidSet);
+	for (auto Index : ValidSet)
+		OutPutSet[Index] = true;
+	
 	std::ofstream file("BoundaryPoints.txt");
 	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(BoundarySet);
+	oa& BOOST_SERIALIZATION_NVP(ValidSet);
 	file.close();
 
 	return OutPutSet;
@@ -237,4 +238,21 @@ Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVerte
 	igl::arap_solve(BoundaryCoord, arap_data, UV);
 	
 	return UV;
+}
+
+void CArapParameterization::__findValidBoundary(std::set<int>& vBoundarySet, std::set<int>& voValidBoundary)
+{
+	int Sum = 0;
+	auto Aabb = m_Mesh.calcAABB();
+	auto Offset = (Aabb.second - Aabb.first) / 20.0;
+	for (auto& Boundary : vBoundarySet)
+	{
+		auto VetrexPosition = m_Mesh.m_Vertices[Boundary].xyz();
+		auto MinX = std::min(abs(VetrexPosition.x() - Aabb.second.x()), abs(VetrexPosition.x() - Aabb.first.x()));
+		auto MinY = std::min(abs(VetrexPosition.y() - Aabb.second.y()), abs(VetrexPosition.y() - Aabb.first.y()));
+		if (MinX > Offset.x() && MinY > Offset.y())
+			Sum++;
+		else
+			voValidBoundary.insert(Boundary);
+	}
 }
