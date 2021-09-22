@@ -32,5 +32,7 @@ namespace hiveObliquePhotography
 		VISUALIZATION_DECLSPEC pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
 
 		VISUALIZATION_DECLSPEC bool hiveGetVisualizationConfig(CVisualizationConfig*& voConfig);
+
+		VISUALIZATION_DECLSPEC void TestInterface();
 	}
 }

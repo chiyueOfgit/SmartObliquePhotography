@@ -2,6 +2,14 @@
 #include "VisualizationInterface.h"
 #include "PointCloudVisualizer.h"
 
+#include <fstream>	//remove
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/set.hpp>
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/obj_io.h>
+#include "Mesh.h"
+#include "PointCloudRetouchInterface.h"
+
 using namespace hiveObliquePhotography::Visualization;
 
 void hiveObliquePhotography::Visualization::hiveInitVisualizer(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
@@ -86,4 +94,48 @@ bool hiveObliquePhotography::Visualization::hiveGetVisualizationConfig(CVisualiz
 		voConfig = nullptr;
 		return false;
 	}
+}
+
+void hiveObliquePhotography::Visualization::TestInterface()
+{
+	const std::string ObjFile = "Temp/Tile16.obj";
+	const std::string Boundary = "Temp/BoundaryPoints.txt";
+
+	auto pVisualizer = CPointCloudVisualizer::getInstance();
+
+	std::set<int> BoundaryPoints;
+	std::ifstream file(Boundary);
+	boost::archive::text_iarchive ia(file);
+	ia >> BOOST_SERIALIZATION_NVP(BoundaryPoints);
+	file.close();
+
+	pcl::TextureMesh Mesh1, Mesh2;
+	pcl::io::loadOBJFile(ObjFile, Mesh1);
+	pcl::io::loadPolygonFileOBJ(ObjFile, Mesh2);
+	Mesh2.tex_materials = Mesh1.tex_materials;
+	auto Material = Mesh2.tex_materials[0];
+
+	CMesh M(Mesh1);
+
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr pCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+	for (auto Boundary : BoundaryPoints)
+	{
+		pcl::PointXYZRGB Point;
+		auto& Vertex = M.m_Vertices[Boundary];
+		Point.x = Vertex.x;
+		Point.y = Vertex.y;
+		Point.z = Vertex.z;
+		Point.r = 255;
+		Point.g = 0;
+		Point.b = 0;
+		pCloud->push_back(Point);
+	}
+
+	auto pPCLVisualizer = hiveGetPCLVisualizer();
+	pPCLVisualizer->addTextureMesh(Mesh2);
+	pPCLVisualizer->addPointCloud(pCloud, Boundary);
+	pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, Boundary);
+	pPCLVisualizer->resetCamera();
+	pPCLVisualizer->updateCamera();
 }

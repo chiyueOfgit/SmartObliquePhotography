@@ -2,8 +2,8 @@
 #include "ArapParameterization.h"
 #include <set>
 #include <igl/arap.h>
-#include <fstream>
-#include <boost/archive/text_iarchive.hpp>
+
+#include <fstream>	//remove
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/set.hpp>
 
@@ -74,7 +74,7 @@ std::vector<bool> CArapParameterization::findBoundaryPoint()
 		}
 	}
 
-	std::ofstream file("BoundaryPoints");
+	std::ofstream file("BoundaryPoints.txt");
 	boost::archive::text_oarchive oa(file);
 	oa& BOOST_SERIALIZATION_NVP(BoundarySet);
 	file.close();
