@@ -16,12 +16,6 @@ namespace hiveObliquePhotography
 			int _Conj = -1;
 		};
 
-		struct SVertexInfo
-		{
-			std::vector<int> _InEdgeSet;
-			bool _IsBoundary;
-		};
-		
 		class CArapParameterization : public IMeshParameterization
 		{
 		public:
@@ -36,7 +30,7 @@ namespace hiveObliquePhotography
 			Eigen::MatrixXd calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
 
 		private:
-			Eigen::SparseMatrix<double, Eigen::ColMajor> __buildTutteSolveMatrix(const std::vector<SVertexInfo>& vVertexInfoSet);
+			Eigen::SparseMatrix<double, Eigen::ColMajor> __buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet, const std::vector<bool>& vBoundaryStatus);
 			void __fillTutteSolveVectors(Eigen::VectorXd& vVectorX, Eigen::VectorXd& vVectorY, const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
 			Eigen::VectorXd __solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor>& vMatrix, const Eigen::VectorXd& vVector);
 			Eigen::MatrixXd __switch2UVMatrix(const CMesh& vMesh, const Eigen::VectorXd& vX, const Eigen::VectorXd& vY);
@@ -45,7 +39,7 @@ namespace hiveObliquePhotography
 			int __findTwinRef(int vStartIndex, int vEndIndex);
 
 			std::vector<SHalfEdge> m_HalfEdgeTable;
-			std::vector<SVertexInfo> m_VertexInfoTable;
+			std::vector<std::vector<int>> m_VertexInfoTable;
 		};
 	}
 }
