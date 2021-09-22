@@ -124,9 +124,9 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutte
 	TutteMatrix.reserve(Eigen::VectorXd::Zero(NumVertices));
 	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
-		if (vBoundaryStatus[VertexId]) //boundary
-			TutteMatrix.insert(VertexId, VertexId) = 1.0;
-		else //interior
+		//if (vBoundaryStatus[VertexId]) //boundary
+		//	TutteMatrix.insert(VertexId, VertexId) = 1.0;
+		//else //interior
 		{
 			const auto& NeighborHalfEdgeSet = m_VertexInfoTable[VertexId];
 
@@ -137,7 +137,7 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutte
 				NeighborVertexSet.push_back(vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId);
 
 			for (auto NextVertexId : NeighborVertexSet)
-				if (!vBoundaryStatus[NextVertexId])
+				//if (!vBoundaryStatus[NextVertexId])
 					TutteMatrix.insert(VertexId, NextVertexId) = 1.0;
 		}
 	}

@@ -22,7 +22,7 @@ class TestArapParameterization : public testing::Test
 protected:
 	void SetUp() override
 	{
-		m_Mesh = _loadMesh(StoneMeshPath);
+		m_Mesh = _loadMesh(ScuMeshPath);
 		m_pMeshParameterization = _createProduct(m_Mesh);
 	}
 

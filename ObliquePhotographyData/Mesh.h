@@ -42,7 +42,7 @@ namespace hiveObliquePhotography
 			if (i >= 0 && i < sizeof(SFace) / sizeof(IndexType))
 				return *(reinterpret_cast<IndexType*>(this) + i);
 			else
-				throw("yue jie");
+				throw("[] out of range.");
 		}
 	};
 
