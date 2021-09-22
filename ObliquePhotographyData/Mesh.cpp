@@ -51,7 +51,7 @@ std::vector<SFace> CMesh::findFacesByVertex(IndexType vVertex) const
 	_ASSERTE(vVertex < m_Vertices.size());
 	for (auto& Face : m_Faces)
 		for (int i = 0; i < 3; i++)	//Èý½ÇÐÎÃæÆ¬
-			if (i == vVertex)
+			if (const_cast<SFace&>(Face)[i] == vVertex)
 			{
 				Faces.push_back(Face);
 				break;
