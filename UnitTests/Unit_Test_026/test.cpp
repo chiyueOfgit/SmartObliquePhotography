@@ -15,13 +15,14 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Plane/Plane100.obj");
 const auto ScuMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Scu/Tile16.obj");
+const auto StoneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/LI_Rock_Pavers.obj");
 
 class TestArapParameterization : public testing::Test
 {
 protected:
 	void SetUp() override
 	{
-		m_Mesh = _loadMesh(ScuMeshPath);
+		m_Mesh = _loadMesh(StoneMeshPath);
 		m_pMeshParameterization = _createProduct(m_Mesh);
 	}
 
@@ -61,21 +62,21 @@ protected:
 
 TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 {
-	//int Sum = 0;
-	//m_pMeshParameterization->buildHalfEdge();
-	//auto PointSet = m_pMeshParameterization->findBoundaryPoint();
-	//for(auto Flag: PointSet)
-	//{
-	//	if(Flag)
-	//	{
-	//		Sum++;
-	//	}
-	//}
-	//EXPECT_EQ(Sum, 8);
-	//int i = 0;
-	//EXPECT_EQ(PointSet.size(), 9);
+	int Sum = 0;
+	m_pMeshParameterization->buildHalfEdge();
+	auto PointSet = m_pMeshParameterization->findBoundaryPoint();
+	for(auto Flag: PointSet)
+	{
+		if(Flag)
+		{
+			Sum++;
+		}
+	}
+	EXPECT_EQ(Sum, 8);
+	int i = 0;
+	EXPECT_EQ(PointSet.size(), 9);
 
-	auto UV = m_pMeshParameterization->execute();
+	/*auto UV = m_pMeshParameterization->execute();
 	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
 	for (int Row = 0; Row < UV.rows(); Row++)
 	{
@@ -120,5 +121,5 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 
 		std::ofstream ObjFileOut(ObjName);
 		ObjFileOut << FileLines;
-	}
+	}*/
 }

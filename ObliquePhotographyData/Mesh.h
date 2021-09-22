@@ -37,12 +37,12 @@ namespace hiveObliquePhotography
 		IndexType b;
 		IndexType c;
 
-		IndexType operator[](IndexType i) const
+		IndexType& operator[](IndexType i)
 		{
 			if (i >= 0 && i < sizeof(SFace) / sizeof(IndexType))
-				return *(reinterpret_cast<const IndexType*>(this) + i);
+				return *(reinterpret_cast<IndexType*>(this) + i);
 			else
-				return -1;
+				throw("yue jie");
 		}
 	};
 

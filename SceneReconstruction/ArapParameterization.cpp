@@ -32,8 +32,20 @@ void CArapParameterization::buildHalfEdge()
 	m_HalfEdgeTable.clear();
 	m_HalfEdgeTable.reserve(m_Mesh.m_Vertices.size() * 3);
 	std::vector<bool> Flag(m_Mesh.m_Vertices.size(), false);
+	int sum = 0;
 	for(auto& Face : m_Mesh.m_Faces)
 	{
+        Eigen::Vector3f A = m_Mesh.m_Vertices[Face[1]].xyz() - m_Mesh.m_Vertices[Face[0]].xyz();
+		Eigen::Vector3f B = m_Mesh.m_Vertices[Face[2]].xyz() - m_Mesh.m_Vertices[Face[1]].xyz();
+		Eigen::Vector3f Cross = A.cross(B);
+
+		if (Cross.dot(m_Mesh.m_Vertices[Face[0]].normal()) < 0 || Cross.dot(m_Mesh.m_Vertices[Face[1]].normal()) < 0 || Cross.dot(m_Mesh.m_Vertices[Face[2]].normal()) < 0)
+		{
+			auto Temp = Face[1];
+			Face[1] = Face[2];
+			Face[2] = Temp;
+		}
+
 		for(int i = 0; i < 3; i++)
 		{
 			SHalfEdge HalfEdge;
@@ -50,6 +62,14 @@ void CArapParameterization::buildHalfEdge()
 			}
 			m_HalfEdgeTable.push_back(HalfEdge);
 		}
+		/*Eigen::Vector3f A = m_Mesh.m_Vertices[Face[1]].xyz() - m_Mesh.m_Vertices[Face[0]].xyz();
+		Eigen::Vector3f B = m_Mesh.m_Vertices[Face[2]].xyz() - m_Mesh.m_Vertices[Face[1]].xyz();
+		Eigen::Vector3f Cross = A.cross(B);
+
+		if (Cross.dot(m_Mesh.m_Vertices[Face[0]].normal()) < 0 || Cross.dot(m_Mesh.m_Vertices[Face[1]].normal()) < 0 || Cross.dot(m_Mesh.m_Vertices[Face[2]].normal()) < 0)
+		{
+			sum++;
+		}*/
 		Flag[Face[0]] = true;
 		Flag[Face[1]] = true;
 		Flag[Face[2]] = true;
@@ -112,9 +132,9 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutte
 
 			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NeighborHalfEdgeSet.size();
 
-			std::set<int> NeighborVertexSet;
+			std::vector<int> NeighborVertexSet;
 			for (auto i : NeighborHalfEdgeSet)
-				NeighborVertexSet.insert(vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId);
+				NeighborVertexSet.push_back(vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId);
 
 			for (auto NextVertexId : NeighborVertexSet)
 				if (!vBoundaryStatus[NextVertexId])
