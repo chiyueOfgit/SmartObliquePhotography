@@ -543,31 +543,30 @@ void CQTInterface::onActionOpenMesh()
     {
         PointCloud_t::Ptr pCloud(new PointCloud_t);
         Visualization::hiveInitVisualizer(pCloud, true);
-        //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
         __initialVTKWidget();
-        Visualization::TestInterface();
+        //Visualization::TestInterface();
 
-        //Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
-        //auto Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
-        //auto Texture = SceneReconstruction::hiveBakeColorTexture(Mesh, m_pCloud, { 512, 512 });
+        Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+        auto Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(Mesh, m_pCloud, { 512, 512 });
 
-        //{
-        //    const auto Width = Texture.getWidth();
-        //    const auto Height = Texture.getHeight();
-        //    const auto BytesPerPixel = 3;
-        //    auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
-        //    for (auto i = 0; i < Height; i++)
-        //        for (auto k = 0; k < Width; k++)
-        //        {
-        //            auto Offset = ((Height - 1 - i) * Width + k) * BytesPerPixel;
-        //            ResultImage[Offset] = Texture.getColor(i, k)[0];
-        //            ResultImage[Offset + 1] = Texture.getColor(i, k)[1];
-        //            ResultImage[Offset + 2] = Texture.getColor(i, k)[2];
-        //        }
+        {
+            const auto Width = Texture.getWidth();
+            const auto Height = Texture.getHeight();
+            const auto BytesPerPixel = 3;
+            auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+            for (auto i = 0; i < Height; i++)
+                for (auto k = 0; k < Width; k++)
+                {
+                    auto Offset = ((Height - 1 - i) * Width + k) * BytesPerPixel;
+                    ResultImage[Offset] = Texture.getColor(i, k)[0];
+                    ResultImage[Offset + 1] = Texture.getColor(i, k)[1];
+                    ResultImage[Offset + 2] = Texture.getColor(i, k)[2];
+                }
 
-        //    stbi_write_png("TestColor.png", Width, Height, BytesPerPixel, ResultImage, 0);
-        //    stbi_image_free(ResultImage);
-        //}
+            stbi_write_png("TestColor.png", Width, Height, BytesPerPixel, ResultImage, 0);
+            stbi_image_free(ResultImage);
+        }
         //Visualization::hiveAddTextureMesh(Mesh);
         //std::vector<std::size_t> PointLabel;
         //PointCloudRetouch::hiveDumpPointLabel(PointLabel);

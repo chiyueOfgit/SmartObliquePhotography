@@ -6,6 +6,7 @@
 #include <fstream>	//remove
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/set.hpp>
+#include <iomanip>
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -20,7 +21,7 @@ Eigen::MatrixXd CArapParameterization::execute()
 	buildHalfEdge();
 	auto BoundaryStatus = findBoundaryPoint();
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
-	//auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
+	auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
 	return InitialUV;
 }
 
@@ -122,24 +123,40 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutte
 	auto NumVertices = m_Mesh.m_Vertices.size();
 	Eigen::SparseMatrix<double, Eigen::ColMajor> TutteMatrix(NumVertices, NumVertices);
 	TutteMatrix.reserve(Eigen::VectorXd::Zero(NumVertices));
+
 	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
-		//if (vBoundaryStatus[VertexId]) //boundary
-		//	TutteMatrix.insert(VertexId, VertexId) = 1.0;
-		//else //interior
+		//TutteMatrix.insert(VertexId, VertexId) = 1.0;
+		if (vBoundaryStatus[VertexId]) //boundary
+			TutteMatrix.insert(VertexId, VertexId) = 1.0;
+		else //interior
 		{
 			const auto& NeighborHalfEdgeSet = m_VertexInfoTable[VertexId];
 
-			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NeighborHalfEdgeSet.size();
-
-			std::vector<int> NeighborVertexSet;
+			int Sum = 0;
+			std::set<int> NeighborVertexSet;
 			for (auto i : NeighborHalfEdgeSet)
-				NeighborVertexSet.push_back(vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId);
-
+				NeighborVertexSet.insert(vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId);
 			for (auto NextVertexId : NeighborVertexSet)
-				//if (!vBoundaryStatus[NextVertexId])
+			{
+				if (!vBoundaryStatus[NextVertexId])
+				{
 					TutteMatrix.insert(VertexId, NextVertexId) = 1.0;
+					Sum++;
+				}
+			}
+
+			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NeighborVertexSet.size();
 		}
+	}
+
+	//cout matrix
+	std::cout << "\n    Tutte: \n";
+	for (int i = 0; i < TutteMatrix.cols(); i++)
+	{
+		for (int k = 0; k < TutteMatrix.rows(); k++)
+			std::cout << std::setw(2) << TutteMatrix.coeff(k, i) << " ";
+		std::cout << std::endl;
 	}
 
 	return TutteMatrix;
@@ -166,7 +183,7 @@ void CArapParameterization::__fillTutteSolveVectors(Eigen::VectorXd& vVectorX, E
 		{
 			vVectorX(VertexId) = 0.0;
 			vVectorY(VertexId) = 0.0;
-		}	
+		}
 	}
 }
 
