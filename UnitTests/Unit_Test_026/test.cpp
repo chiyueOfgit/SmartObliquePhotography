@@ -62,21 +62,11 @@ protected:
 
 TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 {
-	int Sum = 0;
-	m_pMeshParameterization->buildHalfEdge();
-	auto PointSet = m_pMeshParameterization->findBoundaryPoint();
-	for(auto Flag: PointSet)
-	{
-		if(Flag)
-		{
-			Sum++;
-		}
-	}
-	EXPECT_EQ(Sum, 8);
-	int i = 0;
-	EXPECT_EQ(PointSet.size(), 9);
+	//int Sum = 0;
+	//m_pMeshParameterization->buildHalfEdge();
+	//auto PointSet = m_pMeshParameterization->findBoundaryPoint();
 
-	/*auto UV = m_pMeshParameterization->execute();
+	auto UV = m_pMeshParameterization->execute();
 	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
 	for (int Row = 0; Row < UV.rows(); Row++)
 	{
@@ -121,5 +111,5 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 
 		std::ofstream ObjFileOut(ObjName);
 		ObjFileOut << FileLines;
-	}*/
+	}
 }
