@@ -1,5 +1,4 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# 创建的文件:22.09.2021 11:52:37
 
 newmtl Mountains
 	Ns 10.0000
@@ -12,5 +11,4 @@ newmtl Mountains
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka .\diff2.jpg
-	map_Kd .\diff2.jpg
+	map_Kd diff2.jpg
