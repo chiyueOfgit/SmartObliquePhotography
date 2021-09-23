@@ -10,8 +10,12 @@ _REGISTER_NORMAL_PRODUCT(CEuclideanNeighborhoodBuilder, KEYWORD::EUCLIDEAN_NEIGH
 //FUNCTION: 
 void CEuclideanNeighborhoodBuilder::__extraInitV(const hiveConfig::CHiveConfig* vConfig)
 {
-	m_pTree.reset(new pcl::search::KdTree<pcl::PointSurfel>);
-	m_pTree->setInputCloud(m_pPointCloudScene);
+	m_TreeSet.resize(m_TileSet.size());
+	for (int i = 0; i < m_TileSet.size(); i++)
+	{
+		m_TreeSet[i] = std::make_shared<pcl::search::KdTree<PointCloud_t::PointType>>();;
+		m_TreeSet[i]->setInputCloud(m_TileSet[i]);
+	}
 
 	m_SearchMode = *vConfig->getAttribute<std::string>("SEARCH_MODE");
 	m_NearestN = *vConfig->getAttribute<int>("NEAREST_N");
@@ -27,11 +31,18 @@ std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pc
 //FIXME-014: 为什么在基类采用了工厂模式后，这里还要vType这个参数？
 	std::vector<pcl::index_t> Neighborhood;
 	std::vector<float> Distance;
+	int WhichTile = 0;
+	while (WhichTile + 1 < m_OffsetSet.size() && m_OffsetSet[WhichTile + 1] <= vSeed)
+		WhichTile++;
+	vSeed -= m_OffsetSet[WhichTile];
+
 	if (vType == "NEAREST")
-		m_pTree->nearestKSearch(m_pPointCloudScene->points[vSeed], static_cast<int>(vPara), Neighborhood, Distance);
+		m_TreeSet[WhichTile]->nearestKSearch(m_TileSet[WhichTile]->points[vSeed], static_cast<int>(vPara), Neighborhood, Distance);
 	else if (vType == "RADIUS")
-		m_pTree->radiusSearch(m_pPointCloudScene->points[vSeed], vPara, Neighborhood, Distance);
+		m_TreeSet[WhichTile]->radiusSearch(m_TileSet[WhichTile]->points[vSeed], vPara, Neighborhood, Distance);
 	//发生NRVO
+	for (auto& Index : Neighborhood)
+		Index += m_OffsetSet[WhichTile];
 	return Neighborhood;
 }
 
@@ -39,10 +50,17 @@ std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pc
 {
 	std::vector<pcl::index_t> Neighborhood;
 	std::vector<float> Distance;
+	int WhichTile = 0;
+	while (WhichTile + 1 < m_OffsetSet.size() && m_OffsetSet[WhichTile + 1] <= vSeed)
+		WhichTile++;
+	vSeed -= m_OffsetSet[WhichTile];
+
 	if (m_SearchMode == "NEAREST")
-		m_pTree->nearestKSearch(m_pPointCloudScene->points[vSeed], m_NearestN, Neighborhood, Distance);
+		m_TreeSet[WhichTile]->nearestKSearch(m_TileSet[WhichTile]->points[vSeed], m_NearestN, Neighborhood, Distance);
 	else if (m_SearchMode == "RADIUS")
-		m_pTree->radiusSearch(m_pPointCloudScene->points[vSeed], m_Radius, Neighborhood, Distance);
+		m_TreeSet[WhichTile]->radiusSearch(m_TileSet[WhichTile]->points[vSeed], m_Radius, Neighborhood, Distance);
 	//发生NRVO
+	for (auto& Index : Neighborhood)
+		Index += m_OffsetSet[WhichTile];
 	return Neighborhood;
 }

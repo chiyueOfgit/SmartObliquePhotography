@@ -51,14 +51,14 @@ void CHoleRepairer::setHoleRegion(const std::vector<pcl::index_t>& vHoleRegion)
 	m_BoundarySet = TempBoundarySet;
 }
 
-void CHoleRepairer::repairHole(std::vector<pcl::PointSurfel>& voNewPoints)
+void CHoleRepairer::repairHole(std::vector<pcl::PointXYZRGBNormal>& voNewPoints)
 {
 	if (!m_BoundarySet.empty() && !m_Input.empty())
 	{
-		std::vector<pcl::PointSurfel> NewPoints;
+		std::vector<pcl::PointXYZRGBNormal> NewPoints;
 		for (auto& Boundary : m_BoundarySet)
 		{
-			std::vector<pcl::PointSurfel> TempPoints;
+			std::vector<pcl::PointXYZRGBNormal> TempPoints;
 			repairHoleByBoundaryAndInput(Boundary, m_Input, TempPoints);
 			NewPoints.insert(NewPoints.end(), TempPoints.begin(), TempPoints.end());
 		}
@@ -70,7 +70,7 @@ void CHoleRepairer::repairHole(std::vector<pcl::PointSurfel>& voNewPoints)
 
 //*****************************************************************
 //FUNCTION: 
-void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointSurfel>& voNewPoints)
+void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>& vBoundaryIndices, const std::vector<pcl::index_t>& vInputIndices, std::vector<pcl::PointXYZRGBNormal>& voNewPoints)
 {
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	//Input
@@ -383,14 +383,18 @@ void CHoleRepairer::__inputHeightCorrection(std::vector<std::vector<SLattice>>& 
 
 //*****************************************************************
 //FUNCTION: 
-void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vPlaneNormal, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointSurfel>& voNewPoints)
+void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vPlaneNormal, const Eigen::MatrixXi& vMask, const std::vector<std::vector<SLattice>>& vPlaneLattices, std::vector<pcl::PointXYZRGBNormal>& voNewPoints)
 {
 	_ASSERTE(!vPlaneLattices.empty());
 	Eigen::Vector2i Resolution{ vPlaneLattices.front().size(), vPlaneLattices.size() };
 
 	const float K = 1.0f, B = 0.0f;	//线性系数
 
-	std::vector<pcl::PointSurfel> NewPoints;
+	Eigen::Vector3f PointNormal = vPlaneNormal;
+	if (PointNormal.z() < 0)
+		PointNormal = -PointNormal;
+
+	std::vector<pcl::PointXYZRGBNormal> NewPoints;
 	for (int X = 0; X < Resolution.x(); X++)
 	{
 		for (int Y = 0; Y < Resolution.y(); Y++)
@@ -399,10 +403,13 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vPlan
 			if (Lattice.Indices.empty())
 			{
 				Eigen::Vector3f RealPos = Lattice.CenterPos + vPlaneNormal * (K * Lattice.Height(0, 0) + B);	//取出加偏移
-				pcl::PointSurfel TempPoint;
+				pcl::PointXYZRGBNormal TempPoint;
 				TempPoint.x = RealPos.x();
 				TempPoint.y = RealPos.y();
 				TempPoint.z = RealPos.z();
+				TempPoint.normal_x = PointNormal.x();
+				TempPoint.normal_y = PointNormal.y();
+				TempPoint.normal_z = PointNormal.z();
 				TempPoint.r = Lattice.Color.x();
 				TempPoint.g = Lattice.Color.y();
 				TempPoint.b = Lattice.Color.z();

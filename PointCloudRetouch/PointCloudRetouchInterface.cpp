@@ -8,12 +8,12 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::PointCloudRetouch::hiveInit(PointCloud_t::Ptr vPointCloud, const hiveConfig::CHiveConfig* vConfig)
+bool hiveObliquePhotography::PointCloudRetouch::hiveInit(const std::vector<PointCloud_t::Ptr>& vTileSet, const hiveConfig::CHiveConfig* vConfig)
 {
-	_ASSERTE(vPointCloud && vConfig);
+	_ASSERTE(!vTileSet.empty() && vConfig);
 	if (_access(KEYWORD::TEMP_FOLDER.c_str(), 0) == -1)
 		_mkdir(KEYWORD::TEMP_FOLDER.c_str());
-	return CPointCloudRetouchManager::getInstance()->init(vPointCloud, vConfig);
+	return CPointCloudRetouchManager::getInstance()->init(vTileSet, vConfig);
 }
 
 //*****************************************************************
@@ -25,7 +25,7 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointCloudtoSave(PointCl
 	CPointCloudRetouchManager::getInstance()->dumpIndicesByLabel(PointIndices, EPointLabel::UNDETERMINED);
 	for (auto Index : PointIndices)
 	{
-		pcl::PointSurfel TempPoint;
+		PointCloud_t::PointType TempPoint;
 		auto Pos = CPointCloudRetouchManager::getInstance()->getScene().getPositionAt(Index);
 		TempPoint.x = Pos.x();
 		TempPoint.y = Pos.y();
@@ -76,6 +76,13 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveMarkIsolatedAreaAsLitter()
 bool hiveObliquePhotography::PointCloudRetouch::hiveDumpPointLabel(std::vector<std::size_t>& voPointLabel)
 {
 	return CPointCloudRetouchManager::getInstance()->dumpPointLabel(voPointLabel);
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool hiveObliquePhotography::PointCloudRetouch::hiveDumpTileLabel(std::size_t vTile, std::vector<std::size_t>& voTileLabel)
+{
+	return CPointCloudRetouchManager::getInstance()->dumpTileLabel(vTile, voTileLabel);
 }
 
 void hiveObliquePhotography::PointCloudRetouch::hiveDumpExpandResult(std::vector<pcl::index_t>& voExpandPoints, bool vIsLitterMarker)
@@ -151,7 +158,18 @@ void hiveObliquePhotography::PointCloudRetouch::hiveRepairHoleSetReferenceRegion
 	CPointCloudRetouchManager::getInstance()->executeHoleRepairerSetInput(vReferenceRegion);
 }
 
-void hiveObliquePhotography::PointCloudRetouch::hiveRepairHole(std::vector<pcl::PointSurfel>& voNewPoints)
+void hiveObliquePhotography::PointCloudRetouch::hiveRepairHole(std::vector<pcl::PointXYZRGBNormal>& voNewPoints)
 {
 	CPointCloudRetouchManager::getInstance()->executeHoleRepairer(voNewPoints);
+}
+
+void hiveObliquePhotography::PointCloudRetouch::hiveTagLabel(const std::vector<pcl::index_t>& vPoints, bool vIsLitterMarker)	//only for perform
+{
+	EPointLabel AimLabel;
+	if (vIsLitterMarker)
+		AimLabel = EPointLabel::UNWANTED;
+	else
+		AimLabel = EPointLabel::KEPT;
+	for (auto Index : vPoints)
+		CPointCloudRetouchManager::getInstance()->tagPointLabel(Index, AimLabel, 0, 0);
 }

@@ -12,14 +12,14 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveConfig::CHiveConfig* vConfig)
+bool CPointCloudRetouchManager::init(const std::vector<PointCloud_t::Ptr>& vTileSet, const hiveConfig::CHiveConfig* vConfig)
 {
-	_ASSERTE(vPointCloud && vConfig);
+	_ASSERTE(!vTileSet.empty() && vConfig);
 
 	bool Status = __reset();
 	_ASSERTE(Status);
 
-	m_Scene.init(vPointCloud);
+	m_Scene.init(vTileSet);
 	m_PointLabelSet.init(m_Scene.getNumPoint());
 	m_pConfig = vConfig;
 
@@ -68,7 +68,7 @@ bool CPointCloudRetouchManager::init(PointCloud_t::Ptr vPointCloud, const hiveCo
 		{
 			std::optional<std::string> NeighborhoodBuilderSig = pConfig->getAttribute<std::string>("SIG");
 			_ASSERTE(NeighborhoodBuilderSig.has_value());
-			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), pConfig, vPointCloud, &m_PointLabelSet);
+			m_pNeighborhoodBuilder = hiveDesignPattern::hiveCreateProduct<INeighborhoodBuilder>(NeighborhoodBuilderSig.value(), pConfig, vTileSet, &m_PointLabelSet);
 			_HIVE_EARLY_RETURN(!m_pNeighborhoodBuilder, _FORMAT_STR1("Fail to initialize retouch due to the failure of creating neighborhood builder [%1%].", NeighborhoodBuilderSig.value()), false);
 			continue;
 		}
@@ -177,7 +177,24 @@ bool CPointCloudRetouchManager::dumpPointLabel(std::vector<std::size_t>& voPoint
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::dumpPointLabelAt(std::size_t& voPointLabel, std::uint32_t vIndex) const  //FIXME-014：就为了一个有效性检查，有必要搞这么复杂的函数吗？
+bool CPointCloudRetouchManager::dumpTileLabel(std::size_t vTile, std::vector<std::size_t>& voTileLabel)
+{
+	if (vTile <= m_Scene.getNumTile())
+	{
+		voTileLabel.clear();
+		auto Start = m_Scene.getTileOffset(vTile);
+		auto End = m_Scene.getTileNumPoints(vTile) + Start;
+		for (auto i = Start; i < End; i++)
+			voTileLabel.push_back(static_cast<std::size_t>(m_PointLabelSet.getLabelAt(i)));
+		return true;
+	}
+	else
+		return false;
+}
+
+//*****************************************************************
+//FUNCTION: 
+bool CPointCloudRetouchManager::dumpPointLabelAt(std::size_t& voPointLabel, std::uint32_t vIndex) const
 {
 	auto NumPoints = m_Scene.getNumPoint();
 	if (vIndex < NumPoints)
@@ -324,6 +341,8 @@ std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::inde
 	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed, vType, vPara);
 }
 
+//*****************************************************************
+//FUNCTION: 
 std::vector<pcl::index_t> CPointCloudRetouchManager::buildNeighborhood(pcl::index_t vSeed)
 {
 	return m_pNeighborhoodBuilder->buildNeighborhood(vSeed);
@@ -384,7 +403,7 @@ bool CPointCloudRetouchManager::undo()
 //FUNCTION: 
 void CPointCloudRetouchManager::recordCurrentStatus()
 {
-	m_StatusQueue.push_back(std::make_pair(m_PointLabelSet, m_Timestamp));  //FIXME-014：每次调用这个函数的时候，m_Timestamp更新了吗？
+	m_StatusQueue.emplace_back(m_PointLabelSet, m_Timestamp);
 	if (m_StatusQueue.size() > 10)
 		m_StatusQueue.pop_front();
 }
@@ -405,7 +424,7 @@ void CPointCloudRetouchManager::executeHoleRepairerSetInput(const std::vector<pc
 
 //*****************************************************************
 //FUNCTION: 
-void CPointCloudRetouchManager::executeHoleRepairer(std::vector<pcl::PointSurfel>& voNewPoints)
+void CPointCloudRetouchManager::executeHoleRepairer(std::vector<pcl::PointXYZRGBNormal>& voNewPoints)
 {
 	m_HoleRepairer.repairHole(voNewPoints);
 }

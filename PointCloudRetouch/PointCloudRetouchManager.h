@@ -27,6 +27,7 @@ namespace hiveObliquePhotography
 				m_PointLabelSet.tagPointLabel(vPoint, vTargetLabel, vClusterIndex, vClusterBelongingProbability);
 			}
 			bool dumpPointLabel(std::vector<std::size_t>& voPointLabel) const;
+			bool dumpTileLabel(std::size_t vTile, std::vector<std::size_t>& voTileLabel);
 			bool dumpPointLabelAt(std::size_t& voPointLabel, std::uint32_t vIndex) const;
 
 			void dumpExpandPoints(std::vector<int>& voExpandPoints, bool vIsLitterMarker) 
@@ -34,14 +35,14 @@ namespace hiveObliquePhotography
 				vIsLitterMarker ? m_LitterMarker.dumpTaskMarkedPoints(voExpandPoints) : m_BackgroundMarker.dumpTaskMarkedPoints(voExpandPoints);
 			}
 
-			bool init(PointCloud_t::Ptr vPointCloud, const hiveConfig::CHiveConfig* vConfig);
+			bool init(const std::vector<PointCloud_t::Ptr>& vTileSet, const hiveConfig::CHiveConfig* vConfig);
 			void clearMark();
 			bool executePreprocessor(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc, const Eigen::Vector3d& vViewPos);
 			bool executeMarker(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel);
 			bool executeOutlierDetector(EPointLabel vTargetLabel);
 			void executeHoleRepairerSetRegion(const std::vector<pcl::index_t>& vHoleRegion);
 			void executeHoleRepairerSetInput(const std::vector<pcl::index_t>& vInput);
-			void executeHoleRepairer(std::vector<pcl::PointSurfel>& voNewPoints);
+			void executeHoleRepairer(std::vector<pcl::PointXYZRGBNormal>& voNewPoints);
 			void recordCurrentStatus();
 			bool undo();
 			void recoverMarkedPoints2Undetermined(EPointLabel vLabel);

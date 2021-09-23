@@ -5,28 +5,20 @@
 #include <string>
 #include "PointCloudLoader.h"
 #include "PointCloudSaver.h"
-#include <filesystem>
 
 using namespace hiveObliquePhotography;
 
 CPointCloudScene::~CPointCloudScene()
-{
-	clear();
-}
+{}
 
 //*****************************************************************
 //FUNCTION: 
-PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
+std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std::string>& vFileNameSet)
 {
-	if (vFileNameSet.empty()) return nullptr;
-	
-	clear();
-	m_pPointCloudScene.reset(new PointCloud_t);
-	
-	_ASSERTE(m_pPointCloudScene->empty() && m_PointCloudTileMap.empty());
+	if (vFileNameSet.empty()) return {};
 
 	std::vector<std::string> LoadedFileSet;
-	
+	std::vector<PointCloud_t::Ptr> TileSet;
 	for (const auto& FileName : vFileNameSet)
 	{
 		std::string LowerFileName = hiveUtility::hiveLocateFile(FileName);
@@ -54,8 +46,7 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 			catch (...) { }
 
 			if(!pTile) continue;
-			m_PointCloudTileMap.emplace(FileName, pTile);
-			*m_pPointCloudScene += *pTile;
+			TileSet.push_back(pTile);
 			LoadedFileSet.emplace_back(LowerFileName);
 		}
 		else
@@ -63,7 +54,7 @@ PointCloud_t::Ptr CPointCloudScene::loadScene(const std::vector<std::string>& vF
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load tile [%1%] due to unknown format.", FileName));
 		}
 	}
-	return m_pPointCloudScene;
+	return TileSet;
 }
 
 //*****************************************************************
@@ -80,12 +71,4 @@ bool CPointCloudScene::saveScene(PointCloud_t& vPointCloud, std::string vFileNam
 		_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to save tile [%1%] due to unknown format.", vFileName));
 	}
 	return true;
-}
-
-//*****************************************************************
-//FUNCTION: 
-void CPointCloudScene::clear()
-{
-	m_PointCloudTileMap.clear();
-	m_pPointCloudScene.reset();
 }

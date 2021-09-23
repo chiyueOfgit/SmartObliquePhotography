@@ -12,19 +12,24 @@
 
 using namespace hiveObliquePhotography::Visualization;
 
-void hiveObliquePhotography::Visualization::hiveInitVisualizer(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
+void hiveObliquePhotography::Visualization::hiveInitVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt)
 {
-	CPointCloudVisualizer::getInstance()->init(vPointCloud, vIsInQt);
+	CPointCloudVisualizer::getInstance()->init(vTileSet, vIsInQt);
 }
 
-void hiveObliquePhotography::Visualization::hiveResetVisualizer(PointCloud_t::Ptr vPointCloud, bool vIsInQt)
+void hiveObliquePhotography::Visualization::hiveResetVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt)
 {
-	CPointCloudVisualizer::getInstance()->reset(vPointCloud, vIsInQt);
+	CPointCloudVisualizer::getInstance()->reset(vTileSet, vIsInQt);
 }
 
 void hiveObliquePhotography::Visualization::hiveRefreshVisualizer(const std::vector<std::size_t>& vPointLabel, bool vResetCamera)
 {
 	CPointCloudVisualizer::getInstance()->refresh(vPointLabel, vResetCamera);
+}
+
+void hiveObliquePhotography::Visualization::hiveSetPointRenderSize(double vSize)
+{
+	CPointCloudVisualizer::getInstance()->setPointRenderSize(vSize);
 }
 
 void hiveObliquePhotography::Visualization::hiveRunVisualizerLoop()
@@ -42,7 +47,7 @@ int hiveObliquePhotography::Visualization::hiveHighlightPointSet(const std::vect
 	if (!vPointSet.empty())
 	{
 		auto MaxIter = std::max_element(vPointSet.begin(), vPointSet.end());
-		_ASSERTE(MaxIter != vPointSet.end() && *MaxIter < CPointCloudVisualizer::getInstance()->m_pSceneCloud->size());
+		_ASSERTE(MaxIter != vPointSet.end() && *MaxIter < CPointCloudVisualizer::getInstance()->m_NumPoints);
 	}
 	_ASSERTE(vColor.x() >= 0 && vColor.y() >= 0 && vColor.z() >= 0);
 
@@ -70,7 +75,7 @@ void hiveObliquePhotography::Visualization::hiveAddTextureMesh(const pcl::Textur
 	CPointCloudVisualizer::getInstance()->addTextureMesh(vMesh);
 }
 
-void hiveObliquePhotography::Visualization::hiveDumpUserCloudSet(std::vector<PointCloud_t::Ptr>& voCloudSet)
+void hiveObliquePhotography::Visualization::hiveDumpUserCloudSet(std::vector<RetouchCloud_t::Ptr>& voCloudSet)
 {
 	voCloudSet = CPointCloudVisualizer::getInstance()->getUserCloudSet();
 }

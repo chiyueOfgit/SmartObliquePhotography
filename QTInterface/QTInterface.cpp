@@ -158,11 +158,7 @@ void CQTInterface::__initialSlider(const QStringList& vFilePathList)
             m_PointSize = m_pPointSizeSlider->value();
             auto OverwriteSuccess = m_pVisualizationConfig->overwriteAttribute(Visualization::POINT_SHOW_SIZE, static_cast<double>(m_PointSize));
             if (OverwriteSuccess)
-            {
-                std::vector<std::size_t> PointLabelSet;
-                PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
-                Visualization::hiveRefreshVisualizer(PointLabelSet);
-            }
+                Visualization::hiveSetPointRenderSize(m_PointSize);
         }
     );
 
@@ -221,7 +217,7 @@ std::string CQTInterface::__getDirectory(const std::string& vFilePath)
 
 void CQTInterface::onActionPointPicking()
 {
-    if (m_pCloud)
+    if (!m_TileSet.empty())
     {
         if (m_UI.actionPointPicking->isChecked())
         {
@@ -254,7 +250,7 @@ void CQTInterface::onActionPointPicking()
 
 void CQTInterface::onActionAreaPicking()
 {
-    if (m_pCloud)
+    if (!m_TileSet.empty())
     {
         if (!m_pVisualizationConfig->getAttribute<bool>(Visualization::REPAIR_MODE).value())
         {
@@ -323,18 +319,20 @@ void CQTInterface::onActionOpen()
     if (FilePathSet.empty())
         return;
 
-    m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene(FilePathSet);
+    m_TileSet = hiveInitPointCloudScene(FilePathSet);
 
-    if (m_pCloud == nullptr)
+    if (m_TileSet.empty())
         FileOpenSuccessFlag = false;
 
     if (FileOpenSuccessFlag)
     {
-        m_DirectoryOpenPath = CQTInterface::__getDirectory(FilePathSet.back());
+        m_DirectoryOpenPath = __getDirectory(FilePathSet.back());
 
-        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(m_pCloud, true);
-        //Visualization::hiveRegisterQTLinker(new CQTLinker(this));
+        auto config = m_pPointCloudRetouchConfig->getSubconfigAt(0);
+        auto num = config->getNumSubconfig();
+
+        PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
+        Visualization::hiveInitVisualizer(m_TileSet, true);
         CQTInterface::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
@@ -409,7 +407,7 @@ void CQTInterface::onActionBrush()
 
 void CQTInterface::onActionOutlierDetection()
 {
-    if (m_pCloud)
+    if (!m_TileSet.empty())
     {
         PointCloudRetouch::hiveMarkIsolatedAreaAsLitter();
         std::vector<std::size_t> PointLabelSet;
@@ -420,16 +418,16 @@ void CQTInterface::onActionOutlierDetection()
 
 void CQTInterface::onActionStartRepairHole()
 {
-    if (m_pCloud)
+    if (!m_TileSet.empty())
     {
         PointCloud_t::Ptr pCloud(new PointCloud_t);
         PointCloudRetouch::hiveDumpPointCloudtoSave(pCloud);
         auto CloudSavedPath = "Temp/" + m_CurrentCloud + ".ply";
         hiveSavePointCloudScene(*pCloud, CloudSavedPath);
         
-        m_pCloud = hiveInitPointCloudScene({ CloudSavedPath });
-        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(m_pCloud, true);
+        m_TileSet = hiveInitPointCloudScene({ CloudSavedPath });
+        PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
+        Visualization::hiveInitVisualizer(m_TileSet, true);
         __initialVTKWidget();
 
         //unable ui icons and reset configs
@@ -521,7 +519,7 @@ void CQTInterface::onActionSetting()
         m_pDisplayOptionsSettingDialog->exec();
 
         __parseConfigFile();
-        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
+        PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
 
         Visualization::hiveRemoveAllShapes();
         Visualization::hiveCancelAllHighlighting();
@@ -576,7 +574,7 @@ void CQTInterface::onActionOpenMesh()
 
 void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
 {
-    Visualization::hiveResetVisualizer(m_pCloud, true);
+    Visualization::hiveResetVisualizer(m_TileSet, true);
     __initialVTKWidget();
     std::vector<std::size_t> PointLabelSet;
     PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);

@@ -7,11 +7,13 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
-		VISUALIZATION_DECLSPEC void hiveInitVisualizer(PointCloud_t::Ptr vPointCloud, bool vIsInQt = true);
+		VISUALIZATION_DECLSPEC void hiveInitVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt = true);
 
-		VISUALIZATION_DECLSPEC void hiveResetVisualizer(PointCloud_t::Ptr vPointCloud = nullptr, bool vIsInQt = true);
+		VISUALIZATION_DECLSPEC void hiveResetVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt = true);
 
 		VISUALIZATION_DECLSPEC void hiveRefreshVisualizer(const std::vector<std::size_t>& vPointLabel, bool vResetCamera = false);
+
+		VISUALIZATION_DECLSPEC void hiveSetPointRenderSize(double vSize);
 
 		VISUALIZATION_DECLSPEC void hiveRunVisualizerLoop();
 
@@ -27,7 +29,7 @@ namespace hiveObliquePhotography
 
 		VISUALIZATION_DECLSPEC void hiveAddTextureMesh(const pcl::TextureMesh& vMesh);
 
-		VISUALIZATION_DECLSPEC void hiveDumpUserCloudSet(std::vector<PointCloud_t::Ptr>& voCloudSet);
+		VISUALIZATION_DECLSPEC void hiveDumpUserCloudSet(std::vector<RetouchCloud_t::Ptr>& voCloudSet);
 
 		VISUALIZATION_DECLSPEC pcl::visualization::PCLVisualizer*& hiveGetPCLVisualizer();
 

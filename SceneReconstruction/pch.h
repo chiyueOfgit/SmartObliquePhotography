@@ -32,4 +32,4 @@
 
 #include "SceneReconstructionCommon.h"
 
-using PointCloud_t = pcl::PointCloud<pcl::PointSurfel>;
+using PointCloud_t = pcl::PointCloud<pcl::PointXYZRGBNormal>;

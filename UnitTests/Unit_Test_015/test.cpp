@@ -144,7 +144,7 @@ void generateInOutRadiusPoint(Eigen::Vector3f& vCenterPosition, float vFrom, flo
 	{
 		Eigen::Vector3f Position = generatePosition(vCenterPosition, vFrom, vTo, vOnThePlane);
 		Eigen::Vector3f Normal = generateNormal(StandardNormal, vDisturb);
-		pcl::PointSurfel Temp;
+		pcl::PointXYZRGBNormal Temp;
 		Temp.x = Position[0];
 		Temp.y = Position[1];
 		Temp.z = Position[2];
@@ -532,7 +532,7 @@ TEST(Normal_Feature_BaseTest_1, Test_9)
 	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
 	Eigen::Vector3f GTNormal{ 0.0f,0.0f,1.0f };
 	GTNormal /= GTNormal.norm();
-	pcl::PointSurfel Temp;
+	pcl::PointXYZRGBNormal Temp;
 	Temp.x = GTPosition[0];
 	Temp.y = GTPosition[1];
 	Temp.z = GTPosition[2];
@@ -576,7 +576,7 @@ TEST(Normal_Feature_BaseTest_2, Test_10)
 	Eigen::Vector3f GTPosition{ 0.0f,0.0f,0.0f };
 	Eigen::Vector3f GTNormal{ 0.0f,0.0f,1.0f };
 	GTNormal /= GTNormal.norm();
-	pcl::PointSurfel ThisPoint;
+	pcl::PointXYZRGBNormal ThisPoint;
 	ThisPoint.x = GTPosition[0];
 	ThisPoint.y = GTPosition[1];
 	ThisPoint.z = GTPosition[2];
@@ -592,10 +592,10 @@ TEST(Normal_Feature_BaseTest_2, Test_10)
 	pManager->init(pCloud, pTestConfig);
 	
 	pcl::PointCloud<pcl::Normal>::Ptr OtherNormals(new pcl::PointCloud<pcl::Normal>);
-	pcl::NormalEstimation<pcl::PointSurfel, pcl::Normal> OtherNormalEstimation;
+	pcl::NormalEstimation<pcl::PointXYZRGBNormal, pcl::Normal> OtherNormalEstimation;
 	OtherNormalEstimation.setInputCloud(pCloud);
 	OtherNormalEstimation.setRadiusSearch(Radius);
-	pcl::search::KdTree<pcl::PointSurfel>::Ptr OtherKdtree(new pcl::search::KdTree<pcl::PointSurfel>);
+	pcl::search::KdTree<pcl::PointXYZRGBNormal>::Ptr OtherKdtree(new pcl::search::KdTree<pcl::PointXYZRGBNormal>);
 	OtherNormalEstimation.setSearchMethod(OtherKdtree);
 	OtherNormalEstimation.compute(*OtherNormals);
 

@@ -97,11 +97,11 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 
 		if (KeyString == "r")
 		{
-			std::vector<pcl::PointSurfel> NewPoints;
+			std::vector<RetouchPoint_t> NewPoints;
 			PointCloudRetouch::hiveRepairHole(NewPoints);
 			if (!NewPoints.empty())
 			{
-				PointCloud_t::Ptr RepairCloud(new PointCloud_t);
+				RetouchCloud_t::Ptr RepairCloud(new RetouchCloud_t);
 				for (auto& Point : NewPoints)
 				{
 					if (Point.r == 0 && Point.g == 0 && Point.b == 0)
@@ -114,7 +114,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			}
 		}
 
-		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_MAIN_VIEW).value())
+		/*if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_MAIN_VIEW).value())
 		{
 			m_pVisualizer->jumpToThreeView(EView::MainView);
 		}
@@ -129,7 +129,8 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SHOW_BOUNDING_BOX).value())
 		{
 			m_pVisualizer->showBoundingBox();
-		}
+		}*/
+
 		
 		if (RefreshFlag)
 		{
@@ -166,7 +167,30 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 	m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value());
 
-	if (m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value() && m_MousePressStatus[0])
+	/*if (m_MousePressStatus[0])
+	{
+		std::vector<Eigen::Vector3d> TileCenter = m_pVisualizer->getTileCenter();
+		auto ScenceName = m_pVisualizer->getName();
+		pcl::visualization::Camera Camera;
+		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
+		Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
+		Eigen::Vector3d CameraFocal{ Camera.focal[0], Camera.focal[1], Camera.focal[2] };
+		Eigen::Vector3d Eye = CameraPos + (CameraFocal - CameraPos).normalized() * Camera.clip[0];
+
+		for (int i = 0; i < TileCenter.size(); i++)
+		{
+			double Distance = (Eye - TileCenter[i]).norm();
+			if (Distance < 40)
+				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3.0, ScenceName + std::to_string(i));
+			else if (Distance > 100)
+				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1.0, ScenceName + std::to_string(i));
+			else
+				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2.0, ScenceName + std::to_string(i));
+		}
+		m_pVisualizer->m_pPCLVisualizer->updateCamera();
+	}*/
+
+	/*if (m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value() && m_MousePressStatus[0])
 	{
 		m_Radius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value();
 
@@ -209,16 +233,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
 			m_pVisualizer->refresh(PointLabel);
 		}
-	}
+	}*/
 
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && Button == pcl::visualization::MouseEvent::RightButton && PressStatus)
 	{
-		{
-			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-			m_pVisualizer->refresh(PointLabel);
-		}
-
+		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
+		m_pVisualizer->m_pPCLVisualizer->updateCamera();
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
 
 		//reset
@@ -249,6 +269,28 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		if (PickedIndices.empty())
 			return;
+
+		Eigen::Vector3f PickWorldPos{};
+		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->singlePick(m_PosX, m_PosY, PickWorldPos.x(), PickWorldPos.y(), PickWorldPos.z());
+		int WhichTile = 0;
+		for (; WhichTile < m_pVisualizer->m_TileBoxSet.size(); WhichTile++)
+		{
+			auto& Box = m_pVisualizer->m_TileBoxSet[WhichTile];
+			bool Flag = true;
+			for (int i = 0; i < 3 && Flag; i++)
+			{
+				if (PickWorldPos.data()[i] < Box.first.data()[i])
+					Flag = false;
+				if (PickWorldPos.data()[i] > Box.second.data()[i])
+					Flag = false;
+			}
+			if (Flag)
+				break;
+		}
+
+		if (WhichTile < m_pVisualizer->m_TileSet.size())
+			for (auto& Index : PickedIndices)
+				Index += m_pVisualizer->m_OffsetSet[WhichTile];
 
 		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
@@ -293,7 +335,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		{
 			for (auto Index : NearestPoints)
 			{
-				auto& Point = m_pVisualizer->m_pSceneCloud->points[Index];
+				int WhichTile = 0;
+				while (WhichTile + 1 < m_pVisualizer->m_TileSet.size() && m_pVisualizer->m_OffsetSet[WhichTile + 1] <= Index)
+					WhichTile++;
+
+				auto& Point = m_pVisualizer->m_TileSet[WhichTile]->points[Index - m_pVisualizer->m_OffsetSet[WhichTile]];
 				Eigen::Vector3f CameraPos2Point = { float(Camera.pos[0] - Point.x), float(Camera.pos[1] - Point.y), float(Camera.pos[2] - Point.z) };
 				Eigen::Vector3i Color{ Point.r, Point.g, Point.b };
 				m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 0.01f * CameraPos2Point, 30.0);
@@ -303,8 +349,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		if (m_IsRefreshImmediately)
 		{
 			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-			m_pVisualizer->refresh(PointLabel);
+			PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
+			m_pVisualizer->refresh(WhichTile, PointLabel);
 		}
 
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
@@ -339,22 +385,34 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			if (PickedIndices.empty())
 				return;
 
-			if (m_pVisualizationConfig->getAttribute<bool>(AREA_PICK_CULLING).value())
-				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, [&](const Eigen::Vector2d&) -> double { return -1; }, ViewPos);
-			//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
-
 			if (!m_pVisualizationConfig->getAttribute<bool>(REPAIR_MODE).value())
 			{
-				auto pRandomHardness = [=](const Eigen::Vector2d&) -> double
+				Eigen::Vector3f PickWorldPos{};
+				m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->singlePick(m_PosX, m_PosY, PickWorldPos.x(), PickWorldPos.y(), PickWorldPos.z());
+				int WhichTile = 0;
+				for (; WhichTile < m_pVisualizer->m_TileBoxSet.size(); WhichTile++)
 				{
-					static int i = 0;
-					return i++ % 2 ? 1.0 : 0.0;
-				};
+					auto& Box = m_pVisualizer->m_TileBoxSet[WhichTile];
+					bool Flag = true;
+					for (int i = 0; i < 3 && Flag; i++)
+					{
+						if (PickWorldPos.data()[i] < Box.first.data()[i])
+							Flag = false;
+						if (PickWorldPos.data()[i] > Box.second.data()[i])
+							Flag = false;
+					}
+					if (Flag)
+						break;
+				}
 
-				if (m_UnwantedMode)
-					PointCloudRetouch::hiveMarkLitter(PickedIndices, PV, pRandomHardness);
-				else
-					PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, pRandomHardness);
+				if (WhichTile < m_pVisualizer->m_TileSet.size())
+					for (auto& Index : PickedIndices)
+						Index += m_pVisualizer->m_OffsetSet[WhichTile];
+
+				PointCloudRetouch::hiveTagLabel(PickedIndices, m_UnwantedMode);
+				std::vector<std::size_t> PointLabel;
+				PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
+				m_pVisualizer->refresh(WhichTile, PointLabel);
 			}
 			else
 			{
@@ -362,12 +420,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 					PointCloudRetouch::hiveRepairHoleSetRepairRegion(PickedIndices);
 				else
 					PointCloudRetouch::hiveRepairHoleSetReferenceRegion(PickedIndices);
-			}
 
-			{
-				std::vector<std::size_t> PointLabel;
-				PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-				m_pVisualizer->refresh(PointLabel);
+				{
+					std::vector<std::size_t> PointLabel;
+					PointCloudRetouch::hiveDumpPointLabel(PointLabel);
+					m_pVisualizer->refresh(PointLabel);
+				}
 			}
 
 		}

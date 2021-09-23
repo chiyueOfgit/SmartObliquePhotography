@@ -30,11 +30,11 @@ void CNormalComplexityVisualization::run()
 	pcl::search::Search<pcl::PointNormal>::Ptr Tree;
 	if (m_pCloud->isOrganized())
 	{
-		Tree.reset(new pcl::search::OrganizedNeighbor<pcl::PointNormal>());
+		Tree = std::make_shared<pcl::search::OrganizedNeighbor<pcl::PointNormal>>();
 	}
 	else
 	{
-		Tree.reset(new pcl::search::KdTree<pcl::PointNormal>(false));
+		Tree = std::make_shared<pcl::search::KdTree<pcl::PointNormal>>();
 	}
 
 	Tree->setInputCloud(pNormalCloud);

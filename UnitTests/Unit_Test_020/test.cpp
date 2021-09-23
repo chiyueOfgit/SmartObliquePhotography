@@ -42,9 +42,9 @@ protected:
 
 		m_pRetouchConfig = new CPointCloudRetouchConfig;
 		ASSERT_EQ(hiveConfig::hiveParseConfig(RetouchConfigFile, hiveConfig::EConfigType::XML, m_pRetouchConfig), hiveConfig::EParseResult::SUCCEED);
-		m_pCloud.reset(new PointCloud_t);
-		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ DataPath + ModelNames[m_TestNumber] + ".ply" });
-		hiveInit(m_pCloud, m_pRetouchConfig);
+		m_pCloud = std::make_shared<PointCloud_t>();
+		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ DataPath + ModelNames[m_TestNumber] + ".ply" }).front();
+		hiveInit({ m_pCloud }, m_pRetouchConfig);
 
 		m_pHoleRepairerConfig = new CPointCloudRetouchConfig;
 		ASSERT_EQ(hiveConfig::hiveParseConfig(HoleRepairerConfigFile, hiveConfig::EConfigType::XML, m_pHoleRepairerConfig), hiveConfig::EParseResult::SUCCEED);
@@ -58,10 +58,10 @@ protected:
 			m_InputIndices = _loadIndices(DataPath + ModelNames[m_TestNumber] + "_input.txt");
 		ASSERT_TRUE(!m_InputIndices.empty());
 
-		if (ENABLE_VISUALIZER)
+		if constexpr (ENABLE_VISUALIZER)
 		{
 			m_pVisualizer = hiveObliquePhotography::Visualization::CPointCloudVisualizer::getInstance();
-			m_pVisualizer->init(m_pCloud, false);
+			m_pVisualizer->init({ m_pCloud }, false);
 			std::vector<std::size_t> Label;
 			hiveDumpPointLabel(Label);
 			m_pVisualizer->refresh(Label);
@@ -69,13 +69,13 @@ protected:
 
 			for (auto& Indices : m_BoundaryIndices)
 			{
-				std::vector<pcl::PointSurfel> TempPoints;
+				std::vector<pcl::PointXYZRGBNormal> TempPoints;
 				m_Repairer.repairHoleByBoundaryAndInput(Indices, m_InputIndices, TempPoints);
 				PointCloud_t::Ptr TempCloud(new PointCloud_t);
 				for (auto& Point : TempPoints)
 				{
 					if (Point.r == 0 && Point.g == 0 && Point.b == 0)
-						Point.rgba = -1;
+						Point.rgb = -1;
 					else
 					{
 						//×¢ÊÍÈ¡Ïû¸ßÁÁ
@@ -96,7 +96,7 @@ protected:
 
 				//add lattices
 				const int PointSize = 3;
-				m_pPCLVisualizer->addPointCloud<pcl::PointSurfel>(TempCloud, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
+				m_pPCLVisualizer->addPointCloud<pcl::PointXYZRGBNormal>(TempCloud, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
 				m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, "TempCloud" + std::to_string(TempCloud->size()) + std::to_string(Indices.size()));
 				//add box line
 				_drawBox(std::make_pair(std::get<1>(TempBox), std::get<2>(TempBox)));
@@ -106,7 +106,7 @@ protected:
 
 	void TearDown() override
 	{
-		if (ENABLE_VISUALIZER)
+		if constexpr (ENABLE_VISUALIZER)
 		{
 			if (m_pVisualizer)
 				m_pVisualizer->run();
@@ -199,7 +199,7 @@ protected:
 		return AxisOrder;
 	}
 
-	bool _isInBox(const pcl::PointSurfel& vPoint, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
+	bool _isInBox(const pcl::PointXYZRGBNormal& vPoint, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vBox)
 	{
 		Eigen::Vector3f Pos;
 		Pos.x() = vPoint.x;
