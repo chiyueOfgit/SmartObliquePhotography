@@ -1,0 +1,7 @@
+newmtl Rock_0
+Ka 0 0 0
+Kd 1 1 1
+Ks 0.6 0.6 0.6
+Km 0
+map_Kd ./LI_Rock_Pavers_color.png
+

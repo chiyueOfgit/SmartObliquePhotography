@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="PointCluster">
+      <UniqueIdentifier>{420b5f5d-879a-4e53-9df9-1332679ee257}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Operation">
+      <UniqueIdentifier>{9c830b88-7188-42a0-b536-55f6a37c0a08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PointCloud">
+      <UniqueIdentifier>{cb8d607d-42be-46fa-ae0c-e3de2db9c7b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NeighborhoodBuilder">
+      <UniqueIdentifier>{b7765bfa-9481-4819-bba0-9486d93dfe97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PointCluster\Feature">
+      <UniqueIdentifier>{926b71ef-dc67-44ac-ae60-fb66ef7901a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Precompute">
+      <UniqueIdentifier>{db0fdec4-d856-4bde-aff7-fdd9f89879f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{b9410939-016c-44ff-8db3-2fa6e933b55f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Operation\HoleRepair">
+      <UniqueIdentifier>{4e6b1e57-78ea-4df5-bcce-0c22c8927d98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Operation\Expander">
+      <UniqueIdentifier>{b2eea53f-b834-45d9-a571-0bac94d0973e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PointCluster.h">
+      <Filter>PointCluster</Filter>
+    </ClInclude>
+    <ClInclude Include="PointClusterSet.h">
+      <Filter>PointCluster</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="PointCloudRetouchInterface.h" />
+    <ClInclude Include="PointCloudRetouchExport.h" />
+    <ClInclude Include="PointCloudRetouchCommon.h" />
+    <ClInclude Include="RetouchTask.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
+    <ClInclude Include="InitialClusterCreator.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLabelSet.h">
+      <Filter>PointCloud</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudRetouchScene.h">
+      <Filter>PointCloud</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudRetouchManager.h" />
+    <ClInclude Include="PointClassifier.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
+    <ClInclude Include="NeighborhoodBuilder.h">
+      <Filter>NeighborhoodBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="Feature.h">
+      <Filter>PointCluster\Feature</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanarityFeature.h">
+      <Filter>PointCluster\Feature</Filter>
+    </ClInclude>
+    <ClInclude Include="EuclideanNeighborhoodBuilder.h">
+      <Filter>NeighborhoodBuilder</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudRetouchConfig.h" />
+    <ClInclude Include="ColorFeature.h">
+      <Filter>PointCluster\Feature</Filter>
+    </ClInclude>
+    <ClInclude Include="OutlierDetector.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
+    <ClInclude Include="PointSetPreprocessor.h">
+      <Filter>Operation</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalComplexity.h">
+      <Filter>PointCluster\Feature</Filter>
+    </ClInclude>
+    <ClInclude Include="PrecomputeManager.h">
+      <Filter>Precompute</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="stb_image_write.h" />
+    <ClInclude Include="TextureSynthesizer.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="OrderIndependentTextureSynthesizer.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MipmapGenerator.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundaryDetector.h">
+      <Filter>Operation\HoleRepair</Filter>
+    </ClInclude>
+    <ClInclude Include="HoleRepairer.h">
+      <Filter>Operation\HoleRepair</Filter>
+    </ClInclude>
+    <ClInclude Include="PointClusterExpander.h">
+      <Filter>Operation\Expander</Filter>
+    </ClInclude>
+    <ClInclude Include="PointClusterExpanderBase.h">
+      <Filter>Operation\Expander</Filter>
+    </ClInclude>
+    <ClInclude Include="PointClusterExpanderMultithread.h">
+      <Filter>Operation\Expander</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeBasedTextureSynthesizer.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MultithreadTextureSynthesizer.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="MutableKernelSizeTextureSynthesizer.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PointCluster.cpp">
+      <Filter>PointCluster</Filter>
+    </ClCompile>
+    <ClCompile Include="PointClusterSet.cpp">
+      <Filter>PointCluster</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudRetouchInterface.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="InitialClusterCreator.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="RetouchTask.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudRetouchScene.cpp">
+      <Filter>PointCloud</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLabelSet.cpp">
+      <Filter>PointCloud</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudRetouchManager.cpp" />
+    <ClCompile Include="NeighborhoodBuilder.cpp">
+      <Filter>NeighborhoodBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanarityFeature.cpp">
+      <Filter>PointCluster\Feature</Filter>
+    </ClCompile>
+    <ClCompile Include="EuclideanNeighborhoodBuilder.cpp">
+      <Filter>NeighborhoodBuilder</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudRetouchConfig.cpp" />
+    <ClCompile Include="ColorFeature.cpp">
+      <Filter>PointCluster\Feature</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlierDetector.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="PointSetPreprocessor.cpp">
+      <Filter>Operation</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalComplexity.cpp">
+      <Filter>PointCluster\Feature</Filter>
+    </ClCompile>
+    <ClCompile Include="PrecomputeManager.cpp">
+      <Filter>Precompute</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureSynthesizer.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderIndependentTextureSynthesizer.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MipmapGenerator.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundaryDetector.cpp">
+      <Filter>Operation\HoleRepair</Filter>
+    </ClCompile>
+    <ClCompile Include="HoleRepairer.cpp">
+      <Filter>Operation\HoleRepair</Filter>
+    </ClCompile>
+    <ClCompile Include="PointClusterExpander.cpp">
+      <Filter>Operation\Expander</Filter>
+    </ClCompile>
+    <ClCompile Include="PointClusterExpanderMultithread.cpp">
+      <Filter>Operation\Expander</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeBasedTextureSynthesizer.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MultithreadTextureSynthesizer.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="MutableKernelSizeTextureSynthesizer.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

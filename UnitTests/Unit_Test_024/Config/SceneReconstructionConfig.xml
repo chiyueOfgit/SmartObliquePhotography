@@ -1,0 +1,11 @@
+<SURFACE>
+  PoissonReconstruction
+  <OCTREE_DEPTH> 6 </OCTREE_DEPTH>
+</SURFACE>
+<TEXCOORD>
+  PlaneParameterization
+</TEXCOORD>
+<TEXTURE>
+  RayCasting
+</TEXTURE>
+

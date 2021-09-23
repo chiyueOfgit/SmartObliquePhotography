@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D4823E3F-6504-4715-B848-33CFFCF7D6AB}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.19041.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <ProjectName>Integration_Test_004(texture_synthesizer)</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>msvc2017_64</QtInstall>
+    <QtModules>core;xml;gui;widgets;designer</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>msvc2017_64</QtInstall>
+    <QtModules>core;xml;gui;widgets;designer</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PreprocessorDefinitions>X64;NDEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_UNIT_TEST;NOMINMAX;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\PointCloudRetouch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PreprocessorDefinitions>X64;_DEBUG;_CONSOLE;HIVE_STATIC_LIBRARY;_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING;_UNIT_TEST;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="pch.h" />
+    <QtMoc Include="TextureSynthesizerWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TextureSynthesizerWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="TextureSynthesizerWindow.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\PointCloudRetouch_Lib\PointCloudRetouch_Lib.vcxproj">
+      <Project>{87879ac2-2e99-42c7-8ff9-a456d9350873}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="D:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets" Condition="Exists('D:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets')" />
+    <Import Project="D:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets" Condition="Exists('D:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets')" />
+    <Import Project="D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets" Condition="Exists('D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets')" />
+    <Import Project="D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets" Condition="Exists('D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets')" />
+    <Import Project="D:\vc_packages\PCL.1.11.1\build\native\PCL.targets" Condition="Exists('D:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" />
+    <Import Project="D:\vc_packages\boost.1.76.0.0\build\boost.targets" Condition="Exists('D:\vc_packages\boost.1.76.0.0\build\boost.targets')" />
+    <Import Project="D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets" Condition="Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" />
+    <Import Project="D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets" Condition="Exists('D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" />
+    <Import Project="D:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets" Condition="Exists('D:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets')" />
+    <Import Project="D:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets" Condition="Exists('D:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets')" />
+    <Import Project="D:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets" Condition="Exists('D:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets')" />
+    <Import Project="D:\vc_packages\VTK.8.2.1\build\native\VTK.targets" Condition="Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('D:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\Eigen3.3.3.9\build\native\Eigen3.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\FLANN.1.9.1\build\native\FLANN.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\OpenNI2.2.2.0\build\native\OpenNI2.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\Qhull.8.0.0\build\native\Qhull.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\PCL.1.11.1\build\native\PCL.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\PCL.1.11.1\build\native\PCL.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost.1.76.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost.1.76.0.0\build\boost.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_serialization-vc142.1.76.0.0\build\boost_serialization-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\hive-common.redist.0.3.8\build\native\hive-common.redist.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\inteltbb.redist.win.2021.1.1.133\build\native\nuget\inteltbb.redist.win.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\inteltbb.devel.win.2021.1.1.133\build\native\nuget\inteltbb.devel.win.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\hive-common.0.3.8\build\native\hive-common.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.8.2.1\build\native\VTK.targets'))" />
+  </Target>
+</Project>

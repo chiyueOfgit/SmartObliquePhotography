@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/QTInterface">
+        <file>Icon/open.png</file>
+        <file>Icon/pointPicking.png</file>
+        <file>Icon/rubber.png</file>
+        <file>Icon/update.png</file>
+    </qresource>
+</RCC>

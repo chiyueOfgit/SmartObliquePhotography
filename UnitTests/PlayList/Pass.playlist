@@ -1,0 +1,626 @@
+<Playlist Version="2.0">
+  <Rule Name="Includes" Match="Any">
+    <Rule Match="All">
+      <Property Name="Solution" />
+      <Rule Match="Any">
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_001 (load_point_cloud_tile)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="Test_LoadPointCloudTile" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_LoadPointCloudTile.DeathTest_LoadInexistentTile" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_LoadPointCloudTile.DeathTest_LoadInexistentTile" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_LoadPointCloudTile.LoadTilePcd" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_LoadPointCloudTile.LoadTilePcd" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_LoadPointCloudTile.LoadTilePly" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_LoadPointCloudTile.LoadTilePly" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_016 (neighborhood_builder)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="CTestNeighborhoodBuilder" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestNeighborhoodBuilder.Nearest_Illegal_Input_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestNeighborhoodBuilder.Nearest_Illegal_Input_Test" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestNeighborhoodBuilder.Radius_Illegal_Input_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestNeighborhoodBuilder.Radius_Illegal_Input_Test" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestNeighborhoodBuilder.Radius_Symmetry_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestNeighborhoodBuilder.Radius_Symmetry_Test" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_002 (load_point_cloud_scene)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="Test_LoadPointCloudScene" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_LoadPointCloudScene.DeathTest_LoadDuplicatedFile1" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_LoadPointCloudScene.DeathTest_LoadDuplicatedFile1" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_LoadPointCloudScene.DeathTest_LoadDuplicatedFile2" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_LoadPointCloudScene.DeathTest_LoadDuplicatedFile2" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_LoadPointCloudScene.DeathTest_LoadIncorrectFileSet" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_LoadPointCloudScene.DeathTest_LoadIncorrectFileSet" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_LoadPointCloudScene.DeathTest_LoadPartiallyIncorrectFileSet" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_LoadPointCloudScene.DeathTest_LoadPartiallyIncorrectFileSet" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_LoadPointCloudScene.LoadScene" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_LoadPointCloudScene.LoadScene" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_009 (outlier_detector)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="TestOutlierDetector" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestOutlierDetector.DeathTest_InvalidInput" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestOutlierDetector.DeathTest_InvalidInput" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestOutlierDetector.FunctionTest_Test1" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestOutlierDetector.FunctionTest_Test1" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestOutlierDetector.FunctionTest_Test2" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestOutlierDetector.FunctionTest_Test2" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestOutlierDetector.FunctionTest_Test3" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestOutlierDetector.FunctionTest_Test3" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_015 (feature)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_1" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_1.Test_1" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_1.Test_1" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_2" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_2.Test_2" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_2.Test_2" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_3" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_3.Test_3" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_3.Test_3" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_4" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_4.Test_4" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_4.Test_4" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Color_Feature_BaseTest_5" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Color_Feature_BaseTest_5.Test_5" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Color_Feature_BaseTest_5.Test_5" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Normal_Feature_BaseTest_1" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Normal_Feature_BaseTest_1.Test_8" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Normal_Feature_BaseTest_1.Test_8" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Normal_Feature_BaseTest_2" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Normal_Feature_BaseTest_2.Test_9" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Normal_Feature_BaseTest_2.Test_9" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Normal_Feature_BaseTest_3" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Normal_Feature_BaseTest_3.Test_10" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Normal_Feature_BaseTest_3.Test_10" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Plane_Feature_BaseTest_1" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Plane_Feature_BaseTest_1.Test_6" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Plane_Feature_BaseTest_1.Test_6" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Plane_Feature_BaseTest_2" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Plane_Feature_BaseTest_2.Test_7" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Plane_Feature_BaseTest_2.Test_7" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_017 (selecting)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="TestSelecting" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_CullingTest_KeepABuilding" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_CullingTest_KeepABuilding" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_CullingTest_KeepATree" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_CullingTest_KeepATree" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_CullingTest_KeepGround" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_CullingTest_KeepGround" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_CullingTest_KeepMoreTrees" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_CullingTest_KeepMoreTrees" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_MultipleObjectsTest_CompleteMoreTrees" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_MultipleObjectsTest_CompleteMoreTrees" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_NoThroughTest_CompleteBuilding" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_NoThroughTest_CompleteBuilding" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_NoThroughTest_CompleteGround" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_NoThroughTest_CompleteGround" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestSelecting.Selecting_NoThroughTest_CompleteTree" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestSelecting.Selecting_NoThroughTest_CompleteTree" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_014 (point_cluster_expander)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="TestExpander" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestExpander.EmptyInput" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestExpander.EmptyInput" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestExpander.NoRepeatIndex" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestExpander.NoRepeatIndex" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestExpander.NullptrInput" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestExpander.NullptrInput" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_013 (point_label_set)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="TestPointLabelSet" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestPointLabelSet.Illegal_Input_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestPointLabelSet.Illegal_Input_Test" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestPointLabelSet.Uninitialized_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestPointLabelSet.Uninitialized_Test" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_008 (undo)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="CTestUndo" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestUndo.Empty_Input_Expect_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestUndo.Empty_Input_Expect_Test" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestUndo.Empty_ResultQueue_Expect_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestUndo.Empty_ResultQueue_Expect_Test" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestUndo.LabelSet_Undo_Cleanup_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestUndo.LabelSet_Undo_Cleanup_Test" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestUndo.LabelSet_Undo_Overview_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestUndo.LabelSet_Undo_Overview_Test" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestUndo.Timestamp_Undo_Cleanup_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestUndo.Timestamp_Undo_Cleanup_Test" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestUndo.Timestamp_Undo_Overview_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestUndo.Timestamp_Undo_Overview_Test" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_010 (init_point_cloud_retouch)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="CTestInitPointCloudRetouch" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestInitPointCloudRetouch.ReInitPointCloudRetouchManager" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestInitPointCloudRetouch.ReInitPointCloudRetouchManager" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestInitPointCloudRetouch.ResetPointCloudRetouchManager" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestInitPointCloudRetouch.ResetPointCloudRetouchManager" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+                <Rule Match="All">
+                  <Property Name="Class" Value="Test_InitPointCloudRetouch" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_InitPointCloudRetouch.DeathTest_InitRetouchTaskWithErrorConfig" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_InitPointCloudRetouch.DeathTest_InitRetouchTaskWithErrorConfig" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_InitPointCloudRetouch.DeathTest_InitSceneWithErrorPtr" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_InitPointCloudRetouch.DeathTest_InitSceneWithErrorPtr" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_InitPointCloudRetouch.DeathTest_InitSceneWithNegativeSize" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_InitPointCloudRetouch.DeathTest_InitSceneWithNegativeSize" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_InitPointCloudRetouch.InitPointCloudRetouchManager" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_InitPointCloudRetouch.InitPointCloudRetouchManager" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_InitPointCloudRetouch.InitPointCloudRetouchScene" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_InitPointCloudRetouch.InitPointCloudRetouchScene" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_InitPointCloudRetouch.InitPointLabelSet" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_InitPointCloudRetouch.InitPointLabelSet" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_InitPointCloudRetouch.InitRetouchTask" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_InitPointCloudRetouch.InitRetouchTask" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_012 (point_cluster)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="TestPointCluster" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestPointCluster.DeathTest_InvalidIndex" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestPointCluster.DeathTest_InvalidIndex" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestPointCluster.DeathTest_Uninitialized" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestPointCluster.DeathTest_Uninitialized" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="TestPointCluster.FalseProbability_Test" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="TestPointCluster.FalseProbability_Test" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_003 (save_point_cloud_scene)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="Test_SavePointCloudScene" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_SavePointCloudScene.Save4NonexistentFormat" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_SavePointCloudScene.Save4NonexistentFormat" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_SavePointCloudScene.SaveScene4PCD" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_SavePointCloudScene.SaveScene4PCD" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="Test_SavePointCloudScene.SaveScene4PLY" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="Test_SavePointCloudScene.SaveScene4PLY" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+        <Rule Match="All">
+          <Property Name="Project" Value="Unit_Test_011 (create_initial_cluster)" />
+          <Rule Match="Any">
+            <Rule Match="All">
+              <Property Name="Namespace" Value="" />
+              <Rule Match="Any">
+                <Rule Match="All">
+                  <Property Name="Class" Value="CTestCreateInitialCluster" />
+                  <Rule Match="Any">
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestCreateInitialCluster.BaseTest1_Create_Cluster" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestCreateInitialCluster.BaseTest1_Create_Cluster" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestCreateInitialCluster.DeathTest1_User_Caused_Error" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestCreateInitialCluster.DeathTest1_User_Caused_Error" />
+                      </Rule>
+                    </Rule>
+                    <Rule Match="All">
+                      <Property Name="TestWithNormalizedFullyQualifiedName" Value="CTestCreateInitialCluster.DeathTest2_User_Caused_Error" />
+                      <Rule Match="Any">
+                        <Property Name="DisplayName" Value="CTestCreateInitialCluster.DeathTest2_User_Caused_Error" />
+                      </Rule>
+                    </Rule>
+                  </Rule>
+                </Rule>
+              </Rule>
+            </Rule>
+          </Rule>
+        </Rule>
+      </Rule>
+    </Rule>
+  </Rule>
+</Playlist>

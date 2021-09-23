@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CTextureSynthesizerWindow</class>
+ <widget class="QMainWindow" name="CTextureSynthesizerWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>832</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>QTInterface</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="3" column="1">
+     <widget class="QLabel" name="Result">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Input</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLabel" name="Mask">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="Input">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="9">
+     <widget class="QPushButton" name="actionExecute">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Execute</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="Output">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Output</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Result</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>Mask</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>960</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionLoadInput"/>
+    <addaction name="actionLoadOutput"/>
+    <addaction name="actionLoadMask"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <action name="actionLoadInput">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/open.png</normaloff>:/QTInterface/Icon/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load Input</string>
+   </property>
+   <property name="toolTip">
+    <string>Load Reference Image</string>
+   </property>
+  </action>
+  <action name="actionLoadOutput">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/save.png</normaloff>:/QTInterface/Icon/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load Output</string>
+   </property>
+   <property name="toolTip">
+    <string>Load Request Image</string>
+   </property>
+  </action>
+  <action name="actionSetting">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/setting.png</normaloff>:/QTInterface/Icon/setting.png</iconset>
+   </property>
+   <property name="text">
+    <string>Setting</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionAreaPicking">
+   <property name="text">
+    <string>AreaPicking</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/delete.png</normaloff>:/QTInterface/Icon/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionBrush">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/brush.png</normaloff>:/QTInterface/Icon/brush.png</iconset>
+   </property>
+   <property name="text">
+    <string>Brush</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionRubber">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/rubber.png</normaloff>:/QTInterface/Icon/rubber.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rubber</string>
+   </property>
+  </action>
+  <action name="actionDichotomy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/dichotomy.png</normaloff>:/QTInterface/Icon/dichotomy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dichotomy</string>
+   </property>
+  </action>
+  <action name="actionRegionGrowing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/regionGrowing.png</normaloff>:/QTInterface/Icon/regionGrowing.png</iconset>
+   </property>
+   <property name="text">
+    <string>RegionGrowing</string>
+   </property>
+  </action>
+  <action name="actionUpdate">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/update.png</normaloff>:/QTInterface/Icon/update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Update</string>
+   </property>
+  </action>
+  <action name="actionBlend">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/blend.png</normaloff>:/QTInterface/Icon/blend.png</iconset>
+   </property>
+   <property name="text">
+    <string>Blend</string>
+   </property>
+  </action>
+  <action name="actionPointPicking">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/pointPicking.png</normaloff>:/QTInterface/Icon/pointPicking.png</iconset>
+   </property>
+   <property name="text">
+    <string>PointPicking</string>
+   </property>
+  </action>
+  <action name="actionInstructions">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/QTInterface/Icon/instructions.png</normaloff>:/QTInterface/Icon/instructions.png</iconset>
+   </property>
+   <property name="text">
+    <string>Instructions</string>
+   </property>
+  </action>
+  <action name="actionLoadMask">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Load Mask</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="TextureSynthesizerWindow.qrc"/>
+ </resources>
+ <connections/>
+</ui>

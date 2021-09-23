@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/featureVisualization">
+        <file>Icon/open.png</file>
+        <file>Icon/save.png</file>
+        <file>Icon/setting.png</file>
+        <file>Icon/delete.png</file>
+        <file>Icon/brush.png</file>
+        <file>Icon/dichotomy.png</file>
+        <file>Icon/update.png</file>
+        <file>Icon/regionGrowing.png</file>
+        <file>Icon/rubber.png</file>
+        <file>Icon/blend.png</file>
+        <file>Icon/circleAreaPicking.png</file>
+        <file>Icon/pointPicking.png</file>
+        <file>Icon/instructions.png</file>
+        <file>Icon/Outlier.png</file>
+    </qresource>
+</RCC>
