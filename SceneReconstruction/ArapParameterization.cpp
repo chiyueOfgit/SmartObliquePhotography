@@ -7,6 +7,8 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/set.hpp>
 #include <iomanip>
+#include<Eigen/IterativeLinearSolvers>
+
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -22,7 +24,7 @@ Eigen::MatrixXd CArapParameterization::execute()
 	auto BoundaryStatus = findBoundaryPoint();
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
 	auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
-	return InitialUV;
+	return UV;
 }
 
 //*****************************************************************
@@ -152,13 +154,13 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutte
 	}
 
 	//cout matrix
-	std::cout << "\n    Tutte: \n";
+	/*std::cout << "\n    Tutte: \n";
 	for (int i = 0; i < TutteMatrix.cols(); i++)
 	{
 		for (int k = 0; k < TutteMatrix.rows(); k++)
 			std::cout << std::setw(2) << TutteMatrix.coeff(k, i) << " ";
 		std::cout << std::endl;
-	}
+	}*/
 
 	return TutteMatrix;
 }
@@ -195,7 +197,9 @@ Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMa
 	auto CompressMatrix = vMatrix;
 	CompressMatrix.makeCompressed();
 
-	Eigen::SimplicialLDLT<Eigen::SparseMatrix<double, Eigen::ColMajor>> Solver;
+
+	Eigen::ConjugateGradient<Eigen::SparseMatrix<double, Eigen::ColMajor>>Solver;
+	//Eigen::SimplicialLLT<Eigen::SparseMatrix<double, Eigen::ColMajor>> Solver;
 	Solver.analyzePattern(CompressMatrix);
 	Solver.factorize(CompressMatrix);
 	_ASSERTE(Solver.info() == Eigen::Success);	//fixme: NumericalIssue
