@@ -44,6 +44,14 @@ namespace hiveObliquePhotography
 			else
 				throw("[] out of range.");
 		}
+
+		const IndexType& operator[](IndexType i) const
+		{
+			if (i >= 0 && i < sizeof(SFace) / sizeof(IndexType))
+				return *(reinterpret_cast<const IndexType*>(this) + i);
+			else
+				throw("[] out of range.");
+		}
 	};
 
 	class OPDATA_DECLSPEC CMesh
