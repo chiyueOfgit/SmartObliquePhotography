@@ -16,6 +16,7 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Plane/Plane100.obj");
 const auto ScuMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Scu/Tile16.obj");
 const auto StoneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/LI_Rock_Pavers.obj");
+const auto MountainMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/mountain.obj");
 
 class TestArapParameterization : public testing::Test
 {
@@ -54,6 +55,8 @@ protected:
 			std::string Line;
 			std::vector<Eigen::Vector3f> Normals;
 			std::vector<Eigen::Vector2f> TexCoords;
+			std::string NumberRegex = "(-?\\d+.?\\d+e?-?\\d*)";
+			std::string SpaceRegex = " +";
 			while (std::getline(ObjFileIn, Line))
 			{
 				if (Line[0] == '#')
@@ -64,7 +67,7 @@ protected:
 				if (Line.substr(0, 2) == "v ")
 				{
 					std::smatch Result;
-					std::regex VertexRegex("(-?\\d+.?\\d+) +(-?\\d+.?\\d+) +(-?\\d+.?\\d+)");
+					std::regex VertexRegex(NumberRegex + SpaceRegex + NumberRegex + SpaceRegex + NumberRegex);
 					std::regex_search(Line, Result, VertexRegex);
 					_ASSERTE(Result.size() == 4);
 					hiveObliquePhotography::SVertex Vertex;
@@ -76,7 +79,7 @@ protected:
 				if (Line.substr(0, 2) == "vt")
 				{
 					std::smatch Result;
-					std::regex VertexRegex("(-?\\d+.?\\d+) +(-?\\d+.?\\d+)");
+					std::regex VertexRegex(NumberRegex + SpaceRegex + NumberRegex);
 					std::regex_search(Line, Result, VertexRegex);
 					_ASSERTE(Result.size() == 3);
 					Eigen::Vector2f TexCoord;
@@ -87,7 +90,7 @@ protected:
 				if (Line.substr(0, 2) == "vn")
 				{
 					std::smatch Result;
-					std::regex VertexRegex("(-?\\d+.?\\d+) +(-?\\d+.?\\d+) +(-?\\d+.?\\d+)");
+					std::regex VertexRegex(NumberRegex + SpaceRegex + NumberRegex + SpaceRegex + NumberRegex);
 					std::regex_search(Line, Result, VertexRegex);
 					_ASSERTE(Result.size() == 4);
 					Eigen::Vector3f Normal;
@@ -130,6 +133,46 @@ protected:
 		return Mesh;
 	}
 
+	void _saveObj(const std::string& vPath, const hiveObliquePhotography::CMesh& vMesh)
+	{
+		ofstream ObjFile(vPath);
+		std::string FileLines;
+		std::string Comments;
+		std::string Pos;
+		std::string Tex;
+		std::string Normal;
+		std::string FaceStr;
+		if (ObjFile.is_open())
+		{
+			Comments += "# Vertices: " + std::to_string(vMesh.m_Vertices.size()) + "\n";
+			Comments += "# Faces: " + std::to_string(vMesh.m_Faces.size()) + "\n";
+			for (auto& Vertex : vMesh.m_Vertices)
+			{
+				Pos += _FORMAT_STR3("v %1% %2% %3%\n", std::to_string(Vertex.x), std::to_string(Vertex.y), std::to_string(Vertex.z));
+				Tex += _FORMAT_STR2("vt %1% %2%\n", std::to_string(Vertex.u), std::to_string(Vertex.v));
+				Normal += _FORMAT_STR3("vn %1% %2% %3%\n", std::to_string(Vertex.nx), std::to_string(Vertex.ny), std::to_string(Vertex.nz));
+			}
+
+			for (auto& Face : vMesh.m_Faces)
+			{
+				FaceStr += "f ";
+				for (int i = 0; i < 3; i++)
+				{
+					auto Index = std::to_string(Face[i] + 1);
+					FaceStr += _FORMAT_STR3("%1%/%2%/%3% ", Index, Index, Index);
+				}
+				FaceStr += "\n";
+			}
+
+			FileLines += Comments;
+			FileLines += "mtllib " + vPath.substr(0, vPath.find(".")) + ".mtl\n" + "\n";
+			FileLines += Pos + "\n" + Tex + "\n" + Normal + "\n";
+			FileLines += FaceStr;
+		}
+		ObjFile << FileLines;
+		ObjFile.close();
+	}
+
 	CArapParameterization* _createProduct(const hiveObliquePhotography::CMesh& vMesh)
 	{
 		auto pParameterization =  hiveDesignPattern::hiveCreateProduct<IMeshParameterization>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
@@ -166,46 +209,46 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
 	for (int Row = 0; Row < UV.rows(); Row++)
 	{
-		m_Mesh.m_Vertices[Row].u = UV.row(Row)(0);
-		m_Mesh.m_Vertices[Row].v = UV.row(Row)(1);
+		m_Mesh.m_Vertices[Row].u = UV.row(Row).x();
+		m_Mesh.m_Vertices[Row].v = UV.row(Row).y();
 	}
 
 	std::string ObjName = "Plane.obj";
-	pcl::io::saveOBJFile(ObjName, m_Mesh.toTexMesh(m_Material));
-	std::ifstream ObjFileIn(ObjName);
-	if (ObjFileIn.is_open())
-	{
-		std::string Line;
-		std::string FileLines;
-		while (std::getline(ObjFileIn, Line))
-		{
-			if (Line[0] == 'f')
-			{
-				std::string FixedLine("f ");
+	_saveObj(ObjName, m_Mesh);
 
-				std::smatch Result;
-				std::regex FaceRegex("\\d+/\\d+/\\d+");
-				for (auto Begin = Line.cbegin(); std::regex_search(Begin, Line.cend(), Result, FaceRegex); Begin = Result.suffix().first)
-				{
-					auto FaceStr = Result[0].str();
-					auto FirstPartition = FaceStr.find('/');
-					auto SecondPartition = FaceStr.find_last_of('/');
-					auto Vp = FaceStr.substr(0, FirstPartition);
-					auto Vn = FaceStr.substr(FirstPartition + 1, SecondPartition - FirstPartition - 1);
-					auto Vt = FaceStr.substr(SecondPartition + 1, FaceStr.length());
+	//pcl::io::saveOBJFile(ObjName, m_Mesh.toTexMesh(m_Material));
+	//std::ifstream ObjFileIn(ObjName);
+	//if (ObjFileIn.is_open())
+	//{
+	//	std::string Line;
+	//	std::string FileLines;
+	//	while (std::getline(ObjFileIn, Line))
+	//	{
+	//		if (Line[0] == 'f')
+	//		{
+	//			std::string FixedLine("f ");
 
-					FixedLine += Vp + "/" + Vt + "/" + Vn + " ";
-				}
-				FileLines += FixedLine;
-			}
-			else
-				FileLines += Line;
-			FileLines += "\n";
-		}
+	//			std::smatch Result;
+	//			std::regex FaceRegex("(\\d+)/(\\d+)/(\\d+)");
+	//			for (auto Begin = Line.cbegin(); std::regex_search(Begin, Line.cend(), Result, FaceRegex); Begin = Result.suffix().first)
+	//			{
+	//				_ASSERTE(Result.size() == 4);
+	//				std::string Vp = Result[1];
+	//				std::string Vn = Result[2];
+	//				std::string Vt = Result[3];
 
-		ObjFileIn.close();
+	//				FixedLine += Vp + "/" + Vt + "/" + Vn + " ";
+	//			}
+	//			FileLines += FixedLine;
+	//		}
+	//		else
+	//			FileLines += Line;
+	//		FileLines += "\n";
+	//	}
 
-		std::ofstream ObjFileOut(ObjName);
-		ObjFileOut << FileLines;
-	}
+	//	ObjFileIn.close();
+
+	//	std::ofstream ObjFileOut(ObjName);
+	//	ObjFileOut << FileLines;
+	//}
 }

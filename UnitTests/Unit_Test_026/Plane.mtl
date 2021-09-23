@@ -5,8 +5,8 @@ newmtl
 Ka 0 0 0
 Kd 0 0 0
 Ks 0 0 0
-d 0
-Ns 0
-illum 0
+d 7.0065e-44
+Ns 3.7616e-37
+illum 39768
 map_Kd 
 ###

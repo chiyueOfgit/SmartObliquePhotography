@@ -142,14 +142,14 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutte
 				NeighborVertexSet.insert(vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId);
 			for (auto NextVertexId : NeighborVertexSet)
 			{
-				if (!vBoundaryStatus[NextVertexId])
+				//if (!vBoundaryStatus[NextVertexId])
 				{
 					TutteMatrix.insert(VertexId, NextVertexId) = 1.0;
 					Sum++;
 				}
 			}
 
-			TutteMatrix.insert(VertexId, VertexId) = -1.0 * NeighborVertexSet.size();
+			TutteMatrix.insert(VertexId, VertexId) = -1.0 * Sum;
 		}
 	}
 
@@ -202,10 +202,11 @@ Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMa
 	//Eigen::SimplicialLLT<Eigen::SparseMatrix<double, Eigen::ColMajor>> Solver;
 	Solver.analyzePattern(CompressMatrix);
 	Solver.factorize(CompressMatrix);
-	_ASSERTE(Solver.info() == Eigen::Success);	//fixme: NumericalIssue
+	//_ASSERTE(Solver.info() == Eigen::Success);	//fixme: NumericalIssue
 	auto Solution = Solver.solve(vVector);
-	_ASSERTE(Solver.info() == Eigen::Success);
+	//_ASSERTE(Solver.info() == Eigen::Success);
 	auto Info = Solver.info();
+
 	return Solution;
 }
 
@@ -227,6 +228,8 @@ Eigen::MatrixXd CArapParameterization::__switch2UVMatrix(const CMesh& vMesh, con
 	{
 		float U = (vX(VertexId) - BeginX) / WidthU;
 		float V = (vY(VertexId) - BeginY) / HeightV;
+		//float U = vX(VertexId);
+		//float V = vY(VertexId);
 
 		UVMatrix.row(VertexId) = Eigen::Vector2d(U, V);
 	}
