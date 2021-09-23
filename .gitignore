@@ -266,3 +266,5 @@ __pycache__/
 /QTInterface/Temp
 /UnitTests/TestData/Test019_Model/Cache
 /UnitTests/TestData/Test019_Model/SquareMaskResultImage.png
+/Models
+/UnitTests/TestData/General
