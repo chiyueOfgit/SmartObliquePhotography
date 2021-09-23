@@ -164,9 +164,10 @@ protected:
 				FaceStr += "\n";
 			}
 
+			auto Name = vPath.substr(0, vPath.find("."));
 			FileLines += Comments;
-			FileLines += "mtllib " + vPath.substr(0, vPath.find(".")) + ".mtl\n" + "\n";
-			FileLines += Pos + "\n" + Tex + "\n" + Normal + "\n";
+			FileLines += "mtllib " + Name + ".mtl\n" + "\n";
+			FileLines += Pos + "\n" + "usemtl " + Name + "\n" + Tex + "\n" + Normal + "\n";
 			FileLines += FaceStr;
 		}
 		ObjFile << FileLines;
