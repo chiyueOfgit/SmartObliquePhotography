@@ -12,7 +12,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(COutlierDetector, KEYWORD::OUTLIER_DETECTOR)
 
 //*****************************************************************
 //FUNCTION: 
-void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vTargetLabel,const float DEV_MUL_THRESH,const int MIN_K, const bool POINT_FILTER_CONDITION)  //FIXME: 实际从vConfig就拿三个值，还不如直接把这三个值作为参数传进来，这样就不依赖CHiveConfig了，你的测试用例也会变得更简单
+void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vTargetLabel, float vSearchRadius, int vMinNeighbors, bool vCondition)  //FIXME: 实际从vConfig就拿三个值，还不如直接把这三个值作为参数传进来，这样就不依赖CHiveConfig了，你的测试用例也会变得更简单
 {
 	if (vInputIndices.empty()) return;
 
@@ -48,9 +48,9 @@ void COutlierDetector::runV(pcl::Indices& vInputIndices, EPointLabel vTargetLabe
 	pcl::PointCloud<pcl::PointSurfel>::Ptr pResultCloud(new pcl::PointCloud<pcl::PointSurfel>);
 	pcl::RadiusOutlierRemoval<pcl::PointSurfel> RadiusOutlier;     //FIXME: 从include的文件来看，pcl提供了多种去除离群点的方法，为什么选当前这种，有过测试吗？
 	RadiusOutlier.setInputCloud(pCloud);
-	RadiusOutlier.setRadiusSearch(vConfig->getAttribute<float>("SEARCH_RADIUS").value());
-	RadiusOutlier.setMinNeighborsInRadius(vConfig->getAttribute<int>("MIN_NEIGHBORS_IN_RADIUS").value());
-	RadiusOutlier.setNegative(vConfig->getAttribute<bool>("POINT_FILTER_CONDITION").value());
+	RadiusOutlier.setRadiusSearch(vSearchRadius);
+	RadiusOutlier.setMinNeighborsInRadius(vMinNeighbors);
+	RadiusOutlier.setNegative(vCondition);
 	RadiusOutlier.filter(*pResultCloud);
 
 	for (auto& Point : pResultCloud->points)

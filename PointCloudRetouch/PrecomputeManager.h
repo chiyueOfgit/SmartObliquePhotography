@@ -43,8 +43,8 @@ namespace hiveObliquePhotography
 			template<class T>
 			void __serialization(const std::string& vPath, const T* vContainer) const
 			{
-				std::ofstream file(vPath.c_str());
-				boost::archive::text_oarchive oa(file);
+				std::ofstream file(vPath.c_str(), std::ios::binary);
+				boost::archive::binary_oarchive oa(file);
 				oa& BOOST_SERIALIZATION_NVP(*vContainer);
 				file.close();
 			}
@@ -52,8 +52,8 @@ namespace hiveObliquePhotography
 			template<class T>
 			void __deserialization(const std::string& vPath, T* voContainer) const
 			{
-				std::ifstream file(vPath.c_str());
-				boost::archive::text_iarchive ia(file);
+				std::ifstream file(vPath.c_str(), std::ios::binary);
+				boost::archive::binary_iarchive ia(file);
 				ia >> BOOST_SERIALIZATION_NVP(*voContainer);
 				file.close();
 			}

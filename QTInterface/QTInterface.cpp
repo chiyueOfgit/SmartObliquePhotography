@@ -540,13 +540,13 @@ void CQTInterface::onActionOpenMesh()
     if (hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
     {
         PointCloud_t::Ptr pCloud(new PointCloud_t);
-        Visualization::hiveInitVisualizer(pCloud, true);
+        Visualization::hiveInitVisualizer({ pCloud }, true);
         __initialVTKWidget();
         //Visualization::TestInterface();
 
         Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
         auto Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
-        auto Texture = SceneReconstruction::hiveBakeColorTexture(Mesh, m_pCloud, { 512, 512 });
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(Mesh, pCloud, { 512, 512 });
 
         {
             const auto Width = Texture.getWidth();
