@@ -270,11 +270,16 @@ void CArapParameterization::__findValidBoundary(std::set<int>& vBoundarySet, std
 	int Sum = 0;
 	auto Aabb = m_Mesh.calcAABB();
 	auto Offset = (Aabb.second - Aabb.first) / 20.0;
+
+	std::pair<int, int> XYAxis;
+	int HeightAxis;
+	m_Mesh.calcModelPlaneAxis(XYAxis, HeightAxis);
+	
 	for (auto& Boundary : vBoundarySet)
 	{
 		auto VetrexPosition = m_Mesh.m_Vertices[Boundary].xyz();
-		auto MinX = std::min(abs(VetrexPosition.x() - Aabb.second.x()), abs(VetrexPosition.x() - Aabb.first.x()));
-		auto MinY = std::min(abs(VetrexPosition.y() - Aabb.second.y()), abs(VetrexPosition.y() - Aabb.first.y()));
+		auto MinX = std::min(abs(VetrexPosition.data()[XYAxis.first] - Aabb.second.data()[XYAxis.first]), abs(VetrexPosition.data()[XYAxis.first] - Aabb.first.data()[XYAxis.first]));
+		auto MinY = std::min(abs(VetrexPosition.data()[XYAxis.second] - Aabb.second.data()[XYAxis.second]), abs(VetrexPosition.data()[XYAxis.second] - Aabb.first.data()[XYAxis.second]));
 		if (MinX > Offset.x() && MinY > Offset.y())
 			Sum++;
 		else
