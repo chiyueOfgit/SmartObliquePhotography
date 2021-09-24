@@ -36,6 +36,9 @@
 
 #include "pcl/io/pcd_io.h"
 #include "pcl/io/ply_io.h"
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/obj_io.h>
+#include <regex>
 
 #define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
@@ -87,7 +90,9 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionRubber, SIGNAL(triggered()), this, SLOT(onActionRubber()));
     QObject::connect(m_UI.actionBrush, SIGNAL(triggered()), this, SLOT(onActionBrush()));
     QObject::connect(m_UI.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
+    QObject::connect(m_UI.actionReconstruction, SIGNAL(triggered()), this, SLOT(onActionReconstruction()));
     QObject::connect(m_UI.actionOpenMesh, SIGNAL(triggered()), this, SLOT(onActionOpenMesh()));
+    QObject::connect(m_UI.actionBakeTexture, SIGNAL(triggered()), this, SLOT(onActionBakeTexture()));
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
     QObject::connect(m_UI.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
     QObject::connect(m_UI.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
@@ -353,6 +358,8 @@ void CQTInterface::onActionOpen()
             m_UI.actionSetting->setEnabled(true);
             m_UI.actionOutlierDetection->setEnabled(true);
             m_UI.actionRepairHole->setEnabled(true);
+            m_UI.actionReconstruction->setEnabled(true);
+            m_UI.actionBakeTexture->setEnabled(true);
 
             m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
         }
@@ -532,22 +539,48 @@ void CQTInterface::onActionSetting()
         _SAFE_DELETE(m_pDisplayOptionsSettingDialog);
 }
 
+void CQTInterface::onActionReconstruction()
+{
+    auto MeshPath = QFileDialog::getSaveFileName(this, tr("Save Mesh"), ".", tr("OBJ files(*.obj)")).toStdString();
+
+    if (!m_TileSet.empty())
+    {
+        PointCloud_t::Ptr pResult(new PointCloud_t);
+        for (auto pCloud : m_TileSet)
+            *pResult += *pCloud;
+        CMesh Mesh;
+        SceneReconstruction::hiveSurfaceReconstruction(pResult, Mesh);
+        hiveSaveMeshModel(Mesh, MeshPath);
+
+        __messageDockWidgetOutputText(QString::fromStdString("Reconstruction finished."));
+    }
+}
+
 void CQTInterface::onActionOpenMesh()
 {
     auto MeshPath = QFileDialog::getOpenFileName(this, tr("Open Mesh"), QString::fromStdString(m_DirectoryOpenPath), tr("OBJ files(*.obj)")).toStdString();
 
-    // test load mesh
-    if (hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
+    // load mesh
+    if (MeshPath != "" && hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
     {
-        PointCloud_t::Ptr pCloud(new PointCloud_t);
-        Visualization::hiveInitVisualizer({ pCloud }, true);
-        __initialVTKWidget();
-        //Visualization::TestInterface();
-
+        m_Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
         Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
-        auto Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
-        auto Texture = SceneReconstruction::hiveBakeColorTexture(Mesh, pCloud, { 512, 512 });
+        Visualization::TestInterface();
+        __messageDockWidgetOutputText(QString::fromStdString("Open mesh succeed."));
+    }
+}
 
+void CQTInterface::onActionBakeTexture()
+{
+    auto TexturePath = QFileDialog::getSaveFileName(this, tr("Save Texture"), ".", tr("PNG files(*.png)")).toStdString();
+
+    if (!m_TileSet.empty())
+    {
+        PointCloud_t::Ptr pResult(new PointCloud_t);
+        for (auto pCloud : m_TileSet)
+            *pResult += *pCloud;
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_Mesh, pResult, { 512, 512 });
+        
         {
             const auto Width = Texture.getWidth();
             const auto Height = Texture.getHeight();
@@ -562,13 +595,11 @@ void CQTInterface::onActionOpenMesh()
                     ResultImage[Offset + 2] = Texture.getColor(i, k)[2];
                 }
 
-            stbi_write_png("TestColor.png", Width, Height, BytesPerPixel, ResultImage, 0);
+            stbi_write_png(TexturePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
             stbi_image_free(ResultImage);
         }
-        //Visualization::hiveAddTextureMesh(Mesh);
-        //std::vector<std::size_t> PointLabel;
-        //PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-        //Visualization::hiveRefreshVisualizer(PointLabel, true);
+
+        __messageDockWidgetOutputText(QString::fromStdString("Bake Texture finished."));
     }
 }
 

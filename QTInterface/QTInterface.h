@@ -2,6 +2,7 @@
 #include "ui_QTInterface.h"
 #include "QTDockWidgetTitleBar.h"
 #include "InstructionsDialog.h"
+#include "Mesh.h"
 
 class QStandardItem;
 class QStandardItemModel;
@@ -46,6 +47,7 @@ namespace hiveObliquePhotography
             size_t m_SceneIndex = -1;
             int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;
+            CMesh m_Mesh;
             std::vector<PointCloud_t::Ptr> m_TileSet;
             QDockWidget* m_pRubberSizeDockWidget = nullptr;
             QDockWidget* m_pBrushSizeDockWidget = nullptr;
@@ -88,7 +90,9 @@ namespace hiveObliquePhotography
             void onActionStartRepairHole();
             void onActionInstructions();
             void onActionSetting();
+            void onActionReconstruction();
             void onActionOpenMesh();
+            void onActionBakeTexture();
             void onResourceSpaceItemDoubleClick(QModelIndex);
         };
     }

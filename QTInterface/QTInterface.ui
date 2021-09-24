@@ -74,6 +74,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOpen"/>
+   <addaction name="actionOpenMesh"/>
    <addaction name="actionSave"/>
    <addaction name="separator"/>
    <addaction name="actionPointPicking"/>
@@ -88,9 +89,10 @@
    <addaction name="separator"/>
    <addaction name="actionPrecompute"/>
    <addaction name="actionRepairHole"/>
+   <addaction name="actionReconstruction"/>
+   <addaction name="actionBakeTexture"/>
    <addaction name="actionSetting"/>
    <addaction name="actionInstructions"/>
-   <addaction name="actionOpenMesh"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="resourceSpaceDockWidget">
@@ -400,22 +402,46 @@ background-color: rgb(255, 255, 255);</string>
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/dichotomy.png</normaloff>:/QTInterface/Icon/dichotomy.png</iconset>
+    <iconset>
+     <normaloff>Icon/Hole.png</normaloff>Icon/Hole.png</iconset>
    </property>
    <property name="text">
     <string>RepairHole</string>
    </property>
   </action>
-  <action name="actionOpenMesh">
+  <action name="actionBakeTexture">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
-    <iconset resource="QTInterface.qrc">
-     <normaloff>:/QTInterface/Icon/open.png</normaloff>:/QTInterface/Icon/open.png</iconset>
+    <iconset>
+     <normaloff>Icon/Bake.png</normaloff>Icon/Bake.png</iconset>
    </property>
    <property name="text">
-    <string>OpenMesh</string>
+    <string>BakeTexture</string>
    </property>
    <property name="toolTip">
+    <string>BakeTexture</string>
+   </property>
+  </action>
+  <action name="actionReconstruction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>Icon/Reconstruction.png</normaloff>Icon/Reconstruction.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reconstruction</string>
+   </property>
+  </action>
+  <action name="actionOpenMesh">
+   <property name="icon">
+    <iconset>
+     <normaloff>Icon/OpenMesh.png</normaloff>Icon/OpenMesh.png</iconset>
+   </property>
+   <property name="text">
     <string>OpenMesh</string>
    </property>
   </action>
