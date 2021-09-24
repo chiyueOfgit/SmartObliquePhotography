@@ -40,7 +40,10 @@ pcl::TextureMesh CMesh::toTexMesh(const pcl::TexMaterial& vMaterial) const
 	for (int i = 0; i < m_Vertices.size(); i++)
 		Coords.push_back(Eigen::Vector2f{ m_Vertices[i].u, m_Vertices[i].v });
 	TexMesh.tex_coordinates.push_back(Coords);
-	TexMesh.tex_materials.push_back(vMaterial);
+	if (m_Material.tex_name != "")
+		TexMesh.tex_materials.push_back(m_Material);
+	else
+		TexMesh.tex_materials.push_back(vMaterial);
 
 	return TexMesh;
 }

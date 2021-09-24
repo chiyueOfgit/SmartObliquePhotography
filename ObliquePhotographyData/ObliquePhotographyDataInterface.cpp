@@ -2,6 +2,7 @@
 #include "ObliquePhotographyDataInterface.h"
 #include "PointCloudScene.h"
 #include "MeshLoader.h"
+#include "MeshSaver.h"
 
 using namespace hiveObliquePhotography;
 
@@ -30,10 +31,25 @@ void hiveObliquePhotography::hiveLoadMeshModel(hiveObliquePhotography::CMesh& vo
 	auto* pMeshLoader = hiveDesignPattern::hiveGetOrCreateProduct<IMeshLoader>(hiveUtility::hiveGetFileSuffix(vFileName));
 	if (pMeshLoader)
 	{
-		CMesh Mesh;
 		try
 		{
-			pMeshLoader->loadDataFromFile(Mesh, vFileName);
+			pMeshLoader->loadDataFromFile(voMesh, vFileName);
+		}
+		catch (...) {}
+	}
+}
+
+void hiveObliquePhotography::hiveSaveMeshModel(const hiveObliquePhotography::CMesh& vMesh, std::string vFileName)
+{
+	std::string LowerFileName = hiveUtility::hiveLocateFile(vFileName);
+	transform(LowerFileName.begin(), LowerFileName.end(), LowerFileName.begin(), ::tolower);
+
+	auto* pMeshLoader = hiveDesignPattern::hiveGetOrCreateProduct<IMeshSaver>(hiveUtility::hiveGetFileSuffix(vFileName) + "_Save");
+	if (pMeshLoader)
+	{
+		try
+		{
+			pMeshLoader->saveDataToFileV(vMesh, vFileName);
 		}
 		catch (...) {}
 	}

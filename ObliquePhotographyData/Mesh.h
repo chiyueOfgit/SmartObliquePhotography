@@ -12,11 +12,11 @@ namespace hiveObliquePhotography
 		DataType x;
 		DataType y;
 		DataType z;
-		DataType nx;
-		DataType ny;
-		DataType nz;
-		DataType u;
-		DataType v;
+		DataType nx = 0;
+		DataType ny = 0;
+		DataType nz = 0;
+		DataType u = 0;
+		DataType v = 0;
 
 		Eigen::Vector3f xyz() const { return { x, y, z }; }
 		Eigen::Vector3f normal() const { return { nx, ny, nz }; }
@@ -67,6 +67,7 @@ namespace hiveObliquePhotography
 		std::vector<SFace> findFacesByVertex(IndexType vVertex) const;
 		std::pair<Eigen::Vector3f, Eigen::Vector3f> calcAABB() const;
 		void calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const;
+		void setMaterial(const pcl::TexMaterial& vMaterial) { m_Material = vMaterial; }
 
 		Eigen::MatrixXd getVerticesMatrix() const;
 		Eigen::MatrixXi getFacesMatrix() const;
@@ -84,5 +85,7 @@ namespace hiveObliquePhotography
 
 		void __fillCloud(const std::vector<SVertex>& vVertices, pcl::PCLPointCloud2& vCloud) const;
 		void __fillPolygons(const std::vector<SFace>& vFaces, std::vector<pcl::Vertices>& vPolygons) const;
+
+		pcl::TexMaterial m_Material;
 	};
 }
