@@ -50,7 +50,27 @@
 <img src='InstructionImages/blend.png'>    
 预先进行场景的计算，计算中无法操作场景，计算完成后可以提高操作场景的速度
 预处理用时测试：使用AMD 5800X对100MB的300W级别点云模型进行预处理，用时<1min
+\n
+* 空洞修补
+<img src='InstructionImages/Hole.png'>    
+点击后等待相机重置，此时工具栏操作按钮除去矩形选择框全部变灰（不可点击操作）。
+点击矩形选择框，默认进入空洞选取模式，右键拉取选择空洞区域（红色边框）；按空格键切换选取模式，右键拉取选择样式区域（蓝色边框）；
+按键盘“r”键开始补洞
+\n
+* 网格重建
+<img src='InstructionImages/Reconstruction.png'>
+点击后对场景中点云模型进行三角网格重建
+\n
+* 纹理贴图烘焙
+首先使用“打开文件”
+<img src='InstructionImages/open.png'> 
+打开点云模型，再点击按钮
+<img src='InstructionImages/OpenMesh.png'>
+打开网格模型，再点击按钮
+<img src='InstructionImages/Bake.png'>
+选择保存路径，开始纹理烘焙
 
+\n
 # 鼠标使用指南
 * 左键
 旋转
