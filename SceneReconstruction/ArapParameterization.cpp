@@ -24,7 +24,7 @@ Eigen::MatrixXd CArapParameterization::execute()
 	auto BoundaryStatus = findBoundaryPoint();
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
 	auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
-	return UV;
+	return InitialUV;
 }
 
 //*****************************************************************
@@ -197,8 +197,10 @@ Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMa
 	CompressMatrix.makeCompressed();
 
 
-	Eigen::ConjugateGradient<Eigen::SparseMatrix<double, Eigen::ColMajor>>Solver;
+	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double, Eigen::ColMajor>>Solver;
 	//Eigen::SimplicialLLT<Eigen::SparseMatrix<double, Eigen::ColMajor>> Solver;
+	
+	Eigen::BiCGSTAB<Eigen::SparseMatrix<double, Eigen::ColMajor>>Solver;
 	Solver.analyzePattern(CompressMatrix);
 	Solver.factorize(CompressMatrix);
 	//_ASSERTE(Solver.info() == Eigen::Success);	//fixme: NumericalIssue
