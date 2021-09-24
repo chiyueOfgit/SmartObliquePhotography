@@ -35,6 +35,6 @@ namespace hiveObliquePhotography
 
 		VISUALIZATION_DECLSPEC bool hiveGetVisualizationConfig(CVisualizationConfig*& voConfig);
 
-		VISUALIZATION_DECLSPEC void TestInterface();
+		VISUALIZATION_DECLSPEC void TestInterface(const std::string& vObj, const std::string& vBoundary);
 	}
 }
