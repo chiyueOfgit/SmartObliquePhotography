@@ -23,7 +23,7 @@ Eigen::MatrixXd CArapParameterization::execute()
 	buildHalfEdge();
 	auto BoundaryStatus = findBoundaryPoint();
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
-	auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
+	//auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
 	return InitialUV;
 }
 
