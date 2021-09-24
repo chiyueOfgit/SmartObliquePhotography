@@ -148,7 +148,6 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutte
 					Sum++;
 				}
 			}
-
 			TutteMatrix.insert(VertexId, VertexId) = -1.0 * Sum;
 		}
 	}
