@@ -283,9 +283,8 @@ void CPointCloudVisualizer::refresh(std::size_t vWhichTile, const std::vector<st
 						}
 		}
 
-		m_pPCLVisualizer->removePointCloud(m_CloudName + std::to_string(vWhichTile));
 		pcl::visualization::PointCloudColorHandlerRGBAField<VisualPoint_t> RGBAColor(pCloud2Show);
-		m_pPCLVisualizer->addPointCloud<VisualPoint_t>(pCloud2Show, RGBAColor, m_CloudName + std::to_string(vWhichTile));
+		m_pPCLVisualizer->updatePointCloud<VisualPoint_t>(pCloud2Show, RGBAColor, m_CloudName + std::to_string(vWhichTile));
 		m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, PointSize, m_CloudName + std::to_string(vWhichTile));
 
 	}

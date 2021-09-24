@@ -302,7 +302,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				return 1;
 		};
 
-		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
+		//PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
 		auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
