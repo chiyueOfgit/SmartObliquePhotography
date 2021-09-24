@@ -17,13 +17,14 @@ const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Plane/Pla
 const auto ScuMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Scu/Tile16.obj");
 const auto StoneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/LI_Rock_Pavers.obj");
 const auto MountainMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/mountain.obj");
+const auto PyramidMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Pyramid.obj");
 
 class TestArapParameterization : public testing::Test
 {
 protected:
 	void SetUp() override
 	{
-		m_Mesh = _loadObj(ScuMeshPath);
+		m_Mesh = _loadObj(PyramidMeshPath);
 		m_pMeshParameterization = _createProduct(m_Mesh);
 	}
 
