@@ -36,8 +36,9 @@ void CArapParameterization::buildHalfEdge()
 	m_HalfEdgeTable.reserve(m_Mesh.m_Vertices.size() * 3);
 	std::vector<bool> Flag(m_Mesh.m_Vertices.size(), false);
 	int sum = 0;
-	for(auto& Face : m_Mesh.m_Faces)
+	for(int FaceId = 0; FaceId < m_Mesh.m_Faces.size(); FaceId++)
 	{
+		auto& Face = m_Mesh.m_Faces[FaceId];
         Eigen::Vector3f A = m_Mesh.m_Vertices[Face[1]].xyz() - m_Mesh.m_Vertices[Face[0]].xyz();
 		Eigen::Vector3f B = m_Mesh.m_Vertices[Face[2]].xyz() - m_Mesh.m_Vertices[Face[1]].xyz();
 		Eigen::Vector3f Cross = A.cross(B);
@@ -53,6 +54,7 @@ void CArapParameterization::buildHalfEdge()
 		{
 			SHalfEdge HalfEdge;
 			HalfEdge._VertexId = Face[i];
+			HalfEdge._Face = FaceId;
 			auto Index = m_HalfEdgeTable.size();
 			m_VertexInfoTable[Face[i]].push_back(Index);
 			HalfEdge._Prev = Index + ((i == 0) ? (2) : (-1));
@@ -65,14 +67,7 @@ void CArapParameterization::buildHalfEdge()
 			}
 			m_HalfEdgeTable.push_back(HalfEdge);
 		}
-		/*Eigen::Vector3f A = m_Mesh.m_Vertices[Face[1]].xyz() - m_Mesh.m_Vertices[Face[0]].xyz();
-		Eigen::Vector3f B = m_Mesh.m_Vertices[Face[2]].xyz() - m_Mesh.m_Vertices[Face[1]].xyz();
-		Eigen::Vector3f Cross = A.cross(B);
 
-		if (Cross.dot(m_Mesh.m_Vertices[Face[0]].normal()) < 0 || Cross.dot(m_Mesh.m_Vertices[Face[1]].normal()) < 0 || Cross.dot(m_Mesh.m_Vertices[Face[2]].normal()) < 0)
-		{
-			sum++;
-		}*/
 		Flag[Face[0]] = true;
 		Flag[Face[1]] = true;
 		Flag[Face[2]] = true;
@@ -127,28 +122,58 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutte
 	Eigen::SparseMatrix<double, Eigen::ColMajor> TutteMatrix(NumVertices, NumVertices);
 	TutteMatrix.reserve(Eigen::VectorXd::Zero(NumVertices));
 
+	auto Uniform = []()
+	{
+		return 1.0;
+	};
+	auto MeanWalue = [&](int vHalfEdge, int vVertex, int vNextVertex)
+	{
+		auto CalcAngle = [&](int vFaceId) -> double
+		{
+			auto Face = m_Mesh.m_Faces[vFaceId];
+			int RestVertex = 0;
+			for (int i = 0; i < 3; i++)
+			{
+				auto VertexId = Face[i];
+				if (VertexId != vVertex && VertexId != vNextVertex)
+				{
+					RestVertex = VertexId;
+					break;
+				}
+			}
+
+			auto A = m_Mesh.m_Vertices[vNextVertex].xyz() - m_Mesh.m_Vertices[vVertex].xyz();
+			auto B = m_Mesh.m_Vertices[RestVertex].xyz() - m_Mesh.m_Vertices[vVertex].xyz();
+
+			return std::acos(A.dot(B) / (A.norm() * B.norm()));
+		};
+
+		auto Sigma = CalcAngle(vHalfEdgeSet[vHalfEdge]._Face);
+		auto Gamma = CalcAngle(vHalfEdgeSet[vHalfEdgeSet[vHalfEdge]._Conj]._Face);
+		auto Length = (m_Mesh.m_Vertices[vVertex].xyz() - m_Mesh.m_Vertices[vNextVertex].xyz()).norm();
+
+		return (std::tan(Sigma / 2) + std::tan(Gamma / 2)) / Length;
+	};
+
 	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
-		//TutteMatrix.insert(VertexId, VertexId) = 1.0;
 		if (vBoundaryStatus[VertexId]) //boundary
 			TutteMatrix.insert(VertexId, VertexId) = 1.0;
 		else //interior
 		{
 			const auto& NeighborHalfEdgeSet = m_VertexInfoTable[VertexId];
 
-			int Sum = 0;
-			std::set<int> NeighborVertexSet;
+			double SumWeight = 0;
 			for (auto i : NeighborHalfEdgeSet)
-				NeighborVertexSet.insert(vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId);
-			for (auto NextVertexId : NeighborVertexSet)
 			{
-				//if (!vBoundaryStatus[NextVertexId])
-				{
-					TutteMatrix.insert(VertexId, NextVertexId) = 1.0;
-					Sum++;
-				}
+				auto NextVertexId = vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId;
+				//auto Weight = Uniform();
+				auto Weight = MeanWalue(i, VertexId, NextVertexId);
+				TutteMatrix.insert(VertexId, NextVertexId) = Weight;
+				SumWeight += Weight;
 			}
-			TutteMatrix.insert(VertexId, VertexId) = -1.0 * Sum;
+
+			TutteMatrix.insert(VertexId, VertexId) = -1.0 * SumWeight;
 		}
 	}
 

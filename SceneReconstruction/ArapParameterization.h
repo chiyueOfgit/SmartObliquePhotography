@@ -15,6 +15,7 @@ namespace hiveObliquePhotography
 			int _Prev;
 			int _Next;
 			int _Conj = -1;
+			int _Face;
 		};
 
 		class CArapParameterization : public IMeshParameterization
