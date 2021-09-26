@@ -10,7 +10,6 @@ namespace hiveObliquePhotography
 	namespace Visualization
 	{
 		class CPointCloudVisualizer;
-
 		class CVisualizationConfig;
 
 		class CInteractionCallback
@@ -34,6 +33,7 @@ namespace hiveObliquePhotography
 			void __saveIndices(const std::string& vPath, const std::vector<int>& vIndices) const ;
 			void __loadIndices(const std::string& vPath, std::vector<int>& voIndices) const;
 
+			pcl::visualization::Camera m_Camera;
 			bool m_KeyPressStatus[256] = { false };
 			bool m_MousePressStatus[3] = { false };
 
@@ -45,10 +45,8 @@ namespace hiveObliquePhotography
 
 			bool m_UnwantedMode = true;
 			bool m_IsRefreshImmediately = true;	//点选是否立即刷新
-			bool m_IsEnableColorInfos = false;
 
 			CPointCloudVisualizer* m_pVisualizer = nullptr;
-
 			CVisualizationConfig* m_pVisualizationConfig = nullptr;
 		};
 	}

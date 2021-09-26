@@ -111,6 +111,12 @@ namespace hiveObliquePhotography
 				update(Position);
 			return { Min, Max };
 		}
-		
+		static bool isInAABB(const Eigen::Vector3f& vSample, const std::pair<Eigen::Vector3f, Eigen::Vector3f>& vAABB)
+		{
+			for (int i = 0; i < 3; i++)
+				if (vSample.data()[i] < vAABB.first.data()[i] || vSample.data()[i] > vAABB.second.data()[i])
+					return false;
+			return true;
+		}
 	}
 }
