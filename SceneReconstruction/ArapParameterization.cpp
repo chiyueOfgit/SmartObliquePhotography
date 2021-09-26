@@ -6,6 +6,7 @@
 #include <fstream>	//remove
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/set.hpp>
+#include <boost/serialization/vector.hpp>
 #include <iomanip>
 #include<Eigen/IterativeLinearSolvers>
 
@@ -27,8 +28,11 @@ Eigen::MatrixXd CArapParameterization::execute()
 		BoundaryStatus[Index] = true;
 	
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
-	auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV, BoundarySet);
-	return UV;
+	for (auto Index : BoundarySet)
+		std::cout << "(" << InitialUV.row(Index).x() << " " << InitialUV.row(Index).y() << ") ";
+
+	//auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV, BoundarySet);
+	return InitialUV;
 }
 
 //*****************************************************************
@@ -95,10 +99,10 @@ std::vector<int> CArapParameterization::findBoundaryPoint()
 	}
 	__findValidBoundary(BoundarySet, ValidSet);
 
-	/*std::ofstream file("BoundaryPoints.txt");
+	std::ofstream file("BoundaryPoints.txt");
 	boost::archive::text_oarchive oa(file);
 	oa& BOOST_SERIALIZATION_NVP(ValidSet);
-	file.close();*/
+	file.close();
 
 	return ValidSet;
 }
@@ -278,7 +282,6 @@ int CArapParameterization::__findTwinRef(int vStartIndex, int vEndIndex)
 //FUNCTION: 
 Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, const Eigen::MatrixXd& vInitialUV, const std::vector<int>& vBoundarySet)
 {
-
 	igl::ARAPData arap_data;
 	arap_data.with_dynamics = false;
 	int Size = vBoundarySet.size();

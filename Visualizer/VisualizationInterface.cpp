@@ -5,6 +5,7 @@
 #include <fstream>	//remove
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/set.hpp>
+#include <boost/serialization/vector.hpp>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/obj_io.h>
 #include "Mesh.h"
@@ -104,7 +105,7 @@ void hiveObliquePhotography::Visualization::TestInterface(const std::string& vOb
 {
 	auto pVisualizer = CPointCloudVisualizer::getInstance();
 
-	std::set<int> BoundaryPoints;
+	std::vector<int> BoundaryPoints;
 	std::ifstream file(vBoundary);
 	boost::archive::text_iarchive ia(file);
 	ia >> BOOST_SERIALIZATION_NVP(BoundaryPoints);
