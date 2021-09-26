@@ -564,7 +564,7 @@ void CQTInterface::onActionOpenMesh()
     {
         m_Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
         Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
-        Visualization::TestInterface(MeshPath, "Temp/BoundaryPoints.txt");
+        Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
         __messageDockWidgetOutputText(QString::fromStdString("Open mesh succeed."));
     }
 }

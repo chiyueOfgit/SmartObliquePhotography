@@ -227,7 +227,6 @@ Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMa
 	auto CompressMatrix = vMatrix;
 	CompressMatrix.makeCompressed();
 
-
 	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double, Eigen::ColMajor>>Solver;
 	//Eigen::SimplicialLLT<Eigen::SparseMatrix<double, Eigen::ColMajor>> Solver;
 	
