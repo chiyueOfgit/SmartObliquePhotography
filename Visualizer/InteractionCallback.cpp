@@ -20,16 +20,13 @@ using namespace hiveObliquePhotography::Visualization;
 CInteractionCallback::CInteractionCallback(pcl::visualization::PCLVisualizer* vVisualizer)
 {
 	m_pVisualizer = CPointCloudVisualizer::getInstance();
+	m_pVisualizationConfig = CVisualizationConfig::getInstance();
 
 	_ASSERTE(vVisualizer);
 	vVisualizer->registerKeyboardCallback([&](const auto& vEvent) { keyboardCallback(vEvent); });
 	vVisualizer->registerMouseCallback([&](const auto& vEvent) { mouseCallback(vEvent); });
 	vVisualizer->registerPointPickingCallback([&](const auto& vEvent) { pointPicking(vEvent); });
 	vVisualizer->registerAreaPickingCallback([&](const auto& vEvent) { areaPicking(vEvent); });
-
-	m_pVisualizationConfig = CVisualizationConfig::getInstance();
-	m_pVisualizer->m_LitterColor = m_pVisualizationConfig->getAttribute<std::tuple<int, int, int>>(LITTER_HIGHLIGHT_COLOR).value();
-	m_pVisualizer->m_BackgroundColor = m_pVisualizationConfig->getAttribute<std::tuple<int, int, int>>(BACKGROUND_HIGHLIGHT_COLOR).value();
 }
 
 //*****************************************************************
@@ -51,8 +48,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(SWITCH_UNWANTED_DISCARD).value())
 		{
 			static int i = 0;
-			i++;
-			if (i % 2)
+			if (++i % 2)
 				PointCloudRetouch::hiveHideLitter();
 			else
 				PointCloudRetouch::hiveDisplayLitter();	
@@ -80,13 +76,13 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(POINT_SIZE_UP).value())
 		{
 			m_pVisualizationConfig->overwriteAttribute(POINT_SHOW_SIZE, m_pVisualizationConfig->getAttribute<double>(POINT_SHOW_SIZE).value() + 1);
-			RefreshFlag = true;
+			m_pVisualizer->setPointRenderSize(m_pVisualizationConfig->getAttribute<double>(POINT_SHOW_SIZE).value());
 		}
 
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(POINT_SIZE_DOWN).value())
 		{
 			m_pVisualizationConfig->overwriteAttribute(POINT_SHOW_SIZE, m_pVisualizationConfig->getAttribute<double>(POINT_SHOW_SIZE).value() - 1);
-			RefreshFlag = true;
+			m_pVisualizer->setPointRenderSize(m_pVisualizationConfig->getAttribute<double>(POINT_SHOW_SIZE).value());
 		}
 
 		if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(RECOVER_BACKGROUND_POINTS).value())
@@ -131,7 +127,6 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			m_pVisualizer->showBoundingBox();
 		}*/
 
-		
 		if (RefreshFlag)
 		{
 			std::vector<std::size_t> PointLabel;
@@ -165,101 +160,30 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 	m_PosX = vEvent.getX();
 	m_PosY = vEvent.getY();
 
-	m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value());
+	m_pVisualizer->m_pPCLVisualizer->getCameraParameters(m_Camera);
+	Eigen::Matrix4d Proj, View;
+	m_Camera.computeProjectionMatrix(Proj);
+	m_Camera.computeViewMatrix(View);
+	Eigen::Matrix4d PV = Proj * View;
+	Eigen::Vector3d ViewPos = { m_Camera.pos[0], m_Camera.pos[1], m_Camera.pos[2] };
 
-	/*if (m_MousePressStatus[0])
-	{
-		std::vector<Eigen::Vector3d> TileCenter = m_pVisualizer->getTileCenter();
-		auto ScenceName = m_pVisualizer->getName();
-		pcl::visualization::Camera Camera;
-		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-		Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-		Eigen::Vector3d CameraFocal{ Camera.focal[0], Camera.focal[1], Camera.focal[2] };
-		Eigen::Vector3d Eye = CameraPos + (CameraFocal - CameraPos).normalized() * Camera.clip[0];
-
-		for (int i = 0; i < TileCenter.size(); i++)
-		{
-			double Distance = (Eye - TileCenter[i]).norm();
-			if (Distance < 40)
-				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3.0, ScenceName + std::to_string(i));
-			else if (Distance > 100)
-				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1.0, ScenceName + std::to_string(i));
-			else
-				m_pVisualizer->m_pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2.0, ScenceName + std::to_string(i));
-		}
-		m_pVisualizer->m_pPCLVisualizer->updateCamera();
-	}*/
-
-	/*if (m_pVisualizationConfig->getAttribute<bool>(RUBBER_MODE).value() && m_MousePressStatus[0])
-	{
-		m_Radius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value();
-
-		pcl::visualization::Camera Camera;
-		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-		Eigen::Matrix4d Proj, View;
-		Camera.computeProjectionMatrix(Proj);
-		Camera.computeViewMatrix(View);
-		Eigen::Matrix4d PV = Proj * View;
-		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-
-		m_Radius = static_cast<int>(m_Radius);
-		double RadiusOnWindow = m_Radius * Camera.window_size[1] / m_pVisualizer->m_WindowSize.y();
-		Eigen::Vector2d CircleCenterOnWindow = { m_PosX, m_PosY };
-
-		std::vector<pcl::index_t> PickedIndices;
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(true);
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(m_PosX - m_Radius, m_PosY - m_Radius, m_PosX + m_Radius, m_PosY + m_Radius, PickedIndices);
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
-
-		if (PickedIndices.empty())
-			return;
-
-		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
-		{
-			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
-
-			if ((PosOnWindow - CircleCenterOnWindow).norm() <= RadiusOnWindow)
-				return -1;
-			else
-				return 1;
-		};
-
-		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
-
-		PointCloudRetouch::hiveEraseMark(PickedIndices);
-
-		{
-			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-			m_pVisualizer->refresh(PointLabel);
-		}
-	}*/
+	static bool Scroll;
+	if (m_pVisualizationConfig->getAttribute<bool>(AUTO_LOD).value() && ((Button == pcl::visualization::MouseEvent::LeftButton && vEvent.getType() == pcl::visualization::MouseEvent::MouseButtonRelease) || (Scroll && vEvent.getType() == pcl::visualization::MouseEvent::MouseMove)))
+		m_pVisualizer->__autoLod();
+	Scroll = ScrollStatus;
 
 	if (m_pVisualizationConfig->getAttribute<bool>(CIRCLE_MODE).value() && Button == pcl::visualization::MouseEvent::RightButton && PressStatus)
 	{
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
 		m_pVisualizer->m_pPCLVisualizer->updateCamera();
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(true);
-
-		//reset
-		m_pVisualizer->m_MainColors.clear();
-		m_pVisualizer->removeAllUserColoredPoints();
 
 		m_Radius = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value();
 		m_Hardness = m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_HARDNESS).value();
 		m_UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE).value();
 		m_IsRefreshImmediately = m_pVisualizationConfig->getAttribute<bool>(REFRESH_IMMEDIATELY).value();
 
-		pcl::visualization::Camera Camera;
-		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-		Eigen::Matrix4d Proj, View;
-		Camera.computeProjectionMatrix(Proj);
-		Camera.computeViewMatrix(View);
-		Eigen::Matrix4d PV = Proj * View;
-		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-
 		m_Radius = static_cast<int>(m_Radius);
-		double RadiusOnWindow = m_Radius * Camera.window_size[1] / m_pVisualizer->m_WindowSize.y();
+		double RadiusOnWindow = m_Radius * m_Camera.window_size[1] / m_pVisualizer->m_WindowSize.y();
 		Eigen::Vector2d CircleCenterOnWindow = { m_PosX, m_PosY };
 
 		std::vector<pcl::index_t> PickedIndices;
@@ -274,27 +198,15 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->singlePick(m_PosX, m_PosY, PickWorldPos.x(), PickWorldPos.y(), PickWorldPos.z());
 		int WhichTile = 0;
 		for (; WhichTile < m_pVisualizer->m_TileBoxSet.size(); WhichTile++)
-		{
-			auto& Box = m_pVisualizer->m_TileBoxSet[WhichTile];
-			bool Flag = true;
-			for (int i = 0; i < 3 && Flag; i++)
-			{
-				if (PickWorldPos.data()[i] < Box.first.data()[i])
-					Flag = false;
-				if (PickWorldPos.data()[i] > Box.second.data()[i])
-					Flag = false;
-			}
-			if (Flag)
+			if (isInAABB(PickWorldPos, m_pVisualizer->m_TileBoxSet[WhichTile]))
 				break;
-		}
-
-		if (WhichTile < m_pVisualizer->m_TileSet.size())
-			for (auto& Index : PickedIndices)
-				Index += m_pVisualizer->m_OffsetSet[WhichTile];
+		_ASSERTE(WhichTile < m_pVisualizer->m_TileSet.size());
+		for (auto& Index : PickedIndices)
+			Index += m_pVisualizer->m_OffsetSet[WhichTile];
 
 		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
-			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * m_Camera.window_size[0] / 2, (vPos.y() + 1) * m_Camera.window_size[1] / 2);
 
 			if ((PosOnWindow - CircleCenterOnWindow).norm() <= RadiusOnWindow)
 				return -1;
@@ -302,12 +214,12 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				return 1;
 		};
 
-		//PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
-		//m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
+		PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
+		m_pVisualizer->addUserColoredPoints(PickedIndices, { 255, 255, 255 });
 
 		auto HardnessFunc = [=](const Eigen::Vector2d& vPos) -> double
 		{
-			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * Camera.window_size[0] / 2, (vPos.y() + 1) * Camera.window_size[1] / 2);
+			Eigen::Vector2d PosOnWindow((vPos.x() + 1) * m_Camera.window_size[0] / 2, (vPos.y() + 1) * m_Camera.window_size[1] / 2);
 
 			double X = (PosOnWindow - CircleCenterOnWindow).norm() / RadiusOnWindow;
 			if (X <= 1.0)
@@ -329,50 +241,22 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		else
 			PointCloudRetouch::hiveMarkBackground(PickedIndices, PV, HardnessFunc);
 
-		//show points
-		std::vector<pcl::index_t> NearestPoints;
-		if (m_IsEnableColorInfos && PointCloudRetouch::hiveDumpColorFeatureNearestPoints(NearestPoints))
-		{
-			for (auto Index : NearestPoints)
-			{
-				int WhichTile = 0;
-				while (WhichTile + 1 < m_pVisualizer->m_TileSet.size() && m_pVisualizer->m_OffsetSet[WhichTile + 1] <= Index)
-					WhichTile++;
-
-				auto& Point = m_pVisualizer->m_TileSet[WhichTile]->points[Index - m_pVisualizer->m_OffsetSet[WhichTile]];
-				Eigen::Vector3f CameraPos2Point = { float(Camera.pos[0] - Point.x), float(Camera.pos[1] - Point.y), float(Camera.pos[2] - Point.z) };
-				Eigen::Vector3i Color{ Point.r, Point.g, Point.b };
-				m_pVisualizer->addUserColoredPointsAsNewCloud({ Index }, Color, 0.01f * CameraPos2Point, 30.0);
-			}
-		}
-
 		if (m_IsRefreshImmediately)
 		{
 			std::vector<std::size_t> PointLabel;
 			PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
 			m_pVisualizer->refresh(WhichTile, PointLabel);
 		}
-
-		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->setLineMode(false);
 	}
 
 	else if (m_pVisualizationConfig->getAttribute<bool>(AREA_MODE).value())
 	{
 		m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
 
-		pcl::visualization::Camera Camera;
-		m_pVisualizer->m_pPCLVisualizer->getCameraParameters(Camera);
-		Eigen::Matrix4d Proj, View;
-		Camera.computeProjectionMatrix(Proj);
-		Camera.computeViewMatrix(View);
-		Eigen::Matrix4d PV = Proj * View;
-		Eigen::Vector3d ViewPos = { Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-
 		m_UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE).value();
 
 		static bool isPicking = false;
 		static Eigen::Vector2i LeftUp;
-
 		if (isPicking && Button == pcl::visualization::MouseEvent::RightButton && !PressStatus)
 		{
 			isPicking = false;
@@ -391,23 +275,11 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 				m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->singlePick(m_PosX, m_PosY, PickWorldPos.x(), PickWorldPos.y(), PickWorldPos.z());
 				int WhichTile = 0;
 				for (; WhichTile < m_pVisualizer->m_TileBoxSet.size(); WhichTile++)
-				{
-					auto& Box = m_pVisualizer->m_TileBoxSet[WhichTile];
-					bool Flag = true;
-					for (int i = 0; i < 3 && Flag; i++)
-					{
-						if (PickWorldPos.data()[i] < Box.first.data()[i])
-							Flag = false;
-						if (PickWorldPos.data()[i] > Box.second.data()[i])
-							Flag = false;
-					}
-					if (Flag)
+					if (isInAABB(PickWorldPos, m_pVisualizer->m_TileBoxSet[WhichTile]))
 						break;
-				}
-
-				if (WhichTile < m_pVisualizer->m_TileSet.size())
-					for (auto& Index : PickedIndices)
-						Index += m_pVisualizer->m_OffsetSet[WhichTile];
+				_ASSERTE(WhichTile < m_pVisualizer->m_TileSet.size());
+				for (auto& Index : PickedIndices)
+					Index += m_pVisualizer->m_OffsetSet[WhichTile];
 
 				PointCloudRetouch::hiveTagLabel(PickedIndices, m_UnwantedMode);
 				std::vector<std::size_t> PointLabel;
@@ -420,14 +292,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 					PointCloudRetouch::hiveRepairHoleSetRepairRegion(PickedIndices);
 				else
 					PointCloudRetouch::hiveRepairHoleSetReferenceRegion(PickedIndices);
-
-				{
-					std::vector<std::size_t> PointLabel;
-					PointCloudRetouch::hiveDumpPointLabel(PointLabel);
-					m_pVisualizer->refresh(PointLabel);
-				}
 			}
-
 		}
 		if (Button == pcl::visualization::MouseEvent::RightButton && PressStatus)
 		{
@@ -441,7 +306,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 			auto fromWindow2World = [&](const Eigen::Vector2i& vCoord) -> pcl::PointXYZ
 			{
-				Eigen::Vector4d PixelPosition = { vCoord.x() / Camera.window_size[0] * 2 - 1, vCoord.y() / Camera.window_size[1] * 2 - 1, -0.8f, 1.0f };
+				Eigen::Vector4d PixelPosition = { vCoord.x() / m_Camera.window_size[0] * 2 - 1, vCoord.y() / m_Camera.window_size[1] * 2 - 1, -0.8f, 1.0f };
 				PixelPosition = (Proj * View).inverse() * PixelPosition;
 				PixelPosition /= PixelPosition.w();
 
@@ -457,11 +322,7 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			LineEndPoints.push_back(fromWindow2World({ m_PosX, m_PosY }));
 			LineEndPoints.push_back(fromWindow2World({ LeftUp.x(), m_PosY }));
 
-			Eigen::Vector3i SquareColor;
-			if (m_UnwantedMode)
-				SquareColor = { std::get<0>(m_pVisualizer->m_LitterColor), std::get<1>(m_pVisualizer->m_LitterColor), std::get<2>(m_pVisualizer->m_LitterColor) };
-			else
-				SquareColor = { std::get<0>(m_pVisualizer->m_BackgroundColor), std::get<1>(m_pVisualizer->m_BackgroundColor), std::get<2>(m_pVisualizer->m_BackgroundColor) };
+			Eigen::Vector3i SquareColor = m_UnwantedMode ? m_pVisualizer->m_LitterColor : m_pVisualizer->m_BackgroundColor;
 			for (int i = 0; i < LineEndPoints.size(); i++)
 			{
 				auto& LineStartPoint = LineEndPoints[i];
@@ -516,7 +377,6 @@ void CInteractionCallback::__loadIndices(const std::string& vPath, std::vector<i
 void CInteractionCallback::__drawHintCircle()
 {
 	m_pVisualizer->m_pPCLVisualizer->removeAllShapes();
-
 	m_UnwantedMode = m_pVisualizationConfig->getAttribute<bool>(UNWANTED_MODE).value();
 
 	pcl::visualization::Camera Camera;
@@ -526,50 +386,11 @@ void CInteractionCallback::__drawHintCircle()
 	Camera.computeViewMatrix(View);
 	Eigen::Matrix4d PVInverse = (Proj * View).inverse();
 
-	//colors
-	PointCloudRetouch::hiveDumpColorFeatureMainColors(m_pVisualizer->m_MainColors);
-
-	if (m_IsEnableColorInfos && m_pVisualizer->m_MainColors.size())
-	{
-		float CircleY = 0.7, DistanceX = 0.2;
-		std::vector<Eigen::Vector2f> CirclesNDCPos;
-
-		float DeltaX = float(m_pVisualizer->m_MainColors.size() - 1) * 0.5f;
-
-		for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
-			CirclesNDCPos.push_back({ (i - DeltaX) * DistanceX, CircleY });
-
-		for (int i = 0; i < m_pVisualizer->m_MainColors.size(); i++)
-		{
-			Eigen::Vector4d PixelPosition = { CirclesNDCPos[i].x(), CirclesNDCPos[i].y(), -0.5f, 1.0f };
-
-			PixelPosition = PVInverse * PixelPosition;
-			PixelPosition /= PixelPosition.w();
-
-			pcl::PointXYZ Circle;
-
-			Circle.x = PixelPosition.x();
-			Circle.y = PixelPosition.y();
-			Circle.z = PixelPosition.z();
-
-			Eigen::Vector3d CameraPos{ Camera.pos[0], Camera.pos[1], Camera.pos[2] };
-			Eigen::Vector3d PixelPos{ PixelPosition.x(), PixelPosition.y(), PixelPosition.z() };
-
-			auto Length = (CameraPos - PixelPos).norm();
-
-			std::string CircleName = "Circle" + std::to_string(i);
-			if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
-				m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.3 / m_pVisualizer->m_WindowSize.y() * Length * 40.0, float(m_pVisualizer->m_MainColors[i].x()) / 255, float(m_pVisualizer->m_MainColors[i].y()) / 255, float(m_pVisualizer->m_MainColors[i].z()) / 255, CircleName);
-		}
-	}
-
 	Eigen::Vector4d PixelPosition = { m_PosX / Camera.window_size[0] * 2 - 1, m_PosY / Camera.window_size[1] * 2 - 1, 0.0f, 1.0f };
-
 	PixelPosition = PVInverse * PixelPosition;
 	PixelPosition /= PixelPosition.w();
 
 	pcl::PointXYZ Circle;
-
 	Circle.x = PixelPosition.x();
 	Circle.y = PixelPosition.y();
 	Circle.z = PixelPosition.z();
@@ -581,11 +402,7 @@ void CInteractionCallback::__drawHintCircle()
 
 	if (!m_MousePressStatus[0] && !m_MousePressStatus[2])
 	{
-		Eigen::Vector3i CircleColor;
-		if (m_UnwantedMode)
-			CircleColor = { std::get<0>(m_pVisualizer->m_LitterColor), std::get<1>(m_pVisualizer->m_LitterColor), std::get<2>(m_pVisualizer->m_LitterColor) };
-		else
-			CircleColor = { std::get<0>(m_pVisualizer->m_BackgroundColor), std::get<1>(m_pVisualizer->m_BackgroundColor), std::get<2>(m_pVisualizer->m_BackgroundColor) };
+		Eigen::Vector3i CircleColor = m_UnwantedMode ? m_pVisualizer->m_LitterColor : m_pVisualizer->m_BackgroundColor;
 
 		m_pVisualizer->m_pPCLVisualizer->addSphere<pcl::PointXYZ>(Circle, 0.5555 / m_pVisualizer->m_WindowSize.y() * Length * m_pVisualizationConfig->getAttribute<double>(SCREEN_CIRCLE_RADIUS).value(), CircleColor.x(), CircleColor.y(), CircleColor.z(), "Circle");
 		m_pVisualizer->m_pPCLVisualizer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "Circle");

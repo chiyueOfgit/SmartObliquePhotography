@@ -46,7 +46,7 @@ Eigen::Vector4f CPointCloudScene::getNormalAt(pcl::index_t vIndex) const
 //FUNCTION: 
 Eigen::Vector3i CPointCloudScene::getColorAt(pcl::index_t vIndex) const
 {
-	return __extractRgba(__getPoint(vIndex).rgb);
+	return __extractColor(__getPoint(vIndex).rgb);
 }
 
 //*****************************************************************
@@ -61,10 +61,7 @@ std::size_t CPointCloudScene::getTileIndexByPoint(pcl::index_t vIndex) const
 
 inline PointCloud_t::PointType CPointCloudScene::__getPoint(pcl::index_t vIndex) const
 {
-	std::size_t WhichTile = 0;
-	while (WhichTile + 1 < m_TileSet.size() && m_TileSet[WhichTile + 1].first <= vIndex)
-		WhichTile++;
-
+	auto WhichTile = getTileIndexByPoint(vIndex);
 	return m_TileSet[WhichTile].second->points[vIndex - m_TileSet[WhichTile].first];
 }
 
@@ -118,8 +115,8 @@ std::vector<pcl::index_t> CPointCloudScene::getPointsInBox(const std::pair<Eigen
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector3i CPointCloudScene::__extractRgba(float vRgba) const
-{//FIXME-010: 函数名说要提取rgb，但返回的是rgb，故意的吗？
+Eigen::Vector3i CPointCloudScene::__extractColor(float vData) const
+{
 	union ColorLayout
 	{
 		struct
@@ -129,15 +126,10 @@ Eigen::Vector3i CPointCloudScene::__extractRgba(float vRgba) const
 			std::uint8_t r;
 			std::uint8_t a;
 		};
-		float rgb;
+		float data;
 	};
 	ColorLayout Color;  
-	Color.rgb = vRgba;    //FIXME-010：这种颜色的转化方法很奇怪，给个说明文档
+	Color.data = vData;    //pcl内部32位rgba强制表示为无意义的float
 
-	Eigen::Vector3i Rgb;
-	Rgb.x() = Color.r;
-	Rgb.y() = Color.g;
-	Rgb.z() = Color.b;
-
-	return Rgb;
+	return { Color.r, Color.g, Color.b };
 }

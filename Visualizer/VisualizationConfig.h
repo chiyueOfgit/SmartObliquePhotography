@@ -25,9 +25,9 @@ namespace hiveObliquePhotography
 		const std::string AREA_MODE = "AREA_MODE";
 		const std::string REPAIR_MODE = "REPAIR_MODE";
 		const std::string AREA_PICK_CULLING = "AREA_PICK_CULLING";
-		const std::string RUBBER_MODE = "RUBBER_MODE";
 		const std::string UNWANTED_MODE = "UNWANTED_MODE";
 		const std::string REFRESH_IMMEDIATELY = "REFRESH_IMMEDIATELY";
+		const std::string AUTO_LOD = "AUTO_LOD";
 
 		const std::string LITTER_HIGHLIGHT_COLOR = "LITTER_HIGHLIGHT_COLOR";
 		const std::string BACKGROUND_HIGHLIGHT_COLOR = "BACKGROUND_HIGHLIGHT_COLOR";
@@ -72,9 +72,9 @@ namespace hiveObliquePhotography
 				_defineAttribute(AREA_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(REPAIR_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(AREA_PICK_CULLING, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
-				_defineAttribute(RUBBER_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(UNWANTED_MODE, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				_defineAttribute(REFRESH_IMMEDIATELY, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
+				_defineAttribute(AUTO_LOD, hiveConfig::EConfigDataType::ATTRIBUTE_BOOL);
 				
 				_defineAttribute(SCREEN_CIRCLE_RADIUS, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);
 				_defineAttribute(SCREEN_CIRCLE_HARDNESS, hiveConfig::EConfigDataType::ATTRIBUTE_DOUBLE);

@@ -57,7 +57,7 @@ namespace hiveObliquePhotography
 
 		private:
 			inline PointCloud_t::PointType __getPoint(pcl::index_t vIndex) const;
-			Eigen::Vector3i __extractRgba(float vRgba) const;
+			Eigen::Vector3i __extractColor(float vRgba) const;
 
 			std::vector<std::pair<int, PointCloud_t::Ptr>> m_TileSet;
 			std::size_t m_NumPoints = 0;

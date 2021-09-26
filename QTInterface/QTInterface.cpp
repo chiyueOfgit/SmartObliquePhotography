@@ -451,7 +451,6 @@ void CQTInterface::onActionStartRepairHole()
             m_UI.actionOutlierDetection->setEnabled(false);
             m_UI.actionRepairHole->setEnabled(true);
 
-            m_pVisualizationConfig->overwriteAttribute(Visualization::RUBBER_MODE, false);
             m_pVisualizationConfig->overwriteAttribute(Visualization::AREA_MODE, false);
             m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, false);
             m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, true);

@@ -66,8 +66,7 @@ void hiveObliquePhotography::Visualization::hiveCancelAllHighlighting()
 
 void hiveObliquePhotography::Visualization::hiveRemoveAllShapes()
 {
-	CPointCloudVisualizer::getInstance()->m_MainColors.clear();
-	CPointCloudVisualizer::getInstance()->m_pPCLVisualizer->removeAllShapes();
+	hiveGetPCLVisualizer()->removeAllShapes();
 }
 
 void hiveObliquePhotography::Visualization::hiveAddTextureMesh(const pcl::TextureMesh& vMesh)
