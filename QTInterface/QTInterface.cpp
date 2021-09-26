@@ -557,7 +557,7 @@ void CQTInterface::onActionReconstruction()
 
 void CQTInterface::onActionOpenMesh()
 {
-    auto MeshPath = QFileDialog::getOpenFileName(this, tr("Open Mesh"), QString::fromStdString(m_DirectoryOpenPath), tr("OBJ files(*.obj)")).toStdString();
+    auto MeshPath = QFileDialog::getOpenFileName(this, tr("Open Mesh"), QString::fromStdString("../UnitTests/Unit_Test_026"), tr("OBJ files(*.obj)")).toStdString();
 
     // load mesh
     if (MeshPath != "" && hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
