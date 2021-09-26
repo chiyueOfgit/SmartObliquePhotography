@@ -269,7 +269,7 @@ void CArapParameterization::__findValidBoundary(std::set<int>& vBoundarySet, std
 {
 	int Sum = 0;
 	auto Aabb = m_Mesh.calcAABB();
-	auto Offset = (Aabb.second - Aabb.first) / 20.0;
+	auto Offset = (Aabb.second - Aabb.first) / 100.0;
 
 	std::pair<int, int> XYAxis;
 	int HeightAxis;
