@@ -21,10 +21,14 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 Eigen::MatrixXd CArapParameterization::execute()
 {
 	buildHalfEdge();
-	auto BoundaryStatus = findBoundaryPoint();
+	auto BoundarySet = findBoundaryPoint();
+	std::vector<bool> BoundaryStatus(m_Mesh.m_Vertices.size(), false);
+	for (auto& Index : BoundarySet)
+		BoundaryStatus[Index] = true;
+	
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
-	//auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV);
-	return InitialUV;
+	auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV, BoundarySet);
+	return UV;
 }
 
 //*****************************************************************
@@ -76,11 +80,11 @@ void CArapParameterization::buildHalfEdge()
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<bool> CArapParameterization::findBoundaryPoint()
+std::vector<int> CArapParameterization::findBoundaryPoint()
 {
 	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
 	std::set<int> BoundarySet;
-	std::set<int> ValidSet;
+	std::vector<int> ValidSet;
 	for(auto& HalfEdge : m_HalfEdgeTable)
 	{
 		if(HalfEdge._Conj < 0)
@@ -90,15 +94,13 @@ std::vector<bool> CArapParameterization::findBoundaryPoint()
 		}
 	}
 	__findValidBoundary(BoundarySet, ValidSet);
-	for (auto Index : ValidSet)
-		OutPutSet[Index] = true;
-	
-	std::ofstream file("BoundaryPoints.txt");
+
+	/*std::ofstream file("BoundaryPoints.txt");
 	boost::archive::text_oarchive oa(file);
 	oa& BOOST_SERIALIZATION_NVP(ValidSet);
-	file.close();
+	file.close();*/
 
-	return OutPutSet;
+	return ValidSet;
 }
 
 //*****************************************************************
@@ -274,23 +276,30 @@ int CArapParameterization::__findTwinRef(int vStartIndex, int vEndIndex)
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, const Eigen::MatrixXd& vInitialUV)
+Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, const Eigen::MatrixXd& vInitialUV, const std::vector<int>& vBoundarySet)
 {
-	igl::ARAPData arap_data;
-	arap_data.with_dynamics = true;
-	Eigen::VectorXi Boundary = Eigen::VectorXi::Zero(0);
-	Eigen::MatrixXd BoundaryCoord = Eigen::MatrixXd::Zero(0, 0);
-	arap_data.max_iter = 100;
 
+	igl::ARAPData arap_data;
+	arap_data.with_dynamics = false;
+	int Size = vBoundarySet.size();
+	Eigen::VectorXi Boundary(Size);
+	Eigen::MatrixXd BoundaryCoord(Size, 2);
+	arap_data.max_iter = 100;
+	for (int i = 0; i < Size; i++)
+	{
+		Boundary[i] = vBoundarySet[i];
+		BoundaryCoord.row(i) = vInitialUV.row(vBoundarySet[i]);
+	}
 	// 2 means 2d
 	igl::arap_precomputation(vVertexPos, vFaces, 2, Boundary, arap_data);
 	auto UV = vInitialUV;
 	igl::arap_solve(BoundaryCoord, arap_data, UV);
-	
+
+	__normalizeUV(UV);
 	return UV;
 }
 
-void CArapParameterization::__findValidBoundary(std::set<int>& vBoundarySet, std::set<int>& voValidBoundary)
+void CArapParameterization::__findValidBoundary(std::set<int>& vBoundarySet, std::vector<int>& voValidBoundary)
 {
 	int Sum = 0;
 	auto Aabb = m_Mesh.calcAABB();
@@ -308,6 +317,34 @@ void CArapParameterization::__findValidBoundary(std::set<int>& vBoundarySet, std
 		if (MinX > Offset.x() && MinY > Offset.y())
 			Sum++;
 		else
-			voValidBoundary.insert(Boundary);
+			voValidBoundary.push_back(Boundary);
+	}
+}
+
+void CArapParameterization::__normalizeUV(Eigen::MatrixXd& vioUVMatrix)
+{
+	Eigen::Vector2d MinUV{ DBL_MAX, DBL_MAX };
+	Eigen::Vector2d MaxUV{ -DBL_MAX, -DBL_MAX };
+	auto update = [&](const Eigen::Vector2d& vUV)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			if (vUV.data()[i] < MinUV.data()[i])
+				MinUV.data()[i] = vUV.data()[i];
+			if (vUV.data()[i] > MaxUV.data()[i])
+				MaxUV.data()[i] = vUV.data()[i];
+		}
+	};
+	for (int VertexId = 0; VertexId < vioUVMatrix.rows(); VertexId++)
+		update(vioUVMatrix.row(VertexId));
+
+	auto WidthU = MaxUV[0] - MinUV[0];
+	auto HeightV = MaxUV[1] - MinUV[1];
+
+	for (int VertexId = 0; VertexId < vioUVMatrix.rows(); VertexId++)
+	{
+		float U = (vioUVMatrix.row(VertexId).data()[0] - MinUV[0]) / WidthU;
+		float V = (vioUVMatrix.row(VertexId).data()[1] - MinUV[1]) / HeightV;
+		vioUVMatrix.row(VertexId) = Eigen::Vector2d(U, V);
 	}
 }
