@@ -166,7 +166,7 @@ protected:
 
 	CArapParameterizer* _createProduct(const hiveObliquePhotography::CMesh& vMesh)
 	{
-		auto pParameterization =  hiveDesignPattern::hiveCreateProduct<IMeshParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
+		auto pParameterization =  hiveDesignPattern::hiveCreateProduct<IMeshParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("Parameterization"), vMesh);
 		EXPECT_NE(pParameterization, nullptr);
 		if (!pParameterization)
 			std::cerr << "create baker error." << std::endl;

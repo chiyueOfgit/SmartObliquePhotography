@@ -19,9 +19,12 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 	m_pCloud = vPointCloud;
 	__buildKdTree(m_pCloud);
 
-	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(vResolution.y(), vResolution.x());
+	auto Res = m_pConfig->getAttribute<std::tuple<int, int>>(KEYWORD::RESOLUTION).value();
+	Eigen::Vector2i Resolution = { std::get<0>(Res), std::get<1>(Res) };
+
+	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(Resolution.y(), Resolution.x());
 	for (const auto& Face : m_Mesh.m_Faces)
-		for (const auto& PerTexel : findSamplesPerFace(Face, vResolution))
+		for (const auto& PerTexel : findSamplesPerFace(Face, Resolution))
 		{
 			std::vector<std::array<int, 3>> TexelColorSet;
 			TexelColorSet.reserve(PerTexel.RaySet.size());
@@ -34,7 +37,7 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 		}
 	
 	CImage<std::array<int, 3>> ResultTexture;
-	ResultTexture.fillColor(vResolution.y(), vResolution.x(), Texture.data());
+	ResultTexture.fillColor(Resolution.y(), Resolution.x(), Texture.data());
 	return ResultTexture;
 }
 

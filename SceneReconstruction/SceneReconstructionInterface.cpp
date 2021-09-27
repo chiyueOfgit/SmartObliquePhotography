@@ -40,7 +40,7 @@ pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(cons
 void hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vMesh, const std::string& vPath)
 {
 	_ASSERTE(!vMesh.m_Vertices.empty());
-	auto pParameterizater = hiveDesignPattern::hiveCreateProduct<CArapParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
+	auto pParameterizater = hiveDesignPattern::hiveCreateProduct<CArapParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("Parameterization"), vMesh);
 	_ASSERTE(pParameterizater);
 
 	pParameterizater->setPath4Boundary(vPath);
