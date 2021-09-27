@@ -582,8 +582,6 @@ void CQTInterface::onActionParameterization()
         hiveSaveMeshModel(m_MeshSet.begin()->second, MeshPath);
         __messageDockWidgetOutputText(QString::fromStdString("Mesh parameterization succeed."));
     }
-
-
 }
 
 void CQTInterface::onActionBakeTexture()
@@ -595,7 +593,7 @@ void CQTInterface::onActionBakeTexture()
         PointCloud_t::Ptr pResult(new PointCloud_t);
         for (auto pCloud : m_TileSet)
             *pResult += *pCloud;
-        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.begin()->second, pResult, { 512, 512 });
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.begin()->second, pResult, { 2048, 2048 });
         
         {
             const auto Width = Texture.getWidth();
