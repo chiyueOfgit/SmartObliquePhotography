@@ -134,7 +134,7 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 {
 	auto NumVertices = m_Mesh.m_Vertices.size();
 	Eigen::SparseMatrix<double, Eigen::ColMajor> TutteMatrix(NumVertices, NumVertices);
-	TutteMatrix.reserve(Eigen::VectorXd::Zero(NumVertices));
+	TutteMatrix.reserve(Eigen::VectorXd::Zero(NumVertices * 3));
 
 	auto Uniform = []()
 	{

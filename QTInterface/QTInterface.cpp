@@ -564,16 +564,20 @@ void CQTInterface::onActionOpenMesh()
     if (MeshPath != "" && hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
     {
         m_MeshSet[MeshPath] = SceneReconstruction::hiveTestCMesh(MeshPath);
-        Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
-        Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
+        //Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+        //Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
         __messageDockWidgetOutputText(QString::fromStdString("Open mesh succeed."));
     }
 }
 
 void CQTInterface::onActionParameterization()
 {
-    auto PresetPath = m_MeshSet.begin()->first;
-    PresetPath = PresetPath.substr(0, PresetPath.find_last_of("/"));
+    std::string PresetPath(".");
+    if (!m_MeshSet.empty())
+    {
+        PresetPath = m_MeshSet.begin()->first;
+        PresetPath = PresetPath.substr(0, PresetPath.find_last_of("/"));
+    }
     auto MeshPath = QFileDialog::getSaveFileName(this, tr("Save Mesh"), PresetPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
 
     if (!m_MeshSet.empty() && MeshPath != "")
