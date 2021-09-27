@@ -38,6 +38,8 @@ namespace hiveObliquePhotography
 
 				_defineAttribute(KEYWORD::TEXTURE, hiveConfig::EConfigDataType::ATTRIBUTE_SUBCONFIG);
 				_defineAttribute(KEYWORD::RESOLUTION, hiveConfig::EConfigDataType::ATTRIBUTE_VEC2I);
+				_defineAttribute(KEYWORD::SURFEL_RADIUS, hiveConfig::EConfigDataType::ATTRIBUTE_FLOAT);
+				_defineAttribute(KEYWORD::NUM_SAMPLE, hiveConfig::EConfigDataType::ATTRIBUTE_INT);
 			}
 
 			void __parseSubConfig()

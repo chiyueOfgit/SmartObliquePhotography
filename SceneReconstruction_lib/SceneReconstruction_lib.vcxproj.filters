@@ -36,11 +36,11 @@
     <ClCompile Include="..\SceneReconstruction\TextureBaker.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\SceneReconstruction\ArapParameterization.cpp">
-      <Filter>头文件</Filter>
+    <ClCompile Include="..\SceneReconstruction\ArapParameterizer.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\SceneReconstruction\MeshParameterization.cpp">
-      <Filter>头文件</Filter>
+    <ClCompile Include="..\SceneReconstruction\MeshParameterizer.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,10 +74,10 @@
     <ClInclude Include="..\SceneReconstruction\TextureBaker.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\SceneReconstruction\ArapParameterization.h">
+    <ClInclude Include="..\SceneReconstruction\ArapParameterizer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\SceneReconstruction\MeshParameterization.h">
+    <ClInclude Include="..\SceneReconstruction\MeshParameterizer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -50,6 +50,9 @@ namespace hiveObliquePhotography
 			PointCloud_t::Ptr m_pCloud = nullptr;
 
 			std::pair<flann::Index<flann::L2<float>>*, Eigen::Matrix<float, -1, -1, Eigen::RowMajor>> m_KdTree;
+
+			float m_SurfelRadius = 1.0f;
+			int m_NumSample = 4;
 		};
 	}
 }

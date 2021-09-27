@@ -7,10 +7,8 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 //TODO: magic number
-constexpr float SurfelRadius = 2.0f;
-constexpr float SearchRadius = 5.0f;
+constexpr float SearchRadius = 2.0f;
 constexpr float DistanceThreshold = 0.2f;
-constexpr int SampleNumber = 8;
 
 //*****************************************************************
 //FUNCTION: 
@@ -18,6 +16,9 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 {
 	m_pCloud = vPointCloud;
 	__buildKdTree(m_pCloud);
+
+	m_SurfelRadius = m_pConfig->getAttribute<float>(KEYWORD::SURFEL_RADIUS).value();
+	m_NumSample = m_pConfig->getAttribute<int>(KEYWORD::NUM_SAMPLE).value();
 
 	auto Res = m_pConfig->getAttribute<std::tuple<int, int>>(KEYWORD::RESOLUTION).value();
 	Eigen::Vector2i Resolution = { std::get<0>(Res), std::get<1>(Res) };
@@ -56,16 +57,16 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 			if (i >= 0 && i < vResolution.x() && k >= 0 && k < vResolution.y())
 			{
 				std::vector<Eigen::Vector2f> SampleSet;
-				SampleSet.reserve(SampleNumber);
+				SampleSet.reserve(m_NumSample);
 				SampleSet.emplace_back((i + 0.5f) / vResolution.x(), (k + 0.5f) / vResolution.y());
 
-				auto USampleSet = hiveMath::hiveGenerateRandomRealSet((i + 0.0f) / vResolution.x(), (i + 1.0f) / vResolution.x(), SampleNumber - 1);
-				auto VSampleSet = hiveMath::hiveGenerateRandomRealSet((k + 0.0f) / vResolution.y(), (k + 1.0f) / vResolution.y(), SampleNumber - 1);
-				for (int m = 0; m < SampleNumber - 1; ++m)
+				auto USampleSet = hiveMath::hiveGenerateRandomRealSet((i + 0.0f) / vResolution.x(), (i + 1.0f) / vResolution.x(), m_NumSample - 1);
+				auto VSampleSet = hiveMath::hiveGenerateRandomRealSet((k + 0.0f) / vResolution.y(), (k + 1.0f) / vResolution.y(), m_NumSample - 1);
+				for (int m = 0; m < m_NumSample - 1; ++m)
 					SampleSet.emplace_back(USampleSet[m], VSampleSet[m]);
 
 				std::vector<SRay> RaySet;
-				RaySet.reserve(SampleNumber);
+				RaySet.reserve(m_NumSample);
 				for (const auto& Sample : SampleSet)
 				{
 					auto BarycentricCoord = __calcBarycentricCoord(VertexA.uv(), VertexB.uv(), VertexC.uv(), Sample);
@@ -102,7 +103,7 @@ std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const SRay& vR
 		//float DistanceToTexel = (HitPos - RayOrigin).norm();
 
 		//¹Ì¶¨°ë¾¶
-		if (DistanceToCenter <= SurfelRadius)
+		if (DistanceToCenter <= m_SurfelRadius)
 			Candidates.emplace_back(HitPos, Index);
 	}
 
@@ -133,7 +134,7 @@ std::array<int, 3> CRayCastingBaker::calcTexelColor(const std::vector<SCandidate
 		if ((Intersection - Min).dot(Intersection - Max) <= 0)
 		{
 			auto& Point = m_pCloud->points[SurfelIndex];
-			float Distance = (Intersection - Point.getVector3fMap()).norm() / SurfelRadius;
+			float Distance = (Intersection - Point.getVector3fMap()).norm() / m_SurfelRadius;
 			float Weight = std::exp(-Distance * Distance * 20); //TODO: magic number
 
 			CulledCandidates.emplace_back(Point.getRGBVector3i(), Weight);
