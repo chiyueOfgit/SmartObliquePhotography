@@ -14,6 +14,7 @@ namespace hiveObliquePhotography
 			virtual void constructSurface(CMesh& voMesh) override;
 			
 		private:
+			std::vector<Eigen::Vector3f> __calcVertexNormal(const CMesh& vMesh);
 		};
 	}
 }

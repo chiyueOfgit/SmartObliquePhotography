@@ -37,19 +37,19 @@ pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(cons
 
 //*****************************************************************
 //FUNCTION: 
-void hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vMesh, const std::string& vPath)
+void hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vioMesh, const std::string& vPath)
 {
-	_ASSERTE(!vMesh.m_Vertices.empty());
-	auto pParameterizater = hiveDesignPattern::hiveCreateProduct<CArapParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("Parameterization"), vMesh);
+	_ASSERTE(!vioMesh.m_Vertices.empty());
+	auto pParameterizater = hiveDesignPattern::hiveCreateProduct<CArapParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("Parameterization"), vioMesh);
 	_ASSERTE(pParameterizater);
 
 	pParameterizater->setPath4Boundary(vPath);
 	auto UV = pParameterizater->execute();
-	_ASSERTE(UV.rows() == vMesh.m_Vertices.size());
+	_ASSERTE(UV.rows() == vioMesh.m_Vertices.size());
 	for (int i = 0; i < UV.rows(); i++)
 	{
-		vMesh.m_Vertices[i].u = UV.row(i).x();
-		vMesh.m_Vertices[i].v = UV.row(i).y();
+		vioMesh.m_Vertices[i].u = UV.row(i).x();
+		vioMesh.m_Vertices[i].v = UV.row(i).y();
 	}
 }
 
