@@ -1,5 +1,5 @@
 ﻿#include "pch.h"
-#include "ArapParameterization.h"
+#include "ArapParameterizer.h"
 
 #include <igl/arap.h>
 #include <igl/readOBJ.h>
@@ -15,13 +15,13 @@
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
-_REGISTER_NORMAL_PRODUCT(CArapParameterization, KEYWORD::ARAP_MESH_PARAMETERIZATION)
+_REGISTER_NORMAL_PRODUCT(CArapParameterizer, KEYWORD::ARAP_MESH_PARAMETERIZATION)
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::MatrixXd CArapParameterization::execute()
+Eigen::MatrixXd CArapParameterizer::execute()
 {
 	buildHalfEdge();
 	auto BoundarySet = findBoundaryPoint();
@@ -39,7 +39,7 @@ Eigen::MatrixXd CArapParameterization::execute()
 
 //*****************************************************************
 //FUNCTION: 
-void CArapParameterization::buildHalfEdge()
+void CArapParameterizer::buildHalfEdge()
 {
 	m_VertexInfoTable.resize(m_Mesh.m_Vertices.size());
 	m_HalfEdgeTable.clear();
@@ -86,7 +86,7 @@ void CArapParameterization::buildHalfEdge()
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<int> CArapParameterization::findBoundaryPoint()
+std::vector<int> CArapParameterizer::findBoundaryPoint()
 {
 	//std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
 	//std::set<int> BoundarySet;
@@ -117,7 +117,7 @@ std::vector<int> CArapParameterization::findBoundaryPoint()
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::MatrixXd CArapParameterization::calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus)
+Eigen::MatrixXd CArapParameterizer::calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus)
 {
 	auto TutteMatrix = __buildTutteSolveMatrix(m_HalfEdgeTable, vBoundaryStatus);
 	Eigen::VectorXd VectorX, VectorY;
@@ -130,7 +130,7 @@ Eigen::MatrixXd CArapParameterization::calcInitialUV(const CMesh& vMesh, const s
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet, const std::vector<bool>& vBoundaryStatus)
+Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet, const std::vector<bool>& vBoundaryStatus)
 {
 	auto NumVertices = m_Mesh.m_Vertices.size();
 	Eigen::SparseMatrix<double, Eigen::ColMajor> TutteMatrix(NumVertices, NumVertices);
@@ -205,7 +205,7 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterization::__buildTutte
 
 //*****************************************************************
 //FUNCTION: 
-void CArapParameterization::__fillTutteSolveVectors(Eigen::VectorXd& vVectorX, Eigen::VectorXd& vVectorY, const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus)
+void CArapParameterizer::__fillTutteSolveVectors(Eigen::VectorXd& vVectorX, Eigen::VectorXd& vVectorY, const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus)
 {
 	auto NumVertices = vMesh.m_Vertices.size();
 	vVectorX.resize(NumVertices);
@@ -230,7 +230,7 @@ void CArapParameterization::__fillTutteSolveVectors(Eigen::VectorXd& vVectorX, E
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor>& vMatrix, const Eigen::VectorXd& vVector)
+Eigen::VectorXd CArapParameterizer::__solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor>& vMatrix, const Eigen::VectorXd& vVector)
 {
 	auto CompressMatrix = vMatrix;
 	CompressMatrix.makeCompressed();
@@ -251,7 +251,7 @@ Eigen::VectorXd CArapParameterization::__solveSparseMatrix(const Eigen::SparseMa
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::MatrixXd CArapParameterization::__switch2UVMatrix(const CMesh& vMesh, const Eigen::VectorXd& vX, const Eigen::VectorXd& vY)
+Eigen::MatrixXd CArapParameterizer::__switch2UVMatrix(const CMesh& vMesh, const Eigen::VectorXd& vX, const Eigen::VectorXd& vY)
 {
 	_ASSERTE(vX.size() == vMesh.m_Vertices.size() && vX.size() == vY.size());
 	Eigen::MatrixXd UVMatrix(vMesh.m_Vertices.size(), 2);
@@ -277,7 +277,7 @@ Eigen::MatrixXd CArapParameterization::__switch2UVMatrix(const CMesh& vMesh, con
 }
 //*****************************************************************
 //FUNCTION: 
-int CArapParameterization::__findTwinRef(int vStartIndex, int vEndIndex)
+int CArapParameterizer::__findTwinRef(int vStartIndex, int vEndIndex)
 {
 	for(auto EdgeIndex : m_VertexInfoTable[vEndIndex])
 		if (m_HalfEdgeTable[m_HalfEdgeTable[EdgeIndex]._Next]._VertexId == vStartIndex)
@@ -287,7 +287,7 @@ int CArapParameterization::__findTwinRef(int vStartIndex, int vEndIndex)
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, const Eigen::MatrixXd& vInitialUV, const std::vector<int>& vBoundarySet)
+Eigen::MatrixXd CArapParameterizer::__solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, const Eigen::MatrixXd& vInitialUV, const std::vector<int>& vBoundarySet)
 {
 	igl::ARAPData arap_data;
 	arap_data.with_dynamics = false;
@@ -309,7 +309,7 @@ Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVerte
 	return UV;
 }
 
-void CArapParameterization::__findValidBoundary(std::set<int>& vBoundarySet, std::vector<int>& voValidBoundary)
+void CArapParameterizer::__findValidBoundary(std::set<int>& vBoundarySet, std::vector<int>& voValidBoundary)
 {
 	int Sum = 0;
 	auto Aabb = m_Mesh.calcAABB();
@@ -331,7 +331,7 @@ void CArapParameterization::__findValidBoundary(std::set<int>& vBoundarySet, std
 	}
 }
 
-void CArapParameterization::__normalizeUV(Eigen::MatrixXd& vioUVMatrix)
+void CArapParameterizer::__normalizeUV(Eigen::MatrixXd& vioUVMatrix)
 {
 	Eigen::Vector2d MinUV{ DBL_MAX, DBL_MAX };
 	Eigen::Vector2d MaxUV{ -DBL_MAX, -DBL_MAX };

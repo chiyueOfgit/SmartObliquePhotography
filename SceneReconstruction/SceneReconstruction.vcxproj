@@ -152,9 +152,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ArapParameterization.cpp" />
+    <ClCompile Include="ArapParameterizer.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="MeshParameterization.cpp" />
+    <ClCompile Include="MeshParameterizer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -167,9 +167,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ObliquePhotographyData\Image.h" />
-    <ClInclude Include="ArapParameterization.h" />
+    <ClInclude Include="ArapParameterizer.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="MeshParameterization.h" />
+    <ClInclude Include="MeshParameterizer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PoissonSurfaceReconstructor.h" />
     <ClInclude Include="RayCastingBaker.h" />

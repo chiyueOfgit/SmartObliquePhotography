@@ -92,6 +92,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
     QObject::connect(m_UI.actionReconstruction, SIGNAL(triggered()), this, SLOT(onActionReconstruction()));
     QObject::connect(m_UI.actionOpenMesh, SIGNAL(triggered()), this, SLOT(onActionOpenMesh()));
+    QObject::connect(m_UI.actionParameterization, SIGNAL(triggered()), this, SLOT(onActionParameterization()));
     QObject::connect(m_UI.actionBakeTexture, SIGNAL(triggered()), this, SLOT(onActionBakeTexture()));
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
     QObject::connect(m_UI.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
@@ -562,11 +563,27 @@ void CQTInterface::onActionOpenMesh()
     // load mesh
     if (MeshPath != "" && hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
     {
-        m_Mesh = SceneReconstruction::hiveTestCMesh(MeshPath);
+        m_MeshSet[MeshPath] = SceneReconstruction::hiveTestCMesh(MeshPath);
         Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
         Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
         __messageDockWidgetOutputText(QString::fromStdString("Open mesh succeed."));
     }
+}
+
+void CQTInterface::onActionParameterization()
+{
+    auto PresetPath = m_MeshSet.begin()->first;
+    PresetPath = PresetPath.substr(0, PresetPath.find_last_of("/"));
+    auto MeshPath = QFileDialog::getSaveFileName(this, tr("Save Mesh"), PresetPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
+
+    if (!m_MeshSet.empty() && MeshPath != "")
+    {
+        SceneReconstruction::hiveMeshParameterization(m_MeshSet.begin()->second, m_MeshSet.begin()->first);
+        hiveSaveMeshModel(m_MeshSet.begin()->second, MeshPath);
+        __messageDockWidgetOutputText(QString::fromStdString("Mesh parameterization succeed."));
+    }
+
+
 }
 
 void CQTInterface::onActionBakeTexture()
@@ -578,7 +595,7 @@ void CQTInterface::onActionBakeTexture()
         PointCloud_t::Ptr pResult(new PointCloud_t);
         for (auto pCloud : m_TileSet)
             *pResult += *pCloud;
-        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_Mesh, pResult, { 512, 512 });
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.begin()->second, pResult, { 512, 512 });
         
         {
             const auto Width = Texture.getWidth();

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ArapParameterization.h"
+#include "ArapParameterizer.h"
 #include "SceneReconstructionConfig.h"
 
 #include <pcl/io/obj_io.h>
@@ -33,19 +33,6 @@ protected:
 	void TearDown() override
 	{
 		delete m_pMeshParameterization;
-	}
-
-	hiveObliquePhotography::CMesh _loadMesh(const std::string& vPath)
-	{
-		pcl::PolygonMesh TexMesh;
-		pcl::io::loadOBJFile(vPath, TexMesh);
-		//m_Material = TexMesh.tex_materials[0];
-		hiveObliquePhotography::CMesh Mesh(TexMesh);
-		bool EmptyFlag = Mesh.m_Vertices.empty() || Mesh.m_Faces.empty();
-		EXPECT_FALSE(EmptyFlag);
-		if (EmptyFlag)
-			std::cerr << "mesh load error." << std::endl;
-		return Mesh;
 	}
 
 	hiveObliquePhotography::CMesh _loadObj(const std::string& vPath)
@@ -177,20 +164,20 @@ protected:
 		ObjFile.close();
 	}
 
-	CArapParameterization* _createProduct(const hiveObliquePhotography::CMesh& vMesh)
+	CArapParameterizer* _createProduct(const hiveObliquePhotography::CMesh& vMesh)
 	{
-		auto pParameterization =  hiveDesignPattern::hiveCreateProduct<IMeshParameterization>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
+		auto pParameterization =  hiveDesignPattern::hiveCreateProduct<IMeshParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
 		EXPECT_NE(pParameterization, nullptr);
 		if (!pParameterization)
 			std::cerr << "create baker error." << std::endl;
-		return dynamic_cast<CArapParameterization*>(pParameterization);
+		return dynamic_cast<CArapParameterizer*>(pParameterization);
 	}
 
 	hiveObliquePhotography::CMesh m_Mesh;
 	pcl::TexMaterial m_Material;
 	std::string m_MeshPath;
 
-	CArapParameterization* m_pMeshParameterization = nullptr;
+	CArapParameterizer* m_pMeshParameterization = nullptr;
 };
 
 
@@ -207,40 +194,4 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 
 	std::string ObjName = "Plane.obj";
 	_saveObj(ObjName, m_Mesh);
-
-	//pcl::io::saveOBJFile(ObjName, m_Mesh.toTexMesh(m_Material));
-	//std::ifstream ObjFileIn(ObjName);
-	//if (ObjFileIn.is_open())
-	//{
-	//	std::string Line;
-	//	std::string FileLines;
-	//	while (std::getline(ObjFileIn, Line))
-	//	{
-	//		if (Line[0] == 'f')
-	//		{
-	//			std::string FixedLine("f ");
-
-	//			std::smatch Result;
-	//			std::regex FaceRegex("(\\d+)/(\\d+)/(\\d+)");
-	//			for (auto Begin = Line.cbegin(); std::regex_search(Begin, Line.cend(), Result, FaceRegex); Begin = Result.suffix().first)
-	//			{
-	//				_ASSERTE(Result.size() == 4);
-	//				std::string Vp = Result[1];
-	//				std::string Vn = Result[2];
-	//				std::string Vt = Result[3];
-
-	//				FixedLine += Vp + "/" + Vt + "/" + Vn + " ";
-	//			}
-	//			FileLines += FixedLine;
-	//		}
-	//		else
-	//			FileLines += Line;
-	//		FileLines += "\n";
-	//	}
-
-	//	ObjFileIn.close();
-
-	//	std::ofstream ObjFileOut(ObjName);
-	//	ObjFileOut << FileLines;
-	//}
 }

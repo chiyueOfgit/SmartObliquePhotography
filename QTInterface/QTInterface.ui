@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>960</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -90,6 +90,7 @@
    <addaction name="actionPrecompute"/>
    <addaction name="actionRepairHole"/>
    <addaction name="actionReconstruction"/>
+   <addaction name="actionParameterization"/>
    <addaction name="actionBakeTexture"/>
    <addaction name="actionSetting"/>
    <addaction name="actionInstructions"/>
@@ -443,6 +444,15 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>OpenMesh</string>
+   </property>
+  </action>
+  <action name="actionParameterization">
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/Reconstructor.png</normaloff>:/QTInterface/Icon/Reconstructor.png</iconset>
+   </property>
+   <property name="text">
+    <string>Parameterization</string>
    </property>
   </action>
  </widget>

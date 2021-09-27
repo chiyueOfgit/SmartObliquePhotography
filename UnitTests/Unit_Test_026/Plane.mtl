@@ -12,4 +12,4 @@ newmtl Plane
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.3500 0.3500 0.3500
 	Ke 0.0000 0.0000 0.0000
-	map_Kd ChessBoard.jpg
+	map_Kd Test.png

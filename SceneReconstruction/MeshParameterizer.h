@@ -5,11 +5,11 @@ namespace hiveObliquePhotography
 {
 	namespace SceneReconstruction
 	{
-		class IMeshParameterization : public hiveDesignPattern::IProduct
+		class IMeshParameterizer : public hiveDesignPattern::IProduct
 		{
 		public:
-			IMeshParameterization() = default;
-			virtual ~IMeshParameterization() = default;
+			IMeshParameterizer() = default;
+			virtual ~IMeshParameterizer() = default;
 
 			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, const CMesh& vMesh);
 

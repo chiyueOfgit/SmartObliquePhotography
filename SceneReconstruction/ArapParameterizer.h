@@ -1,5 +1,5 @@
 #pragma once
-#include "MeshParameterization.h"
+#include "MeshParameterizer.h"
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <Eigen/SparseCholesky>
@@ -18,16 +18,16 @@ namespace hiveObliquePhotography
 			int _Face;
 		};
 
-		class CArapParameterization : public IMeshParameterization
+		class CArapParameterizer : public IMeshParameterizer
 		{
 		public:
-			CArapParameterization() = default;
-			~CArapParameterization() = default;
+			CArapParameterizer() = default;
+			~CArapParameterizer() = default;
 
 			Eigen::MatrixXd execute();
 
 			void buildHalfEdge();
-			std::vector<int> findBoundaryPoint();	
+			std::vector<int> findBoundaryPoint();
 			
 			Eigen::MatrixXd calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
 			void setPath4Boundary(const std::string& vPath) { m_MeshPath = vPath; }

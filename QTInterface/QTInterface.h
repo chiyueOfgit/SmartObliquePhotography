@@ -47,7 +47,7 @@ namespace hiveObliquePhotography
             size_t m_SceneIndex = -1;
             int m_PointSize = 3;             // magic
             std::vector<std::string> m_FilePathList;
-            CMesh m_Mesh;
+            std::map<std::string, CMesh> m_MeshSet;
             std::vector<PointCloud_t::Ptr> m_TileSet;
             QDockWidget* m_pRubberSizeDockWidget = nullptr;
             QDockWidget* m_pBrushSizeDockWidget = nullptr;
@@ -79,6 +79,7 @@ namespace hiveObliquePhotography
             void onActionPointPicking();
             void onActionAreaPicking();
             void onActionOpen();
+            void onActionOpenMesh();
             void onActionSave();
             void onActionDiscardAndRecover();
             void onActionDeleteLitter();
@@ -91,7 +92,7 @@ namespace hiveObliquePhotography
             void onActionInstructions();
             void onActionSetting();
             void onActionReconstruction();
-            void onActionOpenMesh();
+            void onActionParameterization();
             void onActionBakeTexture();
             void onResourceSpaceItemDoubleClick(QModelIndex);
         };

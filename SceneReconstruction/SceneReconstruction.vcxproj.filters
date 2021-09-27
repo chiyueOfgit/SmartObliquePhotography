@@ -16,10 +16,10 @@
     <ClCompile Include="RayCastingBaker.cpp">
       <Filter>Texture</Filter>
     </ClCompile>
-    <ClCompile Include="MeshParameterization.cpp">
+    <ClCompile Include="MeshParameterizer.cpp">
       <Filter>Parameterization</Filter>
     </ClCompile>
-    <ClCompile Include="ArapParameterization.cpp">
+    <ClCompile Include="ArapParameterizer.cpp">
       <Filter>Parameterization</Filter>
     </ClCompile>
   </ItemGroup>
@@ -43,10 +43,10 @@
       <Filter>Texture</Filter>
     </ClInclude>
     <ClInclude Include="..\ObliquePhotographyData\Image.h" />
-    <ClInclude Include="MeshParameterization.h">
+    <ClInclude Include="MeshParameterizer.h">
       <Filter>Parameterization</Filter>
     </ClInclude>
-    <ClInclude Include="ArapParameterization.h">
+    <ClInclude Include="ArapParameterizer.h">
       <Filter>Parameterization</Filter>
     </ClInclude>
   </ItemGroup>
