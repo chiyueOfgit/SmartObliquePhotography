@@ -24,7 +24,8 @@ class TestArapParameterization : public testing::Test
 protected:
 	void SetUp() override
 	{
-		m_Mesh = _loadObj(StoneMeshPath);
+		m_MeshPath = StoneMeshPath;
+		m_Mesh = _loadObj(m_MeshPath);
 		m_pMeshParameterization = _createProduct(m_Mesh);
 	}
 
@@ -186,6 +187,7 @@ protected:
 
 	hiveObliquePhotography::CMesh m_Mesh;
 	pcl::TexMaterial m_Material;
+	std::string m_MeshPath;
 
 	CArapParameterization* m_pMeshParameterization = nullptr;
 };
@@ -193,20 +195,7 @@ protected:
 
 TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 {
-	//int Sum = 0;
-	//m_pMeshParameterization->buildHalfEdge();
-	//auto PointSet = m_pMeshParameterization->findBoundaryPoint();
-	//for(auto Flag: PointSet)
-	//{
-	//	if(Flag)
-	//	{
-	//		Sum++;
-	//	}
-	//}
-	//EXPECT_EQ(Sum, 8);
-	//int i = 0;
-	//EXPECT_EQ(PointSet.size(), 9);
-
+	m_pMeshParameterization->setPath4Boundary(m_MeshPath);
 	auto UV = m_pMeshParameterization->execute();
 	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
 	for (int Row = 0; Row < UV.rows(); Row++)

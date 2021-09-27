@@ -30,7 +30,7 @@ namespace hiveObliquePhotography
 			std::vector<int> findBoundaryPoint();	
 			
 			Eigen::MatrixXd calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
-
+			void setPath4Boundary(const std::string& vPath) { m_MeshPath = vPath; }
 		private:
 			Eigen::SparseMatrix<double, Eigen::ColMajor> __buildTutteSolveMatrix(const std::vector<SHalfEdge>& vHalfEdgeSet, const std::vector<bool>& vBoundaryStatus);
 			void __fillTutteSolveVectors(Eigen::VectorXd& vVectorX, Eigen::VectorXd& vVectorY, const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
@@ -44,6 +44,7 @@ namespace hiveObliquePhotography
 			
 			std::vector<SHalfEdge> m_HalfEdgeTable;
 			std::vector<std::vector<int>> m_VertexInfoTable;
+			std::string m_MeshPath;
 		};
 	}
 }

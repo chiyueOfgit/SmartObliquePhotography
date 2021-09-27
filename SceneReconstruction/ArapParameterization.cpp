@@ -2,6 +2,8 @@
 #include "ArapParameterization.h"
 
 #include <igl/arap.h>
+#include <igl/readOBJ.h>
+#include <igl/boundary_loop.h>
 
 #include <fstream>	//remove
 #include <boost/archive/text_oarchive.hpp>
@@ -86,25 +88,31 @@ void CArapParameterization::buildHalfEdge()
 //FUNCTION: 
 std::vector<int> CArapParameterization::findBoundaryPoint()
 {
-	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
-	std::set<int> BoundarySet;
-	std::vector<int> ValidSet;
-	for(auto& HalfEdge : m_HalfEdgeTable)
-	{
-		if(HalfEdge._Conj < 0)
-		{
-			BoundarySet.insert(HalfEdge._VertexId);
-			BoundarySet.insert(m_HalfEdgeTable[HalfEdge._Next]._VertexId);
-		}
-	}
-	__findValidBoundary(BoundarySet, ValidSet);
+	//std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
+	//std::set<int> BoundarySet;
+	//std::vector<int> ValidSet;
+	//for(auto& HalfEdge : m_HalfEdgeTable)
+	//{
+	//	if(HalfEdge._Conj < 0)
+	//	{
+	//		BoundarySet.insert(HalfEdge._VertexId);
+	//		BoundarySet.insert(m_HalfEdgeTable[HalfEdge._Next]._VertexId);
+	//	}
+	//}
+
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	igl::readOBJ(m_MeshPath, V, F);
+	std::vector<int> Boundary;
+	igl::boundary_loop(F, Boundary);
+	//__findValidBoundary(Boundary, ValidSet);
 
 	std::ofstream file("BoundaryPoints.txt");
 	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(ValidSet);
+	oa& BOOST_SERIALIZATION_NVP(Boundary);
 	file.close();
 
-	return ValidSet;
+	return Boundary;
 }
 
 //*****************************************************************
@@ -297,7 +305,7 @@ Eigen::MatrixXd CArapParameterization::__solveARAP(const Eigen::MatrixXd& vVerte
 	auto UV = vInitialUV;
 	igl::arap_solve(BoundaryCoord, arap_data, UV);
 
-	__normalizeUV(UV);
+	//__normalizeUV(UV);
 	return UV;
 }
 
