@@ -550,6 +550,7 @@ void CQTInterface::onActionReconstruction()
             *pResult += *pCloud;
         CMesh Mesh;
         SceneReconstruction::hiveSurfaceReconstruction(pResult, Mesh);
+        m_MeshSet[MeshPath] = Mesh;
         hiveSaveMeshModel(Mesh, MeshPath);
 
         __messageDockWidgetOutputText(QString::fromStdString("Reconstruction finished."));
