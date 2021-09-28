@@ -44,23 +44,19 @@ void CArapParameterizer::buildHalfEdge()
 	m_VertexInfoTable.resize(m_Mesh.m_Vertices.size());
 	m_HalfEdgeTable.clear();
 	m_HalfEdgeTable.reserve(m_Mesh.m_Vertices.size() * 3);
-	std::vector<bool> Flag(m_Mesh.m_Vertices.size(), false);
-	int sum = 0;
-	for(int FaceId = 0; FaceId < m_Mesh.m_Faces.size(); FaceId++)
+	std::vector Traversed(m_Mesh.m_Vertices.size(), false);
+	for(size_t FaceId = 0; FaceId < m_Mesh.m_Faces.size(); ++FaceId)
 	{
 		auto& Face = m_Mesh.m_Faces[FaceId];
-        Eigen::Vector3f A = m_Mesh.m_Vertices[Face[1]].xyz() - m_Mesh.m_Vertices[Face[0]].xyz();
-		Eigen::Vector3f B = m_Mesh.m_Vertices[Face[2]].xyz() - m_Mesh.m_Vertices[Face[1]].xyz();
-		Eigen::Vector3f Cross = A.cross(B);
+		const auto& VertexA = m_Mesh.m_Vertices[Face[0]];
+		const auto& VertexB = m_Mesh.m_Vertices[Face[1]];
+		const auto& VertexC = m_Mesh.m_Vertices[Face[2]];
+		Eigen::Vector3f FaceNormal = (VertexC.xyz() - VertexB.xyz()).cross(VertexA.xyz() - VertexB.xyz());
 
-		if (Cross.dot(m_Mesh.m_Vertices[Face[0]].normal()) < 0 || Cross.dot(m_Mesh.m_Vertices[Face[1]].normal()) < 0 || Cross.dot(m_Mesh.m_Vertices[Face[2]].normal()) < 0)
-		{
-			auto Temp = Face[1];
-			Face[1] = Face[2];
-			Face[2] = Temp;
-		}
+		if (VertexA.normal().dot(FaceNormal) < 0 && VertexB.normal().dot(FaceNormal) < 0 && VertexC.normal().dot(FaceNormal) < 0)
+			std::swap(Face[1], Face[2]);
 
-		for(int i = 0; i < 3; i++)
+		for(size_t i = 0; i < 3; ++i)
 		{
 			SHalfEdge HalfEdge;
 			HalfEdge._VertexId = Face[i];
@@ -69,18 +65,18 @@ void CArapParameterizer::buildHalfEdge()
 			m_VertexInfoTable[Face[i]].push_back(Index);
 			HalfEdge._Prev = Index + ((i == 0) ? (2) : (-1));
 			HalfEdge._Next = Index + ((i == 2) ? (-2) : (1));
-			if(Flag[Face[i]] && Flag[Face[(i + 1) % 3]])
+			if(Traversed[Face[i]] && Traversed[Face[(i + 1) % 3]])
 			{
 				HalfEdge._Conj = __findTwinRef(Face[i], Face[(i + 1) % 3]);
-				if( HalfEdge._Conj >= 0 )
-				    m_HalfEdgeTable[HalfEdge._Conj]._Conj = Index;
+				if(HalfEdge._Conj >= 0)
+					m_HalfEdgeTable[HalfEdge._Conj]._Conj = Index;
 			}
 			m_HalfEdgeTable.push_back(HalfEdge);
 		}
 
-		Flag[Face[0]] = true;
-		Flag[Face[1]] = true;
-		Flag[Face[2]] = true;
+		Traversed[Face[0]] = true;
+		Traversed[Face[1]] = true;
+		Traversed[Face[2]] = true;
 	}
 }
 
