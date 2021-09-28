@@ -57,4 +57,6 @@ std::vector<Eigen::Vector3f> CPoissonSurfaceReconstructor::__calcVertexNormal(co
 
 	for (int i = 0; i < VertexNormals.size(); i++)
 		VertexNormals[i] /= NumNormals[i];
+
+	return VertexNormals;
 }
