@@ -550,6 +550,7 @@ void CQTInterface::onActionReconstruction()
             *pResult += *pCloud;
         CMesh Mesh;
         SceneReconstruction::hiveSurfaceReconstruction(pResult, Mesh);
+        m_MeshSet[MeshPath] = Mesh;
         hiveSaveMeshModel(Mesh, MeshPath);
 
         __messageDockWidgetOutputText(QString::fromStdString("Reconstruction finished."));
@@ -564,8 +565,8 @@ void CQTInterface::onActionOpenMesh()
     if (MeshPath != "" && hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
     {
         m_MeshSet[MeshPath] = SceneReconstruction::hiveTestCMesh(MeshPath);
-        //Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
-        //Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
+        Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+        Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
         __messageDockWidgetOutputText(QString::fromStdString("Open mesh succeed."));
     }
 }

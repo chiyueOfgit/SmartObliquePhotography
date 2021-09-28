@@ -10,6 +10,7 @@
 #include <pcl/io/obj_io.h>
 #include "Mesh.h"
 #include "PointCloudRetouchInterface.h"
+#include "ObliquePhotographyDataInterface.h"
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -117,7 +118,8 @@ void hiveObliquePhotography::Visualization::TestInterface(const std::string& vOb
 	Mesh2.tex_materials = Mesh1.tex_materials;
 	auto Material = Mesh2.tex_materials[0];
 
-	CMesh M(Mesh1);
+	CMesh M;
+	hiveLoadMeshModel(M, vObj);
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr pCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 

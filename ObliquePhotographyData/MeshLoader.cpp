@@ -14,11 +14,9 @@ bool IMeshLoader::loadDataFromFile(CMesh& voMesh, const std::string& vFileName)
 	if (FileName.empty())
 		return false;
 
-	CMesh Mesh;
-
 	try
 	{
-		int result = __loadDataFromFileV(vFileName, Mesh);
+		int result = __loadDataFromFileV(vFileName, voMesh);
 		if (result == 0)
 		{
 			hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Succeed to load point cloud file [%1%].", vFileName));
