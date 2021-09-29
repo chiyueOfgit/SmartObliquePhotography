@@ -15,6 +15,12 @@ CMesh::CMesh(const pcl::TextureMesh& vTexMesh)
 	__fillFaces(m_Faces, vTexMesh.tex_polygons[0]);
 }
 
+CMesh::CMesh(const Eigen::MatrixXd& vVertexMatrix, const Eigen::MatrixXi& vFaceMatrix)
+{
+	__fillVertices(m_Vertices, vVertexMatrix);
+	__fillFaces(m_Faces, vFaceMatrix);
+}
+
 //*****************************************************************
 //FUNCTION: 
 pcl::PolygonMesh CMesh::toPolMesh() const
@@ -152,6 +158,20 @@ void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::TextureMe
 
 //*****************************************************************
 //FUNCTION: 
+void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const Eigen::MatrixXd& vVerticesMatrix) const
+{
+	for(int i = 0; i < vVerticesMatrix.rows(); i++)
+	{
+		SVertex Vertex;
+		Vertex.x = vVerticesMatrix.row(i).data()[0];
+		Vertex.y = vVerticesMatrix.row(i).data()[1];
+		Vertex.z = vVerticesMatrix.row(i).data()[2];
+		vVertices.push_back(Vertex);
+	}
+}
+
+//*****************************************************************
+//FUNCTION: 
 std::map<std::uint32_t, std::uint32_t> CMesh::__getOffsetTable(const std::vector<pcl::PCLPointField>& vVertexAttributes) const
 {
 	std::map<std::uint32_t, std::uint32_t> OffsetTable;
@@ -197,6 +217,18 @@ void CMesh::__fillFaces(std::vector<SFace>& vFaces, const std::vector<pcl::Verti
 	_ASSERTE(vFaceData[0].vertices.size() == 3);
 	for (auto& Face : vFaceData)
 		vFaces.push_back({ Face.vertices[0], Face.vertices[1], Face.vertices[2] });
+}
+
+void CMesh::__fillFaces(std::vector<SFace>& vFaces, const Eigen::MatrixXi& vFacesMatrix) const
+{
+	for (int i = 0; i < vFacesMatrix.rows(); i++)
+	{
+		SFace Face;
+		Face.a = vFacesMatrix.row(i).data()[0];
+		Face.b = vFacesMatrix.row(i).data()[1];
+		Face.c = vFacesMatrix.row(i).data()[2];
+		vFaces.push_back(Face);
+	}
 }
 
 //*****************************************************************

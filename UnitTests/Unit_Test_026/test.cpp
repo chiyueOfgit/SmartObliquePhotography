@@ -7,6 +7,8 @@
 #include <fstream>
 #include <regex>
 
+#include <igl/decimate.h>
+
 //测试用例列表：
 //   * findBoundaryPoint: 测试在简单场景下寻找边界点正确性。
 
@@ -19,7 +21,7 @@ const auto StoneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/LI
 const auto MountainMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/mountain.obj");
 const auto ScuMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Scu/Tile16.obj");
 const auto PyramidMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Pyramid.obj");
-const auto PoissonMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/005006.obj");
+const auto PoissonMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/005006new.obj");
 
 class TestArapParameterization : public testing::Test
 {
@@ -182,17 +184,32 @@ protected:
 };
 
 
-TEST_F(TestArapParameterization, TestfindBoundaryPoint)
-{
-	m_pMeshParameterization->setPath4Boundary(m_MeshPath);
-	auto UV = m_pMeshParameterization->execute();
-	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
-	for (int Row = 0; Row < UV.rows(); Row++)
-	{
-		m_Mesh.m_Vertices[Row].u = UV.row(Row).x();
-		m_Mesh.m_Vertices[Row].v = UV.row(Row).y();
-	}
+//TEST_F(TestArapParameterization, TestfindBoundaryPoint)
+//{
+//	m_pMeshParameterization->setPath4Boundary(m_MeshPath);
+//	auto UV = m_pMeshParameterization->execute();
+//	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
+//	for (int Row = 0; Row < UV.rows(); Row++)
+//	{
+//		m_Mesh.m_Vertices[Row].u = UV.row(Row).x();
+//		m_Mesh.m_Vertices[Row].v = UV.row(Row).y();
+//	}
+//
+//	std::string ObjName = "Plane.obj";
+//	_saveObj(ObjName, m_Mesh);
+//}
 
-	std::string ObjName = "Plane.obj";
-	_saveObj(ObjName, m_Mesh);
+TEST_F(TestArapParameterization, Simplification)
+{
+	Eigen::MatrixXd V = m_Mesh.getVerticesMatrix();
+	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
+	Eigen::VectorXi J, I;
+	Eigen::MatrixXd OV;
+	Eigen::MatrixXi OF;
+	
+	bool a = igl::decimate(V, F, 10000, OV, OF, J, I);
+
+	hiveObliquePhotography::CMesh Mesh(OV, OF);
+	std::string ObjName = "Simplification.obj";
+	_saveObj(ObjName, Mesh);
 }
