@@ -1,6 +1,6 @@
 <SURFACE>
   PoissonReconstruction
-  <OCTREE_DEPTH> 8 </OCTREE_DEPTH>
+  <OCTREE_DEPTH> 7 </OCTREE_DEPTH>
 </SURFACE>
 <TEXCOORD>
   Parameterization
