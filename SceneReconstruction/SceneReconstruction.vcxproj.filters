@@ -22,6 +22,9 @@
     <ClCompile Include="ArapParameterizer.cpp">
       <Filter>Parameterization</Filter>
     </ClCompile>
+    <ClCompile Include="MeshSuture.cpp">
+      <Filter>Suture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -49,6 +52,9 @@
     <ClInclude Include="ArapParameterizer.h">
       <Filter>Parameterization</Filter>
     </ClInclude>
+    <ClInclude Include="MeshSuture.h">
+      <Filter>Suture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -62,6 +68,9 @@
     </Filter>
     <Filter Include="Parameterization">
       <UniqueIdentifier>{44113bd4-25fd-460b-bc13-bad6d9d16ab1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Suture">
+      <UniqueIdentifier>{64bf4be6-2e4d-43e6-9ba4-ccb47385fecc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
