@@ -344,8 +344,8 @@ void CArapParameterizer::__normalizeUV(Eigen::MatrixXd& vioUVMatrix)
 
 	for (int VertexId = 0; VertexId < vioUVMatrix.rows(); VertexId++)
 	{
-		float U = (vioUVMatrix.row(VertexId).data()[0] - MinUV[0]) / WidthU;
-		float V = (vioUVMatrix.row(VertexId).data()[1] - MinUV[1]) / HeightV;
+		float U = (vioUVMatrix.row(VertexId).x() - MinUV[0]) / WidthU;
+		float V = (vioUVMatrix.row(VertexId).y() - MinUV[1]) / HeightV;
 		vioUVMatrix.row(VertexId) = Eigen::Vector2d(U, V);
 	}
 }

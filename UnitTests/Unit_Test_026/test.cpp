@@ -206,9 +206,7 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 //	Eigen::VectorXi J, I;
 //	Eigen::MatrixXd OV;
 //	Eigen::MatrixXi OF;
-//	
-//	bool a = igl::decimate(V, F, 10000, OV, OF, J, I);
-//
+//	bool a = igl::decimate(V, F, 0.9 * F.rows(), OV, OF, J, I);
 //	hiveObliquePhotography::CMesh Mesh(OV, OF);
 //	std::string ObjName = "Simplification.obj";
 //	_saveObj(ObjName, Mesh);
