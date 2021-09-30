@@ -163,9 +163,9 @@ void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const Eigen::MatrixX
 	for(int i = 0; i < vVerticesMatrix.rows(); i++)
 	{
 		SVertex Vertex;
-		Vertex.x = vVerticesMatrix.row(i).data()[0];
-		Vertex.y = vVerticesMatrix.row(i).data()[1];
-		Vertex.z = vVerticesMatrix.row(i).data()[2];
+		Vertex.x = vVerticesMatrix.row(i).x();
+		Vertex.y = vVerticesMatrix.row(i).y();
+		Vertex.z = vVerticesMatrix.row(i).z();
 		vVertices.push_back(Vertex);
 	}
 }
@@ -224,9 +224,9 @@ void CMesh::__fillFaces(std::vector<SFace>& vFaces, const Eigen::MatrixXi& vFace
 	for (int i = 0; i < vFacesMatrix.rows(); i++)
 	{
 		SFace Face;
-		Face.a = vFacesMatrix.row(i).data()[0];
-		Face.b = vFacesMatrix.row(i).data()[1];
-		Face.c = vFacesMatrix.row(i).data()[2];
+		Face.a = vFacesMatrix.row(i).x();
+		Face.b = vFacesMatrix.row(i).y();
+		Face.c = vFacesMatrix.row(i).z();
 		vFaces.push_back(Face);
 	}
 }

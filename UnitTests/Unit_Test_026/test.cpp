@@ -184,32 +184,30 @@ protected:
 };
 
 
-//TEST_F(TestArapParameterization, TestfindBoundaryPoint)
-//{
-//	m_pMeshParameterization->setPath4Boundary(m_MeshPath);
-//	auto UV = m_pMeshParameterization->execute();
-//	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
-//	for (int Row = 0; Row < UV.rows(); Row++)
-//	{
-//		m_Mesh.m_Vertices[Row].u = UV.row(Row).x();
-//		m_Mesh.m_Vertices[Row].v = UV.row(Row).y();
-//	}
-//
-//	std::string ObjName = "Plane.obj";
-//	_saveObj(ObjName, m_Mesh);
-//}
-
-TEST_F(TestArapParameterization, Simplification)
+TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 {
-	Eigen::MatrixXd V = m_Mesh.getVerticesMatrix();
-	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
-	Eigen::VectorXi J, I;
-	Eigen::MatrixXd OV;
-	Eigen::MatrixXi OF;
-	
-	bool a = igl::decimate(V, F, 10000, OV, OF, J, I);
+	m_pMeshParameterization->setPath4Boundary(m_MeshPath);
+	auto UV = m_pMeshParameterization->execute();
+	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
+	for (int Row = 0; Row < UV.rows(); Row++)
+	{
+		m_Mesh.m_Vertices[Row].u = UV.row(Row).x();
+		m_Mesh.m_Vertices[Row].v = UV.row(Row).y();
+	}
 
-	hiveObliquePhotography::CMesh Mesh(OV, OF);
-	std::string ObjName = "Simplification.obj";
-	_saveObj(ObjName, Mesh);
+	std::string ObjName = "Plane.obj";
+	_saveObj(ObjName, m_Mesh);
 }
+
+//TEST_F(TestArapParameterization, Simplification)
+//{
+//	Eigen::MatrixXd V = m_Mesh.getVerticesMatrix();
+//	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
+//	Eigen::VectorXi J, I;
+//	Eigen::MatrixXd OV;
+//	Eigen::MatrixXi OF;
+//	bool a = igl::decimate(V, F, 0.9 * F.rows(), OV, OF, J, I);
+//	hiveObliquePhotography::CMesh Mesh(OV, OF);
+//	std::string ObjName = "Simplification.obj";
+//	_saveObj(ObjName, Mesh);
+//}
