@@ -4,7 +4,6 @@
 
 namespace hiveObliquePhotography
 {
-		
 	using DataType = float;
 	using IndexType = std::uint32_t;
 	struct SVertex

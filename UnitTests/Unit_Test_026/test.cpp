@@ -28,7 +28,7 @@ class TestArapParameterization : public testing::Test
 protected:
 	void SetUp() override
 	{
-		m_MeshPath = StoneMeshPath;
+		m_MeshPath = PoissonMeshPath;
 		m_Mesh = _loadObj(m_MeshPath);
 		m_pMeshParameterization = _createProduct(m_Mesh);
 	}
@@ -95,27 +95,34 @@ protected:
 				if (Line[0] == 'f')
 				{
 					std::smatch Result;
-					std::regex FaceRegex("(\\d+)/(\\d+)/(\\d+)");
+					std::regex FaceRegex("(\\d*)/(\\d*)/(\\d*)");
 					std::vector<uint32_t> Face;
 					for (auto Begin = Line.cbegin(); std::regex_search(Begin, Line.cend(), Result, FaceRegex); Begin = Result.suffix().first)
 					{
 						_ASSERTE(Result.size() == 4);
 						auto VertexId = std::stoi(Result[1]) - 1;
-						auto TexId = std::stoi(Result[2]) - 1;
-						auto NormalId = std::stoi(Result[3]) - 1;
+						auto TexId = Result[2] != "" ? std::stoi(Result[2]) - 1 : -1;
+						auto NormalId = Result[3] != "" ? std::stoi(Result[3]) - 1 : -1;
 
 						//处理位置
 						Face.push_back(VertexId);	//0为全部匹配
 
 						//处理纹理
-						Mesh.m_Vertices[VertexId].u = TexCoords[TexId].x();
-						Mesh.m_Vertices[VertexId].v = TexCoords[TexId].y();
+						if (TexId != -1)
+						{
+							Mesh.m_Vertices[VertexId].u = TexCoords[TexId].x();
+							Mesh.m_Vertices[VertexId].v = TexCoords[TexId].y();
+						}
 
 						//处理法线
-						Mesh.m_Vertices[VertexId].nx = Normals[NormalId].x();
-						Mesh.m_Vertices[VertexId].ny = Normals[NormalId].y();
-						Mesh.m_Vertices[VertexId].nz = Normals[NormalId].z();
+						if (NormalId != -1)
+						{
+							Mesh.m_Vertices[VertexId].nx = Normals[NormalId].x();
+							Mesh.m_Vertices[VertexId].ny = Normals[NormalId].y();
+							Mesh.m_Vertices[VertexId].nz = Normals[NormalId].z();
+						}
 					}
+
 					Mesh.m_Faces.push_back({ Face[0], Face[1], Face[2] });
 				}
 			}
