@@ -152,6 +152,7 @@
     <ClCompile Include="..\SceneReconstruction\ArapParameterizer.cpp" />
     <ClCompile Include="..\SceneReconstruction\dllmain.cpp" />
     <ClCompile Include="..\SceneReconstruction\MeshParameterizer.cpp" />
+    <ClCompile Include="..\SceneReconstruction\MeshPlaneIntersection.cpp" />
     <ClCompile Include="..\SceneReconstruction\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -166,6 +167,7 @@
     <ClInclude Include="..\SceneReconstruction\ArapParameterizer.h" />
     <ClInclude Include="..\SceneReconstruction\framework.h" />
     <ClInclude Include="..\SceneReconstruction\MeshParameterizer.h" />
+    <ClInclude Include="..\SceneReconstruction\MeshPlaneIntersection.h" />
     <ClInclude Include="..\SceneReconstruction\pch.h" />
     <ClInclude Include="..\SceneReconstruction\PoissonSurfaceReconstructor.h" />
     <ClInclude Include="..\SceneReconstruction\RayCastingBaker.h" />
