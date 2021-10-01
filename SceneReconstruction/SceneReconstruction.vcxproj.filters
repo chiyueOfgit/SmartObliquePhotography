@@ -22,6 +22,9 @@
     <ClCompile Include="ArapParameterizer.cpp">
       <Filter>Parameterization</Filter>
     </ClCompile>
+    <ClCompile Include="MeshSuture.cpp">
+      <Filter>Suture</Filter>
+    </ClCompile>
     <ClCompile Include="MeshPlaneIntersection.cpp">
       <Filter>Stitching</Filter>
     </ClCompile>
@@ -52,6 +55,9 @@
     <ClInclude Include="ArapParameterizer.h">
       <Filter>Parameterization</Filter>
     </ClInclude>
+    <ClInclude Include="MeshSuture.h">
+      <Filter>Suture</Filter>
+    </ClInclude>
     <ClInclude Include="MeshPlaneIntersection.h">
       <Filter>Stitching</Filter>
     </ClInclude>
@@ -68,6 +74,9 @@
     </Filter>
     <Filter Include="Parameterization">
       <UniqueIdentifier>{44113bd4-25fd-460b-bc13-bad6d9d16ab1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Suture">
+      <UniqueIdentifier>{64bf4be6-2e4d-43e6-9ba4-ccb47385fecc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Stitching">
       <UniqueIdentifier>{918fad14-d06e-417c-8b89-a4712a17d237}</UniqueIdentifier>

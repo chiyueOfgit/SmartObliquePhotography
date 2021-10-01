@@ -130,7 +130,10 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 {
 	auto NumVertices = m_Mesh.m_Vertices.size();
 	Eigen::SparseMatrix<double, Eigen::ColMajor> TutteMatrix(NumVertices, NumVertices);
-	TutteMatrix.reserve(Eigen::VectorXd::Zero(NumVertices * 3));
+
+	typedef Eigen::Triplet<double> TWeight;
+	std::vector<TWeight> WeightTriplet;
+	WeightTriplet.reserve(NumVertices * 10);
 
 	auto Uniform = []()
 	{
@@ -168,7 +171,7 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
 		if (vBoundaryStatus[VertexId]) //boundary
-			TutteMatrix.insert(VertexId, VertexId) = 1.0;
+			WeightTriplet.push_back(TWeight(VertexId, VertexId, 1.0));
 		else //interior
 		{
 			const auto& NeighborHalfEdgeSet = m_VertexInfoTable[VertexId];
@@ -179,23 +182,15 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 				auto NextVertexId = vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId;
 				//auto Weight = Uniform();
 				auto Weight = MeanWalue(i, VertexId, NextVertexId);
-				TutteMatrix.insert(VertexId, NextVertexId) = Weight;
+				WeightTriplet.push_back(TWeight(VertexId, NextVertexId, Weight));
 				SumWeight += Weight;
 			}
 
-			TutteMatrix.insert(VertexId, VertexId) = -1.0 * SumWeight;
+			WeightTriplet.push_back(TWeight(VertexId, VertexId, -1.0 * SumWeight));
 		}
 	}
 
-	//cout matrix
-	/*std::cout << "\n    Tutte: \n";
-	for (int i = 0; i < TutteMatrix.cols(); i++)
-	{
-		for (int k = 0; k < TutteMatrix.rows(); k++)
-			std::cout << std::setw(2) << TutteMatrix.coeff(k, i) << " ";
-		std::cout << std::endl;
-	}*/
-
+	TutteMatrix.setFromTriplets(WeightTriplet.begin(), WeightTriplet.end());
 	return TutteMatrix;
 }
 
@@ -349,8 +344,8 @@ void CArapParameterizer::__normalizeUV(Eigen::MatrixXd& vioUVMatrix)
 
 	for (int VertexId = 0; VertexId < vioUVMatrix.rows(); VertexId++)
 	{
-		float U = (vioUVMatrix.row(VertexId).data()[0] - MinUV[0]) / WidthU;
-		float V = (vioUVMatrix.row(VertexId).data()[1] - MinUV[1]) / HeightV;
+		float U = (vioUVMatrix.row(VertexId).x() - MinUV[0]) / WidthU;
+		float V = (vioUVMatrix.row(VertexId).y() - MinUV[1]) / HeightV;
 		vioUVMatrix.row(VertexId) = Eigen::Vector2d(U, V);
 	}
 }
