@@ -8,7 +8,7 @@ namespace hiveObliquePhotography
 		IPointCloudSaver() = default;
 		~IPointCloudSaver() override = default;
 
-		virtual void saveDataToFileV(const PointCloud_t& vPointCloud, const std::string& vFilePath) = 0;
+		virtual void saveDataToFileV(const PointCloud_t::Ptr vPointCloud, const std::string& vFilePath) = 0;
 		
 	private:
 	};

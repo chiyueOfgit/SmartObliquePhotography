@@ -16,7 +16,7 @@ PointCloud_t::Ptr IPointCloudLoader::loadDataFromFile(const std::string& vFileNa
 
 	try
 	{
-		int r = __loadDataFromFileV(vFileName, *pPointCloud);
+		int r = __loadDataFromFileV(vFileName, pPointCloud);
 		if (r == 0)
 		{
 			hiveEventLogger::hiveOutputEvent(_FORMAT_STR1("Succeed to load point cloud file [%1%].", vFileName));

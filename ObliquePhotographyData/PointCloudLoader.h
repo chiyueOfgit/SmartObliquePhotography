@@ -11,6 +11,6 @@ namespace hiveObliquePhotography
 		PointCloud_t::Ptr loadDataFromFile(const std::string& vFileName);
 		
 	private:
-		virtual int __loadDataFromFileV(const std::string& vFileName, PointCloud_t& voPointCloud) = 0;
+		virtual int __loadDataFromFileV(const std::string& vFileName, PointCloud_t::Ptr voPointCloud) = 0;
 	};
 }
