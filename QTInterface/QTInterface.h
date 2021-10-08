@@ -44,11 +44,12 @@ namespace hiveObliquePhotography
             QCheckBox* m_pAreaPickingCullingBox = nullptr;
             std::string m_CurrentCloud = "";
             std::string m_DirectoryOpenPath = "../Models";
-            size_t m_SceneIndex = -1;
             int m_PointSize = 3;             // magic
-            std::vector<std::string> m_FilePathList;
             std::map<std::string, CMesh> m_MeshSet;
+            std::vector<std::string> m_NameSet;
             std::vector<PointCloud_t::Ptr> m_TileSet;
+            std::vector<int> m_SelectedTileIndices;
+
             QDockWidget* m_pRubberSizeDockWidget = nullptr;
             QDockWidget* m_pBrushSizeDockWidget = nullptr;
             QDockWidget* m_pPointPickingDockWidget = nullptr;
@@ -68,12 +69,15 @@ namespace hiveObliquePhotography
             void __initialSlider(const QStringList& vFilePathList);
             void __connectSignals();
             void __parseConfigFile();
-            bool __messageDockWidgetOutputText(QString vString);
-            bool __addResourceSpaceCloudItem(const std::string& vFilePath);
+            bool __messageDockWidgetOutputText(const std::string& vText);
+            bool __addResourceSpaceCloudItem(const std::string& vFileName);
+            bool __addResourceSpaceMeshItem(const std::string& vFileName);
             void __addAxesToView(vtkRenderWindowInteractor* vInteractor, double vX, double vY, double vXWide, double vYWide);
         	
             std::string __getFileName(const std::string& vFilePath);
             std::string __getDirectory(const std::string& vFilePath);
+            std::string __getFileNameWithSuffix(const std::string& vFilePath);
+            std::string __getSuffix(const std::string& vFilePath);
 
         private slots:
             void onActionPointPicking();
@@ -95,6 +99,7 @@ namespace hiveObliquePhotography
             void onActionParameterization();
             void onActionBakeTexture();
             void onResourceSpaceItemDoubleClick(QModelIndex);
+            void onResourceSpaceItemClick(QModelIndex);
         };
     }
 }
