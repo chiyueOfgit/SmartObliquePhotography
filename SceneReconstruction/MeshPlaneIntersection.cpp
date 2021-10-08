@@ -19,7 +19,7 @@ void CMeshPlaneIntersection::dumpIntersectionPoints(std::vector<SVertex>& vioInt
 
 //*****************************************************************
 //FUNCTION: 
-void CMeshPlaneIntersection::dumpDissociatedMesh(CMesh& vioDissociatedMesh)
+void CMeshPlaneIntersection::dumpDissociatedPoints(std::vector<SVertex>& vioDissociatedPoints)
 {
 	return;
 }
