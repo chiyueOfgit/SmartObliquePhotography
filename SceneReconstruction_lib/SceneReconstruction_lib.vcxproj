@@ -152,6 +152,8 @@
     <ClCompile Include="..\SceneReconstruction\ArapParameterizer.cpp" />
     <ClCompile Include="..\SceneReconstruction\dllmain.cpp" />
     <ClCompile Include="..\SceneReconstruction\MeshParameterizer.cpp" />
+    <ClCompile Include="..\SceneReconstruction\MeshSuture.cpp" />
+    <ClCompile Include="..\SceneReconstruction\MeshPlaneIntersection.cpp" />
     <ClCompile Include="..\SceneReconstruction\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -166,6 +168,8 @@
     <ClInclude Include="..\SceneReconstruction\ArapParameterizer.h" />
     <ClInclude Include="..\SceneReconstruction\framework.h" />
     <ClInclude Include="..\SceneReconstruction\MeshParameterizer.h" />
+    <ClInclude Include="..\SceneReconstruction\MeshSuture.h" />
+    <ClInclude Include="..\SceneReconstruction\MeshPlaneIntersection.h" />
     <ClInclude Include="..\SceneReconstruction\pch.h" />
     <ClInclude Include="..\SceneReconstruction\PoissonSurfaceReconstructor.h" />
     <ClInclude Include="..\SceneReconstruction\RayCastingBaker.h" />
@@ -196,6 +200,7 @@
     <Import Project="D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets" Condition="Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" />
     <Import Project="D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets" Condition="Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" />
     <Import Project="D:\vc_packages\VTK.8.2.1\build\native\VTK.targets" Condition="Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" />
+    <Import Project="D:\vc_packages\VCG.2021.7.0\build\native\VCG.targets" Condition="Exists('D:\vc_packages\VCG.2021.7.0\build\native\VCG.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -216,5 +221,6 @@
     <Error Condition="!Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\VTK.8.2.1\build\native\VTK.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VTK.8.2.1\build\native\VTK.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\VCG.2021.7.0\build\native\VCG.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VCG.2021.7.0\build\native\VCG.targets'))" />
   </Target>
 </Project>

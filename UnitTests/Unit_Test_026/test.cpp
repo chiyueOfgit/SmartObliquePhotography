@@ -7,6 +7,8 @@
 #include <fstream>
 #include <regex>
 
+#include <igl/decimate.h>
+
 //测试用例列表：
 //   * findBoundaryPoint: 测试在简单场景下寻找边界点正确性。
 
@@ -19,14 +21,16 @@ const auto StoneMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/LI
 const auto MountainMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Others/mountain.obj");
 const auto ScuMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Scu/Tile16.obj");
 const auto PyramidMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Pyramid.obj");
+const auto PoissonMeshPath = TESTMODEL_DIR + std::string("/Test026_Model/Tile1.obj");
 
 class TestArapParameterization : public testing::Test
 {
 protected:
 	void SetUp() override
 	{
-		m_MeshPath = StoneMeshPath;
+		m_MeshPath = PoissonMeshPath;
 		m_Mesh = _loadObj(m_MeshPath);
+		ASSERT_TRUE(!m_Mesh.m_Vertices.empty());
 		m_pMeshParameterization = _createProduct(m_Mesh);
 	}
 
@@ -92,28 +96,35 @@ protected:
 				if (Line[0] == 'f')
 				{
 					std::smatch Result;
-					std::regex FaceRegex("(\\d+)/(\\d+)/(\\d+)");
+					std::regex FaceRegex("(\\d*)/(\\d*)/(\\d*)");
 					std::vector<uint32_t> Face;
 					for (auto Begin = Line.cbegin(); std::regex_search(Begin, Line.cend(), Result, FaceRegex); Begin = Result.suffix().first)
 					{
 						_ASSERTE(Result.size() == 4);
 						auto VertexId = std::stoi(Result[1]) - 1;
-						auto TexId = std::stoi(Result[2]) - 1;
-						auto NormalId = std::stoi(Result[3]) - 1;
+						auto TexId = Result[2] != "" ? std::stoi(Result[2]) - 1 : -1;
+						auto NormalId = Result[3] != "" ? std::stoi(Result[3]) - 1 : -1;
 
 						//处理位置
 						Face.push_back(VertexId);	//0为全部匹配
 
 						//处理纹理
-						Mesh.m_Vertices[VertexId].u = TexCoords[TexId].x();
-						Mesh.m_Vertices[VertexId].v = TexCoords[TexId].y();
+						if (TexId != -1)
+						{
+							Mesh.m_Vertices[VertexId].u = TexCoords[TexId].x();
+							Mesh.m_Vertices[VertexId].v = TexCoords[TexId].y();
+						}
 
 						//处理法线
-						Mesh.m_Vertices[VertexId].nx = Normals[NormalId].x();
-						Mesh.m_Vertices[VertexId].ny = Normals[NormalId].y();
-						Mesh.m_Vertices[VertexId].nz = Normals[NormalId].z();
+						if (NormalId != -1)
+						{
+							Mesh.m_Vertices[VertexId].nx = Normals[NormalId].x();
+							Mesh.m_Vertices[VertexId].ny = Normals[NormalId].y();
+							Mesh.m_Vertices[VertexId].nz = Normals[NormalId].z();
+						}
 					}
-					Mesh.m_Faces.emplace_back(Face[0], Face[1], Face[2]);
+
+					Mesh.m_Faces.push_back({ Face[0], Face[1], Face[2] });
 				}
 			}
 
@@ -195,3 +206,16 @@ TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 	std::string ObjName = "Plane.obj";
 	_saveObj(ObjName, m_Mesh);
 }
+
+//TEST_F(TestArapParameterization, Simplification)
+//{
+//	Eigen::MatrixXd V = m_Mesh.getVerticesMatrix();
+//	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
+//	Eigen::VectorXi J, I;
+//	Eigen::MatrixXd OV;
+//	Eigen::MatrixXi OF;
+//	bool a = igl::decimate(V, F, 0.9 * F.rows(), OV, OF, J, I);
+//	hiveObliquePhotography::CMesh Mesh(OV, OF);
+//	std::string ObjName = "Simplification.obj";
+//	_saveObj(ObjName, Mesh);
+//}
