@@ -400,7 +400,7 @@ void CQTInterface::onActionSave()
             pCloud2Save->insert(pCloud2Save->end(), pCloud->begin(), pCloud->end());
     }
 
-    if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud2Save, FilePath))
+    if (hiveObliquePhotography::hiveSavePointCloudScene(pCloud2Save, FilePath))
         __messageDockWidgetOutputText("Save scene successfully");
     else
         __messageDockWidgetOutputText("Scene is not saved");
@@ -435,7 +435,7 @@ void CQTInterface::onActionStartRepairHole()
         PointCloud_t::Ptr pCloud(new PointCloud_t);
         PointCloudRetouch::hiveDumpPointCloudtoSave(pCloud);
         auto CloudSavedPath = "Temp/" + m_CurrentCloud + ".ply";
-        hiveSavePointCloudScene(*pCloud, CloudSavedPath);
+        hiveSavePointCloudScene(pCloud, CloudSavedPath);
         
         m_TileSet = hiveInitPointCloudScene({ CloudSavedPath });
         PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
