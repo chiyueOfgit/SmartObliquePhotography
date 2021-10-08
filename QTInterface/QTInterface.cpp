@@ -95,6 +95,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionParameterization, SIGNAL(triggered()), this, SLOT(onActionParameterization()));
     QObject::connect(m_UI.actionBakeTexture, SIGNAL(triggered()), this, SLOT(onActionBakeTexture()));
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
+    QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(clicked(QModelIndex)), this, SLOT(onResourceSpaceItemClick(QModelIndex)));
     QObject::connect(m_UI.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
     QObject::connect(m_UI.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
     QObject::connect(m_UI.actionRepairHole, SIGNAL(triggered()), this, SLOT(onActionStartRepairHole()));
@@ -185,28 +186,31 @@ void CQTInterface::__parseConfigFile()
     }
 }
 
-bool CQTInterface::__addResourceSpaceCloudItem(const std::string& vFilePath)
+bool CQTInterface::__addResourceSpaceCloudItem(const std::string& vFileName)
 {
-    const auto& FileName = CQTInterface::__getFileName(vFilePath);
-
-    QStandardItem* pStandardItem = new QStandardItem(QString::fromStdString(FileName));
+    QStandardItem* pStandardItem = new QStandardItem(QString::fromStdString(vFileName));
     pStandardItem->setCheckable(true);
     pStandardItem->setCheckState(Qt::Checked);
     pStandardItem->setEditable(false);
-    m_pResourceSpaceStandardItemModels->removeRow(0);
     m_pResourceSpaceStandardItemModels->appendRow(pStandardItem);
-
-    m_CurrentCloud = FileName;
-    CQTInterface::__messageDockWidgetOutputText(QString::fromStdString(vFilePath + " is opened."));
-
+    m_CurrentCloud = vFileName;
     return true;
 }
 
-bool CQTInterface::__messageDockWidgetOutputText(QString vString)
+bool CQTInterface::__addResourceSpaceMeshItem(const std::string& vFileName)
+{
+    QStandardItem* pStandardItem = new QStandardItem(QString::fromStdString(vFileName));
+    pStandardItem->setCheckable(false);
+    pStandardItem->setEditable(false);
+    m_pResourceSpaceStandardItemModels->appendRow(pStandardItem);
+    return true;
+}
+
+bool CQTInterface::__messageDockWidgetOutputText(const std::string& vText)
 {
     QDateTime CurrentDateTime = QDateTime::currentDateTime();
     QString CurrentDateTimeString = CurrentDateTime.toString("[yyyy-MM-dd hh:mm:ss] ");
-    m_UI.textBrowser->append(CurrentDateTimeString + vString);
+    m_UI.textBrowser->append(CurrentDateTimeString + QString::fromStdString(vText));
 
     return true;
 }
@@ -219,6 +223,16 @@ std::string CQTInterface::__getFileName(const std::string& vFilePath)
 std::string CQTInterface::__getDirectory(const std::string& vFilePath)
 {
     return vFilePath.substr(0, vFilePath.find_last_of('/'));
+}
+
+std::string CQTInterface::__getFileNameWithSuffix(const std::string& vFilePath)
+{
+    return vFilePath.substr(vFilePath.find_last_of('/') + 1, vFilePath.length());
+}
+
+std::string CQTInterface::__getSuffix(const std::string& vFilePath)
+{
+    return vFilePath.substr(vFilePath.find_last_of('.') + 1, vFilePath.length());
 }
 
 void CQTInterface::onActionPointPicking()
@@ -236,7 +250,7 @@ void CQTInterface::onActionPointPicking()
             m_pPointPickingDockWidget = new CSliderSizeDockWidget(m_UI.VTKWidget, m_pPointPickingDockWidget, m_pVisualizationConfig);
             m_pPointPickingDockWidget->setWindowTitle(QString("Point Picking"));
             m_pPointPickingDockWidget->show();
-            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to point picking mode."));
+            CQTInterface::__messageDockWidgetOutputText("Switch to point picking mode.");
         }
         else
         {
@@ -245,7 +259,7 @@ void CQTInterface::onActionPointPicking()
             std::vector<std::size_t> PointLabelSet;
             PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
             Visualization::hiveRefreshVisualizer(PointLabelSet);
-            CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
+            CQTInterface::__messageDockWidgetOutputText("Switch to view mode.");
         }
 
         if (m_pVisualizationConfig)
@@ -292,14 +306,14 @@ void CQTInterface::onActionAreaPicking()
                 std::vector<std::size_t> PointLabelSet;
                 PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
                 Visualization::hiveRefreshVisualizer(PointLabelSet);
-                CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to area picking mode."));
+                CQTInterface::__messageDockWidgetOutputText("Switch to area picking mode.");
 
             }
             else
             {
                 if (m_pAreaPickingSetting)
                     _SAFE_DELETE(m_pAreaPickingSetting);
-                CQTInterface::__messageDockWidgetOutputText(QString::fromStdString("Switch to view mode."));
+                CQTInterface::__messageDockWidgetOutputText("Switch to view mode.");
             }
         }
 
@@ -310,27 +324,15 @@ void CQTInterface::onActionAreaPicking()
 void CQTInterface::onActionOpen()
 {
     QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud or Mesh"), QString::fromStdString(m_DirectoryOpenPath), tr("PointCloud Files(*.pcd *.ply);;" "OBJ files(*.obj)"));
-    std::vector<std::string> FilePathSet;
-    bool FileOpenSuccessFlag = true;
-
     if (FilePathList.empty())
         return;
 
+    std::vector<std::string> FilePathSet;
     foreach(QString FilePathQString, FilePathList)
-    {
-        std::string FilePathString = FilePathQString.toStdString();
-        FilePathSet.push_back(FilePathString);
-    }
-
-    if (FilePathSet.empty())
-        return;
+        FilePathSet.push_back(FilePathQString.toStdString());
 
     m_TileSet = hiveInitPointCloudScene(FilePathSet);
-
-    if (m_TileSet.empty())
-        FileOpenSuccessFlag = false;
-
-    if (FileOpenSuccessFlag)
+    if (!m_TileSet.empty())
     {
         m_DirectoryOpenPath = __getDirectory(FilePathSet.back());
 
@@ -365,15 +367,21 @@ void CQTInterface::onActionOpen()
             m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
         }
 
-        if (FilePathSet.size() == 1)
+        // remove last loaded clouds
+        for (int i = 0; i < m_pResourceSpaceStandardItemModels->rowCount();)
         {
-            CQTInterface::__addResourceSpaceCloudItem(FilePathSet[0]);
-        }                                                                           
-        else
-        {
-            m_SceneIndex++;
-            CQTInterface::__addResourceSpaceCloudItem("Scene " + std::to_string(m_SceneIndex));
+            auto Suffix = __getSuffix(m_pResourceSpaceStandardItemModels->item(i)->text().toStdString());
+            if (Suffix == "ply" || Suffix == "pcd")
+                m_pResourceSpaceStandardItemModels->removeRow(i);
+            else
+                i++;
         }
+
+        m_NameSet.clear();
+        for (auto& Path : FilePathSet)
+            m_NameSet.push_back(__getFileNameWithSuffix(Path));
+        for (auto& Name : m_NameSet)
+            CQTInterface::__addResourceSpaceCloudItem(Name);
     }
 }
 
@@ -393,13 +401,9 @@ void CQTInterface::onActionSave()
     }
 
     if (hiveObliquePhotography::hiveSavePointCloudScene(*pCloud2Save, FilePath))
-        __messageDockWidgetOutputText(QString::fromStdString("Save scene successfully"));
+        __messageDockWidgetOutputText("Save scene successfully");
     else
-        __messageDockWidgetOutputText(QString::fromStdString("Scene is not saved"));
-
-    /*CMesh Mesh;
-    SceneReconstruction::hiveSurfaceReconstruction(m_pCloud, Mesh);
-    pcl::io::savePLYFileBinary("Temp/TestPoisson.ply", Mesh.toPolMesh());*/
+        __messageDockWidgetOutputText("Scene is not saved");
 }
 
 void CQTInterface::onActionRubber()
@@ -466,7 +470,7 @@ void CQTInterface::onActionStartRepairHole()
         PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
         Visualization::hiveRefreshVisualizer(PointLabelSet, true);
 
-        __messageDockWidgetOutputText(QString::fromStdString("Start hole repair."));
+        __messageDockWidgetOutputText("Start hole repair.");
     }
 }
 
@@ -507,7 +511,7 @@ void CQTInterface::onActionPrecompute()
 {
     PointCloudRetouch::hiveRunPrecompute(m_CurrentCloud);
     m_UI.actionPrecompute->setChecked(false);
-    __messageDockWidgetOutputText(QString::fromStdString(m_CurrentCloud + "'s precompute is finished."));
+    __messageDockWidgetOutputText(m_CurrentCloud + "'s precompute is finished.");
 }
 
 void CQTInterface::onActionInstructions()
@@ -553,7 +557,7 @@ void CQTInterface::onActionReconstruction()
         m_MeshSet[MeshPath] = Mesh;
         hiveSaveMeshModel(Mesh, MeshPath);
 
-        __messageDockWidgetOutputText(QString::fromStdString("Reconstruction finished."));
+        __messageDockWidgetOutputText("Reconstruction finished.");
     }
 }
 
@@ -565,9 +569,10 @@ void CQTInterface::onActionOpenMesh()
     if (MeshPath != "" && hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
     {
         m_MeshSet[MeshPath] = SceneReconstruction::hiveTestCMesh(MeshPath);
-        Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+        //Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
         Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
-        __messageDockWidgetOutputText(QString::fromStdString("Open mesh succeed."));
+        __addResourceSpaceMeshItem(__getFileNameWithSuffix(MeshPath));
+        __messageDockWidgetOutputText("Open mesh " + MeshPath + " succeed.");
     }
 }
 
@@ -585,7 +590,7 @@ void CQTInterface::onActionParameterization()
     {
         SceneReconstruction::hiveMeshParameterization(m_MeshSet.begin()->second, m_MeshSet.begin()->first);
         hiveSaveMeshModel(m_MeshSet.begin()->second, MeshPath);
-        __messageDockWidgetOutputText(QString::fromStdString("Mesh parameterization succeed."));
+        __messageDockWidgetOutputText("Mesh parameterization succeed.");
     }
 }
 
@@ -618,17 +623,45 @@ void CQTInterface::onActionBakeTexture()
             stbi_image_free(ResultImage);
         }
 
-        __messageDockWidgetOutputText(QString::fromStdString("Bake Texture finished."));
+        __messageDockWidgetOutputText("Bake Texture finished.");
     }
 }
 
 void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
 {
-    Visualization::hiveResetVisualizer(m_TileSet, true);
-    __initialVTKWidget();
-    std::vector<std::size_t> PointLabelSet;
-    PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
-    Visualization::hiveRefreshVisualizer(PointLabelSet);
+    if (!m_TileSet.empty())
+    {
+        Visualization::hiveResetVisualizer(m_TileSet, true);
+        __initialVTKWidget();
+        std::vector<std::size_t> PointLabelSet;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+        Visualization::hiveRefreshVisualizer(PointLabelSet);
+    }
+}
+
+void CQTInterface::onResourceSpaceItemClick(QModelIndex vIndex)
+{
+    auto ModelName = m_pResourceSpaceStandardItemModels->item(vIndex.row())->text().toStdString();
+    if (__getSuffix(ModelName) == "ply" || __getSuffix(ModelName) == "pcd")
+    {
+        auto NameIter = std::find(m_NameSet.begin(), m_NameSet.end(), ModelName);
+        if (NameIter != m_NameSet.end())
+        {
+            auto Index = std::distance(m_NameSet.begin(), NameIter);
+            auto IndexIter = std::find(m_SelectedTileIndices.begin(), m_SelectedTileIndices.end(), Index);
+            if (IndexIter == m_SelectedTileIndices.end())
+                m_SelectedTileIndices.push_back(Index);
+            else
+                m_SelectedTileIndices.erase(IndexIter); // ทดัก
+        }
+    }
+
+    std::string Text;
+    Text += "Current select " + std::to_string(m_SelectedTileIndices.size()) + " tiles, which are \n";
+    for (auto Index : m_SelectedTileIndices)
+        Text += "[" + m_NameSet[Index] + "] ";
+    Text += "\n";
+    __messageDockWidgetOutputText(Text);
 }
 
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)
