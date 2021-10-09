@@ -28,6 +28,9 @@
     <ClCompile Include="MeshPlaneIntersection.cpp">
       <Filter>Suture</Filter>
     </ClCompile>
+    <ClCompile Include="BasicMeshSuture.cpp">
+      <Filter>Suture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -59,6 +62,9 @@
       <Filter>Suture</Filter>
     </ClInclude>
     <ClInclude Include="MeshPlaneIntersection.h">
+      <Filter>Suture</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicMeshSuture.h">
       <Filter>Suture</Filter>
     </ClInclude>
   </ItemGroup>
