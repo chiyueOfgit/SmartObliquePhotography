@@ -24,7 +24,7 @@ class TestArapParameterization : public testing::Test
 protected:
 	void SetUp() override
 	{
-		m_MeshPath = PoissonMeshPath;
+		m_MeshPath = PlaneMeshPath;
 		_loadObj(m_MeshPath, m_Mesh);
 		ASSERT_TRUE(!m_Mesh.m_Vertices.empty());
 		m_pMeshParameterization = _createProduct(m_Mesh);
@@ -64,7 +64,6 @@ protected:
 
 TEST_F(TestArapParameterization, TestfindBoundaryPoint)
 {
-	m_pMeshParameterization->setPath4Boundary(m_MeshPath);
 	auto UV = m_pMeshParameterization->execute();
 	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
 	for (int Row = 0; Row < UV.rows(); Row++)

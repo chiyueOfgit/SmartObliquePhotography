@@ -38,6 +38,7 @@
     <ClInclude Include="..\ObliquePhotographyData\PointCloudScene.h" />
     <ClInclude Include="..\ObliquePhotographyData\TextureLoader.h" />
     <ClInclude Include="..\ObliquePhotographyData\TextureSaver.h" />
+    <ClInclude Include="..\ObliquePhotographyData\VcgMesh.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ObliquePhotographyData\Mesh.cpp" />
@@ -222,6 +223,7 @@
     <Import Project="D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets" Condition="Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" />
     <Import Project="D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets" Condition="Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" />
     <Import Project="D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets" Condition="Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" />
+    <Import Project="D:\vc_packages\VCG.2021.7.0\build\native\VCG.targets" Condition="Exists('D:\vc_packages\VCG.2021.7.0\build\native\VCG.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -243,5 +245,6 @@
     <Error Condition="!Exists('D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_filesystem-vc142.1.76.0.0\build\boost_filesystem-vc142.targets'))" />
     <Error Condition="!Exists('D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\boost_iostreams-vc142.1.76.0.0\build\boost_iostreams-vc142.targets'))" />
+    <Error Condition="!Exists('D:\vc_packages\VCG.2021.7.0\build\native\VCG.targets')" Text="$([System.String]::Format('$(ErrorText)', 'D:\vc_packages\VCG.2021.7.0\build\native\VCG.targets'))" />
   </Target>
 </Project>

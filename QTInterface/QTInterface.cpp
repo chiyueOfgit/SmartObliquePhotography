@@ -237,7 +237,7 @@ std::string CQTInterface::__getSuffix(const std::string& vFilePath)
 
 void CQTInterface::onActionPointPicking()
 {
-    if (!m_TileSet.empty())
+    if (!m_TileSet.TileSet.empty())
     {
         if (m_UI.actionPointPicking->isChecked())
         {
@@ -270,7 +270,7 @@ void CQTInterface::onActionPointPicking()
 
 void CQTInterface::onActionAreaPicking()
 {
-    if (!m_TileSet.empty())
+    if (!m_TileSet.TileSet.empty())
     {
         if (!m_pVisualizationConfig->getAttribute<bool>(Visualization::REPAIR_MODE).value())
         {
@@ -323,7 +323,7 @@ void CQTInterface::onActionAreaPicking()
 
 void CQTInterface::onActionOpen()
 {
-    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud or Mesh"), QString::fromStdString(m_DirectoryOpenPath), tr("PointCloud Files(*.pcd *.ply);;" "OBJ files(*.obj)"));
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud or Mesh"), QString::fromStdString(m_CloudOpenPath), tr("PointCloud Files(*.pcd *.ply);;" "OBJ files(*.obj)"));
     if (FilePathList.empty())
         return;
 
@@ -331,16 +331,16 @@ void CQTInterface::onActionOpen()
     foreach(QString FilePathQString, FilePathList)
         FilePathSet.push_back(FilePathQString.toStdString());
 
-    m_TileSet = hiveInitPointCloudScene(FilePathSet);
-    if (!m_TileSet.empty())
+    m_TileSet.TileSet = hiveInitPointCloudScene(FilePathSet);
+    if (!m_TileSet.TileSet.empty())
     {
-        m_DirectoryOpenPath = __getDirectory(FilePathSet.back());
+        m_CloudOpenPath = __getDirectory(FilePathSet.back());
 
         auto config = m_pPointCloudRetouchConfig->getSubconfigAt(0);
         auto num = config->getNumSubconfig();
 
-        PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(m_TileSet, true);
+        PointCloudRetouch::hiveInit(m_TileSet.TileSet, m_pPointCloudRetouchConfig);
+        Visualization::hiveInitVisualizer(m_TileSet.TileSet, true);
         CQTInterface::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);
@@ -377,10 +377,10 @@ void CQTInterface::onActionOpen()
                 i++;
         }
 
-        m_NameSet.clear();
+        m_TileSet.NameSet.clear();
         for (auto& Path : FilePathSet)
-            m_NameSet.push_back(__getFileNameWithSuffix(Path));
-        for (auto& Name : m_NameSet)
+            m_TileSet.NameSet.push_back(__getFileNameWithSuffix(Path));
+        for (auto& Name : m_TileSet.NameSet)
             CQTInterface::__addResourceSpaceCloudItem(Name);
     }
 }
@@ -419,7 +419,7 @@ void CQTInterface::onActionBrush()
 
 void CQTInterface::onActionOutlierDetection()
 {
-    if (!m_TileSet.empty())
+    if (!m_TileSet.TileSet.empty())
     {
         PointCloudRetouch::hiveMarkIsolatedAreaAsLitter();
         std::vector<std::size_t> PointLabelSet;
@@ -430,16 +430,16 @@ void CQTInterface::onActionOutlierDetection()
 
 void CQTInterface::onActionStartRepairHole()
 {
-    if (!m_TileSet.empty())
+    if (!m_TileSet.TileSet.empty())
     {
         PointCloud_t::Ptr pCloud(new PointCloud_t);
         PointCloudRetouch::hiveDumpPointCloudtoSave(pCloud);
         auto CloudSavedPath = "Temp/" + m_CurrentCloud + ".ply";
         hiveSavePointCloudScene(pCloud, CloudSavedPath);
         
-        m_TileSet = hiveInitPointCloudScene({ CloudSavedPath });
-        PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(m_TileSet, true);
+        m_TileSet.TileSet = hiveInitPointCloudScene({ CloudSavedPath });
+        PointCloudRetouch::hiveInit(m_TileSet.TileSet, m_pPointCloudRetouchConfig);
+        Visualization::hiveInitVisualizer(m_TileSet.TileSet, true);
         __initialVTKWidget();
 
         //unable ui icons and reset configs
@@ -530,7 +530,7 @@ void CQTInterface::onActionSetting()
         m_pDisplayOptionsSettingDialog->exec();
 
         __parseConfigFile();
-        PointCloudRetouch::hiveInit(m_TileSet, m_pPointCloudRetouchConfig);
+        PointCloudRetouch::hiveInit(m_TileSet.TileSet, m_pPointCloudRetouchConfig);
 
         Visualization::hiveRemoveAllShapes();
         Visualization::hiveCancelAllHighlighting();
@@ -545,16 +545,17 @@ void CQTInterface::onActionSetting()
 
 void CQTInterface::onActionReconstruction()
 {
-    auto MeshPath = QFileDialog::getSaveFileName(this, tr("Save Mesh"), ".", tr("OBJ files(*.obj)")).toStdString();
+    auto MeshPath = QFileDialog::getSaveFileName(this, tr("Save Mesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
 
-    if (!m_TileSet.empty())
+    if (!m_TileSet.TileSet.empty())
     {
         PointCloud_t::Ptr pResult(new PointCloud_t);
-        for (auto pCloud : m_TileSet)
+        for (auto pCloud : m_TileSet.TileSet)
             *pResult += *pCloud;
         CMesh Mesh;
         SceneReconstruction::hiveSurfaceReconstruction(pResult, Mesh);
-        m_MeshSet[MeshPath] = Mesh;
+        m_MeshSet.NameSet.push_back(__getFileNameWithSuffix(MeshPath));
+        m_MeshSet.MeshSet.push_back(Mesh);
         hiveSaveMeshModel(Mesh, MeshPath);
 
         __messageDockWidgetOutputText("Reconstruction finished.");
@@ -563,34 +564,39 @@ void CQTInterface::onActionReconstruction()
 
 void CQTInterface::onActionOpenMesh()
 {
-    auto MeshPath = QFileDialog::getOpenFileName(this, tr("Open Mesh"), QString::fromStdString("../UnitTests/Unit_Test_026"), tr("OBJ files(*.obj)")).toStdString();
+    auto MeshPath = QFileDialog::getOpenFileName(this, tr("Open Mesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
 
     // load mesh
-    if (MeshPath != "" && hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
+    if (MeshPath != "")
     {
-        m_MeshSet[MeshPath] = SceneReconstruction::hiveTestCMesh(MeshPath);
-        Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
-        Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
-        __addResourceSpaceMeshItem(__getFileNameWithSuffix(MeshPath));
+        m_MeshOpenPath = __getDirectory(MeshPath);
+
+        CMesh Mesh;
+        auto MeshName = __getFileNameWithSuffix(MeshPath);
+        hiveObliquePhotography::hiveLoadMeshModel(Mesh, MeshPath);
+        m_MeshSet.NameSet.push_back(MeshName);
+        m_MeshSet.MeshSet.push_back(Mesh);
+        //Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+        //Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
+        __addResourceSpaceMeshItem(MeshName);
         __messageDockWidgetOutputText("Open mesh " + MeshPath + " succeed.");
     }
 }
 
 void CQTInterface::onActionParameterization()
 {
-    std::string PresetPath(".");
-    if (!m_MeshSet.empty())
-    {
-        PresetPath = m_MeshSet.begin()->first;
-        PresetPath = PresetPath.substr(0, PresetPath.find_last_of("/"));
-    }
-    auto MeshPath = QFileDialog::getSaveFileName(this, tr("Save Mesh"), PresetPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
+    auto MeshPath = QFileDialog::getSaveFileName(this, tr("Save Mesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
+    auto Directory = __getDirectory(MeshPath);
 
-    if (!m_MeshSet.empty() && MeshPath != "")
+    if (!m_SelectedMeshIndices.empty() && MeshPath != "")
     {
-        SceneReconstruction::hiveMeshParameterization(m_MeshSet.begin()->second, m_MeshSet.begin()->first);
-        hiveSaveMeshModel(m_MeshSet.begin()->second, MeshPath);
-        __messageDockWidgetOutputText("Mesh parameterization succeed.");
+        for (auto Index : m_SelectedMeshIndices)
+        {
+            SceneReconstruction::hiveMeshParameterization(m_MeshSet.MeshSet[Index]);
+            hiveSaveMeshModel(m_MeshSet.MeshSet[Index], Directory + m_MeshSet.NameSet[Index]);
+            __messageDockWidgetOutputText("Mesh parameterization succeed.");
+        }
+
     }
 }
 
@@ -598,12 +604,12 @@ void CQTInterface::onActionBakeTexture()
 {
     auto TexturePath = QFileDialog::getSaveFileName(this, tr("Save Texture"), ".", tr("PNG files(*.png)")).toStdString();
 
-    if (!m_TileSet.empty())
+    if (m_SelectedTileIndices.size() >= 1 && m_SelectedMeshIndices.size() == 1)
     {
         PointCloud_t::Ptr pResult(new PointCloud_t);
-        for (auto pCloud : m_TileSet)
-            *pResult += *pCloud;
-        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.begin()->second, pResult, { 2048, 2048 });
+        for (auto Index : m_SelectedTileIndices)
+            *pResult += *m_TileSet.TileSet[Index];
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[m_SelectedMeshIndices[0]], pResult, { 512, 512 });
         
         {
             const auto Width = Texture.getWidth();
@@ -629,9 +635,9 @@ void CQTInterface::onActionBakeTexture()
 
 void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
 {
-    if (!m_TileSet.empty())
+    if (!m_TileSet.TileSet.empty())
     {
-        Visualization::hiveResetVisualizer(m_TileSet, true);
+        Visualization::hiveResetVisualizer(m_TileSet.TileSet, true);
         __initialVTKWidget();
         std::vector<std::size_t> PointLabelSet;
         PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
@@ -644,24 +650,31 @@ void CQTInterface::onResourceSpaceItemClick(QModelIndex vIndex)
     auto ModelName = m_pResourceSpaceStandardItemModels->item(vIndex.row())->text().toStdString();
     if (__getSuffix(ModelName) == "ply" || __getSuffix(ModelName) == "pcd")
     {
-        auto NameIter = std::find(m_NameSet.begin(), m_NameSet.end(), ModelName);
-        if (NameIter != m_NameSet.end())
+        auto NameIter = std::find(m_TileSet.NameSet.begin(), m_TileSet.NameSet.end(), ModelName);
+        if (NameIter != m_TileSet.NameSet.end())
         {
-            auto Index = std::distance(m_NameSet.begin(), NameIter);
+            auto Index = std::distance(m_TileSet.NameSet.begin(), NameIter);
             auto IndexIter = std::find(m_SelectedTileIndices.begin(), m_SelectedTileIndices.end(), Index);
             if (IndexIter == m_SelectedTileIndices.end())
                 m_SelectedTileIndices.push_back(Index);
             else
                 m_SelectedTileIndices.erase(IndexIter); // ทดัก
         }
+
+        std::string Text;
+        Text += "Current select " + std::to_string(m_SelectedTileIndices.size()) + " tiles, which are \n";
+        for (auto Index : m_SelectedTileIndices)
+            Text += "[" + m_TileSet.NameSet[Index] + "] ";
+        Text += "\n";
+        __messageDockWidgetOutputText(Text);
+    }
+    else if (__getSuffix(ModelName) == "obj")
+    {
+        //auto NameIter = m_MeshSet.find(ModelName);
+        //if ()
+        //m_SelectedMeshSet.push_back(NameIter)
     }
 
-    std::string Text;
-    Text += "Current select " + std::to_string(m_SelectedTileIndices.size()) + " tiles, which are \n";
-    for (auto Index : m_SelectedTileIndices)
-        Text += "[" + m_NameSet[Index] + "] ";
-    Text += "\n";
-    __messageDockWidgetOutputText(Text);
 }
 
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)

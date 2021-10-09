@@ -19,6 +19,18 @@ namespace hiveObliquePhotography
 
     namespace QTInterface
     {
+        struct STileSet
+        {
+            std::vector<std::string> NameSet;
+            std::vector<PointCloud_t::Ptr> TileSet;
+        };
+
+        struct SMeshSet
+        {
+            std::vector<std::string> NameSet;
+            std::vector<CMesh> MeshSet;
+        };
+
         class CDisplayOptionsSettingDialog;
 
         class CQTInterface : public QMainWindow
@@ -43,12 +55,14 @@ namespace hiveObliquePhotography
             QSlider* m_pPointSizeSlider = nullptr;
             QCheckBox* m_pAreaPickingCullingBox = nullptr;
             std::string m_CurrentCloud = "";
-            std::string m_DirectoryOpenPath = "../Models";
+            std::string m_CloudOpenPath = "../Models";
+            std::string m_MeshOpenPath = ".";
             int m_PointSize = 3;             // magic
-            std::map<std::string, CMesh> m_MeshSet;
-            std::vector<std::string> m_NameSet;
-            std::vector<PointCloud_t::Ptr> m_TileSet;
+
+            STileSet m_TileSet;
+            SMeshSet m_MeshSet;
             std::vector<int> m_SelectedTileIndices;
+            std::vector<int> m_SelectedMeshIndices;
 
             QDockWidget* m_pRubberSizeDockWidget = nullptr;
             QDockWidget* m_pBrushSizeDockWidget = nullptr;
