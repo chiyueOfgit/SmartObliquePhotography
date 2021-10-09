@@ -96,9 +96,8 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 	//	}
 	//}
 
-	Eigen::MatrixXd V;
-	Eigen::MatrixXi F;
-	igl::readOBJ(m_MeshPath, V, F);
+	Eigen::MatrixXd V = m_Mesh.getVerticesMatrix();
+	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
 	std::vector<int> Boundary;
 	igl::boundary_loop(F, Boundary);
 	//__findValidBoundary(Boundary, ValidSet);

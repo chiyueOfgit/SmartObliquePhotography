@@ -155,25 +155,19 @@ pcl::TexMaterial CMeshOBJLoader::__loadMaterialFromFile(const std::string& vFile
 				Material.tex_illum = std::stoi(Line.substr(Line.find(' ') + 1, Line.length()));
 			if (Line.find("Ka ") != std::string::npos)
 			{
-				std::smatch Result;
-				std::regex VertexRegex(NumberRegex + SpaceRegex + NumberRegex + SpaceRegex + NumberRegex);
-				std::regex_search(Line, Result, VertexRegex);
+				std::regex_search(Line, Result, ThreeNumRegex);
 				_ASSERTE(Result.size() == 4);
 				Material.tex_Ka = { std::stof(Result[1]), std::stof(Result[2]), std::stof(Result[3]) };
 			}
 			if (Line.find("Kd ") != std::string::npos && Line.find("map_Kd") == std::string::npos)
 			{
-				std::smatch Result;
-				std::regex VertexRegex(NumberRegex + SpaceRegex + NumberRegex + SpaceRegex + NumberRegex);
-				std::regex_search(Line, Result, VertexRegex);
+				std::regex_search(Line, Result, ThreeNumRegex);
 				_ASSERTE(Result.size() == 4);
 				Material.tex_Kd = { std::stof(Result[1]), std::stof(Result[2]), std::stof(Result[3]) };
 			}
 			if (Line.find("Ks ") != std::string::npos)
 			{
-				std::smatch Result;
-				std::regex VertexRegex(NumberRegex + SpaceRegex + NumberRegex + SpaceRegex + NumberRegex);
-				std::regex_search(Line, Result, VertexRegex);
+				std::regex_search(Line, Result, ThreeNumRegex);
 				_ASSERTE(Result.size() == 4);
 				Material.tex_Ks = { std::stof(Result[1]), std::stof(Result[2]), std::stof(Result[3]) };
 			}

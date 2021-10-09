@@ -37,13 +37,12 @@ pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(cons
 
 //*****************************************************************
 //FUNCTION: 
-void hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vioMesh, const std::string& vPath)
+void hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vioMesh)
 {
 	_ASSERTE(!vioMesh.m_Vertices.empty());
 	auto pParameterizater = hiveDesignPattern::hiveCreateProduct<CArapParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("Parameterization"), vioMesh);
 	_ASSERTE(pParameterizater);
 
-	pParameterizater->setPath4Boundary(vPath);
 	auto UV = pParameterizater->execute();
 	_ASSERTE(UV.rows() == vioMesh.m_Vertices.size());
 	for (int i = 0; i < UV.rows(); i++)
