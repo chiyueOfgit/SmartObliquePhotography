@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "MeshPlaneIntersection.h"
+#include<set>
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -9,7 +10,8 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 {
 	m_IntersectionPoints.clear();
 	m_DissociatedPoints.clear();
-	
+
+	std::set<int> Indeices;
 	std::vector<SFace>::iterator Iter = vioMesh.m_Faces.begin();
 	for(;Iter!= vioMesh.m_Faces.end();)
 	{
@@ -20,22 +22,21 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 		{
 			bIsIntersected = true;
 			m_IntersectionPoints.insert(m_IntersectionPoints.end(), TempIntersectionSet.begin(), TempIntersectionSet.end());
-			//TODO: 新生成点属性；
 		}
 		if (bIsIntersected)
 		{
 			auto DissociatedSet = __tellDissociatedPoint(TempFace, vPlane);
 			for (int i = 0; i < TempFace.size(); i++)
 			{
-				if (find(DissociatedSet.begin(), DissociatedSet.end(), (*Iter)[i]) != DissociatedSet.end())
-					m_DissociatedPoints.push_back((*Iter)[i]);
+				if (find(DissociatedSet.begin(), DissociatedSet.end(), i) != DissociatedSet.end())
+					Indeices.insert((*Iter)[i]);
 			}
 			Iter = vioMesh.m_Faces.erase(Iter);
 		}
 		else
 			Iter++;
 	}
-
+	m_DissociatedPoints.assign(Indeices.begin(), Indeices.end());
 	return;
 }
 
@@ -76,12 +77,11 @@ std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcInter
 		float Depth = PlaneNormal.dot(DefaultPlanePoint - Origin) / DotNormal;
 		Eigen::Vector3f HitPos = Origin + Depth * Direction;
 
-		if((HitPos - vFace[i]).dot(HitPos - vFace[(i + 1) % 3]) <= 0)
+		if((HitPos - vFace[i]).dot(HitPos - vFace[(i + 1) % 3]) < 0 || HitPos == vFace[i])
 		{
 			SVertex TempVertex; TempVertex.x = HitPos[0]; TempVertex.y = HitPos[1]; TempVertex.z = HitPos[2];
 			HitPointSet.push_back(TempVertex);
-		}
-			
+		}	
 	}
 	return HitPointSet;
 }
@@ -96,7 +96,7 @@ std::vector<int> CMeshPlaneIntersection::__tellDissociatedPoint(const std::vecto
 	for(int i = 0; i < vFace.size(); i++)
 	{
 		auto Vector = DefaultPlanePoint - vFace[i];
-		if (Vector.dot(PlaneNormal) >= 0)
+		if (Vector.dot(PlaneNormal) > 0)
 			DissociatedIndices.push_back(i);
 	}
 	return DissociatedIndices;
@@ -108,10 +108,7 @@ Eigen::Vector3f CMeshPlaneIntersection::__generateDefaultPlanePoint(const Eigen:
 	for (; i < 3; i++)
 	{
 		if (vPlane[i])
-		{
 		  break;
-		}
-			
 	}
 	Eigen::Vector3f DefaultPlanePoint;
 	for(int k = 0; k < 3; k++)
