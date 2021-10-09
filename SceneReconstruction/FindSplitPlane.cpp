@@ -9,50 +9,52 @@ Eigen::Vector4f CFindSplitPlane::execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCl
 {
 	pcl::PointXYZ MinPointOfCloudOne;
 	pcl::PointXYZ MaxPointOfCloudOne;
-	getMinAndMaxPointOfAABB(vCloudOne, MinPointOfCloudOne, MaxPointOfCloudOne);
+	__getMinAndMaxPointOfAABB(vCloudOne, MinPointOfCloudOne, MaxPointOfCloudOne);
 	pcl::PointXYZ MinPointOfCloudTwo;
 	pcl::PointXYZ MaxPointOfCloudTwo;
-	getMinAndMaxPointOfAABB(vCloudTwo, MinPointOfCloudTwo, MaxPointOfCloudTwo);
+	__getMinAndMaxPointOfAABB(vCloudTwo, MinPointOfCloudTwo, MaxPointOfCloudTwo);
 
-	float HalfModelSize = 25;
-	float BoundingBoxError = 2;
-	if ((fabs(MinPointOfCloudOne.x - MaxPointOfCloudTwo.x) < BoundingBoxError) || (fabs(MinPointOfCloudTwo.x - MaxPointOfCloudOne.x) < BoundingBoxError))
-	{
-		if (fabs((MinPointOfCloudOne.x + MaxPointOfCloudOne.x) / 2 - (MinPointOfCloudTwo.x + MaxPointOfCloudTwo.x) / 2) > HalfModelSize)
-		{
-			//写返回值
-			return Eigen::Vector4f(1,0,0, (MinPointOfCloudOne.x + MaxPointOfCloudOne.x) / 2);
-		}
-	}
+	Eigen::Vector4f voSplitPlane;
+	int AxisFlag = 0;
+	__judgeSplitPlane(AxisFlag, MinPointOfCloudOne.x, MaxPointOfCloudOne.x, MinPointOfCloudTwo.x, MaxPointOfCloudTwo.x, voSplitPlane);
+	AxisFlag = 1;
+	__judgeSplitPlane(AxisFlag, MinPointOfCloudOne.y, MaxPointOfCloudOne.y, MinPointOfCloudTwo.y, MaxPointOfCloudTwo.y, voSplitPlane);
+	AxisFlag = 2;
+	__judgeSplitPlane(AxisFlag, MinPointOfCloudOne.z, MaxPointOfCloudOne.z, MinPointOfCloudTwo.z, MaxPointOfCloudTwo.z, voSplitPlane);
 
-	if ((fabs(MinPointOfCloudOne.y - MaxPointOfCloudTwo.y) < BoundingBoxError) || (fabs(MinPointOfCloudTwo.y - MaxPointOfCloudOne.y) < BoundingBoxError))
-	{
-		if (fabs((MinPointOfCloudOne.y + MaxPointOfCloudOne.y) / 2 - (MinPointOfCloudTwo.y + MaxPointOfCloudTwo.y) / 2) > HalfModelSize)
-		{
-			//写返回值
-			return Eigen::Vector4f(0,1,0, (MinPointOfCloudOne.y + MaxPointOfCloudOne.y) / 2);
-		}
-	}
-
-	if ((fabs(MinPointOfCloudOne.z - MaxPointOfCloudTwo.z) < BoundingBoxError) || (fabs(MinPointOfCloudTwo.z - MaxPointOfCloudOne.z) < BoundingBoxError))
-	{
-		if (fabs((MinPointOfCloudOne.z + MaxPointOfCloudOne.z) / 2 - (MinPointOfCloudTwo.z + MaxPointOfCloudTwo.z) / 2) > HalfModelSize)
-		{
-			//写返回值
-			return Eigen::Vector4f(0,0,1, (MinPointOfCloudOne.z + MaxPointOfCloudOne.z) / 2);
-		}
-	}
-
-	return;
+	return voSplitPlane;
 }
 
 //*****************************************************************
 //FUNCTION:得到点云模型的AABB包围盒的两个组成点；
-void CFindSplitPlane::getMinAndMaxPointOfAABB(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud,pcl::PointXYZ& vMinPoint, pcl::PointXYZ& vMaxPoint)
+void CFindSplitPlane::__getMinAndMaxPointOfAABB(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud,pcl::PointXYZ& vMinPoint, pcl::PointXYZ& vMaxPoint)
 {
 	pcl::MomentOfInertiaEstimation <pcl::PointXYZ> FeatureExtractor;
 	FeatureExtractor.setInputCloud(vCloud);
 	FeatureExtractor.compute();
 	FeatureExtractor.getAABB(vMinPoint, vMaxPoint);
 	return;
+}
+
+//*****************************************************************
+//FUNCTION:判断分割平面垂直于哪个轴，未确定则返回原值，确定则返回切割平面；
+void CFindSplitPlane::__judgeSplitPlane(int vAxisFlag,float vMinAxisValueCloudOne, float vMaxAxisValueCloudOne, float vMinAxisValueCloudTwo, float vMaxAxisValueCloudTwo, Eigen::Vector4f& vioSplitPlane)
+{
+	float HalfModelSize = 25;
+	float BoundingBoxError = 2;
+	if ((fabs(vMinAxisValueCloudOne - vMaxAxisValueCloudTwo) < BoundingBoxError) || (fabs(vMinAxisValueCloudTwo - vMaxAxisValueCloudOne) < BoundingBoxError))
+	{
+		if (fabs((vMinAxisValueCloudOne + vMaxAxisValueCloudOne) / 2 - (vMinAxisValueCloudTwo + vMaxAxisValueCloudTwo) / 2) > HalfModelSize)
+		{
+			float SplitPlaneValue = (vMinAxisValueCloudOne + vMaxAxisValueCloudOne + vMinAxisValueCloudTwo + vMaxAxisValueCloudTwo) / 4;
+			//规定法向量方向;
+			float Sign = ((SplitPlaneValue - vMinAxisValueCloudOne) > 0) ? 1 : -1;
+			if (vAxisFlag == 0)
+				vioSplitPlane = Eigen::Vector4f(1 * Sign, 0, 0, SplitPlaneValue * Sign);
+			if (vAxisFlag == 1)
+				vioSplitPlane = Eigen::Vector4f(0, 1 * Sign, 0, SplitPlaneValue * Sign);
+			if (vAxisFlag == 2)
+				vioSplitPlane = Eigen::Vector4f(0, 0, 1 * Sign, SplitPlaneValue * Sign);
+		}
+	}
 }

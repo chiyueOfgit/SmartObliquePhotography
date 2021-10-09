@@ -975,8 +975,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libigl", "Libigl", "{BA4FC7
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_027 (mesh_plane_intersection)", "UnitTests\Unit_Test_027\Unit_Test_027.vcxproj", "{C7F7ECC7-6620-4176-B2C8-CAED2EBA62A4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FindSplitPlane", "FindSplitPlane\FindSplitPlane.vcxproj", "{A7CF0302-875D-4B16-8AF3-E0D5C9868A2D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1269,14 +1267,6 @@ Global
 		{C7F7ECC7-6620-4176-B2C8-CAED2EBA62A4}.Release|x64.Build.0 = Release|x64
 		{C7F7ECC7-6620-4176-B2C8-CAED2EBA62A4}.Release|x86.ActiveCfg = Release|Win32
 		{C7F7ECC7-6620-4176-B2C8-CAED2EBA62A4}.Release|x86.Build.0 = Release|Win32
-		{A7CF0302-875D-4B16-8AF3-E0D5C9868A2D}.Debug|x64.ActiveCfg = Debug|x64
-		{A7CF0302-875D-4B16-8AF3-E0D5C9868A2D}.Debug|x64.Build.0 = Debug|x64
-		{A7CF0302-875D-4B16-8AF3-E0D5C9868A2D}.Debug|x86.ActiveCfg = Debug|Win32
-		{A7CF0302-875D-4B16-8AF3-E0D5C9868A2D}.Debug|x86.Build.0 = Debug|Win32
-		{A7CF0302-875D-4B16-8AF3-E0D5C9868A2D}.Release|x64.ActiveCfg = Release|x64
-		{A7CF0302-875D-4B16-8AF3-E0D5C9868A2D}.Release|x64.Build.0 = Release|x64
-		{A7CF0302-875D-4B16-8AF3-E0D5C9868A2D}.Release|x86.ActiveCfg = Release|Win32
-		{A7CF0302-875D-4B16-8AF3-E0D5C9868A2D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
