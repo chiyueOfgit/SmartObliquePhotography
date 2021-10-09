@@ -21,7 +21,7 @@ Eigen::Vector4f CFindSplitPlane::execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCl
 		if (fabs((MinPointOfCloudOne.x + MaxPointOfCloudOne.x) / 2 - (MinPointOfCloudTwo.x + MaxPointOfCloudTwo.x) / 2) > HalfModelSize)
 		{
 			//写返回值
-			return Eigen::Vector4f();
+			return Eigen::Vector4f(1,0,0, (MinPointOfCloudOne.x + MaxPointOfCloudOne.x) / 2);
 		}
 	}
 
@@ -30,7 +30,7 @@ Eigen::Vector4f CFindSplitPlane::execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCl
 		if (fabs((MinPointOfCloudOne.y + MaxPointOfCloudOne.y) / 2 - (MinPointOfCloudTwo.y + MaxPointOfCloudTwo.y) / 2) > HalfModelSize)
 		{
 			//写返回值
-			return Eigen::Vector4f();
+			return Eigen::Vector4f(0,1,0, (MinPointOfCloudOne.y + MaxPointOfCloudOne.y) / 2);
 		}
 	}
 
@@ -39,7 +39,7 @@ Eigen::Vector4f CFindSplitPlane::execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCl
 		if (fabs((MinPointOfCloudOne.z + MaxPointOfCloudOne.z) / 2 - (MinPointOfCloudTwo.z + MaxPointOfCloudTwo.z) / 2) > HalfModelSize)
 		{
 			//写返回值
-			return Eigen::Vector4f();
+			return Eigen::Vector4f(0,0,1, (MinPointOfCloudOne.z + MaxPointOfCloudOne.z) / 2);
 		}
 	}
 
