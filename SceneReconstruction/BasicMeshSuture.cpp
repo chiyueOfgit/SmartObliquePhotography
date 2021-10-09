@@ -1,7 +1,9 @@
 #include "pch.h"
-#include"BasicMeshSuture.h"
-#include"MeshPlaneIntersection.h"
-#include"FindSplitPlane.h"
+#include "BasicMeshSuture.h"
+#include <vcg/complex/algorithms/clean.h>
+#include "MeshPlaneIntersection.h"
+#include "FindSplitPlane.h"
+#include "VcgMesh.hpp"
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -144,5 +146,8 @@ std::vector<hiveObliquePhotography::SFace> hiveObliquePhotography::SceneReconstr
 //FUNCTION: 
 void CBasicMeshSuture::__removeUnreferencedVertex(CMesh& vioMesh)
 {
-
+	CVcgMesh VcgMesh;
+	toVcgMesh(vioMesh, VcgMesh);
+	vcg::tri::Clean<CVcgMesh>::RemoveUnreferencedVertex(VcgMesh);
+	fromVcgMesh(VcgMesh, vioMesh);
 }
