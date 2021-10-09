@@ -29,7 +29,7 @@ void CBasicMeshSuture::sutureMeshes()
 //FUNCTION: 
 Eigen::Vector4f CBasicMeshSuture::__calcSegmentPlane()
 {
-	
+	return {};
 }
 
 //*****************************************************************
@@ -46,23 +46,8 @@ void CBasicMeshSuture::__executeIntersection(CMesh& vioMesh, const Eigen::Vector
 //FUNCTION: 
 std::vector<hiveObliquePhotography::SVertex> CBasicMeshSuture::__generatePublicVertices(std::vector<SVertex>& vLHSIntersectionPoints, std::vector<SVertex>& vRHSIntersectionPoints)
 {
-	
+	return {};
 }
-
-//*****************************************************************
-//FUNCTION: 
-void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int>& vDissociatedIndices, std::vector<SVertex>& vPublicVertices)
-{
-	
-}
-
-//*****************************************************************
-//FUNCTION: 
-void CBasicMeshSuture::__removeUnreferencedVertex(CMesh& vioMesh)
-{
-	
-}
-
 
 //*****************************************************************
 //FUNCTION: 
@@ -90,9 +75,8 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<hiveObliquePhotography::SFace> CBasicMeshSuture::__genConnectionFace(int vNumLeft, int vNumRight, bool vDefaultOrder)
+std::vector<hiveObliquePhotography::SFace> hiveObliquePhotography::SceneReconstruction::CBasicMeshSuture::__genConnectionFace(int vNumLeft, int vNumRight, bool vDefaultOrder)
 {
-	using namespace hiveObliquePhotography;
 	std::vector<SFace> ConnectionFaceSet;
 
 	int NumLess = vNumLeft < vNumRight ? vNumLeft : vNumRight;
@@ -145,4 +129,11 @@ std::vector<hiveObliquePhotography::SFace> CBasicMeshSuture::__genConnectionFace
 		genFixLessFace(LessCursor, MoreCursor);
 
 	return ConnectionFaceSet;
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CBasicMeshSuture::__removeUnreferencedVertex(CMesh& vioMesh)
+{
+
 }
