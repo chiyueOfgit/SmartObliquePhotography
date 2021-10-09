@@ -72,6 +72,12 @@
     <ClInclude Include="..\ObliquePhotographyData\TextureSaver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\TextureLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ObliquePhotographyData\VcgMesh.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.cpp">

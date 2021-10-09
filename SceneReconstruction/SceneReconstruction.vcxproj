@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ArapParameterizer.cpp" />
+    <ClCompile Include="BasicMeshSuture.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="MeshParameterizer.cpp" />
     <ClCompile Include="MeshSuture.cpp" />
@@ -170,6 +171,7 @@
   <ItemGroup>
     <ClInclude Include="..\ObliquePhotographyData\Image.h" />
     <ClInclude Include="ArapParameterizer.h" />
+    <ClInclude Include="BasicMeshSuture.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MeshParameterizer.h" />
     <ClInclude Include="MeshSuture.h" />
