@@ -566,13 +566,13 @@ void CQTInterface::onActionOpenMesh()
     auto MeshPath = QFileDialog::getOpenFileName(this, tr("Open Mesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
 
     // load mesh
-    if (MeshPath != "")
+    if (!MeshPath.empty())
     {
         m_MeshOpenPath = __getDirectory(MeshPath);
 
         CMesh Mesh;
         auto MeshName = __getFileNameWithSuffix(MeshPath);
-        hiveObliquePhotography::hiveLoadMeshModel(Mesh, MeshPath);
+        hiveObliquePhotography::hiveLoadMeshModel(Mesh, MeshPath);    	
         m_MeshSet.NameSet.push_back(MeshName);
         m_MeshSet.MeshSet.push_back(Mesh);
 
@@ -618,7 +618,7 @@ void CQTInterface::onActionBakeTexture()
 {
     auto TexturePath = QFileDialog::getSaveFileName(this, tr("Save Texture"), ".", tr("PNG files(*.png)")).toStdString();
 
-    if (m_SelectedTileIndices.size() >= 1 && m_SelectedMeshIndices.size() == 1)
+    if (!m_SelectedTileIndices.empty() && m_SelectedMeshIndices.size() == 1)
     {
         PointCloud_t::Ptr pResult(new PointCloud_t);
         for (auto Index : m_SelectedTileIndices)
