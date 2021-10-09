@@ -11,7 +11,15 @@ namespace hiveObliquePhotography
 			CBasicMeshSuture() = default;
 			~CBasicMeshSuture() = default;
 
-			virtual void sutureMeshes(CMesh& voMeshLHS, CMesh& voMeshRHS) override;
+			virtual void sutureMeshes() override;
+
+
+		private:	
+			Eigen::Vector4f __calcSegmentPlane();
+			void __excuteIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<int>& voDissociatedIndices, std::vector<SVertex>& voIntersectionPoints);
+			std::vector<SVertex> __generatePublicVertices(std::vector<SVertex>& vLHSIntersectionPoints, std::vector<SVertex>& vRHSIntersectionPoints);
+			void __connectVerticesWithMesh(CMesh& vioMesh, std::vector<int>& vDissociatedIndices, std::vector<SVertex>& vPublicVertices);
+			void __removeUnreferencedVertex(CMesh& vioMesh);
 		};
 	}
 }

@@ -7,7 +7,7 @@ _REGISTER_NORMAL_PRODUCT(CBasicMeshSuture, KEYWORD::BASIC_MESH_SUTURE)
 
 //*****************************************************************
 //FUNCTION: 
-void CBasicMeshSuture::sutureMeshes(CMesh& voMeshLHS, CMesh& voMeshRHS)
+void CBasicMeshSuture::sutureMeshes()
 {
 	
 }
