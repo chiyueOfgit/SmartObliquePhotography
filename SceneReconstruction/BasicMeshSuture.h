@@ -20,6 +20,8 @@ namespace hiveObliquePhotography
 			std::vector<SVertex> __generatePublicVertices(std::vector<SVertex>& vLHSIntersectionPoints, std::vector<SVertex>& vRHSIntersectionPoints);
 			void __connectVerticesWithMesh(CMesh& vioMesh, std::vector<int>& vDissociatedIndices, std::vector<SVertex>& vPublicVertices);
 			void __removeUnreferencedVertex(CMesh& vioMesh);
+
+			std::vector<SFace> __genConnectionFace(int vNumLeft, int vNumRight, bool vDefaultOrder = true);
 		};
 	}
 }
