@@ -338,9 +338,6 @@ void CQTInterface::onActionOpen()
     {
         m_CloudOpenPath = __getDirectory(FilePathSet.back());
 
-        auto config = m_pPointCloudRetouchConfig->getSubconfigAt(0);
-        auto num = config->getNumSubconfig();
-
         PointCloudRetouch::hiveInit(m_TileSet.TileSet, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_TileSet.TileSet, true);
         CQTInterface::__initialVTKWidget();
@@ -578,8 +575,23 @@ void CQTInterface::onActionOpenMesh()
         hiveObliquePhotography::hiveLoadMeshModel(Mesh, MeshPath);
         m_MeshSet.NameSet.push_back(MeshName);
         m_MeshSet.MeshSet.push_back(Mesh);
-        //Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+
+        if (m_TileSet.TileSet.empty())
+        {
+            PointCloud_t::Ptr Temp(new PointCloud_t);
+            Temp->push_back({});
+            PointCloudRetouch::hiveInit({ Temp }, m_pPointCloudRetouchConfig);
+            Visualization::hiveInitVisualizer({ Temp }, true);
+            CQTInterface::__initialVTKWidget();
+        }
+        Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+        Visualization::hiveAddTextureMesh(Mesh.toTexMesh({}));
+        std::vector<std::size_t> PointLabelSet;
+        PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+        Visualization::hiveRefreshVisualizer(PointLabelSet, true);
+
         //Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
+
         __addResourceSpaceMeshItem(MeshName);
         __messageDockWidgetOutputText("Open mesh " + MeshPath + " succeed.");
     }
