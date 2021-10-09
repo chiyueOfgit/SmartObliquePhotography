@@ -13,8 +13,9 @@ _REGISTER_NORMAL_PRODUCT(CBasicMeshSuture, KEYWORD::BASIC_MESH_SUTURE)
 //FUNCTION: 
 void CBasicMeshSuture::sutureMeshes()
 {
+	//TODO: nullptr
 	pcl::PointCloud<pcl::PointXYZ>::Ptr CloudOne, CloudTwo;
-	Eigen::Vector4f SegmentPlane = __calcSegmentPlane(CloudOne, CloudTwo);
+	auto SegmentPlane = __calcSegmentPlane(CloudOne, CloudTwo);
 	
 	std::vector<int> LHSDissociatedIndices, RHSDissociatedIndices;
 	std::vector<SVertex> LHSIntersectionPoints, RHSIntersectionPoints;
@@ -39,8 +40,7 @@ void CBasicMeshSuture::dumpMeshes(CMesh& voLHSMesh, CMesh& voRHSMesh)
 //FUNCTION: 
 Eigen::Vector4f CBasicMeshSuture::__calcSegmentPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudOne, pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudTwo)
 {
-	CFindSplitPlane FindSplitPlane;
-	return FindSplitPlane.execute(vCloudOne, vCloudTwo);
+	return CFindSplitPlane().execute(vCloudOne, vCloudTwo);
 }
 
 //*****************************************************************
@@ -67,7 +67,8 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	_ASSERTE(!vDissociatedIndices.empty() && !vPublicVertices.empty());
 
 	std::vector<int> PublicIndices;
-	for (size_t i = 0; i < vPublicVertices.size(); i++)
+	PublicIndices.reserve(vPublicVertices.size());
+	for (size_t i = 0; i < vPublicVertices.size(); ++i)
 	{
 		vioMesh.m_Vertices.push_back(vPublicVertices[i]);
 		PublicIndices.push_back(i + vioMesh.m_Vertices.size());
@@ -86,7 +87,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<hiveObliquePhotography::SFace> hiveObliquePhotography::SceneReconstruction::CBasicMeshSuture::__genConnectionFace(int vNumLeft, int vNumRight, bool vDefaultOrder)
+std::vector<hiveObliquePhotography::SFace> CBasicMeshSuture::__genConnectionFace(int vNumLeft, int vNumRight, bool vDefaultOrder)
 {
 	std::vector<SFace> ConnectionFaceSet;
 
