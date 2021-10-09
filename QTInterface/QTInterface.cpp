@@ -569,7 +569,7 @@ void CQTInterface::onActionOpenMesh()
     if (MeshPath != "" && hiveUtility::hiveGetFileSuffix(MeshPath) == "obj")
     {
         m_MeshSet[MeshPath] = SceneReconstruction::hiveTestCMesh(MeshPath);
-        //Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+        Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
         Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
         __addResourceSpaceMeshItem(__getFileNameWithSuffix(MeshPath));
         __messageDockWidgetOutputText("Open mesh " + MeshPath + " succeed.");
