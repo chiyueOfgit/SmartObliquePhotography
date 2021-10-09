@@ -566,7 +566,7 @@ void CQTInterface::onActionOpenMesh()
     auto MeshPath = QFileDialog::getOpenFileName(this, tr("Open Mesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
 
     // load mesh
-    if (MeshPath != "")
+    if (!MeshPath.empty())
     {
         m_MeshOpenPath = __getDirectory(MeshPath);
 
