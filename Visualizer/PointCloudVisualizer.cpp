@@ -160,10 +160,9 @@ void CPointCloudVisualizer::refresh(const std::vector<std::size_t>& vPointLabel,
 			if (Pair.first != "")
 				m_pPCLVisualizer->removePolygonMesh(Pair.first);
 			else
-			{
 				Pair.first = MeshPrefix + std::to_string(i++);
-				m_pPCLVisualizer->addTextureMesh(Pair.second, Pair.first);
-			}
+
+			m_pPCLVisualizer->addTextureMesh(Pair.second, Pair.first);
 		}
 	}
 

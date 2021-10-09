@@ -28,6 +28,9 @@
     <ClCompile Include="MeshPlaneIntersection.cpp">
       <Filter>Suture</Filter>
     </ClCompile>
+    <ClCompile Include="FindSplitPlane.cpp">
+      <Filter>Suture</Filter>
+    </ClCompile>
     <ClCompile Include="BasicMeshSuture.cpp">
       <Filter>Suture</Filter>
     </ClCompile>
@@ -65,6 +68,9 @@
       <Filter>Suture</Filter>
     </ClInclude>
     <ClInclude Include="BasicMeshSuture.h">
+      <Filter>Suture</Filter>
+    </ClInclude>
+    <ClInclude Include="FindSplitPlane.h">
       <Filter>Suture</Filter>
     </ClInclude>
   </ItemGroup>
