@@ -3403,6 +3403,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     {
       PCL_WARN ("[PCLVisualizer::addTextureMesh] Failed to load texture %s, skipping!\n",
                 mesh.tex_materials[tex_id].tex_name.c_str ());
+      tex_id++;
       continue;
     }
     // the first texture is in REPLACE mode others are in ADD mode

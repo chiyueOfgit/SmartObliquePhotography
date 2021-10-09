@@ -8,7 +8,7 @@ namespace hiveObliquePhotography
 		~CPointCloudScene() override;
 
 		std::vector<PointCloud_t::Ptr> loadScene(const std::vector<std::string>& vFileNameSet);
-		bool saveScene(PointCloud_t& vPointCloud, std::string vFileName);
+		bool saveScene(PointCloud_t::Ptr vPointCloud, std::string vFileName);
 
 	private:
 		CPointCloudScene() = default;

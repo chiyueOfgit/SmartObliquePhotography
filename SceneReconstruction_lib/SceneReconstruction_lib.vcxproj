@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\SceneReconstruction\ArapParameterizer.cpp" />
+    <ClCompile Include="..\SceneReconstruction\BasicMeshSuture.cpp" />
     <ClCompile Include="..\SceneReconstruction\dllmain.cpp" />
     <ClCompile Include="..\SceneReconstruction\MeshParameterizer.cpp" />
     <ClCompile Include="..\SceneReconstruction\MeshSuture.cpp" />
@@ -166,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SceneReconstruction\ArapParameterizer.h" />
+    <ClInclude Include="..\SceneReconstruction\BasicMeshSuture.h" />
     <ClInclude Include="..\SceneReconstruction\framework.h" />
     <ClInclude Include="..\SceneReconstruction\MeshParameterizer.h" />
     <ClInclude Include="..\SceneReconstruction\MeshSuture.h" />

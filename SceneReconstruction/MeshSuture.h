@@ -12,7 +12,7 @@ namespace hiveObliquePhotography
 			virtual ~IMeshSuture() = default;
 
 			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, const CMesh& vMeshLHS, const CMesh& vMeshRHS);
-			virtual void sutureMeshes(CMesh& voMeshLHS, CMesh& voMeshRHS) = 0;
+			virtual void sutureMeshes() = 0;
 
 		protected:
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;

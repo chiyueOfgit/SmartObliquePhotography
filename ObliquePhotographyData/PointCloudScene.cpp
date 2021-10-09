@@ -59,7 +59,7 @@ std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudScene::saveScene(PointCloud_t& vPointCloud, std::string vFileName)
+bool CPointCloudScene::saveScene(PointCloud_t::Ptr vPointCloud, std::string vFileName)
 {
 	auto* pSceneSaver = hiveDesignPattern::hiveGetOrCreateProduct<IPointCloudSaver>(hiveUtility::hiveGetFileSuffix(vFileName) + "_Save");
 	if (pSceneSaver)

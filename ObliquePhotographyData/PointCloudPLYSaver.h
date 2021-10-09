@@ -5,6 +5,6 @@ namespace hiveObliquePhotography
 {
 	class CPointCloudPLYSaver : public IPointCloudSaver
 	{
-		void saveDataToFileV(const PointCloud_t& vPointCloud, const std::string& vFilePath) override;
+		void saveDataToFileV(PointCloud_t::Ptr vPointCloud, const std::string& vFilePath) override;
 	};
 }

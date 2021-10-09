@@ -7,7 +7,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CPointCloudPLYLoader, PLY_LOADER)
 
 //*****************************************************************
 //FUNCTION:
-int CPointCloudPLYLoader::__loadDataFromFileV(const std::string& vFileName, PointCloud_t& voPointCloud)
+int CPointCloudPLYLoader::__loadDataFromFileV(const std::string& vFileName, PointCloud_t::Ptr voPointCloud)
 {
-	return pcl::io::loadPLYFile<PointCloud_t::PointType>(vFileName, voPointCloud);
+	return pcl::io::loadPLYFile<PointCloud_t::PointType>(vFileName, *voPointCloud);
 }

@@ -19,6 +19,18 @@ namespace hiveObliquePhotography
 
     namespace QTInterface
     {
+        struct STileSet
+        {
+            std::vector<std::string> NameSet;
+            std::vector<PointCloud_t::Ptr> TileSet;
+        };
+
+        struct SMeshSet
+        {
+            std::vector<std::string> NameSet;
+            std::vector<CMesh> MeshSet;
+        };
+
         class CDisplayOptionsSettingDialog;
 
         class CQTInterface : public QMainWindow
@@ -43,12 +55,15 @@ namespace hiveObliquePhotography
             QSlider* m_pPointSizeSlider = nullptr;
             QCheckBox* m_pAreaPickingCullingBox = nullptr;
             std::string m_CurrentCloud = "";
-            std::string m_DirectoryOpenPath = "../Models";
-            size_t m_SceneIndex = -1;
+            std::string m_CloudOpenPath = "../Models";
+            std::string m_MeshOpenPath = "../UnitTests/TestData/Test026_Model";
             int m_PointSize = 3;             // magic
-            std::vector<std::string> m_FilePathList;
-            std::map<std::string, CMesh> m_MeshSet;
-            std::vector<PointCloud_t::Ptr> m_TileSet;
+
+            STileSet m_TileSet;
+            SMeshSet m_MeshSet;
+            std::set<int> m_SelectedTileIndices;
+            std::set<int> m_SelectedMeshIndices;
+
             QDockWidget* m_pRubberSizeDockWidget = nullptr;
             QDockWidget* m_pBrushSizeDockWidget = nullptr;
             QDockWidget* m_pPointPickingDockWidget = nullptr;
@@ -68,12 +83,15 @@ namespace hiveObliquePhotography
             void __initialSlider(const QStringList& vFilePathList);
             void __connectSignals();
             void __parseConfigFile();
-            bool __messageDockWidgetOutputText(QString vString);
-            bool __addResourceSpaceCloudItem(const std::string& vFilePath);
+            bool __messageDockWidgetOutputText(const std::string& vText);
+            bool __addResourceSpaceCloudItem(const std::string& vFileName);
+            bool __addResourceSpaceMeshItem(const std::string& vFileName);
             void __addAxesToView(vtkRenderWindowInteractor* vInteractor, double vX, double vY, double vXWide, double vYWide);
         	
             std::string __getFileName(const std::string& vFilePath);
             std::string __getDirectory(const std::string& vFilePath);
+            std::string __getFileNameWithSuffix(const std::string& vFilePath);
+            std::string __getSuffix(const std::string& vFilePath);
 
         private slots:
             void onActionPointPicking();
@@ -95,6 +113,8 @@ namespace hiveObliquePhotography
             void onActionParameterization();
             void onActionBakeTexture();
             void onResourceSpaceItemDoubleClick(QModelIndex);
+            void onResourceSpaceItemClick(QModelIndex vIndex);
+            void onResourceSpaceItemChange(QStandardItem* vItem);
         };
     }
 }
