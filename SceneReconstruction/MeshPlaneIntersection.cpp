@@ -7,6 +7,9 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 //FUNCTION: 
 void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPlane)
 {
+	m_IntersectionPoints.clear();
+	m_DissociatedPoints.clear();
+	
 	std::vector<SFace>::iterator Iter = vioMesh.m_Faces.begin();
 	for(;Iter!= vioMesh.m_Faces.end();)
 	{
@@ -58,7 +61,7 @@ std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcInter
 {
 	std::vector<SVertex> HitPointSet;
 	Eigen::Vector3f PlaneNormal{ vPlane[0], vPlane[1],vPlane[2] };
-	Eigen::Vector3f DefaultPlanePoint{ 0.0f, 0.0f, -vPlane[3] / vPlane[2] };
+	Eigen::Vector3f DefaultPlanePoint = __generateDefaultPlanePoint(vPlane);
 	for(int i = 0; i < vFace.size(); i++)
 	{
 		Eigen::Vector3f Origin = vFace[i];
@@ -71,9 +74,9 @@ std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcInter
 			continue;
 
 		float Depth = PlaneNormal.dot(DefaultPlanePoint - Origin) / DotNormal;
-		auto HitPos = Origin + Depth * Direction;
+		Eigen::Vector3f HitPos = Origin + Depth * Direction;
 
-		if((HitPos - vFace[i]).dot(HitPos - vFace[(i + 1) % 3]) < 0)
+		if((HitPos - vFace[i]).dot(HitPos - vFace[(i + 1) % 3]) <= 0)
 		{
 			SVertex TempVertex; TempVertex.x = HitPos[0]; TempVertex.y = HitPos[1]; TempVertex.z = HitPos[2];
 			HitPointSet.push_back(TempVertex);
@@ -87,14 +90,36 @@ std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcInter
 //FUNCTION: 
 std::vector<int> CMeshPlaneIntersection::__tellDissociatedPoint(const std::vector<Eigen::Vector3f>& vFace, const Eigen::Vector4f& vPlane)
 {
-	Eigen::Vector3f DefaultPlanePoint{ 0.0f, 0.0f, -vPlane[3] / vPlane[2] };
+	Eigen::Vector3f DefaultPlanePoint = __generateDefaultPlanePoint(vPlane);
 	std::vector<int> DissociatedIndices;
 	Eigen::Vector3f PlaneNormal{ vPlane[0], vPlane[1],vPlane[2] };
 	for(int i = 0; i < vFace.size(); i++)
 	{
 		auto Vector = DefaultPlanePoint - vFace[i];
-		if (Vector.dot(PlaneNormal) > 0)
+		if (Vector.dot(PlaneNormal) >= 0)
 			DissociatedIndices.push_back(i);
 	}
 	return DissociatedIndices;
+}
+
+Eigen::Vector3f CMeshPlaneIntersection::__generateDefaultPlanePoint(const Eigen::Vector4f& vPlane)
+{
+	int i = 0;
+	for (; i < 3; i++)
+	{
+		if (vPlane[i])
+		{
+		  break;
+		}
+			
+	}
+	Eigen::Vector3f DefaultPlanePoint;
+	for(int k = 0; k < 3; k++)
+	{
+		if (k == i)
+			DefaultPlanePoint[k] = -vPlane[3] / vPlane[i];
+		else
+			DefaultPlanePoint[k] = 0.0f;
+	}
+	return DefaultPlanePoint;
 }
