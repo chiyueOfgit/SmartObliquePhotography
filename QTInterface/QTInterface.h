@@ -56,13 +56,13 @@ namespace hiveObliquePhotography
             QCheckBox* m_pAreaPickingCullingBox = nullptr;
             std::string m_CurrentCloud = "";
             std::string m_CloudOpenPath = "../Models";
-            std::string m_MeshOpenPath = ".";
+            std::string m_MeshOpenPath = "../Models";
             int m_PointSize = 3;             // magic
 
             STileSet m_TileSet;
             SMeshSet m_MeshSet;
-            std::vector<int> m_SelectedTileIndices;
-            std::vector<int> m_SelectedMeshIndices;
+            std::set<int> m_SelectedTileIndices;
+            std::set<int> m_SelectedMeshIndices;
 
             QDockWidget* m_pRubberSizeDockWidget = nullptr;
             QDockWidget* m_pBrushSizeDockWidget = nullptr;
@@ -113,7 +113,8 @@ namespace hiveObliquePhotography
             void onActionParameterization();
             void onActionBakeTexture();
             void onResourceSpaceItemDoubleClick(QModelIndex);
-            void onResourceSpaceItemClick(QModelIndex);
+            void onResourceSpaceItemClick(QModelIndex vIndex);
+            void onResourceSpaceItemChange(QStandardItem* vItem);
         };
     }
 }

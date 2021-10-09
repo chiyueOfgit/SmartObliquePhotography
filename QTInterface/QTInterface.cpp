@@ -70,10 +70,10 @@ void CQTInterface::init()
     m_pDisplayOptionsSettingDialog = new CDisplayOptionsSettingDialog(this, m_pDisplayOptionsSettingDialog);
     _SAFE_DELETE(m_pDisplayOptionsSettingDialog);
 
-    __connectSignals();
     __initialResourceSpaceDockWidget();
     __initialWorkSpaceDockWidget();
     __initialMessageDockWidget();
+    __connectSignals();
     __parseConfigFile();
 }
 
@@ -95,7 +95,8 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionParameterization, SIGNAL(triggered()), this, SLOT(onActionParameterization()));
     QObject::connect(m_UI.actionBakeTexture, SIGNAL(triggered()), this, SLOT(onActionBakeTexture()));
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
-    QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(clicked(QModelIndex)), this, SLOT(onResourceSpaceItemClick(QModelIndex)));
+    //QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(clicked(QModelIndex)), this, SLOT(onResourceSpaceItemClick(QModelIndex)));
+    QObject::connect(m_pResourceSpaceStandardItemModels, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(onResourceSpaceItemChange(QStandardItem*)));
     QObject::connect(m_UI.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
     QObject::connect(m_UI.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
     QObject::connect(m_UI.actionRepairHole, SIGNAL(triggered()), this, SLOT(onActionStartRepairHole()));
@@ -190,7 +191,7 @@ bool CQTInterface::__addResourceSpaceCloudItem(const std::string& vFileName)
 {
     QStandardItem* pStandardItem = new QStandardItem(QString::fromStdString(vFileName));
     pStandardItem->setCheckable(true);
-    pStandardItem->setCheckState(Qt::Checked);
+    pStandardItem->setCheckState(Qt::Unchecked);
     pStandardItem->setEditable(false);
     m_pResourceSpaceStandardItemModels->appendRow(pStandardItem);
     m_CurrentCloud = vFileName;
@@ -200,7 +201,8 @@ bool CQTInterface::__addResourceSpaceCloudItem(const std::string& vFileName)
 bool CQTInterface::__addResourceSpaceMeshItem(const std::string& vFileName)
 {
     QStandardItem* pStandardItem = new QStandardItem(QString::fromStdString(vFileName));
-    pStandardItem->setCheckable(false);
+    pStandardItem->setCheckable(true);
+    pStandardItem->setCheckState(Qt::Unchecked);
     pStandardItem->setEditable(false);
     m_pResourceSpaceStandardItemModels->appendRow(pStandardItem);
     return true;
@@ -609,7 +611,7 @@ void CQTInterface::onActionBakeTexture()
         PointCloud_t::Ptr pResult(new PointCloud_t);
         for (auto Index : m_SelectedTileIndices)
             *pResult += *m_TileSet.TileSet[Index];
-        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[m_SelectedMeshIndices[0]], pResult, { 512, 512 });
+        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 512, 512 });
         
         {
             const auto Width = Texture.getWidth();
@@ -647,34 +649,63 @@ void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)
 
 void CQTInterface::onResourceSpaceItemClick(QModelIndex vIndex)
 {
-    auto ModelName = m_pResourceSpaceStandardItemModels->item(vIndex.row())->text().toStdString();
-    if (__getSuffix(ModelName) == "ply" || __getSuffix(ModelName) == "pcd")
+    //auto ModelName = m_pResourceSpaceStandardItemModels->item(vIndex.row())->text().toStdString();
+
+    //auto processSelect = [&](const std::vector<std::string>& vNameSet, std::set<int>& vioIndexSet, const std::string& vModelName)
+    //{
+    //    auto NameIter = std::find(vNameSet.begin(), vNameSet.end(), ModelName);
+    //    if (NameIter != vNameSet.end())
+    //    {
+    //        auto Index = std::distance(vNameSet.begin(), NameIter);
+    //        auto IndexIter = std::find(vioIndexSet.begin(), vioIndexSet.end(), Index);
+    //        if (IndexIter == vioIndexSet.end())
+    //            vioIndexSet.insert(Index);
+    //        else
+    //            vioIndexSet.erase(Index); // 反选
+    //    }
+
+    //    std::string Text;
+    //    Text += "Current select " + std::to_string(vioIndexSet.size()) + " " + vModelName + "s, which are \n";
+    //    for (auto Index : vioIndexSet)
+    //        Text += "[" + vNameSet[Index] + "] ";
+    //    Text += "\n";
+    //    __messageDockWidgetOutputText(Text);
+    //};
+
+    //if (__getSuffix(ModelName) == "ply" || __getSuffix(ModelName) == "pcd")
+    //    processSelect(m_TileSet.NameSet, m_SelectedTileIndices, "tile");
+    //else if (__getSuffix(ModelName) == "obj")
+    //    processSelect(m_MeshSet.NameSet, m_SelectedMeshIndices, "mesh");
+}
+
+void CQTInterface::onResourceSpaceItemChange(QStandardItem* vItem)
+{
+    auto ModelName = vItem->text().toStdString();
+
+    auto processSelect = [&](const std::vector<std::string>& vNameSet, std::set<int>& vioIndexSet, const std::string& vModelName)
     {
-        auto NameIter = std::find(m_TileSet.NameSet.begin(), m_TileSet.NameSet.end(), ModelName);
-        if (NameIter != m_TileSet.NameSet.end())
+        auto NameIter = std::find(vNameSet.begin(), vNameSet.end(), ModelName);
+        if (NameIter != vNameSet.end())
         {
-            auto Index = std::distance(m_TileSet.NameSet.begin(), NameIter);
-            auto IndexIter = std::find(m_SelectedTileIndices.begin(), m_SelectedTileIndices.end(), Index);
-            if (IndexIter == m_SelectedTileIndices.end())
-                m_SelectedTileIndices.push_back(Index);
-            else
-                m_SelectedTileIndices.erase(IndexIter); // 反选
+            auto Index = std::distance(vNameSet.begin(), NameIter);
+            if (vItem->checkState() == Qt::CheckState::Checked)
+                vioIndexSet.insert(Index);
+            else if (vItem->checkState() == Qt::CheckState::Unchecked)
+                vioIndexSet.erase(Index);
         }
 
         std::string Text;
-        Text += "Current select " + std::to_string(m_SelectedTileIndices.size()) + " tiles, which are \n";
-        for (auto Index : m_SelectedTileIndices)
-            Text += "[" + m_TileSet.NameSet[Index] + "] ";
+        Text += "Current select " + std::to_string(vioIndexSet.size()) + " " + vModelName + "s, which are \n";
+        for (auto Index : vioIndexSet)
+            Text += "[" + vNameSet[Index] + "] ";
         Text += "\n";
         __messageDockWidgetOutputText(Text);
-    }
-    else if (__getSuffix(ModelName) == "obj")
-    {
-        //auto NameIter = m_MeshSet.find(ModelName);
-        //if ()
-        //m_SelectedMeshSet.push_back(NameIter)
-    }
+    };
 
+    if (__getSuffix(ModelName) == "ply" || __getSuffix(ModelName) == "pcd")
+        processSelect(m_TileSet.NameSet, m_SelectedTileIndices, "tile");
+    else if (__getSuffix(ModelName) == "obj")
+        processSelect(m_MeshSet.NameSet, m_SelectedMeshIndices, "mesh");
 }
 
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)
