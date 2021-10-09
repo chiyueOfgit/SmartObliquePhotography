@@ -1,6 +1,7 @@
 #include "pch.h"
 #include"BasicMeshSuture.h"
 #include"MeshPlaneIntersection.h"
+#include"FindSplitPlane.h"
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -10,7 +11,8 @@ _REGISTER_NORMAL_PRODUCT(CBasicMeshSuture, KEYWORD::BASIC_MESH_SUTURE)
 //FUNCTION: 
 void CBasicMeshSuture::sutureMeshes()
 {
-	Eigen::Vector4f SegmentPlane = __calcSegmentPlane();
+	pcl::PointCloud<pcl::PointXYZ>::Ptr CloudOne, CloudTwo;
+	Eigen::Vector4f SegmentPlane = __calcSegmentPlane(CloudOne, CloudTwo);
 	
 	std::vector<int> LHSDissociatedIndices, RHSDissociatedIndices;
 	std::vector<SVertex> LHSIntersectionPoints, RHSIntersectionPoints;
@@ -27,9 +29,10 @@ void CBasicMeshSuture::sutureMeshes()
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector4f CBasicMeshSuture::__calcSegmentPlane()
+Eigen::Vector4f CBasicMeshSuture::__calcSegmentPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudOne, pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudTwo)
 {
-	
+	CFindSplitPlane FindSplitPlane;
+	return FindSplitPlane.execute(vCloudOne, vCloudTwo);
 }
 
 //*****************************************************************
