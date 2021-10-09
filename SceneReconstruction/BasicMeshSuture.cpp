@@ -67,7 +67,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	_ASSERTE(!vDissociatedIndices.empty() && !vPublicVertices.empty());
 
 	std::vector<int> PublicIndices;
-	for (int i = 0; i < vPublicVertices.size(); i++)
+	for (size_t i = 0; i < vPublicVertices.size(); i++)
 	{
 		vioMesh.m_Vertices.push_back(vPublicVertices[i]);
 		PublicIndices.push_back(i + vioMesh.m_Vertices.size());
@@ -75,7 +75,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true);	// order is heuristic
 
-	for (int Offset = vDissociatedIndices.size(); auto& Face : ConnectionFaceSet)
+	for (auto Offset = vDissociatedIndices.size(); auto& Face : ConnectionFaceSet)
 	{
 		SFace FaceWithMeshIndex;
 		for (int i = 0; i < 3; i++)
@@ -101,23 +101,19 @@ std::vector<hiveObliquePhotography::SFace> hiveObliquePhotography::SceneReconstr
 
 	auto genFixLessFace = [&](IndexType vLess, IndexType& vMore)
 	{
-		SFace Face;
 		if (vDefaultOrder)
-			Face = { vLess, vMore, vMore + 1 };
+			ConnectionFaceSet.emplace_back(vLess, vMore, vMore + 1);
 		else
-			Face = { vLess, vMore + 1, vMore };
-		ConnectionFaceSet.push_back(Face);
-		vMore++;
+			ConnectionFaceSet.emplace_back(vLess, vMore + 1, vMore);
+		++vMore;
 	};
 	auto genFixMoreFace = [&](IndexType& vLess, IndexType vMore)
 	{
-		SFace Face;
 		if (vDefaultOrder)
-			Face = { vLess, vMore, vLess + 1 };
+			ConnectionFaceSet.emplace_back(vLess, vMore, vLess + 1);
 		else
-			Face = { vLess, vLess + 1, vMore };
-		ConnectionFaceSet.push_back(Face);
-		vLess++;
+			ConnectionFaceSet.emplace_back(vLess, vLess + 1, vMore);
+		++vLess;
 	};
 
 	int CheckPoint = 1;
