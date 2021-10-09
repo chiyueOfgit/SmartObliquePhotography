@@ -25,6 +25,12 @@ void CBasicMeshSuture::sutureMeshes()
 	__removeUnreferencedVertex(m_MeshRHS);
 }
 
+void CBasicMeshSuture::dumpMeshes(CMesh& voLHSMesh, CMesh& voRHSMesh)
+{
+	voLHSMesh = m_MeshLHS;
+	voRHSMesh = m_MeshRHS;
+}
+
 //*****************************************************************
 //FUNCTION: 
 Eigen::Vector4f CBasicMeshSuture::__calcSegmentPlane()
