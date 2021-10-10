@@ -79,3 +79,4 @@ TEST_F(TestMeshPlaneIntersection, Test_TerrainModel)
 	MeshPlaneIntersection.dumpIntersectionPoints(IntersectionPoints);
 	EXPECT_EQ(IntersectionPoints.size(), 433);
 }
+
