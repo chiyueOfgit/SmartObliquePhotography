@@ -154,9 +154,11 @@
   <ItemGroup>
     <ClCompile Include="ArapParameterizer.cpp" />
     <ClCompile Include="BasicMeshSuture.cpp" />
+    <ClCompile Include="CMeshSimplification.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FindSplitPlane.cpp" />
     <ClCompile Include="MeshParameterizer.cpp" />
+    <ClCompile Include="MeshSimplification.cpp" />
     <ClCompile Include="MeshSuture.cpp" />
     <ClCompile Include="MeshPlaneIntersection.cpp" />
     <ClCompile Include="pch.cpp">
@@ -172,10 +174,12 @@
   <ItemGroup>
     <ClInclude Include="..\ObliquePhotographyData\Image.h" />
     <ClInclude Include="ArapParameterizer.h" />
+    <ClInclude Include="CMeshSimplification.h" />
     <ClInclude Include="FindSplitPlane.h" />
     <ClInclude Include="BasicMeshSuture.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MeshParameterizer.h" />
+    <ClInclude Include="MeshSimplification.h" />
     <ClInclude Include="MeshSuture.h" />
     <ClInclude Include="MeshPlaneIntersection.h" />
     <ClInclude Include="pch.h" />

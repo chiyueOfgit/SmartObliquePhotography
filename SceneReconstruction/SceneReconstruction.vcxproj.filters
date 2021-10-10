@@ -34,6 +34,12 @@
     <ClCompile Include="BasicMeshSuture.cpp">
       <Filter>Suture</Filter>
     </ClCompile>
+    <ClCompile Include="MeshSimplification.cpp">
+      <Filter>Simplification</Filter>
+    </ClCompile>
+    <ClCompile Include="CMeshSimplification.cpp">
+      <Filter>Simplification</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -73,6 +79,12 @@
     <ClInclude Include="FindSplitPlane.h">
       <Filter>Suture</Filter>
     </ClInclude>
+    <ClInclude Include="MeshSimplification.h">
+      <Filter>Simplification</Filter>
+    </ClInclude>
+    <ClInclude Include="CMeshSimplification.h">
+      <Filter>Simplification</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -89,6 +101,9 @@
     </Filter>
     <Filter Include="Suture">
       <UniqueIdentifier>{64bf4be6-2e4d-43e6-9ba4-ccb47385fecc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Simplification">
+      <UniqueIdentifier>{3f9b93dc-9a9e-46d4-85c4-2b33139ef6d0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
