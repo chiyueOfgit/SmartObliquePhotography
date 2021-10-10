@@ -74,7 +74,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 		PublicIndices.push_back(i + vioMesh.m_Vertices.size());
 	}
 
-	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true);	// order is heuristic
+	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, true);	// order is heuristic
 
 	for (auto Offset = vDissociatedIndices.size(); auto& Face : ConnectionFaceSet)
 	{
@@ -87,55 +87,40 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<hiveObliquePhotography::SFace> CBasicMeshSuture::__genConnectionFace(int vNumLeft, int vNumRight, bool vDefaultOrder)
+std::vector<hiveObliquePhotography::SFace> CBasicMeshSuture::__genConnectionFace(IndexType vNumLeft, IndexType vNumRight, bool vLeftBeforeRight, bool vIsClockwise)
 {
+	if (!vIsClockwise)
+		return __genConnectionFace(vNumRight, vNumLeft, !vLeftBeforeRight, !vIsClockwise);
+
 	std::vector<SFace> ConnectionFaceSet;
-
-	int NumLess = vNumLeft < vNumRight ? vNumLeft : vNumRight;
-	int NumMore = vNumLeft < vNumRight ? vNumRight : vNumLeft;
-	float ContainRate = float(NumMore) / NumLess;
-
-	int LessOffset = NumLess == vNumLeft ? 0 : vNumLeft;
-	int MoreOffset = NumMore == vNumRight ? vNumLeft : 0;
-	IndexType LessCursor = LessOffset, MoreCursor = MoreOffset;
-	IndexType LessEnd = NumLess + LessOffset, MoreEnd = NumMore + MoreOffset;
-
-	auto genFixLessFace = [&](IndexType vLess, IndexType& vMore)
+	std::pair<IndexType, IndexType> Offset(0, 0);
+	if (vLeftBeforeRight)
+		Offset.second = vNumLeft;
+	else
+		Offset.first = vNumRight;
+	
+	for (IndexType LeftCursor = 0, RightCursor = 0; LeftCursor < vNumLeft && RightCursor < vNumRight; )
 	{
-		if (vDefaultOrder)
-			ConnectionFaceSet.emplace_back(vLess, vMore, vMore + 1);
-		else
-			ConnectionFaceSet.emplace_back(vLess, vMore + 1, vMore);
-		++vMore;
-	};
-	auto genFixMoreFace = [&](IndexType& vLess, IndexType vMore)
-	{
-		if (vDefaultOrder)
-			ConnectionFaceSet.emplace_back(vLess, vMore, vLess + 1);
-		else
-			ConnectionFaceSet.emplace_back(vLess, vLess + 1, vMore);
-		++vLess;
-	};
+		auto LeftWithOffset = LeftCursor + Offset.first;
+		auto RightWithOffset = RightCursor + Offset.second;
 
-	int CheckPoint = 1;
-	float AccumContain = ContainRate;
-	while (LessCursor + 1 < LessEnd && MoreCursor + 1 < MoreEnd)
-	{
-		while (CheckPoint < AccumContain && MoreCursor + 1 < MoreEnd)
+		if ((2 * LeftCursor + 1) * (vNumRight - 1) < (2 * RightCursor + 1) * (vNumLeft - 1))
 		{
-			genFixLessFace(LessCursor, MoreCursor);
-			CheckPoint++;
+			if (LeftCursor + 1 >= vNumLeft)
+				break;
+
+			ConnectionFaceSet.emplace_back(LeftWithOffset, RightWithOffset, LeftWithOffset + 1);
+			++LeftCursor;
 		}
-		AccumContain += ContainRate;
+		else
+		{
+			if (RightCursor + 1 >= vNumRight)
+				break;
 
-		genFixMoreFace(LessCursor, MoreCursor);
+			ConnectionFaceSet.emplace_back(LeftWithOffset, RightWithOffset, RightWithOffset + 1);
+			++RightCursor;
+		}
 	}
-
-	while (LessCursor + 1 < LessEnd)
-		genFixMoreFace(LessCursor, MoreCursor);
-	while (MoreCursor + 1 < MoreEnd)
-		genFixLessFace(LessCursor, MoreCursor);
-
 	return ConnectionFaceSet;
 }
 
