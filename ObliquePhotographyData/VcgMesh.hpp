@@ -54,5 +54,7 @@ namespace hiveObliquePhotography
 			FaceIterator->V(2) = &vTo.vert.at(Face.c);
 			++FaceIterator;
 		}
+		
+		vcg::tri::UpdateTopology<CVcgMesh>::FaceFace(vTo);
 	}
 }
