@@ -32,7 +32,11 @@ void CBasicMeshSuture::sutureMeshes()
 //FUNCTION: 
 void CBasicMeshSuture::setCloud4SegmentPlane(PointCloud_t::Ptr vLHSCloud, PointCloud_t::Ptr vRHSCloud)
 {
-	m_SegmentPlane = CFindSplitPlane().execute(vLHSCloud, vRHSCloud);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr TempOne(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr TempTwo(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::copyPointCloud(*vLHSCloud, *TempOne);
+	pcl::copyPointCloud(*vRHSCloud, *TempTwo);
+	m_SegmentPlane = CFindSplitPlane().execute(TempOne, TempTwo);
 }
 
 //*****************************************************************
