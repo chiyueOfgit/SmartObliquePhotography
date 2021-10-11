@@ -34,7 +34,14 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 			Iter = vioMesh.m_Faces.erase(Iter);
 		}
 		else
-			Iter++;
+		{
+			auto DissociatedSet = __tellDissociatedPoint(TempFace, vPlane);
+			if(!DissociatedSet.size())
+				Iter = vioMesh.m_Faces.erase(Iter);
+			else
+			    Iter++;
+		}
+			
 	}
 	m_DissociatedPoints.assign(Indeices.begin(), Indeices.end());
 	return;
