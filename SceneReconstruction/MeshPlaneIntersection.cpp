@@ -11,21 +11,31 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 	m_IntersectionPoints.clear();
 	m_DissociatedPoints.clear();
 
+	auto Box = vioMesh.calcAABB();
+	Eigen::Vector3f Center = (Box.first + Box.second) / 2;
+	Eigen::Vector3f PlaneNormal{ vPlane[0], vPlane[1],vPlane[2] };
+	Eigen::Vector3f DefaultPlanePoint = __generateDefaultPlanePoint(vPlane);
+	Eigen::Vector4f Plane;
+	if ((DefaultPlanePoint - Center).dot(PlaneNormal) > 0)
+		Plane = vPlane;
+	else
+		Plane = -vPlane;
+	
 	std::set<int> Indeices;
 	std::vector<SFace>::iterator Iter = vioMesh.m_Faces.begin();
 	for(;Iter!= vioMesh.m_Faces.end();)
 	{
 		std::vector<Eigen::Vector3f> TempFace{ vioMesh.m_Vertices[(*Iter).a].xyz(), vioMesh.m_Vertices[(*Iter).b].xyz(), vioMesh.m_Vertices[(*Iter).c].xyz() };
-		auto TempIntersectionSet = __calcIntersectionPoints(TempFace, vPlane);
+		auto TempIntersectionSet = __calcIntersectionPoints(TempFace, Plane);
 		bool bIsIntersected = false;
 		if(TempIntersectionSet.size())
 		{
 			bIsIntersected = true;
 			m_IntersectionPoints.insert(m_IntersectionPoints.end(), TempIntersectionSet.begin(), TempIntersectionSet.end());
 		}
+		auto DissociatedSet = __tellDissociatedPoint(TempFace, Plane);
 		if (bIsIntersected)
 		{
-			auto DissociatedSet = __tellDissociatedPoint(TempFace, vPlane);
 			for (int i = 0; i < TempFace.size(); i++)
 			{
 				if (find(DissociatedSet.begin(), DissociatedSet.end(), i) != DissociatedSet.end())
@@ -34,7 +44,12 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 			Iter = vioMesh.m_Faces.erase(Iter);
 		}
 		else
-			Iter++;
+		{
+			if(!DissociatedSet.size())
+				Iter = vioMesh.m_Faces.erase(Iter);
+			else
+			    Iter++;
+		}	
 	}
 	m_DissociatedPoints.assign(Indeices.begin(), Indeices.end());
 	return;

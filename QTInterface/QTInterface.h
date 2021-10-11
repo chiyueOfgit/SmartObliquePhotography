@@ -109,6 +109,7 @@ namespace hiveObliquePhotography
             void onActionStartRepairHole();
             void onActionInstructions();
             void onActionSetting();
+            void onActionSutureMesh();
             void onActionReconstruction();
             void onActionParameterization();
             void onActionBakeTexture();

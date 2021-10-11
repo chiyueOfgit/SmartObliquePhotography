@@ -92,6 +92,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionSetting, SIGNAL(triggered()), this, SLOT(onActionSetting()));
     QObject::connect(m_UI.actionReconstruction, SIGNAL(triggered()), this, SLOT(onActionReconstruction()));
     QObject::connect(m_UI.actionOpenMesh, SIGNAL(triggered()), this, SLOT(onActionOpenMesh()));
+    QObject::connect(m_UI.actionSutureMesh, SIGNAL(triggered()), this, SLOT(onActionSutureMesh()));
     QObject::connect(m_UI.actionParameterization, SIGNAL(triggered()), this, SLOT(onActionParameterization()));
     QObject::connect(m_UI.actionBakeTexture, SIGNAL(triggered()), this, SLOT(onActionBakeTexture()));
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
@@ -361,6 +362,7 @@ void CQTInterface::onActionOpen()
             m_UI.actionOutlierDetection->setEnabled(true);
             m_UI.actionRepairHole->setEnabled(true);
             m_UI.actionReconstruction->setEnabled(true);
+            m_UI.actionSutureMesh->setEnabled(true);
             m_UI.actionBakeTexture->setEnabled(true);
 
             m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
@@ -548,6 +550,8 @@ void CQTInterface::onActionReconstruction()
 
     if (!m_TileSet.TileSet.empty())
     {
+        m_MeshOpenPath = __getDirectory(MeshPath);
+
         PointCloud_t::Ptr pResult(new PointCloud_t);
         for (auto pCloud : m_TileSet.TileSet)
             *pResult += *pCloud;
@@ -595,6 +599,30 @@ void CQTInterface::onActionOpenMesh()
         __addResourceSpaceMeshItem(MeshName);
         __messageDockWidgetOutputText("Open mesh " + MeshPath + " succeed.");
     }
+}
+
+void CQTInterface::onActionSutureMesh()
+{
+    if (m_SelectedMeshIndices.size() == 2 && m_SelectedTileIndices.size() == 2)
+    {
+        auto MeshIter = m_SelectedMeshIndices.begin();
+        auto MeshOneIndex = *MeshIter++;
+        auto MeshTwoIndex = *MeshIter;
+        auto& MeshOne = m_MeshSet.MeshSet[MeshOneIndex];
+        auto& MeshTwo = m_MeshSet.MeshSet[MeshTwoIndex];
+        auto TileIter = m_SelectedTileIndices.begin();
+        auto CloudOne = m_TileSet.TileSet[*TileIter++];
+        auto CloudTwo = m_TileSet.TileSet[*TileIter];
+
+        SceneReconstruction::hiveSutureMesh(MeshOne, MeshTwo, CloudOne, CloudTwo);
+
+        hiveSaveMeshModel(MeshOne, m_MeshSet.NameSet[MeshOneIndex]);
+        hiveSaveMeshModel(MeshTwo, m_MeshSet.NameSet[MeshTwoIndex]);
+
+        __messageDockWidgetOutputText("Suture mesh " + m_MeshSet.NameSet[MeshOneIndex] + " and " + m_MeshSet.NameSet[MeshTwoIndex] + " succeed");
+    }
+    else
+        __messageDockWidgetOutputText("Selected num mesh and cloud is not two, num mesh: " + std::to_string(m_SelectedMeshIndices.size()) + " num cloud: " + std::to_string(m_SelectedTileIndices.size()));
 }
 
 void CQTInterface::onActionParameterization()

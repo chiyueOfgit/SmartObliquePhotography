@@ -12,10 +12,10 @@ namespace hiveObliquePhotography
 			~CBasicMeshSuture() = default;
 
 			virtual void sutureMeshes() override;
+			void setCloud4SegmentPlane(PointCloud_t::Ptr vLHSCloud, PointCloud_t::Ptr vRHSCloud);
 			void dumpMeshes(CMesh& voLHSMesh, CMesh& voRHSMesh);
 		
-		private:
-			Eigen::Vector4f __calcSegmentPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudOne, pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudTwo);
+		private:	
 			void __executeIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<int>& voDissociatedIndices, std::vector<SVertex>& voIntersectionPoints);
 			void __generatePublicVertices(const std::vector<SVertex>& vLHSIntersectionPoints, const std::vector<SVertex>& vRHSIntersectionPoints, std::vector<SVertex>& voPublicVertices);
 			void __connectVerticesWithMesh(CMesh& vioMesh, std::vector<int>& vDissociatedIndices, std::vector<SVertex>& vPublicVertices);
@@ -25,6 +25,8 @@ namespace hiveObliquePhotography
 			SVertex __findNearestPoint(const std::vector<SVertex>& vVectexSet, const SVertex& vVertex);
 
 			std::vector<SFace> __genConnectionFace(IndexType vNumLeft, IndexType vNumRight, bool vLeftBeforeRight, bool vIsClockwise = true);
+			
+			Eigen::Vector4f m_SegmentPlane = {};
 		};
 	}
 }
