@@ -28,6 +28,23 @@ namespace hiveObliquePhotography
 			else
 				return -1;
 		}
+
+		bool operator < (const SVertex& Vertex) const
+		{
+			if (this->x < Vertex.x)
+				return true;
+			else 
+				return false;
+		}
+
+		bool operator == (const SVertex& Vertex) const
+		{
+			for (int i = 0; i < sizeof(SVertex) / sizeof(DataType); i++)
+				if (*(reinterpret_cast<const DataType*>(this) + i) != Vertex[i])
+					return false;
+			return true;
+		}
+
 	};
 
 	struct SFace

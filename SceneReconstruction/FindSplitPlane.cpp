@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "FindSplitPlane.h"
 #include <pcl/features/moment_of_inertia_estimation.h>
 
