@@ -22,7 +22,7 @@ namespace hiveObliquePhotography
 			void __removeUnreferencedVertex(CMesh& vioMesh);
 
 			std::vector<SFace> __genConnectionFace(IndexType vNumLeft, IndexType vNumRight, bool vLeftBeforeRight, bool vIsClockwise = true);
-
+			
 			Eigen::Vector4f m_SegmentPlane = {};
 		};
 	}
