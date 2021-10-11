@@ -13,14 +13,12 @@ _REGISTER_NORMAL_PRODUCT(CBasicMeshSuture, KEYWORD::BASIC_MESH_SUTURE)
 //FUNCTION: 
 void CBasicMeshSuture::sutureMeshes()
 {
-	//TODO: nullptr
-	pcl::PointCloud<pcl::PointXYZ>::Ptr CloudOne, CloudTwo;
-	auto SegmentPlane = __calcSegmentPlane(CloudOne, CloudTwo);
-	
+	_ASSERTE(m_SegmentPlane.norm());
+
 	std::vector<int> LHSDissociatedIndices, RHSDissociatedIndices;
 	std::vector<SVertex> LHSIntersectionPoints, RHSIntersectionPoints;
-	__executeIntersection(m_MeshLHS, SegmentPlane, LHSDissociatedIndices, LHSIntersectionPoints);
-	__executeIntersection(m_MeshRHS, SegmentPlane, RHSDissociatedIndices, RHSIntersectionPoints);
+	__executeIntersection(m_MeshLHS, m_SegmentPlane, LHSDissociatedIndices, LHSIntersectionPoints);
+	__executeIntersection(m_MeshRHS, m_SegmentPlane, RHSDissociatedIndices, RHSIntersectionPoints);
 
 	auto PublicVertices = __generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints);
 	__connectVerticesWithMesh(m_MeshLHS, LHSDissociatedIndices, PublicVertices);
@@ -30,17 +28,19 @@ void CBasicMeshSuture::sutureMeshes()
 	__removeUnreferencedVertex(m_MeshRHS);
 }
 
-void CBasicMeshSuture::dumpMeshes(CMesh& voLHSMesh, CMesh& voRHSMesh)
+//*****************************************************************
+//FUNCTION: 
+void CBasicMeshSuture::setCloud4SegmentPlane(PointCloud_t::Ptr vLHSCloud, PointCloud_t::Ptr vRHSCloud)
 {
-	voLHSMesh = m_MeshLHS;
-	voRHSMesh = m_MeshRHS;
+	m_SegmentPlane = CFindSplitPlane().execute(vLHSCloud, vRHSCloud);
 }
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector4f CBasicMeshSuture::__calcSegmentPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudOne, pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudTwo)
+void CBasicMeshSuture::dumpMeshes(CMesh& voLHSMesh, CMesh& voRHSMesh)
 {
-	return CFindSplitPlane().execute(vCloudOne, vCloudTwo);
+	voLHSMesh = m_MeshLHS;
+	voRHSMesh = m_MeshRHS;
 }
 
 //*****************************************************************

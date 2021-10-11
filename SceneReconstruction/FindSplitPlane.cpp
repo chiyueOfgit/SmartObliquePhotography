@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "FindSplitPlane.h"
 #include <pcl/features/moment_of_inertia_estimation.h>
 
@@ -5,13 +6,13 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 //*****************************************************************
 //FUNCTION: 找到两个相邻点云模型之间的切割平面；
-Eigen::Vector4f CFindSplitPlane::execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudOne, pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudTwo)
+Eigen::Vector4f CFindSplitPlane::execute(PointCloud_t::Ptr vCloudOne, PointCloud_t::Ptr vCloudTwo)
 {
-	pcl::PointXYZ MinPointOfCloudOne;
-	pcl::PointXYZ MaxPointOfCloudOne;
+	PointCloud_t::PointType MinPointOfCloudOne;
+	PointCloud_t::PointType MaxPointOfCloudOne;
 	__getMinAndMaxPointOfAABB(vCloudOne, MinPointOfCloudOne, MaxPointOfCloudOne);
-	pcl::PointXYZ MinPointOfCloudTwo;
-	pcl::PointXYZ MaxPointOfCloudTwo;
+	PointCloud_t::PointType MinPointOfCloudTwo;
+	PointCloud_t::PointType MaxPointOfCloudTwo;
 	__getMinAndMaxPointOfAABB(vCloudTwo, MinPointOfCloudTwo, MaxPointOfCloudTwo);
 
 	Eigen::Vector4f voSplitPlane;
@@ -27,12 +28,12 @@ Eigen::Vector4f CFindSplitPlane::execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCl
 
 //*****************************************************************
 //FUNCTION:得到点云模型的AABB包围盒的两个组成点；
-void CFindSplitPlane::__getMinAndMaxPointOfAABB(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud,pcl::PointXYZ& vMinPoint, pcl::PointXYZ& vMaxPoint)
+void CFindSplitPlane::__getMinAndMaxPointOfAABB(PointCloud_t::Ptr vCloud, PointCloud_t::PointType& voMinPoint, PointCloud_t::PointType& voMaxPoint)
 {
-	pcl::MomentOfInertiaEstimation <pcl::PointXYZ> FeatureExtractor;
+	pcl::MomentOfInertiaEstimation <PointCloud_t::PointType> FeatureExtractor;
 	FeatureExtractor.setInputCloud(vCloud);
 	FeatureExtractor.compute();
-	FeatureExtractor.getAABB(vMinPoint, vMaxPoint);
+	FeatureExtractor.getAABB(voMinPoint, voMaxPoint);
 	return;
 }
 

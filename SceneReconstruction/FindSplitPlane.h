@@ -1,5 +1,4 @@
 #pragma once
-#include "pch.h"
 
 namespace hiveObliquePhotography
 {
@@ -11,9 +10,9 @@ namespace hiveObliquePhotography
 			CFindSplitPlane() = default;
 			~CFindSplitPlane() = default;
 
-			Eigen::Vector4f execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudOne, pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudTwo);
+			Eigen::Vector4f execute(PointCloud_t::Ptr vCloudOne, PointCloud_t::Ptr vCloudTwo);
 			
-			void __getMinAndMaxPointOfAABB(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud,pcl::PointXYZ& vMinPoint, pcl::PointXYZ& vMaxPoint);
+			void __getMinAndMaxPointOfAABB(PointCloud_t::Ptr vCloud, PointCloud_t::PointType& voMinPoint, PointCloud_t::PointType& voMaxPoint);
 			void __judgeSplitPlane(int vAxisFlag,float vMinAxisValueCloudOne, float vMaxAxisValueCloudOne, float vMinAxisValueCloudTwo, float vMaxAxisValueCloudTwo, Eigen::Vector4f& vioSplitPlane);
 		};
 	}
