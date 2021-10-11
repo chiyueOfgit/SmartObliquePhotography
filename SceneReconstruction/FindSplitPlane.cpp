@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "FindSplitPlane.h"
 #include <pcl/features/moment_of_inertia_estimation.h>
 
@@ -27,12 +28,12 @@ Eigen::Vector4f CFindSplitPlane::execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCl
 
 //*****************************************************************
 //FUNCTION:得到点云模型的AABB包围盒的两个组成点；
-void CFindSplitPlane::__getMinAndMaxPointOfAABB(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud,pcl::PointXYZ& vMinPoint, pcl::PointXYZ& vMaxPoint)
+void CFindSplitPlane::__getMinAndMaxPointOfAABB(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, pcl::PointXYZ& voMinPoint, pcl::PointXYZ& voMaxPoint)
 {
-	pcl::MomentOfInertiaEstimation <pcl::PointXYZ> FeatureExtractor;
+	pcl::MomentOfInertiaEstimation<pcl::PointXYZ> FeatureExtractor;
 	FeatureExtractor.setInputCloud(vCloud);
 	FeatureExtractor.compute();
-	FeatureExtractor.getAABB(vMinPoint, vMaxPoint);
+	FeatureExtractor.getAABB(voMinPoint, voMaxPoint);
 	return;
 }
 
@@ -50,11 +51,11 @@ void CFindSplitPlane::__judgeSplitPlane(int vAxisFlag,float vMinAxisValueCloudOn
 			//规定法向量方向;
 			float Sign = ((SplitPlaneValue - vMinAxisValueCloudOne) > 0) ? 1 : -1;
 			if (vAxisFlag == 0)
-				vioSplitPlane = Eigen::Vector4f(1 * Sign, 0, 0, SplitPlaneValue * Sign);
+				vioSplitPlane = Eigen::Vector4f(1 * Sign, 0, 0, -SplitPlaneValue * Sign);
 			if (vAxisFlag == 1)
-				vioSplitPlane = Eigen::Vector4f(0, 1 * Sign, 0, SplitPlaneValue * Sign);
+				vioSplitPlane = Eigen::Vector4f(0, 1 * Sign, 0, -SplitPlaneValue * Sign);
 			if (vAxisFlag == 2)
-				vioSplitPlane = Eigen::Vector4f(0, 0, 1 * Sign, SplitPlaneValue * Sign);
+				vioSplitPlane = Eigen::Vector4f(0, 0, 1 * Sign, -SplitPlaneValue * Sign);
 		}
 	}
 }
