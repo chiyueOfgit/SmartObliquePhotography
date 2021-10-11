@@ -4,6 +4,7 @@
 #include "PoissonSurfaceReconstructor.h"
 #include "RayCastingBaker.h"
 #include "ArapParameterizer.h"
+#include "BasicMeshSuture.h"
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/obj_io.h>
@@ -58,5 +59,15 @@ hiveObliquePhotography::CImage<std::array<int, 3>> hiveObliquePhotography::Scene
 {
 	auto pBaker = hiveDesignPattern::hiveCreateProduct<CRayCastingBaker>(KEYWORD::RAYCASTING_TEXTUREBAKER, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
 	return pBaker->bakeTexture(vSceneCloud, vResolution);
+}
+
+//*****************************************************************
+//FUNCTION: 
+RECONSTRUCTION_DECLSPEC void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo, PointCloud_t::Ptr vCloudOne, PointCloud_t::Ptr vCloudTwo)
+{
+	auto pSuturator = hiveDesignPattern::hiveCreateProduct<CBasicMeshSuture>(KEYWORD::BASIC_MESH_SUTURE, CSceneReconstructionConfig::getInstance()->getSubConfigByName("BasicSuture"), vioMeshOne, vioMeshTwo);
+	pSuturator->setCloud4SegmentPlane(vCloudOne, vCloudTwo);
+	pSuturator->sutureMeshes();
+	pSuturator->dumpMeshes(vioMeshOne, vioMeshTwo);
 }
 

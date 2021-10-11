@@ -51,11 +51,11 @@ void CFindSplitPlane::__judgeSplitPlane(int vAxisFlag,float vMinAxisValueCloudOn
 			//规定法向量方向;
 			float Sign = ((SplitPlaneValue - vMinAxisValueCloudOne) > 0) ? 1 : -1;
 			if (vAxisFlag == 0)
-				vioSplitPlane = Eigen::Vector4f(1 * Sign, 0, 0, SplitPlaneValue * Sign);
+				vioSplitPlane = Eigen::Vector4f(1 * Sign, 0, 0, -SplitPlaneValue * Sign);
 			if (vAxisFlag == 1)
-				vioSplitPlane = Eigen::Vector4f(0, 1 * Sign, 0, SplitPlaneValue * Sign);
+				vioSplitPlane = Eigen::Vector4f(0, 1 * Sign, 0, -SplitPlaneValue * Sign);
 			if (vAxisFlag == 2)
-				vioSplitPlane = Eigen::Vector4f(0, 0, 1 * Sign, SplitPlaneValue * Sign);
+				vioSplitPlane = Eigen::Vector4f(0, 0, 1 * Sign, -SplitPlaneValue * Sign);
 		}
 	}
 }
