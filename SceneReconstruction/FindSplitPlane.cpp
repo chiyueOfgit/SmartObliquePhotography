@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "FindSplitPlane.h"
 #include <pcl/features/moment_of_inertia_estimation.h>
 
@@ -27,12 +28,12 @@ Eigen::Vector4f CFindSplitPlane::execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCl
 
 //*****************************************************************
 //FUNCTION:得到点云模型的AABB包围盒的两个组成点；
-void CFindSplitPlane::__getMinAndMaxPointOfAABB(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud,pcl::PointXYZ& vMinPoint, pcl::PointXYZ& vMaxPoint)
+void CFindSplitPlane::__getMinAndMaxPointOfAABB(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, pcl::PointXYZ& voMinPoint, pcl::PointXYZ& voMaxPoint)
 {
-	pcl::MomentOfInertiaEstimation <pcl::PointXYZ> FeatureExtractor;
+	pcl::MomentOfInertiaEstimation<pcl::PointXYZ> FeatureExtractor;
 	FeatureExtractor.setInputCloud(vCloud);
 	FeatureExtractor.compute();
-	FeatureExtractor.getAABB(vMinPoint, vMaxPoint);
+	FeatureExtractor.getAABB(voMinPoint, voMaxPoint);
 	return;
 }
 

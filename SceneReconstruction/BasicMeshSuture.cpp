@@ -1,7 +1,9 @@
 #include "pch.h"
-#include"BasicMeshSuture.h"
-#include"MeshPlaneIntersection.h"
-#include"FindSplitPlane.h"
+#include "BasicMeshSuture.h"
+#include <vcg/complex/algorithms/clean.h>
+#include "MeshPlaneIntersection.h"
+#include "FindSplitPlane.h"
+#include "VcgMesh.hpp"
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -11,13 +13,12 @@ _REGISTER_NORMAL_PRODUCT(CBasicMeshSuture, KEYWORD::BASIC_MESH_SUTURE)
 //FUNCTION: 
 void CBasicMeshSuture::sutureMeshes()
 {
-	pcl::PointCloud<pcl::PointXYZ>::Ptr CloudOne, CloudTwo;
-	Eigen::Vector4f SegmentPlane = __calcSegmentPlane(CloudOne, CloudTwo);
-	
+	_ASSERTE(m_SegmentPlane.norm());
+
 	std::vector<int> LHSDissociatedIndices, RHSDissociatedIndices;
 	std::vector<SVertex> LHSIntersectionPoints, RHSIntersectionPoints;
-	__executeIntersection(m_MeshLHS, SegmentPlane, LHSDissociatedIndices, LHSIntersectionPoints);
-	__executeIntersection(m_MeshRHS, SegmentPlane, RHSDissociatedIndices, RHSIntersectionPoints);
+	__executeIntersection(m_MeshLHS, m_SegmentPlane, LHSDissociatedIndices, LHSIntersectionPoints);
+	__executeIntersection(m_MeshRHS, m_SegmentPlane, RHSDissociatedIndices, RHSIntersectionPoints);
 
 	auto PublicVertices = __generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints);
 	__connectVerticesWithMesh(m_MeshLHS, LHSDissociatedIndices, PublicVertices);
@@ -27,18 +28,23 @@ void CBasicMeshSuture::sutureMeshes()
 	__removeUnreferencedVertex(m_MeshRHS);
 }
 
-void CBasicMeshSuture::dumpMeshes(CMesh& voLHSMesh, CMesh& voRHSMesh)
+//*****************************************************************
+//FUNCTION: 
+void CBasicMeshSuture::setCloud4SegmentPlane(PointCloud_t::Ptr vLHSCloud, PointCloud_t::Ptr vRHSCloud)
 {
-	voLHSMesh = m_MeshLHS;
-	voRHSMesh = m_MeshRHS;
+	pcl::PointCloud<pcl::PointXYZ>::Ptr TempOne(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr TempTwo(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::copyPointCloud(*vLHSCloud, *TempOne);
+	pcl::copyPointCloud(*vRHSCloud, *TempTwo);
+	m_SegmentPlane = CFindSplitPlane().execute(TempOne, TempTwo);
 }
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector4f CBasicMeshSuture::__calcSegmentPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudOne, pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudTwo)
+void CBasicMeshSuture::dumpMeshes(CMesh& voLHSMesh, CMesh& voRHSMesh)
 {
-	CFindSplitPlane FindSplitPlane;
-	return FindSplitPlane.execute(vCloudOne, vCloudTwo);
+	voLHSMesh = m_MeshLHS;
+	voRHSMesh = m_MeshRHS;
 }
 
 //*****************************************************************
@@ -65,15 +71,16 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	_ASSERTE(!vDissociatedIndices.empty() && !vPublicVertices.empty());
 
 	std::vector<int> PublicIndices;
-	for (int i = 0; i < vPublicVertices.size(); i++)
+	PublicIndices.reserve(vPublicVertices.size());
+	for (size_t i = 0; i < vPublicVertices.size(); ++i)
 	{
 		vioMesh.m_Vertices.push_back(vPublicVertices[i]);
 		PublicIndices.push_back(i + vioMesh.m_Vertices.size());
 	}
 
-	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true);	// order is heuristic
+	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, true);	// order is heuristic
 
-	for (int Offset = vDissociatedIndices.size(); auto& Face : ConnectionFaceSet)
+	for (auto Offset = vDissociatedIndices.size(); auto& Face : ConnectionFaceSet)
 	{
 		SFace FaceWithMeshIndex;
 		for (int i = 0; i < 3; i++)
@@ -84,59 +91,40 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<hiveObliquePhotography::SFace> hiveObliquePhotography::SceneReconstruction::CBasicMeshSuture::__genConnectionFace(int vNumLeft, int vNumRight, bool vDefaultOrder)
+std::vector<hiveObliquePhotography::SFace> CBasicMeshSuture::__genConnectionFace(IndexType vNumLeft, IndexType vNumRight, bool vLeftBeforeRight, bool vIsClockwise)
 {
+	if (!vIsClockwise)
+		return __genConnectionFace(vNumRight, vNumLeft, !vLeftBeforeRight, !vIsClockwise);
+
 	std::vector<SFace> ConnectionFaceSet;
-
-	int NumLess = vNumLeft < vNumRight ? vNumLeft : vNumRight;
-	int NumMore = vNumLeft < vNumRight ? vNumRight : vNumLeft;
-	float ContainRate = float(NumMore) / NumLess;
-
-	int LessOffset = NumLess == vNumLeft ? 0 : vNumLeft;
-	int MoreOffset = NumMore == vNumRight ? vNumLeft : 0;
-	IndexType LessCursor = LessOffset, MoreCursor = MoreOffset;
-	IndexType LessEnd = NumLess + LessOffset, MoreEnd = NumMore + MoreOffset;
-
-	auto genFixLessFace = [&](IndexType vLess, IndexType& vMore)
+	std::pair<IndexType, IndexType> Offset(0, 0);
+	if (vLeftBeforeRight)
+		Offset.second = vNumLeft;
+	else
+		Offset.first = vNumRight;
+	
+	for (IndexType LeftCursor = 0, RightCursor = 0; LeftCursor < vNumLeft && RightCursor < vNumRight; )
 	{
-		SFace Face;
-		if (vDefaultOrder)
-			Face = { vLess, vMore, vMore + 1 };
-		else
-			Face = { vLess, vMore + 1, vMore };
-		ConnectionFaceSet.push_back(Face);
-		vMore++;
-	};
-	auto genFixMoreFace = [&](IndexType& vLess, IndexType vMore)
-	{
-		SFace Face;
-		if (vDefaultOrder)
-			Face = { vLess, vMore, vLess + 1 };
-		else
-			Face = { vLess, vLess + 1, vMore };
-		ConnectionFaceSet.push_back(Face);
-		vLess++;
-	};
+		auto LeftWithOffset = LeftCursor + Offset.first;
+		auto RightWithOffset = RightCursor + Offset.second;
 
-	int CheckPoint = 1;
-	float AccumContain = ContainRate;
-	while (LessCursor + 1 < LessEnd && MoreCursor + 1 < MoreEnd)
-	{
-		while (CheckPoint < AccumContain && MoreCursor + 1 < MoreEnd)
+		if ((2 * LeftCursor + 1) * (vNumRight - 1) < (2 * RightCursor + 1) * (vNumLeft - 1))
 		{
-			genFixLessFace(LessCursor, MoreCursor);
-			CheckPoint++;
+			if (LeftCursor + 1 >= vNumLeft)
+				break;
+
+			ConnectionFaceSet.emplace_back(LeftWithOffset, RightWithOffset, LeftWithOffset + 1);
+			++LeftCursor;
 		}
-		AccumContain += ContainRate;
+		else
+		{
+			if (RightCursor + 1 >= vNumRight)
+				break;
 
-		genFixMoreFace(LessCursor, MoreCursor);
+			ConnectionFaceSet.emplace_back(LeftWithOffset, RightWithOffset, RightWithOffset + 1);
+			++RightCursor;
+		}
 	}
-
-	while (LessCursor + 1 < LessEnd)
-		genFixMoreFace(LessCursor, MoreCursor);
-	while (MoreCursor + 1 < MoreEnd)
-		genFixLessFace(LessCursor, MoreCursor);
-
 	return ConnectionFaceSet;
 }
 
@@ -144,5 +132,8 @@ std::vector<hiveObliquePhotography::SFace> hiveObliquePhotography::SceneReconstr
 //FUNCTION: 
 void CBasicMeshSuture::__removeUnreferencedVertex(CMesh& vioMesh)
 {
-
+	CVcgMesh VcgMesh;
+	toVcgMesh(vioMesh, VcgMesh);
+	vcg::tri::Clean<CVcgMesh>::RemoveUnreferencedVertex(VcgMesh);
+	fromVcgMesh(VcgMesh, vioMesh);
 }
