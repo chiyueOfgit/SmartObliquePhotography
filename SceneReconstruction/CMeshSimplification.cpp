@@ -4,7 +4,7 @@
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
-_REGISTER_NORMAL_PRODUCT(CMeshSimplification, KEYWORD::ARAP_MESH_PARAMETERIZATION)
+//_REGISTER_NORMAL_PRODUCT(CMeshSimplification, KEYWORD::ARAP_MESH_)
 
 //*****************************************************************
 //FUNCTION: 

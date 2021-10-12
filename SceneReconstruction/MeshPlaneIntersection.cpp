@@ -57,12 +57,12 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 
 	auto compare = [&](int vLhs, int vRhs) -> bool
 	{
-		return vioMesh.m_Vertices[vLhs].z < vioMesh.m_Vertices[vRhs].z;
+		return vioMesh.m_Vertices[vLhs].y < vioMesh.m_Vertices[vRhs].y;
 	};
 
 	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
 	{
-		return vLhs.z < vRhs.z;
+		return vLhs.y < vRhs.y;
 	};
 
 	std::sort(m_IntersectionPoints.begin(), m_IntersectionPoints.end(), compareV);
