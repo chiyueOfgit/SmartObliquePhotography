@@ -54,6 +54,9 @@
     <ClCompile Include="..\SceneReconstruction\FindSplitPlane.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\SceneReconstruction\CollapseBasedSimplification.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SceneReconstruction\framework.h">
@@ -102,6 +105,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\SceneReconstruction\FindSplitPlane.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SceneReconstruction\CollapseBasedSimplification.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

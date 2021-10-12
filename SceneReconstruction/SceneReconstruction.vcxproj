@@ -154,7 +154,7 @@
   <ItemGroup>
     <ClCompile Include="ArapParameterizer.cpp" />
     <ClCompile Include="BasicMeshSuture.cpp" />
-    <ClCompile Include="CMeshSimplification.cpp" />
+    <ClCompile Include="CollapseBasedSimplification.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FindSplitPlane.cpp" />
     <ClCompile Include="MeshParameterizer.cpp" />
@@ -174,7 +174,7 @@
   <ItemGroup>
     <ClInclude Include="..\ObliquePhotographyData\Image.h" />
     <ClInclude Include="ArapParameterizer.h" />
-    <ClInclude Include="CMeshSimplification.h" />
+    <ClInclude Include="CollapseBasedSimplification.h" />
     <ClInclude Include="FindSplitPlane.h" />
     <ClInclude Include="BasicMeshSuture.h" />
     <ClInclude Include="framework.h" />
@@ -191,6 +191,7 @@
     <ClInclude Include="SurfaceReconstructor.h" />
     <ClInclude Include="SceneReconstructionConfig.h" />
     <ClInclude Include="TextureBaker.h" />
+    <ClInclude Include="VcgMesh.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
