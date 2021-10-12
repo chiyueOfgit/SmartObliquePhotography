@@ -594,7 +594,7 @@ void CQTInterface::onActionOpenMesh()
         PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
         Visualization::hiveRefreshVisualizer(PointLabelSet, true);
 
-        //Visualization::TestInterface(MeshPath, "../UnitTests/Unit_Test_026/BoundaryPoints.txt");
+        //Visualization::TestInterface(MeshPath, "Model_0_PublicPoints.txt");
 
         __addResourceSpaceMeshItem(MeshName);
         __messageDockWidgetOutputText("Open mesh " + MeshPath + " succeed.");

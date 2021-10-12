@@ -106,17 +106,11 @@ void hiveObliquePhotography::Visualization::TestInterface(const std::string& vOb
 {
 	auto pVisualizer = CPointCloudVisualizer::getInstance();
 
-	std::vector<int> BoundaryPoints;
+	std::set<int> BoundaryPoints;
 	std::ifstream file(vBoundary);
 	boost::archive::text_iarchive ia(file);
 	ia >> BOOST_SERIALIZATION_NVP(BoundaryPoints);
 	file.close();
-
-	pcl::TextureMesh Mesh1, Mesh2;
-	pcl::io::loadOBJFile(vObj, Mesh1);
-	pcl::io::loadPolygonFileOBJ(vObj, Mesh2);
-	Mesh2.tex_materials = Mesh1.tex_materials;
-	auto Material = Mesh2.tex_materials[0];
 
 	CMesh M;
 	hiveLoadMeshModel(M, vObj);
@@ -137,7 +131,7 @@ void hiveObliquePhotography::Visualization::TestInterface(const std::string& vOb
 	}
 
 	auto pPCLVisualizer = hiveGetPCLVisualizer();
-	pPCLVisualizer->addTextureMesh(Mesh2);
+	pPCLVisualizer->addTextureMesh(M.toTexMesh({}));
 	pPCLVisualizer->addPointCloud(pCloud, vBoundary);
 	pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, vBoundary);
 	pPCLVisualizer->resetCamera();

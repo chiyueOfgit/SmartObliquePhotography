@@ -31,7 +31,7 @@ namespace hiveObliquePhotography
 
 		bool operator < (const SVertex& Vertex) const
 		{
-			if (this->x < Vertex.x)
+			if (this->z < Vertex.z)
 				return true;
 			else 
 				return false;
@@ -40,7 +40,7 @@ namespace hiveObliquePhotography
 		bool operator == (const SVertex& Vertex) const
 		{
 			for (int i = 0; i < sizeof(SVertex) / sizeof(DataType); i++)
-				if (*(reinterpret_cast<const DataType*>(this) + i) != Vertex[i])
+				if ((*this)[i] != Vertex[i])
 					return false;
 			return true;
 		}

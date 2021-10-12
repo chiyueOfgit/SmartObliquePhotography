@@ -5,6 +5,11 @@
 #include "FindSplitPlane.h"
 #include "VcgMesh.hpp"
 
+#include <fstream>	//remove
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/set.hpp>
+#include <boost/serialization/vector.hpp>
+
 using namespace hiveObliquePhotography::SceneReconstruction;
 
 _REGISTER_NORMAL_PRODUCT(CBasicMeshSuture, KEYWORD::BASIC_MESH_SUTURE)
@@ -95,6 +100,14 @@ void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLHS
 			SharingVertex = __interpolatePoint(Iter->first, Iter->second);
 		voPublicVertices.push_back(SharingVertex);
 	}
+
+	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
+	{
+		return vLhs.z < vRhs.z;
+	};
+
+	std::sort(voPublicVertices.begin(), voPublicVertices.end(), compareV);
+
 }
 
 //*****************************************************************
@@ -152,7 +165,13 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 		PublicIndices.push_back(i + Offset);
 	}
 
-	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, true);	// order is heuristic
+	static int i = 0;
+	std::ofstream file("Model_" + std::to_string(i++) + "_PublicPoints.txt");
+	boost::archive::text_oarchive oa(file);
+	oa& BOOST_SERIALIZATION_NVP(PublicIndices);
+	file.close();
+
+	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, false);	// order is heuristic
 
 	for (auto Offset = vDissociatedIndices.size(); auto& Face : ConnectionFaceSet)
 	{
@@ -176,7 +195,7 @@ std::vector<hiveObliquePhotography::SFace> CBasicMeshSuture::__genConnectionFace
 		Offset.second = vNumLeft;
 	else
 		Offset.first = vNumRight;
-	
+
 	for (IndexType LeftCursor = 0, RightCursor = 0; LeftCursor < vNumLeft && RightCursor < vNumRight; )
 	{
 		auto LeftWithOffset = LeftCursor + Offset.first;

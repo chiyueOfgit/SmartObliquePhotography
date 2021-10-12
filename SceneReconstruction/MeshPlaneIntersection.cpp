@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "MeshPlaneIntersection.h"
-#include<set>
+#include <set>
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -21,6 +21,7 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 	else
 		Plane = -vPlane;
 	
+	std::set<SVertex> IntersectionPoints;
 	std::set<int> Indeices;
 	std::vector<SFace>::iterator Iter = vioMesh.m_Faces.begin();
 	for(;Iter!= vioMesh.m_Faces.end();)
@@ -31,7 +32,7 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 		if(TempIntersectionSet.size())
 		{
 			bIsIntersected = true;
-			m_IntersectionPoints.insert(m_IntersectionPoints.end(), TempIntersectionSet.begin(), TempIntersectionSet.end());
+			IntersectionPoints.insert(TempIntersectionSet.begin(), TempIntersectionSet.end());
 		}
 		auto DissociatedSet = __tellDissociatedPoint(TempFace, Plane);
 		if (bIsIntersected)
@@ -51,7 +52,22 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 			    Iter++;
 		}	
 	}
+	m_IntersectionPoints.assign(IntersectionPoints.begin(), IntersectionPoints.end());
 	m_DissociatedPoints.assign(Indeices.begin(), Indeices.end());
+
+	auto compare = [&](int vLhs, int vRhs) -> bool
+	{
+		return vioMesh.m_Vertices[vLhs].z < vioMesh.m_Vertices[vRhs].z;
+	};
+
+	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
+	{
+		return vLhs.z < vRhs.z;
+	};
+
+	std::sort(m_IntersectionPoints.begin(), m_IntersectionPoints.end(), compareV);
+	std::sort(m_DissociatedPoints.begin(), m_DissociatedPoints.end(), compare);
+
 	return;
 }
 
