@@ -24,6 +24,7 @@ namespace hiveObliquePhotography
 			const std::string RAYCASTING_TEXTUREBAKER = "RAYCASTING_TEXTUREBAKER";
 			const std::string ARAP_MESH_PARAMETERIZATION = "ARAP_MESH_PARAMETERIZATION";
 			const std::string BASIC_MESH_SUTURE = "BASIC_MESH_SUTURE";
+			const std::string COLLAPSE_BASED_SIMPLIFICATION = "COLLAPSE_BASED_SIMPLIFICATION";
 		}
 	}
 }

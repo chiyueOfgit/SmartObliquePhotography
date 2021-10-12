@@ -37,7 +37,7 @@
     <ClCompile Include="MeshSimplification.cpp">
       <Filter>Simplification</Filter>
     </ClCompile>
-    <ClCompile Include="CMeshSimplification.cpp">
+    <ClCompile Include="CollapseBasedSimplification.cpp">
       <Filter>Simplification</Filter>
     </ClCompile>
   </ItemGroup>
@@ -82,7 +82,10 @@
     <ClInclude Include="MeshSimplification.h">
       <Filter>Simplification</Filter>
     </ClInclude>
-    <ClInclude Include="CMeshSimplification.h">
+    <ClInclude Include="CollapseBasedSimplification.h">
+      <Filter>Simplification</Filter>
+    </ClInclude>
+    <ClInclude Include="VcgMesh.hpp">
       <Filter>Simplification</Filter>
     </ClInclude>
   </ItemGroup>

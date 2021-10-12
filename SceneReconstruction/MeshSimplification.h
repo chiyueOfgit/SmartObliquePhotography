@@ -12,7 +12,7 @@ namespace hiveObliquePhotography
 			virtual ~IMeshSimplifacation() = default;
 
 			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, const CMesh& vMesh);
-			virtual void simplifyMesh() = 0;
+			virtual CMesh simplifyMesh() = 0;
 
 		protected:
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
