@@ -146,10 +146,10 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 	std::vector<int> PublicIndices;
 	PublicIndices.reserve(vPublicVertices.size());
-	for (size_t i = 0; i < vPublicVertices.size(); ++i)
+	for (size_t i = 0, Offset = vioMesh.m_Vertices.size(); i < vPublicVertices.size(); ++i)
 	{
 		vioMesh.m_Vertices.push_back(vPublicVertices[i]);
-		PublicIndices.push_back(i + vioMesh.m_Vertices.size());
+		PublicIndices.push_back(i + Offset);
 	}
 
 	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, true);	// order is heuristic
