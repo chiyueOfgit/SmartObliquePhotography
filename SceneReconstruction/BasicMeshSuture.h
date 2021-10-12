@@ -17,12 +17,15 @@ namespace hiveObliquePhotography
 		
 		private:	
 			void __executeIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<int>& voDissociatedIndices, std::vector<SVertex>& voIntersectionPoints);
-			std::vector<SVertex> __generatePublicVertices(std::vector<SVertex>& vLHSIntersectionPoints, std::vector<SVertex>& vRHSIntersectionPoints);
+			void __generatePublicVertices(const std::vector<SVertex>& vLHSIntersectionPoints, const std::vector<SVertex>& vRHSIntersectionPoints, std::vector<SVertex>& voPublicVertices);
 			void __connectVerticesWithMesh(CMesh& vioMesh, std::vector<int>& vDissociatedIndices, std::vector<SVertex>& vPublicVertices);
 			void __removeUnreferencedVertex(CMesh& vioMesh);
+			double __computeDistance(const SVertex& vLHSVertex, const SVertex& vRHSVertex);
+			SVertex __interpolatePoint(const SVertex& vLHSVertex, const SVertex& vRHSVertex);
+			SVertex __findNearestPoint(const std::vector<SVertex>& vVectexSet, const SVertex& vVertex);
 
 			std::vector<SFace> __genConnectionFace(IndexType vNumLeft, IndexType vNumRight, bool vLeftBeforeRight, bool vIsClockwise = true);
-
+			
 			Eigen::Vector4f m_SegmentPlane = {};
 		};
 	}

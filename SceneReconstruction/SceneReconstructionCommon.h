@@ -17,6 +17,8 @@ namespace hiveObliquePhotography
 			const std::string SURFEL_RADIUS = "SURFEL_RADIUS";
 			const std::string NUM_SAMPLE = "NUM_SAMPLE";
 
+			const std::string SUTURE = "SUTURE";
+
 			//product sig
 			const std::string POISSON_RECONSTRUCTOR = "POISSON_RECONSTRUCTOR";
 			const std::string RAYCASTING_TEXTUREBAKER = "RAYCASTING_TEXTUREBAKER";

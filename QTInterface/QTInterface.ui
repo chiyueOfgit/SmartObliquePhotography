@@ -90,6 +90,7 @@
    <addaction name="actionPrecompute"/>
    <addaction name="actionRepairHole"/>
    <addaction name="actionReconstruction"/>
+   <addaction name="actionSutureMesh"/>
    <addaction name="actionParameterization"/>
    <addaction name="actionBakeTexture"/>
    <addaction name="actionSetting"/>
@@ -453,6 +454,18 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>Parameterization</string>
+   </property>
+  </action>
+  <action name="actionSutureMesh">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/regionGrowing.png</normaloff>:/QTInterface/Icon/regionGrowing.png</iconset>
+   </property>
+   <property name="text">
+    <string>SutureMesh</string>
    </property>
   </action>
  </widget>

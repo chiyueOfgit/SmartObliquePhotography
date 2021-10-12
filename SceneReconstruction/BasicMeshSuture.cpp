@@ -16,11 +16,11 @@ void CBasicMeshSuture::sutureMeshes()
 	_ASSERTE(m_SegmentPlane.norm());
 
 	std::vector<int> LHSDissociatedIndices, RHSDissociatedIndices;
-	std::vector<SVertex> LHSIntersectionPoints, RHSIntersectionPoints;
+	std::vector<SVertex> LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices;
 	__executeIntersection(m_MeshLHS, m_SegmentPlane, LHSDissociatedIndices, LHSIntersectionPoints);
 	__executeIntersection(m_MeshRHS, m_SegmentPlane, RHSDissociatedIndices, RHSIntersectionPoints);
 
-	auto PublicVertices = __generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints);
+	__generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices);
 	__connectVerticesWithMesh(m_MeshLHS, LHSDissociatedIndices, PublicVertices);
 	__connectVerticesWithMesh(m_MeshRHS, RHSDissociatedIndices, PublicVertices);
 
@@ -59,9 +59,83 @@ void CBasicMeshSuture::__executeIntersection(CMesh& vioMesh, const Eigen::Vector
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<hiveObliquePhotography::SVertex> CBasicMeshSuture::__generatePublicVertices(std::vector<SVertex>& vLHSIntersectionPoints, std::vector<SVertex>& vRHSIntersectionPoints)
+void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLHSIntersectionPoints, const std::vector<SVertex>& vRHSIntersectionPoints, std::vector<SVertex>& voPublicVertices)
 {
-	return {};
+	if (voPublicVertices.size() > 0)
+		voPublicVertices.clear();
+	std::vector<SVertex> MajorPoints, MinorPoints, PairedMinorPoints;
+	std::map<SVertex, SVertex> PairingPoints, PairingPointsAmended;
+	bool Comparation = vLHSIntersectionPoints.size() > vRHSIntersectionPoints.size();
+	MajorPoints = Comparation ? vLHSIntersectionPoints : vRHSIntersectionPoints;
+	MinorPoints = Comparation ? vRHSIntersectionPoints : vLHSIntersectionPoints;
+
+	for (auto MajorPoint : MajorPoints)
+	{
+		SVertex NearestPoint = __findNearestPoint(MinorPoints, MajorPoint);
+		PairingPoints.insert(std::pair<SVertex, SVertex>(MajorPoint, NearestPoint));
+		PairedMinorPoints.push_back(NearestPoint);
+	}
+
+	for (auto MinorPoint : MinorPoints)
+	{
+		std::vector<SVertex>::iterator Iter = std::find(PairedMinorPoints.begin(), PairedMinorPoints.end(), MinorPoint);
+		if (Iter != PairedMinorPoints.end())
+			continue;
+
+		SVertex NearestPoint = __findNearestPoint(MajorPoints, MinorPoint);
+		PairingPointsAmended.insert(std::pair<SVertex, SVertex>(NearestPoint, MinorPoint));
+	}
+
+	for (auto Iter = PairingPoints.begin(); Iter != PairingPoints.end(); ++Iter)
+	{
+		SVertex SharingVertex;
+		if (PairingPointsAmended.find(Iter->first) != PairingPointsAmended.end())
+			SharingVertex = __interpolatePoint(__interpolatePoint(Iter->first, Iter->second), __interpolatePoint(Iter->first, PairingPointsAmended.find(Iter->first)->second));
+		else
+			SharingVertex = __interpolatePoint(Iter->first, Iter->second);
+		voPublicVertices.push_back(SharingVertex);
+	}
+}
+
+//*****************************************************************
+//FUNCTION: 
+double CBasicMeshSuture::__computeDistance(const SVertex& vLHSVertex, const SVertex& vRHSVertex)
+{
+	return std::sqrt(std::pow(vLHSVertex.x - vRHSVertex.x, 2) + std::pow(vLHSVertex.y - vRHSVertex.y, 2) + std::pow(vLHSVertex.z - vRHSVertex.z, 2));
+}
+
+//*****************************************************************
+//FUNCTION: 
+hiveObliquePhotography::SVertex CBasicMeshSuture::__interpolatePoint(const SVertex& vLHSVertex, const SVertex& vRHSVertex)
+{
+	hiveObliquePhotography::SVertex NewVertex;
+	NewVertex.x = 0.5 * (vLHSVertex.x + vRHSVertex.x);
+	NewVertex.y = 0.5 * (vLHSVertex.y + vRHSVertex.y);
+	NewVertex.z = 0.5 * (vLHSVertex.z + vRHSVertex.z);
+	NewVertex.nx = 0.5 * (vLHSVertex.nx + vRHSVertex.nx);
+	NewVertex.ny = 0.5 * (vLHSVertex.ny + vRHSVertex.ny);
+	NewVertex.nz = 0.5 * (vLHSVertex.nz + vRHSVertex.nz);
+	NewVertex.u = 0.5 * (vLHSVertex.u + vRHSVertex.u);
+	NewVertex.v = 0.5 * (vLHSVertex.v + vRHSVertex.v);
+	return NewVertex;
+}
+
+//*****************************************************************
+//FUNCTION: 
+hiveObliquePhotography::SVertex CBasicMeshSuture::__findNearestPoint(const std::vector<SVertex>& vVectexSet, const SVertex& vVertex)
+{
+	double MinDistance = FLT_MAX;
+	SVertex NearestPoint;
+	for (auto Point : vVectexSet)
+	{
+		double Distance = __computeDistance(vVertex, Point);
+		if (Distance < MinDistance)
+		{
+			MinDistance = Distance;
+			NearestPoint = Point;
+		}
+	}
+	return NearestPoint;
 }
 
 //*****************************************************************
@@ -72,10 +146,10 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 	std::vector<int> PublicIndices;
 	PublicIndices.reserve(vPublicVertices.size());
-	for (size_t i = 0; i < vPublicVertices.size(); ++i)
+	for (size_t i = 0, Offset = vioMesh.m_Vertices.size(); i < vPublicVertices.size(); ++i)
 	{
 		vioMesh.m_Vertices.push_back(vPublicVertices[i]);
-		PublicIndices.push_back(i + vioMesh.m_Vertices.size());
+		PublicIndices.push_back(i + Offset);
 	}
 
 	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, true);	// order is heuristic
