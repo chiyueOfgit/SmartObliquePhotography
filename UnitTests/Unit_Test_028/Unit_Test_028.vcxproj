@@ -46,8 +46,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SceneReconstruction\SceneReconstruction.vcxproj">
-      <Project>{09da221c-2361-460c-8e26-21f3cfa481fc}</Project>
+    <ProjectReference Include="..\..\ObliquePhotographyData_Lib\ObliquePhotographyData_Lib.vcxproj">
+      <Project>{3757d1fb-eddb-4d14-803b-4d692a7d175b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SceneReconstruction_lib\SceneReconstruction_lib.vcxproj">
+      <Project>{15649c30-750a-4939-9bee-f09d0e010785}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +139,7 @@
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalOptions>/WHOLEARCHIVE:ObliquePhotographyData_Lib.lib /WHOLEARCHIVE:SceneReconstruction_Lib.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
