@@ -142,17 +142,43 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 		PublicIndices.push_back(i + Offset);
 	}
 
-	static bool Order = true;
-	auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, Order);	// order is heuristic
-	Order = false;
-
-	for (auto Offset = vDissociatedIndices.size(); auto& Face : ConnectionFaceSet)
+	auto calcOrder = [&](const SFace& vFace) -> bool
 	{
-		SFace FaceWithMeshIndex;
-		for (int i = 0; i < 3; i++)
-			FaceWithMeshIndex[i] = Face[i] < Offset ? vDissociatedIndices[Face[i]] : PublicIndices[Face[i] - Offset];
-		vioMesh.m_Faces.push_back(FaceWithMeshIndex);
-	}
+		auto A = vioMesh.m_Vertices[vFace.a];
+		auto B = vioMesh.m_Vertices[vFace.b];
+		auto C = vioMesh.m_Vertices[vFace.c];
+
+		auto AB = B.xyz() - A.xyz();
+		auto BC = C.xyz() - B.xyz();
+
+		auto FaceNormal = AB.cross(BC).normalized();
+		auto AverageNormal = (A.normal() + B.normal() + C.normal()) / 3;
+		if (FaceNormal.dot(AverageNormal) > 0)
+			return true;
+		else
+			return false;
+	};
+
+	std::vector<SFace> IndexedFaceSet;
+	auto Order = true;
+	do
+	{
+		IndexedFaceSet.clear();
+		auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, Order);	// order is heuristic
+
+		for (auto Offset = vDissociatedIndices.size(); auto & Face : ConnectionFaceSet)
+		{
+			SFace FaceWithMeshIndex;
+			for (int i = 0; i < 3; i++)
+				FaceWithMeshIndex[i] = Face[i] < Offset ? vDissociatedIndices[Face[i]] : PublicIndices[Face[i] - Offset];
+			IndexedFaceSet.push_back(FaceWithMeshIndex);
+		}
+
+		Order = !Order;
+
+	} while (calcOrder(IndexedFaceSet.front()) != calcOrder(vioMesh.m_Faces.front()));
+
+	vioMesh.m_Faces.insert(vioMesh.m_Faces.end(), IndexedFaceSet.begin(), IndexedFaceSet.end());
 }
 
 //*****************************************************************
