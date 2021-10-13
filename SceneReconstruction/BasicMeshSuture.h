@@ -24,6 +24,7 @@ namespace hiveObliquePhotography
 			SVertex __findNearestPoint(const std::vector<SVertex>& vVectexSet, const SVertex& vOrigin);
 
 			std::vector<SFace> __genConnectionFace(IndexType vNumLeft, IndexType vNumRight, bool vLeftBeforeRight, bool vIsClockwise = true);
+
 			
 			Eigen::Vector4f m_SegmentPlane = {};
 		};

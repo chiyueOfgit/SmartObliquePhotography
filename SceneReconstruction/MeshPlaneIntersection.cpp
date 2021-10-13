@@ -55,18 +55,11 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 	m_IntersectionPoints.assign(IntersectionPoints.begin(), IntersectionPoints.end());
 	m_DissociatedPoints.assign(Indeices.begin(), Indeices.end());
 
-	auto compare = [&](int vLhs, int vRhs) -> bool
-	{
-		return vioMesh.m_Vertices[vLhs].y < vioMesh.m_Vertices[vRhs].y;
-	};
-
-	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
-	{
-		return vLhs.y < vRhs.y;
-	};
-
-	std::sort(m_IntersectionPoints.begin(), m_IntersectionPoints.end(), compareV);
-	std::sort(m_DissociatedPoints.begin(), m_DissociatedPoints.end(), compare);
+	Eigen::Vector3f Direction;
+	__findHightAxis(vioMesh, Direction);
+	Direction = Direction.cross(PlaneNormal);
+	__sortDissociatedIndices(vioMesh, m_DissociatedPoints, Direction);
+	__sortIntersectionPoints(m_IntersectionPoints, Direction);
 
 	return;
 }
@@ -150,4 +143,79 @@ Eigen::Vector3f CMeshPlaneIntersection::__generateDefaultPlanePoint(const Eigen:
 			DefaultPlanePoint[k] = 0.0f;
 	}
 	return DefaultPlanePoint;
+}
+
+
+void CMeshPlaneIntersection::__sortDissociatedIndices(const CMesh& vMesh, std::vector<int>& vioDissociatedPoints, Eigen::Vector3f& vDirection)
+{
+	std::vector<int> OrderSet;
+	auto compareV = [&](int vLhs, int vRhs) -> bool
+	{
+		return vMesh.m_Vertices[vLhs].xyz().dot(vDirection) < vMesh.m_Vertices[vRhs].xyz().dot(vDirection);
+	};
+	std::sort(vioDissociatedPoints.begin(), vioDissociatedPoints.end(), compareV);
+	
+	int CurrentIndex = vioDissociatedPoints[0];
+	while (!vioDissociatedPoints.empty())
+	{
+		float MinDistance = FLT_MAX;
+		std::vector<int>::iterator MinIt;
+		for (auto Iter = vioDissociatedPoints.begin(); Iter != vioDissociatedPoints.end(); Iter++)
+		{
+			auto TempDis = (vMesh.m_Vertices[CurrentIndex].xyz() - vMesh.m_Vertices[(*Iter)].xyz()).norm();
+			if (TempDis < MinDistance)
+			{
+				MinDistance = TempDis;
+				MinIt = Iter;
+			}
+		}
+		OrderSet.push_back(*MinIt);
+		CurrentIndex = *MinIt;
+		MinIt = vioDissociatedPoints.erase(MinIt);
+	}
+	vioDissociatedPoints.swap(OrderSet);
+}
+
+void CMeshPlaneIntersection::__sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints, Eigen::Vector3f& vDirection)
+{
+	std::vector<SVertex> OrderSet;
+	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
+	{
+		return vLhs.xyz().dot(vDirection) < vRhs.xyz().dot(vDirection);
+	};
+	std::sort(vioIntersectionPoints.begin(), vioIntersectionPoints.end(), compareV);
+
+	SVertex CurrentVertex = vioIntersectionPoints[0];
+	while(!vioIntersectionPoints.empty())
+	{
+		float MinDistance = FLT_MAX;
+		std::vector<SVertex>::iterator MinIt;
+		for(auto Iter = vioIntersectionPoints.begin(); Iter!=vioIntersectionPoints.end(); Iter++)
+		{
+			auto TempDis = (CurrentVertex.xyz() - (*Iter).xyz()).norm();
+			if(TempDis < MinDistance)
+			{
+				MinDistance = TempDis;
+				MinIt = Iter;
+			}
+		}
+		OrderSet.push_back(*MinIt);
+		CurrentVertex = *MinIt;
+		MinIt = vioIntersectionPoints.erase(MinIt);
+	}
+	vioIntersectionPoints.swap(OrderSet);
+}
+
+void CMeshPlaneIntersection::__findHightAxis(const CMesh& vMesh, Eigen::Vector3f& voHightAxis)
+{
+	std::pair<int, int> UV;
+	int Height;
+	vMesh.calcModelPlaneAxis(UV, Height);
+	for(int i = 0; i < 3; i++)
+	{
+		if (i == Height)
+			voHightAxis[i] = 1.0f;
+		else
+			voHightAxis[i] = 0.0f;
+	}
 }

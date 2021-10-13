@@ -23,6 +23,11 @@ namespace hiveObliquePhotography
 			std::vector<SVertex> __calcIntersectionPoints(const std::vector<Eigen::Vector3f>& vFace, const Eigen::Vector4f& vPlane);
 			std::vector<int> __tellDissociatedPoint(const std::vector<Eigen::Vector3f>& vFace, const Eigen::Vector4f& vPlane);
 			Eigen::Vector3f __generateDefaultPlanePoint(const Eigen::Vector4f& vPlane);
+			
+			void __sortDissociatedIndices(const CMesh& vMesh, std::vector<int>& vioDissociatedPoints, Eigen::Vector3f& vDirection);
+			void __sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints, Eigen::Vector3f& vDirection);
+			void __findHightAxis(const CMesh& vMesh, Eigen::Vector3f& voHightAxis);
+			
 		};
 	}
 }
