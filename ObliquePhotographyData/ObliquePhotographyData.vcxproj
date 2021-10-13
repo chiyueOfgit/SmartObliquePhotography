@@ -173,6 +173,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="ObliquePhotographyDataExport.h" />
     <ClInclude Include="ObliquePhotographyDataInterface.h" />
+    <ClInclude Include="PointCloudBoundingBox.hpp" />
     <ClInclude Include="PointCloudPCDLoader.h" />
     <ClInclude Include="PointCloudPCDSaver.h" />
     <ClInclude Include="PointCloudPLYLoader.h" />

@@ -1,20 +1,6 @@
 #pragma once
 
-namespace hiveObliquePhotography
+namespace hiveObliquePhotography::SceneReconstruction
 {
-	namespace SceneReconstruction
-	{
-		class CFindSplitPlane
-		{
-		public:
-			CFindSplitPlane() = default;
-			~CFindSplitPlane() = default;
-
-			Eigen::Vector4f execute(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudOne, pcl::PointCloud<pcl::PointXYZ>::Ptr vCloudTwo);
-
-		private:
-			void __getMinAndMaxPointOfAABB(pcl::PointCloud<pcl::PointXYZ>::Ptr vCloud, pcl::PointXYZ& voMinPoint, pcl::PointXYZ& voMaxPoint);
-			void __judgeSplitPlane(int vAxisFlag,float vMinAxisValueCloudOne, float vMaxAxisValueCloudOne, float vMinAxisValueCloudTwo, float vMaxAxisValueCloudTwo, Eigen::Vector4f& voSplitPlane);
-		};
-	}
+	Eigen::Vector4f findSplitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vLhs, pcl::PointCloud<pcl::PointXYZ>::Ptr vRhs);
 }
