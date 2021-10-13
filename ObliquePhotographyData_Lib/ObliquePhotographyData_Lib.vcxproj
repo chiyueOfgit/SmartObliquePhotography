@@ -30,6 +30,7 @@
     <ClInclude Include="..\ObliquePhotographyData\ObliquePhotographyDataExport.h" />
     <ClInclude Include="..\ObliquePhotographyData\ObliquePhotographyDataInterface.h" />
     <ClInclude Include="..\ObliquePhotographyData\pch.h" />
+    <ClInclude Include="..\ObliquePhotographyData\PointCloudBoundingBox.hpp" />
     <ClInclude Include="..\ObliquePhotographyData\PointCloudLoader.h" />
     <ClInclude Include="..\ObliquePhotographyData\PointCloudPCDLoader.h" />
     <ClInclude Include="..\ObliquePhotographyData\PointCloudPCDSaver.h" />

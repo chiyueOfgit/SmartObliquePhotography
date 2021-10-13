@@ -38,7 +38,7 @@ void CBasicMeshSuture::setCloud4SegmentPlane(PointCloud_t::ConstPtr vLhs, PointC
 	SimpleCloudType::Ptr SimpleRhs(new SimpleCloudType);
 	pcl::copyPointCloud(*vLhs, *SimpleLhs);
 	pcl::copyPointCloud(*vRhs, *SimpleRhs);
-	m_SegmentPlane = CFindSplitPlane().execute(SimpleLhs, SimpleRhs);
+	m_SegmentPlane = findSplitPlane(SimpleLhs, SimpleRhs);
 }
 
 //*****************************************************************
@@ -70,14 +70,14 @@ void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLhs
 	MajorPoints = Comparation ? vLhs : vRhs;
 	MinorPoints = Comparation ? vRhs : vLhs;
 
-	for (auto MajorPoint : MajorPoints)
+	for (const auto& MajorPoint : MajorPoints)
 	{
 		SVertex NearestPoint = __findNearestPoint(MinorPoints, MajorPoint);
 		PairingPoints.insert(std::pair(MajorPoint, NearestPoint));
 		PairedMinorPoints.push_back(NearestPoint);
 	}
 
-	for (auto MinorPoint : MinorPoints)
+	for (const auto& MinorPoint : MinorPoints)
 	{
 		if (std::ranges::find(PairedMinorPoints, MinorPoint) != PairedMinorPoints.end())
 			continue;
@@ -88,12 +88,13 @@ void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLhs
 
 	for (auto Iter = PairingPoints.begin(); Iter != PairingPoints.end(); ++Iter)
 	{
-		SVertex SharingVertex;
 		if (PairingPointsAmended.find(Iter->first) != PairingPointsAmended.end())
-			SharingVertex = Iter->first.lerp(Iter->second, 0.5).lerp(Iter->first.lerp(PairingPointsAmended.find(Iter->first)->second, 0.5), 0.5);
+			voPublicVertices.push_back(lerp(
+				lerp(Iter->first, Iter->second),
+				lerp(Iter->first, PairingPointsAmended.find(Iter->first)->second)
+			));
 		else
-			SharingVertex = Iter->first.lerp(Iter->second, 0.5);
-		voPublicVertices.push_back(SharingVertex);
+			voPublicVertices.push_back(lerp(Iter->first, Iter->second));
 	}
 
 	std::ranges::sort(voPublicVertices,
@@ -144,19 +145,16 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 	auto calcOrder = [&](const SFace& vFace) -> bool
 	{
-		auto A = vioMesh.m_Vertices[vFace.a];
-		auto B = vioMesh.m_Vertices[vFace.b];
-		auto C = vioMesh.m_Vertices[vFace.c];
+		const auto& A = vioMesh.m_Vertices[vFace.a];
+		const auto& B = vioMesh.m_Vertices[vFace.b];
+		const auto& C = vioMesh.m_Vertices[vFace.c];
 
 		auto AB = B.xyz() - A.xyz();
 		auto BC = C.xyz() - B.xyz();
 
 		auto FaceNormal = AB.cross(BC).normalized();
 		auto AverageNormal = (A.normal() + B.normal() + C.normal()) / 3;
-		if (FaceNormal.dot(AverageNormal) > 0)
-			return true;
-		else
-			return false;
+		return FaceNormal.dot(AverageNormal) > 0;
 	};
 
 	std::vector<SFace> IndexedFaceSet;
