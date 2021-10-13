@@ -44,7 +44,22 @@ namespace hiveObliquePhotography
 					return false;
 			return true;
 		}
+		
+		SVertex lerp(const SVertex& vOther, float vMix) const
+		{
+			using std::lerp;
 
+			SVertex NewVertex;
+			NewVertex.x = lerp(x, vOther.x, vMix);
+			NewVertex.y = lerp(y, vOther.y, vMix);
+			NewVertex.z = lerp(z, vOther.z, vMix);
+			NewVertex.nx = lerp(nx, vOther.nx, vMix);
+			NewVertex.ny = lerp(ny, vOther.ny, vMix);
+			NewVertex.nz = lerp(nz, vOther.nz, vMix);
+			NewVertex.u = lerp(u, vOther.u, vMix);
+			NewVertex.v = lerp(v, vOther.v, vMix);
+			return NewVertex;
+		}
 	};
 
 	struct SFace

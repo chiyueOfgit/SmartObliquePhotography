@@ -11,40 +11,42 @@ _REGISTER_NORMAL_PRODUCT(CBasicMeshSuture, KEYWORD::BASIC_MESH_SUTURE)
 
 //*****************************************************************
 //FUNCTION: 
-void CBasicMeshSuture::sutureMeshes()
+void CBasicMeshSuture::sutureMeshesV()
 {
 	_ASSERTE(m_SegmentPlane.norm());
 
 	std::vector<int> LHSDissociatedIndices, RHSDissociatedIndices;
 	std::vector<SVertex> LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices;
-	__executeIntersection(m_MeshLHS, m_SegmentPlane, LHSDissociatedIndices, LHSIntersectionPoints);
-	__executeIntersection(m_MeshRHS, m_SegmentPlane, RHSDissociatedIndices, RHSIntersectionPoints);
+	__executeIntersection(m_LhsMesh, m_SegmentPlane, LHSDissociatedIndices, LHSIntersectionPoints);
+	__executeIntersection(m_RhsMesh, m_SegmentPlane, RHSDissociatedIndices, RHSIntersectionPoints);
 
 	__generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices);
-	__connectVerticesWithMesh(m_MeshLHS, LHSDissociatedIndices, PublicVertices);
-	__connectVerticesWithMesh(m_MeshRHS, RHSDissociatedIndices, PublicVertices);
+	__connectVerticesWithMesh(m_LhsMesh, LHSDissociatedIndices, PublicVertices);
+	__connectVerticesWithMesh(m_RhsMesh, RHSDissociatedIndices, PublicVertices);
 
-	__removeUnreferencedVertex(m_MeshLHS);
-	__removeUnreferencedVertex(m_MeshRHS);
+	__removeUnreferencedVertex(m_LhsMesh);
+	__removeUnreferencedVertex(m_RhsMesh);
 }
 
 //*****************************************************************
 //FUNCTION: 
-void CBasicMeshSuture::setCloud4SegmentPlane(PointCloud_t::Ptr vLHSCloud, PointCloud_t::Ptr vRHSCloud)
+void CBasicMeshSuture::setCloud4SegmentPlane(PointCloud_t::ConstPtr vLhs, PointCloud_t::ConstPtr vRhs)
 {
-	pcl::PointCloud<pcl::PointXYZ>::Ptr TempOne(new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::PointCloud<pcl::PointXYZ>::Ptr TempTwo(new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::copyPointCloud(*vLHSCloud, *TempOne);
-	pcl::copyPointCloud(*vRHSCloud, *TempTwo);
-	m_SegmentPlane = CFindSplitPlane().execute(TempOne, TempTwo);
+	using SimpleCloudType = pcl::PointCloud<pcl::PointXYZ>;
+	
+	SimpleCloudType::Ptr SimpleLhs(new SimpleCloudType);
+	SimpleCloudType::Ptr SimpleRhs(new SimpleCloudType);
+	pcl::copyPointCloud(*vLhs, *SimpleLhs);
+	pcl::copyPointCloud(*vRhs, *SimpleRhs);
+	m_SegmentPlane = CFindSplitPlane().execute(SimpleLhs, SimpleRhs);
 }
 
 //*****************************************************************
 //FUNCTION: 
-void CBasicMeshSuture::dumpMeshes(CMesh& voLHSMesh, CMesh& voRHSMesh)
+void CBasicMeshSuture::dumpMeshes(CMesh& voLhsMesh, CMesh& voRhsMesh)
 {
-	voLHSMesh = m_MeshLHS;
-	voRHSMesh = m_MeshRHS;
+	voLhsMesh = m_LhsMesh;
+	voRhsMesh = m_RhsMesh;
 }
 
 //*****************************************************************
@@ -59,84 +61,64 @@ void CBasicMeshSuture::__executeIntersection(CMesh& vioMesh, const Eigen::Vector
 
 //*****************************************************************
 //FUNCTION: 
-void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLHSIntersectionPoints, const std::vector<SVertex>& vRHSIntersectionPoints, std::vector<SVertex>& voPublicVertices)
+void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLhs, const std::vector<SVertex>& vRhs, std::vector<SVertex>& voPublicVertices)
 {
-	if (voPublicVertices.size() > 0)
-		voPublicVertices.clear();
+	voPublicVertices.clear();
 	std::vector<SVertex> MajorPoints, MinorPoints, PairedMinorPoints;
 	std::map<SVertex, SVertex> PairingPoints, PairingPointsAmended;
-	bool Comparation = vLHSIntersectionPoints.size() > vRHSIntersectionPoints.size();
-	MajorPoints = Comparation ? vLHSIntersectionPoints : vRHSIntersectionPoints;
-	MinorPoints = Comparation ? vRHSIntersectionPoints : vLHSIntersectionPoints;
+	bool Comparation = vLhs.size() > vRhs.size();
+	MajorPoints = Comparation ? vLhs : vRhs;
+	MinorPoints = Comparation ? vRhs : vLhs;
 
 	for (auto MajorPoint : MajorPoints)
 	{
 		SVertex NearestPoint = __findNearestPoint(MinorPoints, MajorPoint);
-		PairingPoints.insert(std::pair<SVertex, SVertex>(MajorPoint, NearestPoint));
+		PairingPoints.insert(std::pair(MajorPoint, NearestPoint));
 		PairedMinorPoints.push_back(NearestPoint);
 	}
 
 	for (auto MinorPoint : MinorPoints)
 	{
-		std::vector<SVertex>::iterator Iter = std::find(PairedMinorPoints.begin(), PairedMinorPoints.end(), MinorPoint);
-		if (Iter != PairedMinorPoints.end())
+		if (std::ranges::find(PairedMinorPoints, MinorPoint) != PairedMinorPoints.end())
 			continue;
 
 		SVertex NearestPoint = __findNearestPoint(MajorPoints, MinorPoint);
-		PairingPointsAmended.insert(std::pair<SVertex, SVertex>(NearestPoint, MinorPoint));
+		PairingPointsAmended.insert(std::pair(NearestPoint, MinorPoint));
 	}
 
 	for (auto Iter = PairingPoints.begin(); Iter != PairingPoints.end(); ++Iter)
 	{
 		SVertex SharingVertex;
 		if (PairingPointsAmended.find(Iter->first) != PairingPointsAmended.end())
-			SharingVertex = __interpolatePoint(__interpolatePoint(Iter->first, Iter->second), __interpolatePoint(Iter->first, PairingPointsAmended.find(Iter->first)->second));
+			SharingVertex = Iter->first.lerp(Iter->second, 0.5).lerp(Iter->first.lerp(PairingPointsAmended.find(Iter->first)->second, 0.5), 0.5);
 		else
-			SharingVertex = __interpolatePoint(Iter->first, Iter->second);
+			SharingVertex = Iter->first.lerp(Iter->second, 0.5);
 		voPublicVertices.push_back(SharingVertex);
 	}
 
-	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
-	{
-		return vLhs.y < vRhs.y;
-	};
-
-	std::sort(voPublicVertices.begin(), voPublicVertices.end(), compareV);
-
+	std::ranges::sort(voPublicVertices,
+		[](const SVertex& vLhs, const SVertex& vRhs)
+		{
+			return vLhs.y < vRhs.y;
+		});
 }
 
 //*****************************************************************
 //FUNCTION: 
-double CBasicMeshSuture::__computeDistance(const SVertex& vLHSVertex, const SVertex& vRHSVertex)
+double CBasicMeshSuture::__computeDistance(const SVertex& vLhs, const SVertex& vRhs)
 {
-	return std::sqrt(std::pow(vLHSVertex.x - vRHSVertex.x, 2) + std::pow(vLHSVertex.y - vRHSVertex.y, 2) + std::pow(vLHSVertex.z - vRHSVertex.z, 2));
+	return std::sqrt(std::pow(vLhs.x - vRhs.x, 2) + std::pow(vLhs.y - vRhs.y, 2) + std::pow(vLhs.z - vRhs.z, 2));
 }
 
 //*****************************************************************
 //FUNCTION: 
-hiveObliquePhotography::SVertex CBasicMeshSuture::__interpolatePoint(const SVertex& vLHSVertex, const SVertex& vRHSVertex)
-{
-	hiveObliquePhotography::SVertex NewVertex;
-	NewVertex.x = 0.5 * (vLHSVertex.x + vRHSVertex.x);
-	NewVertex.y = 0.5 * (vLHSVertex.y + vRHSVertex.y);
-	NewVertex.z = 0.5 * (vLHSVertex.z + vRHSVertex.z);
-	NewVertex.nx = 0.5 * (vLHSVertex.nx + vRHSVertex.nx);
-	NewVertex.ny = 0.5 * (vLHSVertex.ny + vRHSVertex.ny);
-	NewVertex.nz = 0.5 * (vLHSVertex.nz + vRHSVertex.nz);
-	NewVertex.u = 0.5 * (vLHSVertex.u + vRHSVertex.u);
-	NewVertex.v = 0.5 * (vLHSVertex.v + vRHSVertex.v);
-	return NewVertex;
-}
-
-//*****************************************************************
-//FUNCTION: 
-hiveObliquePhotography::SVertex CBasicMeshSuture::__findNearestPoint(const std::vector<SVertex>& vVectexSet, const SVertex& vVertex)
+hiveObliquePhotography::SVertex CBasicMeshSuture::__findNearestPoint(const std::vector<SVertex>& vVectexSet, const SVertex& vOrigin)
 {
 	double MinDistance = FLT_MAX;
 	SVertex NearestPoint;
-	for (auto Point : vVectexSet)
+	for (const auto& Point : vVectexSet)
 	{
-		double Distance = __computeDistance(vVertex, Point);
+		double Distance = __computeDistance(vOrigin, Point);
 		if (Distance < MinDistance)
 		{
 			MinDistance = Distance;

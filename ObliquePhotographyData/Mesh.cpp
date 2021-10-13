@@ -273,3 +273,21 @@ void CMesh::__fillPolygons(const std::vector<SFace>& vFaces, std::vector<pcl::Ve
 	}
 }
 
+//*****************************************************************
+//FUNCTION: 
+//SVertex lerp(const SVertex& vLhs, const SVertex& vRhs, float vMix)
+//{
+//	using std::lerp;
+//	
+//	SVertex NewVertex;
+//	NewVertex.x  = lerp(vLhs.x, vRhs.x, vMix);
+//	NewVertex.y  = lerp(vLhs.y, vRhs.y, vMix);
+//	NewVertex.z  = lerp(vLhs.z, vRhs.z, vMix);
+//	NewVertex.nx = lerp(vLhs.nx, vRhs.nx, vMix);
+//	NewVertex.ny = lerp(vLhs.ny, vRhs.ny, vMix);
+//	NewVertex.nz = lerp(vLhs.nz, vRhs.nz, vMix);
+//	NewVertex.u  = lerp(vLhs.u, vRhs.u, vMix);
+//	NewVertex.v  = lerp(vLhs.v, vRhs.v, vMix);
+//	return NewVertex;
+//}
+
