@@ -6,6 +6,12 @@
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
+//测试用例列表：
+//  * Test_NoIntersection: 测试平面与网格不相交
+//  * Test_SeveralIntersections: 测试平面与网格有多个交点（在顶点处相交，在边处相交）
+//  * Test_TerrainModelIntersections: 测试平面与特定复杂地形网格相交
+//  * Test_SortByVertexLoop: 测试游离点loop排序正确性
+
 const auto SimpleMeshPath = TESTMODEL_DIR + std::string("Test027_Model/SimpleMesh.obj");
 const auto SceneMeshPath = TESTMODEL_DIR + std::string("Test027_Model/005006.obj");
 
@@ -77,6 +83,29 @@ TEST_F(TestMeshPlaneIntersection, Test_TerrainModel)
 	Mesh = m_Mesh;
 	MeshPlaneIntersection.execute(Mesh, Plane);
 	MeshPlaneIntersection.dumpIntersectionPoints(IntersectionPoints);
-	EXPECT_EQ(IntersectionPoints.size(), 433);
+	EXPECT_EQ(IntersectionPoints.size(), 205);
 }
 
+TEST_F(TestMeshPlaneIntersection, Test_SortByVertexLoop)
+{
+	LoadMesh(SimpleMeshPath);
+	hiveObliquePhotography::CMesh Mesh;
+	CMeshPlaneIntersection MeshPlaneIntersection;
+	std::vector<int> DissociatedIndices{ 0,3,4,2 };
+	std::vector<hiveObliquePhotography::SVertex> VertexSet;
+	for (auto Index : DissociatedIndices)
+		VertexSet.push_back(m_Mesh.m_Vertices[Index]);
+	MeshPlaneIntersection.sortByVertexLoop(DissociatedIndices, VertexSet);
+	if(DissociatedIndices[0] == 0)
+	{
+		EXPECT_EQ(DissociatedIndices[1], 2);
+		EXPECT_EQ(DissociatedIndices[2], 3);
+		EXPECT_EQ(DissociatedIndices[3], 4);
+	}
+	else
+	{
+		EXPECT_EQ(DissociatedIndices[1], 3);
+		EXPECT_EQ(DissociatedIndices[2], 2);
+		EXPECT_EQ(DissociatedIndices[3], 0);	
+	}
+}
