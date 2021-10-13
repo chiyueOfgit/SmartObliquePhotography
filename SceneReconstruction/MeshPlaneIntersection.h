@@ -26,6 +26,8 @@ namespace hiveObliquePhotography
 			
 			void __sortDissociatedIndices(const CMesh& vMesh, std::vector<int>& vioDissociatedPoints, Eigen::Vector3f& vDirection);
 			void __sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints, Eigen::Vector3f& vDirection);
+			template <typename Type>
+			void __sortByVertexLoop(std::vector<Type>& vioOriginSet, std::vector<SVertex>& vVertexSet);
 			void __findHightAxis(const CMesh& vMesh, Eigen::Vector3f& voHightAxis);
 			
 		};

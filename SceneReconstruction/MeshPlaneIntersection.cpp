@@ -154,26 +154,11 @@ void CMeshPlaneIntersection::__sortDissociatedIndices(const CMesh& vMesh, std::v
 		return vMesh.m_Vertices[vLhs].xyz().dot(vDirection) < vMesh.m_Vertices[vRhs].xyz().dot(vDirection);
 	};
 	std::sort(vioDissociatedPoints.begin(), vioDissociatedPoints.end(), compareV);
-	
-	int CurrentIndex = vioDissociatedPoints[0];
-	while (!vioDissociatedPoints.empty())
-	{
-		float MinDistance = FLT_MAX;
-		std::vector<int>::iterator MinIt;
-		for (auto Iter = vioDissociatedPoints.begin(); Iter != vioDissociatedPoints.end(); Iter++)
-		{
-			auto TempDis = (vMesh.m_Vertices[CurrentIndex].xyz() - vMesh.m_Vertices[(*Iter)].xyz()).norm();
-			if (TempDis < MinDistance)
-			{
-				MinDistance = TempDis;
-				MinIt = Iter;
-			}
-		}
-		OrderSet.push_back(*MinIt);
-		CurrentIndex = *MinIt;
-		MinIt = vioDissociatedPoints.erase(MinIt);
-	}
-	vioDissociatedPoints.swap(OrderSet);
+
+	std::vector<SVertex> VertexSet;
+	for(auto Index: vioDissociatedPoints)
+		VertexSet.push_back(vMesh.m_Vertices[Index]);
+	__sortByVertexLoop<int>(vioDissociatedPoints, VertexSet);
 }
 
 void CMeshPlaneIntersection::__sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints, Eigen::Vector3f& vDirection)
@@ -184,26 +169,42 @@ void CMeshPlaneIntersection::__sortIntersectionPoints(std::vector<SVertex>& vioI
 		return vLhs.xyz().dot(vDirection) < vRhs.xyz().dot(vDirection);
 	};
 	std::sort(vioIntersectionPoints.begin(), vioIntersectionPoints.end(), compareV);
+	__sortByVertexLoop<SVertex>(vioIntersectionPoints, vioIntersectionPoints);
+}
 
-	SVertex CurrentVertex = vioIntersectionPoints[0];
-	while(!vioIntersectionPoints.empty())
+template <typename Type>
+void CMeshPlaneIntersection::__sortByVertexLoop(std::vector<Type>& vioOriginSet, std::vector<SVertex>& vVertexSet)
+{
+	std::vector<int> Indices;
+	std::vector<Type> OrderSet;
+	
+	SVertex CurrentVertex = vVertexSet[0];
+	std::vector<bool> Flag(vVertexSet.size(), false);
+	auto Count = vVertexSet.size();
+	while (Count > 0)
 	{
 		float MinDistance = FLT_MAX;
-		std::vector<SVertex>::iterator MinIt;
-		for(auto Iter = vioIntersectionPoints.begin(); Iter!=vioIntersectionPoints.end(); Iter++)
+		int MinIndex;
+		for (int i = 0; i < vVertexSet.size();i++)
 		{
-			auto TempDis = (CurrentVertex.xyz() - (*Iter).xyz()).norm();
-			if(TempDis < MinDistance)
+			if (!Flag[i])
 			{
-				MinDistance = TempDis;
-				MinIt = Iter;
+				auto TempDis = (CurrentVertex.xyz() - vVertexSet[i].xyz()).norm();
+				if (TempDis < MinDistance)
+				{
+					MinDistance = TempDis;
+					MinIndex = i;
+				}
 			}
 		}
-		OrderSet.push_back(*MinIt);
-		CurrentVertex = *MinIt;
-		MinIt = vioIntersectionPoints.erase(MinIt);
+		Indices.push_back(MinIndex);
+		CurrentVertex = vVertexSet[MinIndex];
+		Flag[MinIndex] = true;
+		Count--;
 	}
-	vioIntersectionPoints.swap(OrderSet);
+	for (auto Index : Indices)
+		OrderSet.push_back(vioOriginSet[Index]);
+	vioOriginSet.swap(OrderSet);
 }
 
 void CMeshPlaneIntersection::__findHightAxis(const CMesh& vMesh, Eigen::Vector3f& voHightAxis)
