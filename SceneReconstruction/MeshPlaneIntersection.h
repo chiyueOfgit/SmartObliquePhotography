@@ -15,7 +15,9 @@ namespace hiveObliquePhotography
 
 			void dumpIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints);
 			void dumpDissociatedPoints(std::vector<int>& vioDissociatedPoints);
-
+#ifdef _UNIT_TEST
+			void sortByVertexLoop(std::vector<int>& vioOriginSet, std::vector<SVertex>& vVertexSet){ __sortByVertexLoop<int>(vioOriginSet, vVertexSet); }
+#endif // _UNIT_TEST
 		private:
 			std::vector<int> m_DissociatedPoints;
 			std::vector<SVertex> m_IntersectionPoints;
@@ -28,7 +30,7 @@ namespace hiveObliquePhotography
 			void __sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints, Eigen::Vector3f& vDirection);
 			template <typename Type>
 			void __sortByVertexLoop(std::vector<Type>& vioOriginSet, std::vector<SVertex>& vVertexSet);
-			void __findHightAxis(const CMesh& vMesh, Eigen::Vector3f& voHightAxis);
+			void __findHeightAxis(const CMesh& vMesh, Eigen::Vector3f& voHeightAxis);
 			
 		};
 	}

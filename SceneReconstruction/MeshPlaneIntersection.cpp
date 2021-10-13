@@ -56,7 +56,7 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 	m_DissociatedPoints.assign(Indeices.begin(), Indeices.end());
 
 	Eigen::Vector3f Direction;
-	__findHightAxis(vioMesh, Direction);
+	__findHeightAxis(vioMesh, Direction);
 	Direction = Direction.cross(PlaneNormal);
 	__sortDissociatedIndices(vioMesh, m_DissociatedPoints, Direction);
 	__sortIntersectionPoints(m_IntersectionPoints, Direction);
@@ -95,17 +95,25 @@ std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcInter
 			Direction = - Direction;
 		
 		float DotNormal = PlaneNormal.dot(Direction);
-		if (DotNormal < 1e-3f)
-			continue;
 
-		float Depth = PlaneNormal.dot(DefaultPlanePoint - Origin) / DotNormal;
-		Eigen::Vector3f HitPos = Origin + Depth * Direction;
-
-		if((HitPos - vFace[i]).dot(HitPos - vFace[(i + 1) % 3]) < 0 || HitPos == vFace[i])
+		if(abs(PlaneNormal.dot(DefaultPlanePoint - Origin)) < 1e-3f && abs(PlaneNormal.dot(DefaultPlanePoint - vFace[(i + 1) % 3])) < 1e-3f)
 		{
-			SVertex TempVertex; TempVertex.x = HitPos[0]; TempVertex.y = HitPos[1]; TempVertex.z = HitPos[2];
+			SVertex TempVertex; TempVertex.x = Origin[0]; TempVertex.y = Origin[1]; TempVertex.z = Origin[2];
 			HitPointSet.push_back(TempVertex);
-		}	
+			SVertex OtherTempVertex; OtherTempVertex.x = vFace[(i + 1) % 3][0]; OtherTempVertex.y = vFace[(i + 1) % 3][1]; OtherTempVertex.z = vFace[(i + 1) % 3][2];
+			HitPointSet.push_back(OtherTempVertex);
+		}
+		else
+		{
+			float Depth = PlaneNormal.dot(DefaultPlanePoint - Origin) / DotNormal;
+			Eigen::Vector3f HitPos = Origin + Depth * Direction;
+
+			if ((HitPos - vFace[i]).dot(HitPos - vFace[(i + 1) % 3]) < 0 || HitPos == vFace[i])
+			{
+				SVertex TempVertex; TempVertex.x = HitPos[0]; TempVertex.y = HitPos[1]; TempVertex.z = HitPos[2];
+				HitPointSet.push_back(TempVertex);
+			}
+		}
 	}
 	return HitPointSet;
 }
@@ -175,6 +183,8 @@ void CMeshPlaneIntersection::__sortIntersectionPoints(std::vector<SVertex>& vioI
 template <typename Type>
 void CMeshPlaneIntersection::__sortByVertexLoop(std::vector<Type>& vioOriginSet, std::vector<SVertex>& vVertexSet)
 {
+	if (vVertexSet.empty())
+		return;
 	std::vector<int> Indices;
 	std::vector<Type> OrderSet;
 	
@@ -207,7 +217,7 @@ void CMeshPlaneIntersection::__sortByVertexLoop(std::vector<Type>& vioOriginSet,
 	vioOriginSet.swap(OrderSet);
 }
 
-void CMeshPlaneIntersection::__findHightAxis(const CMesh& vMesh, Eigen::Vector3f& voHightAxis)
+void CMeshPlaneIntersection::__findHeightAxis(const CMesh& vMesh, Eigen::Vector3f& voHeightAxis)
 {
 	std::pair<int, int> UV;
 	int Height;
@@ -215,8 +225,8 @@ void CMeshPlaneIntersection::__findHightAxis(const CMesh& vMesh, Eigen::Vector3f
 	for(int i = 0; i < 3; i++)
 	{
 		if (i == Height)
-			voHightAxis[i] = 1.0f;
+			voHeightAxis[i] = 1.0f;
 		else
-			voHightAxis[i] = 0.0f;
+			voHeightAxis[i] = 0.0f;
 	}
 }
