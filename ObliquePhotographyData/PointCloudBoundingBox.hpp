@@ -5,7 +5,7 @@ namespace hiveObliquePhotography
 {
 	template <typename PointType>
 		requires pcl::traits::has_xyz_v<PointType>
-	std::pair<PointType, PointType> getAABB(typename pcl::PointCloud<PointType>::ConstPtr vCloud)
+	auto getAabb(std::shared_ptr<const pcl::PointCloud<PointType>> vCloud) -> std::pair<PointType, PointType>
 	{
 		PointType MinPoint, MaxPoint;
 		pcl::MomentOfInertiaEstimation<PointType> FeatureExtractor;
