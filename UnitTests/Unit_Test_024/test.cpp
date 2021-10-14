@@ -164,8 +164,8 @@ TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
 
 TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
 {
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
-	m_pTextureBaker->setPointCloud(pCloud);
+	auto pTileSet = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
+	m_pTextureBaker->setPointCloud(pTileSet.front());
 	
 	SRay TestRay{ {48.0f, 0.0f, 48.0f},{0.0f, 1.0f, 0.0f}};
 	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
@@ -183,8 +183,8 @@ TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
 
 TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
 {
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
-	m_pTextureBaker->setPointCloud(pCloud);
+	auto pTileSet = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
+	m_pTextureBaker->setPointCloud(pTileSet.front());
 
 	SRay TestRay{ {1.5f, 0.0f, 1.5f},{0.0f, 1.0f, 0.0f} };
 	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
@@ -200,17 +200,17 @@ TEST_F(TestCastingTextureBaker, TestExecuteIntersection_2)
 
 TEST_F(TestCastingTextureBaker, TestCalcTexelColor)
 {
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
-	m_pTextureBaker->bakeTexture(pCloud, { 512, 512 });
+	auto pTileSet = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
+	m_pTextureBaker->bakeTexture(pTileSet.front(), { 512, 512 });
 }
 
 TEST_F(TestCastingTextureBaker, PlaneTextureBakingTest)
 {
 	auto PNGFilePath = TESTMODEL_DIR + std::string("Test024_Model/100RG.png");
 	Eigen::Vector2i Resolution{ 10, 10 };
-	auto pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("Test024_Model/100RGPointCloud.ply") });
+	auto pTileSet = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("Test024_Model/100RGPointCloud.ply") });
 	
-	auto Texture = m_pTextureBaker->bakeTexture(pCloud, Resolution);
+	auto Texture = m_pTextureBaker->bakeTexture(pTileSet.front(), Resolution);
 	int Channels = 3;
 	unsigned char* GtData = stbi_load(PNGFilePath.c_str(), &Resolution.x(), &Resolution.y(), &Channels, 0);
 	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)

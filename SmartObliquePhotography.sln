@@ -975,6 +975,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libigl", "Libigl", "{BA4FC7
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_027 (mesh_plane_intersection)", "UnitTests\Unit_Test_027\Unit_Test_027.vcxproj", "{C7F7ECC7-6620-4176-B2C8-CAED2EBA62A4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_028 (mesh_legality)", "UnitTests\Unit_Test_028\Unit_Test_028.vcxproj", "{1F82B90C-2093-4DEB-9EB9-6976317BDEBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1267,6 +1269,14 @@ Global
 		{C7F7ECC7-6620-4176-B2C8-CAED2EBA62A4}.Release|x64.Build.0 = Release|x64
 		{C7F7ECC7-6620-4176-B2C8-CAED2EBA62A4}.Release|x86.ActiveCfg = Release|Win32
 		{C7F7ECC7-6620-4176-B2C8-CAED2EBA62A4}.Release|x86.Build.0 = Release|Win32
+		{1F82B90C-2093-4DEB-9EB9-6976317BDEBD}.Debug|x64.ActiveCfg = Debug|x64
+		{1F82B90C-2093-4DEB-9EB9-6976317BDEBD}.Debug|x64.Build.0 = Debug|x64
+		{1F82B90C-2093-4DEB-9EB9-6976317BDEBD}.Debug|x86.ActiveCfg = Debug|Win32
+		{1F82B90C-2093-4DEB-9EB9-6976317BDEBD}.Debug|x86.Build.0 = Debug|Win32
+		{1F82B90C-2093-4DEB-9EB9-6976317BDEBD}.Release|x64.ActiveCfg = Release|x64
+		{1F82B90C-2093-4DEB-9EB9-6976317BDEBD}.Release|x64.Build.0 = Release|x64
+		{1F82B90C-2093-4DEB-9EB9-6976317BDEBD}.Release|x86.ActiveCfg = Release|Win32
+		{1F82B90C-2093-4DEB-9EB9-6976317BDEBD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1303,6 +1313,7 @@ Global
 		{AC2A7199-0098-49DB-A4D2-7DEE25682950} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 		{BA4FC72C-E496-4D54-B414-12FFB812628A} = {4EC88C8A-1CB8-4DE7-90AA-13271BA4D85E}
 		{C7F7ECC7-6620-4176-B2C8-CAED2EBA62A4} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
+		{1F82B90C-2093-4DEB-9EB9-6976317BDEBD} = {538E2452-E7F5-4FCB-8BB4-390D63EBABAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39CBE48C-AE02-4207-8AE0-74B21A939B18}
