@@ -7,8 +7,8 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 //TODO: magic number
-constexpr float SearchRadius = 2.0f;
-constexpr float DistanceThreshold = 0.2f;
+constexpr float SearchRadius = 5.0f;
+constexpr float DistanceThreshold = 0.5f;
 
 //*****************************************************************
 //FUNCTION: 
