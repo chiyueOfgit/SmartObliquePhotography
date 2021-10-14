@@ -9,14 +9,14 @@ namespace hiveObliquePhotography
 		{
 		public:
 			IMeshSuture() = default;
-			virtual ~IMeshSuture() = default;
+			~IMeshSuture() override = default;
 
-			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, const CMesh& vMeshLHS, const CMesh& vMeshRHS);
-			virtual void sutureMeshes() = 0;
+			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, const CMesh& vLhs, const CMesh& vRhs);
+			virtual void sutureMeshesV() = 0;
 
 		protected:
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
-			CMesh m_MeshLHS, m_MeshRHS;
+			CMesh m_LhsMesh, m_RhsMesh;
 		};
 	}
 }

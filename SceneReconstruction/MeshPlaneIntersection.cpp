@@ -55,18 +55,11 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 	m_IntersectionPoints.assign(IntersectionPoints.begin(), IntersectionPoints.end());
 	m_DissociatedPoints.assign(Indeices.begin(), Indeices.end());
 
-	auto compare = [&](int vLhs, int vRhs) -> bool
-	{
-		return vioMesh.m_Vertices[vLhs].y < vioMesh.m_Vertices[vRhs].y;
-	};
-
-	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
-	{
-		return vLhs.y < vRhs.y;
-	};
-
-	std::sort(m_IntersectionPoints.begin(), m_IntersectionPoints.end(), compareV);
-	std::sort(m_DissociatedPoints.begin(), m_DissociatedPoints.end(), compare);
+	Eigen::Vector3f Direction;
+	__findHeightAxis(vioMesh, Direction);
+	Direction = Direction.cross(PlaneNormal);
+	__sortDissociatedIndices(vioMesh, m_DissociatedPoints, Direction);
+	__sortIntersectionPoints(m_IntersectionPoints, Direction);
 
 	return;
 }
@@ -102,17 +95,25 @@ std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcInter
 			Direction = - Direction;
 		
 		float DotNormal = PlaneNormal.dot(Direction);
-		if (DotNormal < 1e-3f)
-			continue;
 
-		float Depth = PlaneNormal.dot(DefaultPlanePoint - Origin) / DotNormal;
-		Eigen::Vector3f HitPos = Origin + Depth * Direction;
-
-		if((HitPos - vFace[i]).dot(HitPos - vFace[(i + 1) % 3]) < 0 || HitPos == vFace[i])
+		if(abs(PlaneNormal.dot(DefaultPlanePoint - Origin)) < 1e-3f && abs(PlaneNormal.dot(DefaultPlanePoint - vFace[(i + 1) % 3])) < 1e-3f)
 		{
-			SVertex TempVertex; TempVertex.x = HitPos[0]; TempVertex.y = HitPos[1]; TempVertex.z = HitPos[2];
+			SVertex TempVertex; TempVertex.x = Origin[0]; TempVertex.y = Origin[1]; TempVertex.z = Origin[2];
 			HitPointSet.push_back(TempVertex);
-		}	
+			SVertex OtherTempVertex; OtherTempVertex.x = vFace[(i + 1) % 3][0]; OtherTempVertex.y = vFace[(i + 1) % 3][1]; OtherTempVertex.z = vFace[(i + 1) % 3][2];
+			HitPointSet.push_back(OtherTempVertex);
+		}
+		else
+		{
+			float Depth = PlaneNormal.dot(DefaultPlanePoint - Origin) / DotNormal;
+			Eigen::Vector3f HitPos = Origin + Depth * Direction;
+
+			if ((HitPos - vFace[i]).dot(HitPos - vFace[(i + 1) % 3]) < 0 || HitPos == vFace[i])
+			{
+				SVertex TempVertex; TempVertex.x = HitPos[0]; TempVertex.y = HitPos[1]; TempVertex.z = HitPos[2];
+				HitPointSet.push_back(TempVertex);
+			}
+		}
 	}
 	return HitPointSet;
 }
@@ -150,4 +151,82 @@ Eigen::Vector3f CMeshPlaneIntersection::__generateDefaultPlanePoint(const Eigen:
 			DefaultPlanePoint[k] = 0.0f;
 	}
 	return DefaultPlanePoint;
+}
+
+
+void CMeshPlaneIntersection::__sortDissociatedIndices(const CMesh& vMesh, std::vector<int>& vioDissociatedPoints, Eigen::Vector3f& vDirection)
+{
+	std::vector<int> OrderSet;
+	auto compareV = [&](int vLhs, int vRhs) -> bool
+	{
+		return vMesh.m_Vertices[vLhs].xyz().dot(vDirection) < vMesh.m_Vertices[vRhs].xyz().dot(vDirection);
+	};
+	std::sort(vioDissociatedPoints.begin(), vioDissociatedPoints.end(), compareV);
+
+	std::vector<SVertex> VertexSet;
+	for(auto Index: vioDissociatedPoints)
+		VertexSet.push_back(vMesh.m_Vertices[Index]);
+	__sortByVertexLoop<int>(vioDissociatedPoints, VertexSet);
+}
+
+void CMeshPlaneIntersection::__sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints, Eigen::Vector3f& vDirection)
+{
+	std::vector<SVertex> OrderSet;
+	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
+	{
+		return vLhs.xyz().dot(vDirection) < vRhs.xyz().dot(vDirection);
+	};
+	std::sort(vioIntersectionPoints.begin(), vioIntersectionPoints.end(), compareV);
+	__sortByVertexLoop<SVertex>(vioIntersectionPoints, vioIntersectionPoints);
+}
+
+template <typename Type>
+void CMeshPlaneIntersection::__sortByVertexLoop(std::vector<Type>& vioOriginSet, std::vector<SVertex>& vVertexSet)
+{
+	if (vVertexSet.empty())
+		return;
+	std::vector<int> Indices;
+	std::vector<Type> OrderSet;
+	
+	SVertex CurrentVertex = vVertexSet[0];
+	std::vector<bool> Flag(vVertexSet.size(), false);
+	auto Count = vVertexSet.size();
+	while (Count > 0)
+	{
+		float MinDistance = FLT_MAX;
+		int MinIndex;
+		for (int i = 0; i < vVertexSet.size();i++)
+		{
+			if (!Flag[i])
+			{
+				auto TempDis = (CurrentVertex.xyz() - vVertexSet[i].xyz()).norm();
+				if (TempDis < MinDistance)
+				{
+					MinDistance = TempDis;
+					MinIndex = i;
+				}
+			}
+		}
+		Indices.push_back(MinIndex);
+		CurrentVertex = vVertexSet[MinIndex];
+		Flag[MinIndex] = true;
+		Count--;
+	}
+	for (auto Index : Indices)
+		OrderSet.push_back(vioOriginSet[Index]);
+	vioOriginSet.swap(OrderSet);
+}
+
+void CMeshPlaneIntersection::__findHeightAxis(const CMesh& vMesh, Eigen::Vector3f& voHeightAxis)
+{
+	std::pair<int, int> UV;
+	int Height;
+	vMesh.calcModelPlaneAxis(UV, Height);
+	for(int i = 0; i < 3; i++)
+	{
+		if (i == Height)
+			voHeightAxis[i] = 1.0f;
+		else
+			voHeightAxis[i] = 0.0f;
+	}
 }

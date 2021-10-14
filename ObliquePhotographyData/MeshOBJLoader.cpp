@@ -135,6 +135,8 @@ pcl::TexMaterial CMeshOBJLoader::__loadMaterialFromFile(const std::string& vFile
 	if (MtlFileIn.is_open())
 		while (std::getline(MtlFileIn, Line))
 		{
+			if (Line[0] == '#')
+				continue;
 			if (Line.find("newmtl ") != std::string::npos)
 				Material.tex_name = Line.substr(Line.find(' ') + 1, Line.length());
 			if (Line.find("map_Kd") != std::string::npos)

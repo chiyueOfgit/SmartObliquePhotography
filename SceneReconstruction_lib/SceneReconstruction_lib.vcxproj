@@ -155,6 +155,7 @@
     <ClCompile Include="..\SceneReconstruction\dllmain.cpp" />
     <ClCompile Include="..\SceneReconstruction\FindSplitPlane.cpp" />
     <ClCompile Include="..\SceneReconstruction\MeshParameterizer.cpp" />
+    <ClCompile Include="..\SceneReconstruction\MeshSimplification.cpp" />
     <ClCompile Include="..\SceneReconstruction\MeshSuture.cpp" />
     <ClCompile Include="..\SceneReconstruction\MeshPlaneIntersection.cpp" />
     <ClCompile Include="..\SceneReconstruction\pch.cpp">
@@ -174,6 +175,7 @@
     <ClInclude Include="..\SceneReconstruction\FindSplitPlane.h" />
     <ClInclude Include="..\SceneReconstruction\framework.h" />
     <ClInclude Include="..\SceneReconstruction\MeshParameterizer.h" />
+    <ClInclude Include="..\SceneReconstruction\MeshSimplification.h" />
     <ClInclude Include="..\SceneReconstruction\MeshSuture.h" />
     <ClInclude Include="..\SceneReconstruction\MeshPlaneIntersection.h" />
     <ClInclude Include="..\SceneReconstruction\pch.h" />

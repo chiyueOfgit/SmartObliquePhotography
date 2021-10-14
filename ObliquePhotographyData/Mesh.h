@@ -8,14 +8,14 @@ namespace hiveObliquePhotography
 	using IndexType = std::uint32_t;
 	struct SVertex
 	{
-		DataType x;
-		DataType y;
-		DataType z;
+		DataType x  = 0;
+		DataType y  = 0;
+		DataType z  = 0;
 		DataType nx = 0;
 		DataType ny = 0;
 		DataType nz = 0;
-		DataType u = 0;
-		DataType v = 0;
+		DataType u  = 0;
+		DataType v  = 0;
 
 		Eigen::Vector3f xyz() const { return { x, y, z }; }
 		Eigen::Vector3f normal() const { return { nx, ny, nz }; }
@@ -44,7 +44,22 @@ namespace hiveObliquePhotography
 					return false;
 			return true;
 		}
+		
+		SVertex lerp(const SVertex& vOther, float vMix = 0.5f) const
+		{
+			using std::lerp;
 
+			SVertex NewVertex;
+			NewVertex.x = lerp(x, vOther.x, vMix);
+			NewVertex.y = lerp(y, vOther.y, vMix);
+			NewVertex.z = lerp(z, vOther.z, vMix);
+			NewVertex.nx = lerp(nx, vOther.nx, vMix);
+			NewVertex.ny = lerp(ny, vOther.ny, vMix);
+			NewVertex.nz = lerp(nz, vOther.nz, vMix);
+			NewVertex.u = lerp(u, vOther.u, vMix);
+			NewVertex.v = lerp(v, vOther.v, vMix);
+			return NewVertex;
+		}
 	};
 
 	struct SFace
@@ -107,4 +122,9 @@ namespace hiveObliquePhotography
 
 		pcl::TexMaterial m_Material;
 	};
+
+	inline SVertex lerp(const SVertex& vLhs, const SVertex& vRhs, float vMix = 0.5f)
+	{
+		return vLhs.lerp(vRhs, vMix);
+	}
 }

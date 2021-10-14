@@ -194,8 +194,8 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 			for (auto i : NeighborHalfEdgeSet)
 			{
 				auto NextVertexId = vHalfEdgeSet[vHalfEdgeSet[i]._Next]._VertexId;
-				//auto Weight = Uniform();
-				auto Weight = MeanWalue(i, VertexId, NextVertexId);
+				auto Weight = Uniform();
+				//auto Weight = MeanWalue(i, VertexId, NextVertexId);
 				WeightTriplet.push_back(TWeight(VertexId, NextVertexId, Weight));
 				SumWeight += Weight;
 			}
