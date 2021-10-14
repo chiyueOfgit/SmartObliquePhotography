@@ -20,7 +20,7 @@ _REGISTER_NORMAL_PRODUCT(CArapParameterizer, KEYWORD::ARAP_MESH_PARAMETERIZATION
 using namespace hiveObliquePhotography::SceneReconstruction;
 
 //*****************************************************************
-//FUNCTION: 
+//FUNCTION: 执行函数；
 Eigen::MatrixXd CArapParameterizer::execute()
 {
 	buildHalfEdge();
@@ -30,15 +30,19 @@ Eigen::MatrixXd CArapParameterizer::execute()
 		BoundaryStatus[Index] = true;
 	
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
+	
+	//DELETEBEGIN
 	for (auto Index : BoundarySet)
 		std::cout << "(" << InitialUV.row(Index).x() << " " << InitialUV.row(Index).y() << ") ";
+	//DELETEEND
 
+	////NOTE:利用ARAP得到UV
 	//auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV, BoundarySet);
 	return InitialUV;
 }
 
 //*****************************************************************
-//FUNCTION: 
+//FUNCTION: 将Mesh表示为半边结构；
 void CArapParameterizer::buildHalfEdge()
 {
 	m_VertexInfoTable.resize(m_Mesh.m_Vertices.size());
@@ -81,9 +85,10 @@ void CArapParameterizer::buildHalfEdge()
 }
 
 //*****************************************************************
-//FUNCTION: 
+//FUNCTION: 寻找边界点；
 std::vector<int> CArapParameterizer::findBoundaryPoint()
 {
+	////Note:自己实现寻找边界点；
 	//std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
 	//std::set<int> BoundarySet;
 	//std::vector<int> ValidSet;
@@ -96,16 +101,22 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 	//	}
 	//}
 
+	////Note:调用libigl库来实现寻找边界点；
+	//DELETEBEGIN:V好像没用到啊
 	Eigen::MatrixXd V = m_Mesh.getVerticesMatrix();
+	//DELETEEND
 	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
 	std::vector<int> Boundary;
 	igl::boundary_loop(F, Boundary);
 	//__findValidBoundary(Boundary, ValidSet);
 
+	//DELETEBEGIN
 	std::ofstream file("BoundaryPoints.txt");
 	boost::archive::text_oarchive oa(file);
 	oa& BOOST_SERIALIZATION_NVP(Boundary);
 	file.close();
+	//DELETEEND
+
 
 	return Boundary;
 }
@@ -134,10 +145,14 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 	std::vector<TWeight> WeightTriplet;
 	WeightTriplet.reserve(NumVertices * 10);
 
+	//DELETEBEGIN:好像没用到啊；
 	auto Uniform = []()
 	{
 		return 1.0;
 	};
+	//DELETEEND
+
+	//QUESTION:Tutte的L矩阵是怎么计算的；
 	auto MeanWalue = [&](int vHalfEdge, int vVertex, int vNextVertex)
 	{
 		auto CalcAngle = [&](int vFaceId) -> double
@@ -265,6 +280,7 @@ Eigen::MatrixXd CArapParameterizer::__switch2UVMatrix(const CMesh& vMesh, const 
 
 	return UVMatrix;
 }
+
 //*****************************************************************
 //FUNCTION: 
 int CArapParameterizer::__findTwinRef(int vStartIndex, int vEndIndex)

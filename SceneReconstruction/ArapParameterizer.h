@@ -14,7 +14,7 @@ namespace hiveObliquePhotography
 			int _VertexId;
 			int _Prev;
 			int _Next;
-			int _Conj = -1;
+			int _Conj = -1;          //QUESTION：这个字段代表什么？
 			int _Face;
 		};
 
@@ -42,7 +42,7 @@ namespace hiveObliquePhotography
 			void __normalizeUV(Eigen::MatrixXd& vioUVMatrix);
 			
 			std::vector<SHalfEdge> m_HalfEdgeTable;
-			std::vector<std::vector<int>> m_VertexInfoTable;
+			std::vector<std::vector<int>> m_VertexInfoTable;  //QUESTION:存储的什么
 		};
 	}
 }
