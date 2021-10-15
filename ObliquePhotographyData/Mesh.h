@@ -44,7 +44,7 @@ namespace hiveObliquePhotography
 					return false;
 			return true;
 		}
-		
+
 		SVertex lerp(const SVertex& vOther, float vMix = 0.5f) const
 		{
 			using std::lerp;
@@ -100,7 +100,9 @@ namespace hiveObliquePhotography
 		std::pair<Eigen::Vector3f, Eigen::Vector3f> calcAABB() const;
 		void calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const;
 		void setMaterial(const pcl::TexMaterial& vMaterial) { m_Material = vMaterial; }
-
+		void saveMaterial(const std::string& vPath) const;
+		const std::string& getMaterialName() const { return m_Material.tex_name; }
+		
 		Eigen::MatrixXd getVerticesMatrix() const;
 		Eigen::MatrixXi getFacesMatrix() const;
 
