@@ -93,6 +93,7 @@
    <addaction name="actionSutureMesh"/>
    <addaction name="actionParameterization"/>
    <addaction name="actionBakeTexture"/>
+   <addaction name="actionShowMeshIndices"/>
    <addaction name="actionSetting"/>
    <addaction name="actionInstructions"/>
   </widget>
@@ -466,6 +467,18 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>SutureMesh</string>
+   </property>
+  </action>
+  <action name="actionShowMeshIndices">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QTInterface.qrc">
+     <normaloff>:/QTInterface/Icon/circleAreaPicking.png</normaloff>:/QTInterface/Icon/circleAreaPicking.png</iconset>
+   </property>
+   <property name="text">
+    <string>ShowMeshIndices</string>
    </property>
   </action>
  </widget>
