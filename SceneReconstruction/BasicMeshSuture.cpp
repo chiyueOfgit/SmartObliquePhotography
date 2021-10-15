@@ -27,10 +27,10 @@ void CBasicMeshSuture::sutureMeshesV()
 	__serializeIndices(LhsDissociatedIndices, "Model_0_DissociatedPoints.txt");
 	__serializeIndices(RhsDissociatedIndices, "Model_1_DissociatedPoints.txt");
 
-	__generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices);
+	__generatePublicVertices(LhsIntersectionPoints, RhsIntersectionPoints, PublicVertices);
 	m_MeshPlaneIntersection.sortPublic(PublicVertices);
-	__connectVerticesWithMesh(m_LhsMesh, LHSDissociatedIndices, PublicVertices);
-	__connectVerticesWithMesh(m_RhsMesh, RHSDissociatedIndices, PublicVertices);
+	__connectVerticesWithMesh(m_LhsMesh, LhsDissociatedIndices, PublicVertices);
+	__connectVerticesWithMesh(m_RhsMesh, RhsDissociatedIndices, PublicVertices);
 
 	__removeUnreferencedVertex(m_LhsMesh);
 	__removeUnreferencedVertex(m_RhsMesh);
@@ -61,10 +61,9 @@ void CBasicMeshSuture::dumpMeshes(CMesh& voLhsMesh, CMesh& voRhsMesh) const
 //FUNCTION: 
 void CBasicMeshSuture::__executeIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<int>& voDissociatedIndices, std::vector<SVertex>& voIntersectionPoints)
 {
-	CMeshPlaneIntersection MeshPlaneIntersection;
-	MeshPlaneIntersection.execute(vioMesh, vPlane);
-	MeshPlaneIntersection.dumpDissociatedPoints(voDissociatedIndices);
-	MeshPlaneIntersection.dumpIntersectionPoints(voIntersectionPoints);
+	m_MeshPlaneIntersection.execute(vioMesh, vPlane);
+	m_MeshPlaneIntersection.dumpDissociatedPoints(voDissociatedIndices);
+	m_MeshPlaneIntersection.dumpIntersectionPoints(voIntersectionPoints);
 }
 
 //*****************************************************************
