@@ -158,6 +158,11 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	oa& BOOST_SERIALIZATION_NVP(PublicIndices);
 	file.close();
 
+	int Height;
+	std::pair<int, int> UV;
+	vioMesh.calcModelPlaneAxis(UV, Height);
+	Eigen::Vector3f Up = {};
+	Up.data()[Height] = 1.0f;
 	auto calcOrder = [&](const SFace& vFace) -> bool
 	{
 		const auto& A = vioMesh.m_Vertices[vFace.a];
@@ -167,9 +172,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 		auto AB = B.xyz() - A.xyz();
 		auto BC = C.xyz() - B.xyz();
 
-		auto FaceNormal = AB.cross(BC).normalized();
-		auto AverageNormal = (A.normal() + B.normal() + C.normal()) / 3;
-		return FaceNormal.dot(AverageNormal) > 0;
+		return AB.cross(BC).dot(Up) > 0;
 	};
 
 	std::vector<SFace> IndexedFaceSet;
@@ -188,6 +191,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	auto Order = true;
 	do
 	{
+		Order = !Order;
 		IndexedFaceSet.clear();
 		auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, Order);	// order is heuristic
 
@@ -198,8 +202,6 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 				FaceWithMeshIndex[i] = Face[i] < Offset ? vDissociatedIndices[Face[i]] : PublicIndices[Face[i] - Offset];
 			IndexedFaceSet.push_back(FaceWithMeshIndex);
 		}
-
-		Order = !Order;
 
 	} while (calcOrder(IndexedFaceSet.front()) != ModelOrder);
 
