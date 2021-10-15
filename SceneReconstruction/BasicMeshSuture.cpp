@@ -5,6 +5,11 @@
 #include "FindSplitPlane.h"
 #include "VcgMesh.hpp"
 
+#include <fstream>	//remove
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/set.hpp>
+#include <boost/serialization/vector.hpp>
+
 using namespace hiveObliquePhotography::SceneReconstruction;
 
 _REGISTER_NORMAL_PRODUCT(CBasicMeshSuture, KEYWORD::BASIC_MESH_SUTURE)
@@ -19,6 +24,15 @@ void CBasicMeshSuture::sutureMeshesV()
 	std::vector<SVertex> LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices;
 	__executeIntersection(m_LhsMesh, m_SegmentPlane, LHSDissociatedIndices, LHSIntersectionPoints);
 	__executeIntersection(m_RhsMesh, m_SegmentPlane, RHSDissociatedIndices, RHSIntersectionPoints);
+
+	std::ofstream file("Model_" + std::to_string(0) + "_DissociatedPoints.txt");
+	boost::archive::text_oarchive oa(file);
+	oa& BOOST_SERIALIZATION_NVP(LHSDissociatedIndices);
+	file.close();
+	std::ofstream file2("Model_" + std::to_string(1) + "_DissociatedPoints.txt");
+	boost::archive::text_oarchive oa2(file2);
+	oa2& BOOST_SERIALIZATION_NVP(RHSDissociatedIndices);
+	file2.close();
 
 	__generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices);
 	__connectVerticesWithMesh(m_LhsMesh, LHSDissociatedIndices, PublicVertices);
@@ -142,6 +156,12 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 		vioMesh.m_Vertices.push_back(vPublicVertices[i]);
 		PublicIndices.push_back(i + Offset);
 	}
+
+	static int i = 0;
+	std::ofstream file("Model_" + std::to_string(i++) + "_PublicPoints.txt");
+	boost::archive::text_oarchive oa(file);
+	oa& BOOST_SERIALIZATION_NVP(PublicIndices);
+	file.close();
 
 	auto calcOrder = [&](const SFace& vFace) -> bool
 	{

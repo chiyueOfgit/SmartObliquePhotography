@@ -93,6 +93,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionReconstruction, SIGNAL(triggered()), this, SLOT(onActionReconstruction()));
     QObject::connect(m_UI.actionOpenMesh, SIGNAL(triggered()), this, SLOT(onActionOpenMesh()));
     QObject::connect(m_UI.actionSutureMesh, SIGNAL(triggered()), this, SLOT(onActionSutureMesh()));
+    QObject::connect(m_UI.actionShowMeshIndices, SIGNAL(triggered()), this, SLOT(onActionShowMeshIndices()));
     QObject::connect(m_UI.actionParameterization, SIGNAL(triggered()), this, SLOT(onActionParameterization()));
     QObject::connect(m_UI.actionBakeTexture, SIGNAL(triggered()), this, SLOT(onActionBakeTexture()));
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
@@ -623,6 +624,17 @@ void CQTInterface::onActionSutureMesh()
     }
     else
         __messageDockWidgetOutputText("Selected num mesh and cloud is not two, num mesh: " + std::to_string(m_SelectedMeshIndices.size()) + " num cloud: " + std::to_string(m_SelectedTileIndices.size()));
+}
+
+void CQTInterface::onActionShowMeshIndices()
+{
+    if (m_SelectedMeshIndices.size() == 1)
+    {
+        auto IndicesPath = QFileDialog::getOpenFileName(this, tr("Open Indices"), m_MeshOpenPath.c_str(), tr("Indices files(*.txt)")).toStdString();
+
+        Visualization::TestInterface(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], IndicesPath);
+    }
+
 }
 
 void CQTInterface::onActionParameterization()
