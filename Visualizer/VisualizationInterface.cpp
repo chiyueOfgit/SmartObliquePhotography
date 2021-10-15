@@ -105,7 +105,7 @@ void hiveObliquePhotography::Visualization::TestInterface(const CMesh& vMesh, co
 {
 	auto pVisualizer = CPointCloudVisualizer::getInstance();
 
-	std::set<int> IndciesPoints;
+	std::vector<int> IndciesPoints;
 	std::ifstream file(vIndicesPath);
 	boost::archive::text_iarchive ia(file);
 	ia >> BOOST_SERIALIZATION_NVP(IndciesPoints);
