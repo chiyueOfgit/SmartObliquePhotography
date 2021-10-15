@@ -1,5 +1,6 @@
 #pragma once
 #include <vcg/complex/complex.h>
+#include <wrap/io_trimesh/io_material.h>
 #include "Mesh.h"
 
 namespace hiveObliquePhotography

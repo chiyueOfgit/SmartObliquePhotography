@@ -106,6 +106,29 @@ void CMesh::calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const
 
 //*****************************************************************
 //FUNCTION: 
+void CMesh::saveMaterial(const std::string& vPath) const
+{
+	std::ofstream Out(vPath);
+	Out << std::format(
+		"newmtl {}\n"
+		"\tNs {}\n"
+		"\td {}\n"
+		"\tillum {}\n"
+		"\tKa {} {} {}\n"
+		"\tKd {} {} {}\n"
+		"\tKs {} {} {}\n"
+		"map_Kd {}\n",
+		m_Material.tex_name, m_Material.tex_Ns, m_Material.tex_d, m_Material.tex_illum,
+		m_Material.tex_Ka.r, m_Material.tex_Ka.g, m_Material.tex_Ka.b,
+		m_Material.tex_Kd.r, m_Material.tex_Kd.g, m_Material.tex_Kd.b,
+		m_Material.tex_Ks.r, m_Material.tex_Ks.g, m_Material.tex_Ks.b,
+		m_Material.tex_file.substr(m_Material.tex_file.find_last_of('/') + 1)
+		);
+	Out.close();
+}
+
+//*****************************************************************
+//FUNCTION: 
 Eigen::MatrixXd CMesh::getVerticesMatrix() const
 {
 	Eigen::MatrixXd VerticesMatrix(m_Vertices.size(), 3);
