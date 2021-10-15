@@ -7,7 +7,5 @@ namespace hiveObliquePhotography
 	{
 	private:
 		int __loadDataFromFileV(const std::string& vFileName, CMesh& voMesh) override;
-
-		pcl::TexMaterial __loadMaterialFromFile(const std::string& vFileName);
 	};
 }
