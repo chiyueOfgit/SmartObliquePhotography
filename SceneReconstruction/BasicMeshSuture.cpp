@@ -20,23 +20,17 @@ void CBasicMeshSuture::sutureMeshesV()
 {
 	_ASSERTE(m_SegmentPlane.norm());
 
-	std::vector<int> LHSDissociatedIndices, RHSDissociatedIndices;
-	std::vector<SVertex> LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices;
-	__executeIntersection(m_LhsMesh, m_SegmentPlane, LHSDissociatedIndices, LHSIntersectionPoints);
-	__executeIntersection(m_RhsMesh, m_SegmentPlane, RHSDissociatedIndices, RHSIntersectionPoints);
+	std::vector<int> LhsDissociatedIndices, RhsDissociatedIndices;
+	std::vector<SVertex> LhsIntersectionPoints, RhsIntersectionPoints, PublicVertices;
+	__executeIntersection(m_LhsMesh, m_SegmentPlane, LhsDissociatedIndices, LhsIntersectionPoints);
+	__executeIntersection(m_RhsMesh, m_SegmentPlane, RhsDissociatedIndices, RhsIntersectionPoints);
 
-	std::ofstream file("Model_" + std::to_string(0) + "_DissociatedPoints.txt");
-	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(LHSDissociatedIndices);
-	file.close();
-	std::ofstream file2("Model_" + std::to_string(1) + "_DissociatedPoints.txt");
-	boost::archive::text_oarchive oa2(file2);
-	oa2& BOOST_SERIALIZATION_NVP(RHSDissociatedIndices);
-	file2.close();
+	__serializeIndices(LhsDissociatedIndices, "Model_0_DissociatedPoints.txt");
+	__serializeIndices(RhsDissociatedIndices, "Model_1_DissociatedPoints.txt");
 
-	__generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices);
-	__connectVerticesWithMesh(m_LhsMesh, LHSDissociatedIndices, PublicVertices);
-	__connectVerticesWithMesh(m_RhsMesh, RHSDissociatedIndices, PublicVertices);
+	__generatePublicVertices(LhsIntersectionPoints, RhsIntersectionPoints, PublicVertices);
+	__connectVerticesWithMesh(m_LhsMesh, LhsDissociatedIndices, PublicVertices);
+	__connectVerticesWithMesh(m_RhsMesh, RhsDissociatedIndices, PublicVertices);
 
 	__removeUnreferencedVertex(m_LhsMesh);
 	__removeUnreferencedVertex(m_RhsMesh);
@@ -57,7 +51,7 @@ void CBasicMeshSuture::setCloud4SegmentPlane(PointCloud_t::ConstPtr vLhs, PointC
 
 //*****************************************************************
 //FUNCTION: 
-void CBasicMeshSuture::dumpMeshes(CMesh& voLhsMesh, CMesh& voRhsMesh)
+void CBasicMeshSuture::dumpMeshes(CMesh& voLhsMesh, CMesh& voRhsMesh) const
 {
 	voLhsMesh = m_LhsMesh;
 	voRhsMesh = m_RhsMesh;
@@ -120,27 +114,21 @@ void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLhs
 
 //*****************************************************************
 //FUNCTION: 
-double CBasicMeshSuture::__computeDistance(const SVertex& vLhs, const SVertex& vRhs)
+auto CBasicMeshSuture::__findNearestPoint(const std::vector<SVertex>& vVectexSet, const SVertex& vOrigin) -> SVertex
 {
-	return std::sqrt(std::pow(vLhs.x - vRhs.x, 2) + std::pow(vLhs.y - vRhs.y, 2) + std::pow(vLhs.z - vRhs.z, 2));
-}
-
-//*****************************************************************
-//FUNCTION: 
-hiveObliquePhotography::SVertex CBasicMeshSuture::__findNearestPoint(const std::vector<SVertex>& vVectexSet, const SVertex& vOrigin)
-{
-	double MinDistance = FLT_MAX;
-	SVertex NearestPoint;
-	for (const auto& Point : vVectexSet)
+	auto MinDistance = std::numeric_limits<decltype(vOrigin.xyz())::value_type>::max();
+	auto Nearest = vVectexSet.begin();
+	for (auto i = vVectexSet.begin(); i != vVectexSet.end(); ++i)
 	{
-		double Distance = __computeDistance(vOrigin, Point);
-		if (Distance < MinDistance)
+		auto Distance = (vOrigin.xyz() - i->xyz()).norm();
+		if (MinDistance > Distance)
 		{
 			MinDistance = Distance;
-			NearestPoint = Point;
+			Nearest = i;
 		}
+		
 	}
-	return NearestPoint;
+	return *Nearest;
 }
 
 //*****************************************************************
@@ -151,17 +139,15 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 	std::vector<int> PublicIndices;
 	PublicIndices.reserve(vPublicVertices.size());
-	for (size_t i = 0, Offset = vioMesh.m_Vertices.size(); i < vPublicVertices.size(); ++i)
+	for (int i = vioMesh.m_Vertices.size(); const auto& Vertex : vPublicVertices)
 	{
-		vioMesh.m_Vertices.push_back(vPublicVertices[i]);
-		PublicIndices.push_back(i + Offset);
+		vioMesh.m_Vertices.push_back(Vertex);
+
+		PublicIndices.push_back(i++);
 	}
 
-	static int i = 0;
-	std::ofstream file("Model_" + std::to_string(i++) + "_PublicPoints.txt");
-	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(PublicIndices);
-	file.close();
+	static int Count = 0;
+	__serializeIndices(PublicIndices, "Model_" + std::to_string(Count++) + "_PublicPoints.txt");
 
 	auto calcOrder = [&](const SFace& vFace) -> bool
 	{
@@ -169,10 +155,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 		const auto& B = vioMesh.m_Vertices[vFace.b];
 		const auto& C = vioMesh.m_Vertices[vFace.c];
 
-		auto AB = B.xyz() - A.xyz();
-		auto BC = C.xyz() - B.xyz();
-
-		auto FaceNormal = AB.cross(BC).normalized();
+		auto FaceNormal = (B.xyz() - A.xyz()).cross(C.xyz() - B.xyz()).normalized();
 		auto AverageNormal = (A.normal() + B.normal() + C.normal()) / 3;
 		return FaceNormal.dot(AverageNormal) > 0;
 	};
@@ -193,8 +176,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 		}
 
 		Order = !Order;
-
-	} while (calcOrder(IndexedFaceSet.front()) != calcOrder(vioMesh.m_Faces.front()));
+	} while (calcOrder(IndexedFaceSet.front()) ^ calcOrder(vioMesh.m_Faces.front()));
 
 	vioMesh.m_Faces.insert(vioMesh.m_Faces.end(), IndexedFaceSet.begin(), IndexedFaceSet.end());
 }
@@ -246,4 +228,14 @@ void CBasicMeshSuture::__removeUnreferencedVertex(CMesh& vioMesh)
 	toVcgMesh(vioMesh, VcgMesh);
 	vcg::tri::Clean<CVcgMesh>::RemoveUnreferencedVertex(VcgMesh);
 	fromVcgMesh(VcgMesh, vioMesh);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CBasicMeshSuture::__serializeIndices(const std::vector<int>& vData, const std::string& vFileName) const
+{
+	std::ofstream Out(vFileName);
+	boost::archive::text_oarchive Oarchive(Out);
+	Oarchive& BOOST_SERIALIZATION_NVP(vData);
+	Out.close();
 }
