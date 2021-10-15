@@ -144,7 +144,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	int Height;
 	std::pair<int, int> UV;
 	vioMesh.calcModelPlaneAxis(UV, Height);
-	Eigen::Vector3f Up = {};
+	Eigen::Vector3f Up = { 0.0f, 0.0f, 0.0f };
 	Up.data()[Height] = 1.0f;
 	auto calcOrder = [&](const SFace& vFace) -> bool
 	{
