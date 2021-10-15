@@ -44,8 +44,8 @@ void CBasicMeshSuture::setCloud4SegmentPlane(PointCloud_t::ConstPtr vLhs, PointC
 	
 	SimpleCloudType::Ptr SimpleLhs(new SimpleCloudType);
 	SimpleCloudType::Ptr SimpleRhs(new SimpleCloudType);
-	pcl::copyPointCloud(*vLhs, *SimpleLhs);
-	pcl::copyPointCloud(*vRhs, *SimpleRhs);
+	copyPointCloud(*vLhs, *SimpleLhs);
+	copyPointCloud(*vRhs, *SimpleRhs);
 	m_SegmentPlane = findSplitPlane(SimpleLhs, SimpleRhs);
 }
 
@@ -119,7 +119,6 @@ auto CBasicMeshSuture::__findNearestPoint(const std::vector<SVertex>& vVectexSet
 			MinDistance = Distance;
 			Nearest = i;
 		}
-		
 	}
 	return *Nearest;
 }
@@ -172,6 +171,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 		ModelOrder = false;
 	else
 		throw("Model error.");
+	
 	auto Order = true;
 	do
 	{
