@@ -130,6 +130,6 @@ void hiveObliquePhotography::Visualization::TestInterface(const CMesh& vMesh, co
 
 	auto pPCLVisualizer = hiveGetPCLVisualizer();
 	pPCLVisualizer->addPointCloud(pCloud, vIndicesPath);
-	pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, vIndicesPath);
+	pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 15, vIndicesPath);
 	pPCLVisualizer->updateCamera();
 }
