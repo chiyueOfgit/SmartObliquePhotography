@@ -37,7 +37,7 @@ protected:
 	{
 		m_Mesh = _loadMesh(PlaneMeshPath);
 
-		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ CloudPath });
+		m_TileSet = hiveObliquePhotography::hiveInitPointCloudScene({ CloudPath });
 
 		m_pTextureBaker = _createBaker(m_Mesh);
 	}
@@ -93,7 +93,7 @@ protected:
 	}
 
 	hiveObliquePhotography::CMesh m_Mesh;
-	PointCloud_t::Ptr m_pCloud = nullptr;
+	std::vector<PointCloud_t::Ptr> m_TileSet;
 
 	CRayCastingBaker* m_pTextureBaker = nullptr;
 };

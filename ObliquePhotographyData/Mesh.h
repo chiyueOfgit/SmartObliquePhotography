@@ -44,7 +44,7 @@ namespace hiveObliquePhotography
 					return false;
 			return true;
 		}
-		
+
 		SVertex lerp(const SVertex& vOther, float vMix = 0.5f) const
 		{
 			using std::lerp;
