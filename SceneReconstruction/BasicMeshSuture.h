@@ -1,5 +1,6 @@
 #pragma once
 #include "MeshSuture.h"
+#include "MeshPlaneIntersection.h"
 
 namespace hiveObliquePhotography
 {
@@ -24,6 +25,8 @@ namespace hiveObliquePhotography
 			std::vector<SFace> __genConnectionFace(IndexType vNumLeft, IndexType vNumRight, bool vLeftBeforeRight, bool vIsClockwise = true);
 			void __serializeIndices(const std::vector<int>& vData, const std::string& vFileName) const;
 
+			
+			CMeshPlaneIntersection m_MeshPlaneIntersection;
 			Eigen::Vector4f m_SegmentPlane = {};
 		};
 	}

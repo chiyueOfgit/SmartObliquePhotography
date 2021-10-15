@@ -32,7 +32,18 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 		if(TempIntersectionSet.size())
 		{
 			bIsIntersected = true;
-			IntersectionPoints.insert(TempIntersectionSet.begin(), TempIntersectionSet.end());
+			if (TempIntersectionSet.size() == 2)
+			{
+				SVertex AverageVertex;
+				auto FirstIter = TempIntersectionSet.begin();
+				auto SecondIter = FirstIter + 1;
+				AverageVertex.x = (FirstIter->x + SecondIter->x) / 2;
+				AverageVertex.y = (FirstIter->y + SecondIter->y) / 2;
+				AverageVertex.z = (FirstIter->z + SecondIter->z) / 2;
+				IntersectionPoints.insert(AverageVertex);
+			}
+			else
+				IntersectionPoints.insert(TempIntersectionSet.begin(), TempIntersectionSet.end());
 		}
 		auto DissociatedSet = __tellDissociatedPoint(TempFace, Plane);
 		if (bIsIntersected)
@@ -58,6 +69,7 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 	Eigen::Vector3f Direction;
 	__findHeightAxis(vioMesh, Direction);
 	Direction = Direction.cross(PlaneNormal);
+	m_Direction = Direction;
 	__sortDissociatedIndices(vioMesh, m_DissociatedPoints, Direction);
 	__sortIntersectionPoints(m_IntersectionPoints, Direction);
 
@@ -206,6 +218,10 @@ void CMeshPlaneIntersection::__sortByVertexLoop(std::vector<Type>& vioOriginSet,
 					MinIndex = i;
 				}
 			}
+		}
+		if(MinDistance > 30)
+		{
+			break;
 		}
 		Indices.push_back(MinIndex);
 		CurrentVertex = vVertexSet[MinIndex];

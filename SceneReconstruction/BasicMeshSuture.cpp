@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "BasicMeshSuture.h"
 #include <vcg/complex/algorithms/clean.h>
-#include "MeshPlaneIntersection.h"
 #include "FindSplitPlane.h"
 #include "VcgMesh.hpp"
 
@@ -28,9 +27,10 @@ void CBasicMeshSuture::sutureMeshesV()
 	__serializeIndices(LhsDissociatedIndices, "Model_0_DissociatedPoints.txt");
 	__serializeIndices(RhsDissociatedIndices, "Model_1_DissociatedPoints.txt");
 
-	__generatePublicVertices(LhsIntersectionPoints, RhsIntersectionPoints, PublicVertices);
-	__connectVerticesWithMesh(m_LhsMesh, LhsDissociatedIndices, PublicVertices);
-	__connectVerticesWithMesh(m_RhsMesh, RhsDissociatedIndices, PublicVertices);
+	__generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices);
+	m_MeshPlaneIntersection.sortPublic(PublicVertices);
+	__connectVerticesWithMesh(m_LhsMesh, LHSDissociatedIndices, PublicVertices);
+	__connectVerticesWithMesh(m_RhsMesh, RHSDissociatedIndices, PublicVertices);
 
 	__removeUnreferencedVertex(m_LhsMesh);
 	__removeUnreferencedVertex(m_RhsMesh);
@@ -104,12 +104,6 @@ void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLhs
 		else
 			voPublicVertices.push_back(lerp(Iter->first, Iter->second));
 	}
-
-	std::ranges::sort(voPublicVertices,
-		[](const SVertex& vLhs, const SVertex& vRhs)
-		{
-			return vLhs.y < vRhs.y;
-		});
 }
 
 //*****************************************************************
@@ -161,6 +155,18 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	};
 
 	std::vector<SFace> IndexedFaceSet;
+
+	bool ModelOrder;
+	int NumTrue = 0, TestNum = 10;
+	for (int i = 0; i < TestNum; i++)
+		if (calcOrder(vioMesh.m_Faces[i]))
+			NumTrue++;
+	if ((float)NumTrue / TestNum >= 0.8)
+		ModelOrder = true;
+	else if ((float)NumTrue / TestNum <= 0.2)
+		ModelOrder = false;
+	else
+		throw("Model error.");
 	auto Order = true;
 	do
 	{

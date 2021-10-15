@@ -18,10 +18,16 @@ namespace hiveObliquePhotography
 #ifdef _UNIT_TEST
 			void sortByVertexLoop(std::vector<int>& vioOriginSet, std::vector<SVertex>& vVertexSet){ __sortByVertexLoop<int>(vioOriginSet, vVertexSet); }
 #endif // _UNIT_TEST
+
+			void sortPublic(std::vector<SVertex>& vioPoints)
+			{
+				 __sortIntersectionPoints(vioPoints, m_Direction);
+			}
 		private:
 			std::vector<int> m_DissociatedPoints;
 			std::vector<SVertex> m_IntersectionPoints;
-
+			Eigen::Vector3f m_Direction;
+			
 			std::vector<SVertex> __calcIntersectionPoints(const std::vector<Eigen::Vector3f>& vFace, const Eigen::Vector4f& vPlane);
 			std::vector<int> __tellDissociatedPoint(const std::vector<Eigen::Vector3f>& vFace, const Eigen::Vector4f& vPlane);
 			Eigen::Vector3f __generateDefaultPlanePoint(const Eigen::Vector4f& vPlane);
