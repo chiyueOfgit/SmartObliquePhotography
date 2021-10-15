@@ -121,9 +121,18 @@ void hiveObliquePhotography::Visualization::TestInterface(const CMesh& vMesh, co
 		Point.x = Vertex.x;
 		Point.y = Vertex.y;
 		Point.z = Vertex.z;
-		Point.r = 255 - Color;
-		Point.g = 0;
-		Point.b = Color;
+		if (Color == 0)
+		{
+			Point.r = 0;
+			Point.g = 255;
+			Point.b = 0;
+		}
+		else
+		{
+			Point.r = 255 - Color;
+			Point.g = 0;
+			Point.b = Color;
+		}
 		pCloud->push_back(Point);
 		Color += Step;
 	}
