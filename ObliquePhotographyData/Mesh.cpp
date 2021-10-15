@@ -95,9 +95,9 @@ void CMesh::calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const
 	auto AABB = calcAABB();
 	std::vector<std::pair<IndexType, DataType>> AxisAndWidth;
 	for (int i = 0; i < 3; i++)
-		AxisAndWidth.push_back({i, AABB.second.data()[i] - AABB.first.data()[i] });
+		AxisAndWidth.emplace_back(i, AABB.second.data()[i] - AABB.first.data()[i]);
 
-	std::sort(AxisAndWidth.begin(), AxisAndWidth.end(), [&](std::pair<IndexType, DataType> vLeft, std::pair<IndexType, DataType> vRight) { return vLeft.second < vRight.second; });
+	std::ranges::sort(AxisAndWidth, [](auto& vLeft, auto& vRight) { return vLeft.second < vRight.second; });
 	
 	vHeight = AxisAndWidth[0].first;
 
