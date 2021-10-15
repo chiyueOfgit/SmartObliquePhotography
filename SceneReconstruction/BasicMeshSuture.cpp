@@ -178,6 +178,18 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	};
 
 	std::vector<SFace> IndexedFaceSet;
+
+	bool ModelOrder;
+	int NumTrue = 0, TestNum = 10;
+	for (int i = 0; i < TestNum; i++)
+		if (calcOrder(vioMesh.m_Faces[i]))
+			NumTrue++;
+	if ((float)NumTrue / TestNum >= 0.8)
+		ModelOrder = true;
+	else if ((float)NumTrue / TestNum <= 0.2)
+		ModelOrder = false;
+	else
+		throw("Model error.");
 	auto Order = true;
 	do
 	{
@@ -194,7 +206,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 
 		Order = !Order;
 
-	} while (calcOrder(IndexedFaceSet.front()) != calcOrder(vioMesh.m_Faces.front()));
+	} while (calcOrder(IndexedFaceSet.front()) != ModelOrder);
 
 	vioMesh.m_Faces.insert(vioMesh.m_Faces.end(), IndexedFaceSet.begin(), IndexedFaceSet.end());
 }
