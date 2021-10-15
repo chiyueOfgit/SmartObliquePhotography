@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "BasicMeshSuture.h"
 #include <vcg/complex/algorithms/clean.h>
-#include "MeshPlaneIntersection.h"
 #include "FindSplitPlane.h"
 #include "VcgMesh.hpp"
 
@@ -35,6 +34,9 @@ void CBasicMeshSuture::sutureMeshesV()
 	file2.close();
 
 	__generatePublicVertices(LHSIntersectionPoints, RHSIntersectionPoints, PublicVertices);
+
+	m_MeshPlaneIntersection.sortPublic(PublicVertices);
+	
 	__connectVerticesWithMesh(m_LhsMesh, LHSDissociatedIndices, PublicVertices);
 	__connectVerticesWithMesh(m_RhsMesh, RHSDissociatedIndices, PublicVertices);
 
@@ -67,10 +69,9 @@ void CBasicMeshSuture::dumpMeshes(CMesh& voLhsMesh, CMesh& voRhsMesh)
 //FUNCTION: 
 void CBasicMeshSuture::__executeIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<int>& voDissociatedIndices, std::vector<SVertex>& voIntersectionPoints)
 {
-	CMeshPlaneIntersection MeshPlaneIntersection;
-	MeshPlaneIntersection.execute(vioMesh, vPlane);
-	MeshPlaneIntersection.dumpDissociatedPoints(voDissociatedIndices);
-	MeshPlaneIntersection.dumpIntersectionPoints(voIntersectionPoints);
+	m_MeshPlaneIntersection.execute(vioMesh, vPlane);
+	m_MeshPlaneIntersection.dumpDissociatedPoints(voDissociatedIndices);
+	m_MeshPlaneIntersection.dumpIntersectionPoints(voIntersectionPoints);
 }
 
 //*****************************************************************
@@ -110,12 +111,6 @@ void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLhs
 		else
 			voPublicVertices.push_back(lerp(Iter->first, Iter->second));
 	}
-
-	std::ranges::sort(voPublicVertices,
-		[](const SVertex& vLhs, const SVertex& vRhs)
-		{
-			return vLhs.y < vRhs.y;
-		});
 }
 
 //*****************************************************************

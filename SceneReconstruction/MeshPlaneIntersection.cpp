@@ -58,6 +58,7 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 	Eigen::Vector3f Direction;
 	__findHeightAxis(vioMesh, Direction);
 	Direction = Direction.cross(PlaneNormal);
+	m_Direction = Direction;
 	__sortDissociatedIndices(vioMesh, m_DissociatedPoints, Direction);
 	__sortIntersectionPoints(m_IntersectionPoints, Direction);
 
@@ -206,6 +207,10 @@ void CMeshPlaneIntersection::__sortByVertexLoop(std::vector<Type>& vioOriginSet,
 					MinIndex = i;
 				}
 			}
+		}
+		if(MinDistance > 30)
+		{
+			break;
 		}
 		Indices.push_back(MinIndex);
 		CurrentVertex = vVertexSet[MinIndex];
