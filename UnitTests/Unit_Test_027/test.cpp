@@ -95,7 +95,7 @@ TEST_F(TestMeshPlaneIntersection, Test_SortByVertexLoop)
 	std::vector<hiveObliquePhotography::SVertex> VertexSet;
 	for (auto Index : DissociatedIndices)
 		VertexSet.push_back(m_Mesh.m_Vertices[Index]);
-	MeshPlaneIntersection.sortByVertexLoop(DissociatedIndices, VertexSet);
+	//MeshPlaneIntersection.sortByVertexLoop(DissociatedIndices, VertexSet);
 	if(DissociatedIndices[0] == 0)
 	{
 		EXPECT_EQ(DissociatedIndices[1], 2);

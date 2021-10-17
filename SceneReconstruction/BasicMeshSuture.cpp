@@ -24,11 +24,18 @@ void CBasicMeshSuture::sutureMeshesV()
 	__executeIntersection(m_LhsMesh, m_SegmentPlane, LhsDissociatedIndices, LhsIntersectionPoints);
 	__executeIntersection(m_RhsMesh, m_SegmentPlane, RhsDissociatedIndices, RhsIntersectionPoints);
 
+	Eigen::Vector3f Direction;
+	__findSutureDirection(m_LhsMesh, Direction);
+	__sortDissociatedIndices(m_LhsMesh, LhsDissociatedIndices, Direction);
+	__sortDissociatedIndices(m_RhsMesh, RhsDissociatedIndices, Direction);
+	__sortIntersectionPoints(LhsIntersectionPoints, Direction);
+	__sortIntersectionPoints(RhsIntersectionPoints, Direction);
+	
 	__serializeIndices(LhsDissociatedIndices, "Model_0_DissociatedPoints.txt");
 	__serializeIndices(RhsDissociatedIndices, "Model_1_DissociatedPoints.txt");
 
 	__generatePublicVertices(LhsIntersectionPoints, RhsIntersectionPoints, PublicVertices);
-	m_MeshPlaneIntersection.sortPublic(PublicVertices);
+	__sortIntersectionPoints(PublicVertices, Direction);
 	__connectVerticesWithMesh(m_LhsMesh, LhsDissociatedIndices, PublicVertices);
 	__connectVerticesWithMesh(m_RhsMesh, RhsDissociatedIndices, PublicVertices);
 
@@ -61,9 +68,10 @@ void CBasicMeshSuture::dumpMeshes(CMesh& voLhsMesh, CMesh& voRhsMesh) const
 //FUNCTION: 
 void CBasicMeshSuture::__executeIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<int>& voDissociatedIndices, std::vector<SVertex>& voIntersectionPoints)
 {
-	m_MeshPlaneIntersection.execute(vioMesh, vPlane);
-	m_MeshPlaneIntersection.dumpDissociatedPoints(voDissociatedIndices);
-	m_MeshPlaneIntersection.dumpIntersectionPoints(voIntersectionPoints);
+	CMeshPlaneIntersection MeshPlaneIntersection;
+	MeshPlaneIntersection.execute(vioMesh, vPlane);
+	MeshPlaneIntersection.dumpDissociatedPoints(voDissociatedIndices);
+	MeshPlaneIntersection.dumpIntersectionPoints(voIntersectionPoints);
 }
 
 //*****************************************************************
@@ -165,9 +173,9 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	for (int i = 0; i < TestNum; i++)
 		if (calcOrder(vioMesh.m_Faces[i]))
 			NumTrue++;
-	if ((float)NumTrue / TestNum >= 0.8)
+	if ((float)NumTrue / TestNum >= 0.7)
 		ModelOrder = true;
-	else if ((float)NumTrue / TestNum <= 0.2)
+	else if ((float)NumTrue / TestNum <= 0.3)
 		ModelOrder = false;
 	else
 		throw("Model error.");
@@ -249,4 +257,94 @@ void CBasicMeshSuture::__serializeIndices(const std::vector<int>& vData, const s
 	boost::archive::text_oarchive Oarchive(Out);
 	Oarchive& BOOST_SERIALIZATION_NVP(vData);
 	Out.close();
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CBasicMeshSuture::__sortDissociatedIndices(const CMesh& vMesh, std::vector<int>& vioDissociatedPoints, Eigen::Vector3f& vDirection)
+{
+	std::vector<int> LocalOrderIndices;
+	std::vector<int> OrderSet;
+	auto compareV = [&](int vLhs, int vRhs) -> bool
+	{
+		return vMesh.m_Vertices[vLhs].xyz().dot(vDirection) < vMesh.m_Vertices[vRhs].xyz().dot(vDirection);
+	};
+	std::sort(vioDissociatedPoints.begin(), vioDissociatedPoints.end(), compareV);
+
+	std::vector<SVertex> VertexSet;
+	for (auto Index : vioDissociatedPoints)
+		VertexSet.push_back(vMesh.m_Vertices[Index]);
+	__sortByVertexLoop(LocalOrderIndices, VertexSet);
+	for(auto Index : LocalOrderIndices)
+		OrderSet.push_back(vioDissociatedPoints[Index]);
+	vioDissociatedPoints.swap(OrderSet);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CBasicMeshSuture::__sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints, Eigen::Vector3f& vDirection)
+{
+	std::vector<int> LocalOrderIndices;
+	std::vector<SVertex> OrderSet;
+	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
+	{
+		return vLhs.xyz().dot(vDirection) < vRhs.xyz().dot(vDirection);
+	};
+	std::sort(vioIntersectionPoints.begin(), vioIntersectionPoints.end(), compareV);
+	__sortByVertexLoop(LocalOrderIndices, vioIntersectionPoints);
+	for (auto Index : LocalOrderIndices)
+		OrderSet.push_back(vioIntersectionPoints[Index]);
+	vioIntersectionPoints.swap(OrderSet);
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CBasicMeshSuture::__sortByVertexLoop(std::vector<int>& vioOrderIndices, std::vector<SVertex>& vVertexSet)
+{
+	if (vVertexSet.empty())
+		return;
+	SVertex CurrentVertex = vVertexSet[0];
+	std::vector<bool> Flag(vVertexSet.size(), false);
+	auto Count = vVertexSet.size();
+	while (Count > 0)
+	{
+		float MinDistance = FLT_MAX;
+		int MinIndex;
+		for (int i = 0; i < vVertexSet.size(); i++)
+		{
+			if (!Flag[i])
+			{
+				auto TempDis = (CurrentVertex.xyz() - vVertexSet[i].xyz()).norm();
+				if (TempDis < MinDistance)
+				{
+					MinDistance = TempDis;
+					MinIndex = i;
+				}
+			}
+		}
+		if (MinDistance > 30)
+			break;
+		vioOrderIndices.push_back(MinIndex);
+		CurrentVertex = vVertexSet[MinIndex];
+		Flag[MinIndex] = true;
+		Count--;
+	}
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CBasicMeshSuture::__findSutureDirection(const CMesh& vMesh, Eigen::Vector3f& voDirection)
+{
+	std::pair<int, int> UV;
+	int Height;
+	vMesh.calcModelPlaneAxis(UV, Height);
+	for (int i = 0; i < 3; i++)
+	{
+		if (i == Height)
+			voDirection[i] = 1.0f;
+		else
+			voDirection[i] = 0.0f;
+	}
+	Eigen::Vector3f PlaneNormal{ m_SegmentPlane[0],m_SegmentPlane[1],m_SegmentPlane[2] };
+	voDirection = voDirection.cross(PlaneNormal);
 }

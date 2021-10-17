@@ -23,7 +23,11 @@ namespace hiveObliquePhotography::SceneReconstruction
 		std::vector<SFace> __genConnectionFace(IndexType vNumLeft, IndexType vNumRight, bool vLeftBeforeRight, bool vIsClockwise = true);
 		void __serializeIndices(const std::vector<int>& vData, const std::string& vFileName) const;
 
-		CMeshPlaneIntersection m_MeshPlaneIntersection;
+		void __sortDissociatedIndices(const CMesh& vMesh, std::vector<int>& vioDissociatedPoints, Eigen::Vector3f& vDirection);
+		void __sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints, Eigen::Vector3f& vDirection);
+		void __sortByVertexLoop(std::vector<int>& vioOrderIndices, std::vector<SVertex>& vVertexSet);
+		void __findSutureDirection(const CMesh& vMesh, Eigen::Vector3f& voDirection);
+		
 		Eigen::Vector4f m_SegmentPlane = {};
 	};
 }

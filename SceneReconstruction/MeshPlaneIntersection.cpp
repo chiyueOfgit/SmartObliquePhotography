@@ -65,14 +65,7 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 	}
 	m_IntersectionPoints.assign(IntersectionPoints.begin(), IntersectionPoints.end());
 	m_DissociatedPoints.assign(Indeices.begin(), Indeices.end());
-
-	Eigen::Vector3f Direction;
-	__findHeightAxis(vioMesh, Direction);
-	Direction = Direction.cross(PlaneNormal);
-	m_Direction = Direction;
-	__sortDissociatedIndices(vioMesh, m_DissociatedPoints, Direction);
-	__sortIntersectionPoints(m_IntersectionPoints, Direction);
-
+	
 	return;
 }
 
@@ -163,86 +156,4 @@ Eigen::Vector3f CMeshPlaneIntersection::__generateDefaultPlanePoint(const Eigen:
 			DefaultPlanePoint[k] = 0.0f;
 	}
 	return DefaultPlanePoint;
-}
-
-
-void CMeshPlaneIntersection::__sortDissociatedIndices(const CMesh& vMesh, std::vector<int>& vioDissociatedPoints, Eigen::Vector3f& vDirection)
-{
-	std::vector<int> OrderSet;
-	auto compareV = [&](int vLhs, int vRhs) -> bool
-	{
-		return vMesh.m_Vertices[vLhs].xyz().dot(vDirection) < vMesh.m_Vertices[vRhs].xyz().dot(vDirection);
-	};
-	std::sort(vioDissociatedPoints.begin(), vioDissociatedPoints.end(), compareV);
-
-	std::vector<SVertex> VertexSet;
-	for(auto Index: vioDissociatedPoints)
-		VertexSet.push_back(vMesh.m_Vertices[Index]);
-	__sortByVertexLoop<int>(vioDissociatedPoints, VertexSet);
-}
-
-void CMeshPlaneIntersection::__sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints, Eigen::Vector3f& vDirection)
-{
-	std::vector<SVertex> OrderSet;
-	auto compareV = [&](const SVertex& vLhs, const SVertex& vRhs) -> bool
-	{
-		return vLhs.xyz().dot(vDirection) < vRhs.xyz().dot(vDirection);
-	};
-	std::sort(vioIntersectionPoints.begin(), vioIntersectionPoints.end(), compareV);
-	__sortByVertexLoop<SVertex>(vioIntersectionPoints, vioIntersectionPoints);
-}
-
-template <typename Type>
-void CMeshPlaneIntersection::__sortByVertexLoop(std::vector<Type>& vioOriginSet, std::vector<SVertex>& vVertexSet)
-{
-	if (vVertexSet.empty())
-		return;
-	std::vector<int> Indices;
-	std::vector<Type> OrderSet;
-	
-	SVertex CurrentVertex = vVertexSet[0];
-	std::vector<bool> Flag(vVertexSet.size(), false);
-	auto Count = vVertexSet.size();
-	while (Count > 0)
-	{
-		float MinDistance = FLT_MAX;
-		int MinIndex;
-		for (int i = 0; i < vVertexSet.size();i++)
-		{
-			if (!Flag[i])
-			{
-				auto TempDis = (CurrentVertex.xyz() - vVertexSet[i].xyz()).norm();
-				if (TempDis < MinDistance)
-				{
-					MinDistance = TempDis;
-					MinIndex = i;
-				}
-			}
-		}
-		if(MinDistance > 30)
-		{
-			break;
-		}
-		Indices.push_back(MinIndex);
-		CurrentVertex = vVertexSet[MinIndex];
-		Flag[MinIndex] = true;
-		Count--;
-	}
-	for (auto Index : Indices)
-		OrderSet.push_back(vioOriginSet[Index]);
-	vioOriginSet.swap(OrderSet);
-}
-
-void CMeshPlaneIntersection::__findHeightAxis(const CMesh& vMesh, Eigen::Vector3f& voHeightAxis)
-{
-	std::pair<int, int> UV;
-	int Height;
-	vMesh.calcModelPlaneAxis(UV, Height);
-	for(int i = 0; i < 3; i++)
-	{
-		if (i == Height)
-			voHeightAxis[i] = 1.0f;
-		else
-			voHeightAxis[i] = 0.0f;
-	}
 }
