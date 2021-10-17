@@ -2,9 +2,10 @@
 #include "SceneReconstructionInterface.h"
 #include "SceneReconstructionConfig.h"
 #include "PoissonSurfaceReconstructor.h"
-#include "RayCastingBaker.h"
-#include "ArapParameterizer.h"
+#include "CollapseBasedSimplification.h"
 #include "BasicMeshSuture.h"
+#include "ArapParameterizer.h"
+#include "RayCastingBaker.h"
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/obj_io.h>
@@ -20,20 +21,21 @@ void hiveObliquePhotography::SceneReconstruction::hiveSurfaceReconstruction(Poin
 	pPoisson->constructSurface(voMesh);
 }
 
+void hiveObliquePhotography::SceneReconstruction::hiveMeshSimplication(CMesh& vioMesh)
+{
+	auto pSimplifier = hiveDesignPattern::hiveCreateProduct<IMeshSimplifacation>(KEYWORD::COLLAPSE_BASED_SIMPLIFICATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("PoissonReconstruction"), vioMesh);
+	_ASSERTE(pSimplifier);
+	vioMesh = pSimplifier->simplifyMesh();
+}
+
 //*****************************************************************
 //FUNCTION: 
-pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(const std::string& vPath)
+RECONSTRUCTION_DECLSPEC void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo, PointCloud_t::Ptr vCloudOne, PointCloud_t::Ptr vCloudTwo)
 {
-	pcl::TextureMesh Mesh;
-	pcl::io::loadOBJFile(vPath, Mesh);
-	pcl::TextureMesh Mesh2;
-	pcl::io::loadPolygonFileOBJ(vPath, Mesh2);
-	Mesh2.tex_materials = Mesh.tex_materials;
-	auto Material = Mesh2.tex_materials[0];
-
-	CMesh M(Mesh2);
-
-	return M.toTexMesh(Material);
+	auto pSuturator = hiveDesignPattern::hiveCreateProduct<CBasicMeshSuture>(KEYWORD::BASIC_MESH_SUTURE, CSceneReconstructionConfig::getInstance()->getSubConfigByName("BasicSuture"), vioMeshOne, vioMeshTwo);
+	pSuturator->setCloud4SegmentPlane(vCloudOne, vCloudTwo);
+	pSuturator->sutureMeshesV();
+	pSuturator->dumpMeshes(vioMeshOne, vioMeshTwo);
 }
 
 //*****************************************************************
@@ -63,11 +65,16 @@ hiveObliquePhotography::CImage<std::array<int, 3>> hiveObliquePhotography::Scene
 
 //*****************************************************************
 //FUNCTION: 
-RECONSTRUCTION_DECLSPEC void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo, PointCloud_t::Ptr vCloudOne, PointCloud_t::Ptr vCloudTwo)
+pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(const std::string& vPath)
 {
-	auto pSuturator = hiveDesignPattern::hiveCreateProduct<CBasicMeshSuture>(KEYWORD::BASIC_MESH_SUTURE, CSceneReconstructionConfig::getInstance()->getSubConfigByName("BasicSuture"), vioMeshOne, vioMeshTwo);
-	pSuturator->setCloud4SegmentPlane(vCloudOne, vCloudTwo);
-	pSuturator->sutureMeshesV();
-	pSuturator->dumpMeshes(vioMeshOne, vioMeshTwo);
-}
+	pcl::TextureMesh Mesh;
+	pcl::io::loadOBJFile(vPath, Mesh);
+	pcl::TextureMesh Mesh2;
+	pcl::io::loadPolygonFileOBJ(vPath, Mesh2);
+	Mesh2.tex_materials = Mesh.tex_materials;
+	auto Material = Mesh2.tex_materials[0];
 
+	CMesh M(Mesh2);
+
+	return M.toTexMesh(Material);
+}

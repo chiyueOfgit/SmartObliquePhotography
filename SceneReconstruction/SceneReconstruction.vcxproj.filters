@@ -85,9 +85,6 @@
     <ClInclude Include="CollapseBasedSimplification.h">
       <Filter>Simplification</Filter>
     </ClInclude>
-    <ClInclude Include="VcgMesh.hpp">
-      <Filter>Simplification</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

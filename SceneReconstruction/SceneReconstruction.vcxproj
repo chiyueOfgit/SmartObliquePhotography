@@ -194,7 +194,6 @@
     <ClInclude Include="SurfaceReconstructor.h" />
     <ClInclude Include="SceneReconstructionConfig.h" />
     <ClInclude Include="TextureBaker.h" />
-    <ClInclude Include="VcgMesh.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

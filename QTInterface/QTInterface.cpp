@@ -634,7 +634,6 @@ void CQTInterface::onActionShowMeshIndices()
 
         Visualization::TestInterface(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], IndicesPath);
     }
-
 }
 
 void CQTInterface::onActionParameterization()
