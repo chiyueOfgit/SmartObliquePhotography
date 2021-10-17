@@ -83,6 +83,9 @@ namespace hiveObliquePhotography
 			else
 				throw("[] out of range.");
 		}
+
+		IndexType& at(IndexType i) { return operator[](i); }
+		const IndexType& at(IndexType i) const { return operator[](i); }
 	};
 
 	class OPDATA_DECLSPEC CMesh

@@ -11,36 +11,30 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 	m_IntersectionPoints.clear();
 	m_DissociatedPoints.clear();
 
-	auto Box = vioMesh.calcAABB();
-	Eigen::Vector3f Center = (Box.first + Box.second) / 2;
-	Eigen::Vector3f PlaneNormal{ vPlane[0], vPlane[1],vPlane[2] };
-	Eigen::Vector3f DefaultPlanePoint = __generateDefaultPlanePoint(vPlane);
-	Eigen::Vector4f Plane;
-	if ((DefaultPlanePoint - Center).dot(PlaneNormal) > 0)
-		Plane = vPlane;
-	else
-		Plane = -vPlane;
+	auto [BoxMin, BoxMax] = vioMesh.calcAABB();
+	Eigen::Vector4f Plane = vPlane;
+	if (__calcSignedDistance((BoxMin + BoxMax) / 2.0f, vPlane) < 0)
+		Plane *= -1;
 	
 	std::set<SVertex> IntersectionPoints;
-	std::set<int> Indeices;
-	std::vector<SFace>::iterator Iter = vioMesh.m_Faces.begin();
-	for(;Iter!= vioMesh.m_Faces.end();)
+	std::set<int> Indices;
+	for(auto FaceIter = vioMesh.m_Faces.begin(); FaceIter != vioMesh.m_Faces.end();)
 	{
-		std::vector<Eigen::Vector3f> TempFace{ vioMesh.m_Vertices[(*Iter).a].xyz(), vioMesh.m_Vertices[(*Iter).b].xyz(), vioMesh.m_Vertices[(*Iter).c].xyz() };
+		std::vector<Eigen::Vector3f> TempFace{ vioMesh.m_Vertices[FaceIter->a].xyz(), vioMesh.m_Vertices[FaceIter->b].xyz(), vioMesh.m_Vertices[FaceIter->c].xyz() };
 		auto TempIntersectionSet = __calcIntersectionPoints(TempFace, Plane);
 		bool bIsIntersected = false;
-		if(TempIntersectionSet.size())
+		if(!TempIntersectionSet.empty())
 		{
 			bIsIntersected = true;
 			if (TempIntersectionSet.size() == 2)
 			{
-				SVertex AverageVertex;
 				auto FirstIter = TempIntersectionSet.begin();
 				auto SecondIter = FirstIter + 1;
-				AverageVertex.x = (FirstIter->x + SecondIter->x) / 2;
-				AverageVertex.y = (FirstIter->y + SecondIter->y) / 2;
-				AverageVertex.z = (FirstIter->z + SecondIter->z) / 2;
-				IntersectionPoints.insert(AverageVertex);
+				IntersectionPoints.insert(SVertex{
+					.x = (FirstIter->x + SecondIter->x) / 2,
+					.y = (FirstIter->y + SecondIter->y) / 2,
+					.z = (FirstIter->z + SecondIter->z) / 2,
+				});
 			}
 			else
 				IntersectionPoints.insert(TempIntersectionSet.begin(), TempIntersectionSet.end());
@@ -50,23 +44,21 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 		{
 			for (int i = 0; i < TempFace.size(); i++)
 			{
-				if (find(DissociatedSet.begin(), DissociatedSet.end(), i) != DissociatedSet.end())
-					Indeices.insert((*Iter)[i]);
+				if (std::ranges::find(DissociatedSet, i) != DissociatedSet.end())
+					Indices.insert(FaceIter->at(i));
 			}
-			Iter = vioMesh.m_Faces.erase(Iter);
+			FaceIter = vioMesh.m_Faces.erase(FaceIter);
 		}
 		else
 		{
-			if(!DissociatedSet.size())
-				Iter = vioMesh.m_Faces.erase(Iter);
+			if(DissociatedSet.empty())
+				FaceIter = vioMesh.m_Faces.erase(FaceIter);
 			else
-			    Iter++;
+				++FaceIter;
 		}	
 	}
 	m_IntersectionPoints.assign(IntersectionPoints.begin(), IntersectionPoints.end());
-	m_DissociatedPoints.assign(Indeices.begin(), Indeices.end());
-	
-	return;
+	m_DissociatedPoints.assign(Indices.begin(), Indices.end());
 }
 
 //*****************************************************************
@@ -74,7 +66,6 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 void CMeshPlaneIntersection::dumpIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints)
 {
 	vioIntersectionPoints = m_IntersectionPoints;
-	return;
 }
 
 //*****************************************************************
@@ -82,7 +73,6 @@ void CMeshPlaneIntersection::dumpIntersectionPoints(std::vector<SVertex>& vioInt
 void CMeshPlaneIntersection::dumpDissociatedPoints(std::vector<int>& vioDissociatedPoints)
 {
 	vioDissociatedPoints = m_DissociatedPoints;
-	return;
 }
 
 //*****************************************************************
@@ -91,32 +81,42 @@ std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcInter
 {
 	std::vector<SVertex> HitPointSet;
 	Eigen::Vector3f PlaneNormal{ vPlane[0], vPlane[1],vPlane[2] };
-	Eigen::Vector3f DefaultPlanePoint = __generateDefaultPlanePoint(vPlane);
 	for(int i = 0; i < vFace.size(); i++)
 	{
 		Eigen::Vector3f Origin = vFace[i];
 		Eigen::Vector3f Direction = vFace[(i + 1) % 3] - vFace[i];
-		if (Direction.dot(PlaneNormal) < 0)
-			Direction = - Direction;
-		
 		float DotNormal = PlaneNormal.dot(Direction);
-
-		if(abs(PlaneNormal.dot(DefaultPlanePoint - Origin)) < 1e-3f && abs(PlaneNormal.dot(DefaultPlanePoint - vFace[(i + 1) % 3])) < 1e-3f)
+		if (DotNormal < 0)
 		{
-			SVertex TempVertex; TempVertex.x = Origin[0]; TempVertex.y = Origin[1]; TempVertex.z = Origin[2];
-			HitPointSet.push_back(TempVertex);
-			SVertex OtherTempVertex; OtherTempVertex.x = vFace[(i + 1) % 3][0]; OtherTempVertex.y = vFace[(i + 1) % 3][1]; OtherTempVertex.z = vFace[(i + 1) % 3][2];
-			HitPointSet.push_back(OtherTempVertex);
+			DotNormal *= -1;
+			Direction *= -1;
+		}
+
+		if(abs(__calcSignedDistance(Origin, vPlane)) < 1e-3f && abs(__calcSignedDistance(vFace[(i + 1) % 3], vPlane)) < 1e-3f)
+		{
+			HitPointSet.push_back(SVertex{
+				.x = Origin[0],
+				.y = Origin[1],
+				.z = Origin[2],
+			});
+			HitPointSet.push_back(SVertex{
+				.x = vFace[(i + 1) % 3][0],
+				.y = vFace[(i + 1) % 3][1],
+				.z = vFace[(i + 1) % 3][2],
+			});
 		}
 		else
 		{
-			float Depth = PlaneNormal.dot(DefaultPlanePoint - Origin) / DotNormal;
+			float Depth = -__calcSignedDistance(Origin, vPlane) / DotNormal;
 			Eigen::Vector3f HitPos = Origin + Depth * Direction;
 
 			if ((HitPos - vFace[i]).dot(HitPos - vFace[(i + 1) % 3]) < 0 || HitPos == vFace[i])
 			{
-				SVertex TempVertex; TempVertex.x = HitPos[0]; TempVertex.y = HitPos[1]; TempVertex.z = HitPos[2];
-				HitPointSet.push_back(TempVertex);
+				HitPointSet.push_back(SVertex{
+					.x = HitPos[0],
+					.y = HitPos[1],
+					.z = HitPos[2],
+				});
 			}
 		}
 	}
@@ -127,33 +127,16 @@ std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcInter
 //FUNCTION: 
 std::vector<int> CMeshPlaneIntersection::__tellDissociatedPoint(const std::vector<Eigen::Vector3f>& vFace, const Eigen::Vector4f& vPlane)
 {
-	Eigen::Vector3f DefaultPlanePoint = __generateDefaultPlanePoint(vPlane);
 	std::vector<int> DissociatedIndices;
-	Eigen::Vector3f PlaneNormal{ vPlane[0], vPlane[1],vPlane[2] };
 	for(int i = 0; i < vFace.size(); i++)
-	{
-		auto Vector = DefaultPlanePoint - vFace[i];
-		if (Vector.dot(PlaneNormal) > 0)
+		if (__calcSignedDistance(vFace[i], vPlane) < 0)
 			DissociatedIndices.push_back(i);
-	}
 	return DissociatedIndices;
 }
 
-Eigen::Vector3f CMeshPlaneIntersection::__generateDefaultPlanePoint(const Eigen::Vector4f& vPlane)
+//*****************************************************************
+//FUNCTION: 
+float CMeshPlaneIntersection::__calcSignedDistance(const Eigen::Vector3f& vPoint, const Eigen::Vector4f& vPlane) const
 {
-	int i = 0;
-	for (; i < 3; i++)
-	{
-		if (vPlane[i])
-		  break;
-	}
-	Eigen::Vector3f DefaultPlanePoint;
-	for(int k = 0; k < 3; k++)
-	{
-		if (k == i)
-			DefaultPlanePoint[k] = -vPlane[3] / vPlane[i];
-		else
-			DefaultPlanePoint[k] = 0.0f;
-	}
-	return DefaultPlanePoint;
+	return vPlane.dot(Eigen::Vector4f(vPoint.x(), vPoint.y(), vPoint.z(), 1.0f));
 }
