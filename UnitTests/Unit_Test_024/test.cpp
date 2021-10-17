@@ -37,7 +37,7 @@ protected:
 	{
 		m_Mesh = _loadMesh(PlaneMeshPath);
 
-		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ CloudPath });
+		m_TileSet = hiveObliquePhotography::hiveInitPointCloudScene({ CloudPath });
 
 		m_pTextureBaker = _createBaker(m_Mesh);
 	}
@@ -54,9 +54,9 @@ protected:
 		pcl::io::loadPolygonFileOBJ(vPath, TexMesh2);
 		TexMesh2.tex_materials = TexMesh1.tex_materials;
 		hiveObliquePhotography::CMesh Mesh(TexMesh2);
-		bool IfEmpty = Mesh.m_Vertices.empty() || Mesh.m_Faces.empty();
-		EXPECT_FALSE(IfEmpty);
-		if (IfEmpty)
+		bool EmptyFlag = Mesh.m_Vertices.empty() || Mesh.m_Faces.empty();
+		EXPECT_FALSE(EmptyFlag);
+		if (EmptyFlag)
 			std::cerr << "mesh load error." << std::endl;
 		return Mesh;
 	}
@@ -93,7 +93,7 @@ protected:
 	}
 
 	hiveObliquePhotography::CMesh m_Mesh;
-	std::vector<PointCloud_t::Ptr> m_pCloud;
+	std::vector<PointCloud_t::Ptr> m_TileSet;
 
 	CRayCastingBaker* m_pTextureBaker = nullptr;
 };

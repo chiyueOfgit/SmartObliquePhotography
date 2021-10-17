@@ -110,6 +110,7 @@ namespace hiveObliquePhotography
             void onActionInstructions();
             void onActionSetting();
             void onActionSutureMesh();
+            void onActionShowMeshIndices();
             void onActionReconstruction();
             void onActionParameterization();
             void onActionBakeTexture();

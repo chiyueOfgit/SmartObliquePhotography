@@ -93,6 +93,7 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionReconstruction, SIGNAL(triggered()), this, SLOT(onActionReconstruction()));
     QObject::connect(m_UI.actionOpenMesh, SIGNAL(triggered()), this, SLOT(onActionOpenMesh()));
     QObject::connect(m_UI.actionSutureMesh, SIGNAL(triggered()), this, SLOT(onActionSutureMesh()));
+    QObject::connect(m_UI.actionShowMeshIndices, SIGNAL(triggered()), this, SLOT(onActionShowMeshIndices()));
     QObject::connect(m_UI.actionParameterization, SIGNAL(triggered()), this, SLOT(onActionParameterization()));
     QObject::connect(m_UI.actionBakeTexture, SIGNAL(triggered()), this, SLOT(onActionBakeTexture()));
     QObject::connect(m_UI.resourceSpaceTreeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onResourceSpaceItemDoubleClick(QModelIndex)));
@@ -567,38 +568,41 @@ void CQTInterface::onActionReconstruction()
 
 void CQTInterface::onActionOpenMesh()
 {
-    auto MeshPath = QFileDialog::getOpenFileName(this, tr("Open Mesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open Mesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)"));
+    if (FilePathList.empty()) return;
 
-    // load mesh
-    if (MeshPath != "")
+    std::vector<std::string> FilePathSet;
+    foreach(QString FilePathQString, FilePathList)
+        FilePathSet.push_back(FilePathQString.toStdString());
+
+    if (m_TileSet.TileSet.empty())
     {
-        m_MeshOpenPath = __getDirectory(MeshPath);
+        PointCloud_t::Ptr Temp(new PointCloud_t);
+        Temp->push_back({});
+        PointCloudRetouch::hiveInit({ Temp }, m_pPointCloudRetouchConfig);
+        Visualization::hiveInitVisualizer({ Temp }, true);
+        __initialVTKWidget();
+    }
+
+    m_MeshOpenPath = __getDirectory(FilePathSet.front());
+    for (const auto& FilePath : FilePathSet)
+    {
+        if (FilePath.empty()) continue;
 
         CMesh Mesh;
-        auto MeshName = __getFileNameWithSuffix(MeshPath);
-        hiveObliquePhotography::hiveLoadMeshModel(Mesh, MeshPath);    	
+        auto MeshName = __getFileNameWithSuffix(FilePath);
+        hiveLoadMeshModel(Mesh, FilePath);
         m_MeshSet.NameSet.push_back(MeshName);
         m_MeshSet.MeshSet.push_back(Mesh);
 
-        if (m_TileSet.TileSet.empty())
-        {
-            PointCloud_t::Ptr Temp(new PointCloud_t);
-            Temp->push_back({});
-            PointCloudRetouch::hiveInit({ Temp }, m_pPointCloudRetouchConfig);
-            Visualization::hiveInitVisualizer({ Temp }, true);
-            CQTInterface::__initialVTKWidget();
-        }
-        Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
         Visualization::hiveAddTextureMesh(Mesh.toTexMesh({}));
-        std::vector<std::size_t> PointLabelSet;
-        PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
-        Visualization::hiveRefreshVisualizer(PointLabelSet, true);
-
-        //Visualization::TestInterface(MeshPath, "Model_0_PublicPoints.txt");
-
         __addResourceSpaceMeshItem(MeshName);
-        __messageDockWidgetOutputText("Open mesh " + MeshPath + " succeed.");
+        __messageDockWidgetOutputText("Open mesh " + FilePath + " succeed.");
     }
+    Visualization::hiveSetVisualFlag(Visualization::EVisualFlag::ShowMesh);
+    std::vector<std::size_t> PointLabelSet;
+    PointCloudRetouch::hiveDumpPointLabel(PointLabelSet);
+    Visualization::hiveRefreshVisualizer(PointLabelSet, true);
 }
 
 void CQTInterface::onActionSutureMesh()
@@ -623,6 +627,16 @@ void CQTInterface::onActionSutureMesh()
     }
     else
         __messageDockWidgetOutputText("Selected num mesh and cloud is not two, num mesh: " + std::to_string(m_SelectedMeshIndices.size()) + " num cloud: " + std::to_string(m_SelectedTileIndices.size()));
+}
+
+void CQTInterface::onActionShowMeshIndices()
+{
+    if (m_SelectedMeshIndices.size() == 1)
+    {
+        auto IndicesPath = QFileDialog::getOpenFileName(this, tr("Open Indices"), m_MeshOpenPath.c_str(), tr("Indices files(*.txt)")).toStdString();
+
+        Visualization::TestInterface(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], IndicesPath);
+    }
 }
 
 void CQTInterface::onActionParameterization()

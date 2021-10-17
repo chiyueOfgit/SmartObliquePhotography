@@ -8,7 +8,6 @@
 #include <boost/serialization/vector.hpp>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/obj_io.h>
-#include "Mesh.h"
 #include "PointCloudRetouchInterface.h"
 #include "ObliquePhotographyDataInterface.h"
 
@@ -102,38 +101,44 @@ bool hiveObliquePhotography::Visualization::hiveGetVisualizationConfig(CVisualiz
 	}
 }
 
-void hiveObliquePhotography::Visualization::TestInterface(const std::string& vObj, const std::string& vBoundary)
+void hiveObliquePhotography::Visualization::TestInterface(const CMesh& vMesh, const std::string& vIndicesPath)
 {
 	auto pVisualizer = CPointCloudVisualizer::getInstance();
 
-	std::set<int> BoundaryPoints;
-	std::ifstream file(vBoundary);
+	std::vector<int> IndciesPoints;
+	std::ifstream file(vIndicesPath);
 	boost::archive::text_iarchive ia(file);
-	ia >> BOOST_SERIALIZATION_NVP(BoundaryPoints);
+	ia >> BOOST_SERIALIZATION_NVP(IndciesPoints);
 	file.close();
-
-	CMesh M;
-	hiveLoadMeshModel(M, vObj);
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr pCloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-	for (auto Boundary : BoundaryPoints)
+	float Color = 0, Step = (float)255 / IndciesPoints.size();
+	for (auto Boundary : IndciesPoints)
 	{
 		pcl::PointXYZRGB Point;
-		auto& Vertex = M.m_Vertices[Boundary];
+		auto& Vertex = vMesh.m_Vertices[Boundary];
 		Point.x = Vertex.x;
 		Point.y = Vertex.y;
 		Point.z = Vertex.z;
-		Point.r = 255;
-		Point.g = 0;
-		Point.b = 0;
+		if (Color == 0)
+		{
+			Point.r = 0;
+			Point.g = 255;
+			Point.b = 0;
+		}
+		else
+		{
+			Point.r = 255 - Color;
+			Point.g = 0;
+			Point.b = Color;
+		}
 		pCloud->push_back(Point);
+		Color += Step;
 	}
 
 	auto pPCLVisualizer = hiveGetPCLVisualizer();
-	pPCLVisualizer->addTextureMesh(M.toTexMesh({}));
-	pPCLVisualizer->addPointCloud(pCloud, vBoundary);
-	pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, vBoundary);
-	pPCLVisualizer->resetCamera();
+	pPCLVisualizer->addPointCloud(pCloud, vIndicesPath);
+	pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, vIndicesPath);
 	pPCLVisualizer->updateCamera();
 }
