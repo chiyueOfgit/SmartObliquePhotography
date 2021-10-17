@@ -36,8 +36,8 @@ void CBasicMeshSuture::sutureMeshesV()
 
 	__generatePublicVertices(LhsIntersectionPoints, RhsIntersectionPoints, PublicVertices);
 	__sortIntersectionPoints(PublicVertices, Direction);
-	__connectVerticesWithMesh(m_LhsMesh, LhsDissociatedIndices, PublicVertices);
-	__connectVerticesWithMesh(m_RhsMesh, RhsDissociatedIndices, PublicVertices);
+	__connectVerticesWithMesh(m_LhsMesh, LhsDissociatedIndices, PublicVertices, Direction);
+	__connectVerticesWithMesh(m_RhsMesh, RhsDissociatedIndices, PublicVertices, Direction);
 
 	__removeUnreferencedVertex(m_LhsMesh);
 	__removeUnreferencedVertex(m_RhsMesh);
@@ -133,7 +133,7 @@ auto CBasicMeshSuture::__findNearestPoint(const std::vector<SVertex>& vVectexSet
 
 //*****************************************************************
 //FUNCTION: 
-void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int>& vDissociatedIndices, std::vector<SVertex>& vPublicVertices)
+void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int>& vDissociatedIndices, std::vector<SVertex>& vPublicVertices, const Eigen::Vector3f& vDirection)
 {
 	_ASSERTE(!vDissociatedIndices.empty() && !vPublicVertices.empty());
 
@@ -142,7 +142,6 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 	for (int i = vioMesh.m_Vertices.size(); const auto& Vertex : vPublicVertices)
 	{
 		vioMesh.m_Vertices.push_back(Vertex);
-
 		PublicIndices.push_back(i++);
 	}
 
@@ -166,73 +165,55 @@ void CBasicMeshSuture::__connectVerticesWithMesh(CMesh& vioMesh, std::vector<int
 		return AB.cross(BC).dot(Up) > 0;
 	};
 
-	std::vector<SFace> IndexedFaceSet;
-
-	bool ModelOrder;
-	int NumTrue = 0, TestNum = 10;
-	for (int i = 0; i < TestNum; i++)
-		if (calcOrder(vioMesh.m_Faces[i]))
-			NumTrue++;
-	if ((float)NumTrue / TestNum >= 0.7)
-		ModelOrder = true;
-	else if ((float)NumTrue / TestNum <= 0.3)
-		ModelOrder = false;
-	else
-		throw("Model error.");
+	bool ModelOrder = calcOrder(vioMesh.m_Faces.front());
 	
 	auto Order = true;
+	std::vector<SFace> ConnectionFaceSet;
 	do
 	{
 		Order = !Order;
-		IndexedFaceSet.clear();
-		auto ConnectionFaceSet = __genConnectionFace(vDissociatedIndices.size(), PublicIndices.size(), true, Order);	// order is heuristic
+		ConnectionFaceSet = __genConnectionFace(vioMesh, vDissociatedIndices, PublicIndices, vDirection, Order);	// order is heuristic
 
-		for (auto Offset = vDissociatedIndices.size(); auto & Face : ConnectionFaceSet)
-		{
-			SFace FaceWithMeshIndex;
-			for (int i = 0; i < 3; i++)
-				FaceWithMeshIndex[i] = Face[i] < Offset ? vDissociatedIndices[Face[i]] : PublicIndices[Face[i] - Offset];
-			IndexedFaceSet.push_back(FaceWithMeshIndex);
-		}
+	} while (calcOrder(ConnectionFaceSet.front()) != ModelOrder);
 
-	} while (calcOrder(IndexedFaceSet.front()) != ModelOrder);
-
-	vioMesh.m_Faces.insert(vioMesh.m_Faces.end(), IndexedFaceSet.begin(), IndexedFaceSet.end());
+	vioMesh.m_Faces.insert(vioMesh.m_Faces.end(), ConnectionFaceSet.begin(), ConnectionFaceSet.end());
 }
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<hiveObliquePhotography::SFace> CBasicMeshSuture::__genConnectionFace(IndexType vNumLeft, IndexType vNumRight, bool vLeftBeforeRight, bool vIsClockwise)
+std::vector<hiveObliquePhotography::SFace> CBasicMeshSuture::__genConnectionFace(const CMesh& vMesh, const std::vector<int>& vLeft, const std::vector<int>& vRight, const Eigen::Vector3f& vDirection, bool vIsClockwise)
 {
 	if (!vIsClockwise)
-		return __genConnectionFace(vNumRight, vNumLeft, !vLeftBeforeRight, !vIsClockwise);
+		return __genConnectionFace(vMesh, vRight, vLeft, vDirection, !vIsClockwise);
+
+	auto NumLeft = vLeft.size();
+	auto NumRight = vRight.size();
+	auto Direction = vDirection;
+
+	auto calcDistance = [&](int vVertexIndex)
+	{
+		return vMesh.m_Vertices[vVertexIndex].xyz().dot(Direction);
+	};
+	if (calcDistance(vLeft.front()) > calcDistance(vLeft.back()))
+		Direction = -Direction;
 
 	std::vector<SFace> ConnectionFaceSet;
-	std::pair<IndexType, IndexType> Offset(0, 0);
-	if (vLeftBeforeRight)
-		Offset.second = vNumLeft;
-	else
-		Offset.first = vNumRight;
-
-	for (IndexType LeftCursor = 0, RightCursor = 0; LeftCursor < vNumLeft && RightCursor < vNumRight; )
+	for (IndexType LeftCursor = 0, RightCursor = 0; LeftCursor < NumLeft && RightCursor < NumRight; )
 	{
-		auto LeftWithOffset = LeftCursor + Offset.first;
-		auto RightWithOffset = RightCursor + Offset.second;
-
-		if ((2 * LeftCursor + 1) * (vNumRight - 1) < (2 * RightCursor + 1) * (vNumLeft - 1))
+		if (calcDistance(vLeft[LeftCursor]) <= calcDistance(vRight[RightCursor]))
 		{
-			if (LeftCursor + 1 >= vNumLeft)
+			if (LeftCursor + 1 >= NumLeft)
 				break;
 
-			ConnectionFaceSet.emplace_back(LeftWithOffset, RightWithOffset, LeftWithOffset + 1);
+			ConnectionFaceSet.emplace_back(vLeft[LeftCursor], vRight[RightCursor], vLeft[LeftCursor + 1]);
 			++LeftCursor;
 		}
 		else
 		{
-			if (RightCursor + 1 >= vNumRight)
+			if (RightCursor + 1 >= NumRight)
 				break;
 
-			ConnectionFaceSet.emplace_back(LeftWithOffset, RightWithOffset, RightWithOffset + 1);
+			ConnectionFaceSet.emplace_back(vLeft[LeftCursor], vRight[RightCursor], vRight[RightCursor + 1]);
 			++RightCursor;
 		}
 	}
