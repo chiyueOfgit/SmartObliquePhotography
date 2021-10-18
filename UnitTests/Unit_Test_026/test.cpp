@@ -63,16 +63,16 @@ protected:
 };
 
 
-//TEST_F(TestArapParameterization, TestfindBoundaryPoint)
-//{
-//	auto UV = m_pMeshParameterization->execute();
-//	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
-//	for (int Row = 0; Row < UV.rows(); Row++)
-//	{
-//		m_Mesh.m_Vertices[Row].u = UV.row(Row).x();
-//		m_Mesh.m_Vertices[Row].v = UV.row(Row).y();
-//	}
-//
-//	std::string ObjName = "Plane.obj";
-//	_saveObj(ObjName, m_Mesh);
-//}
+TEST_F(TestArapParameterization, TestfindBoundaryPoint)
+{
+	auto UV = m_pMeshParameterization->execute();
+	EXPECT_EQ(UV.rows(), m_Mesh.m_Vertices.size());
+	for (int Row = 0; Row < UV.rows(); Row++)
+	{
+		m_Mesh.m_Vertices[Row].u = UV.row(Row).x();
+		m_Mesh.m_Vertices[Row].v = UV.row(Row).y();
+	}
+
+	std::string ObjName = "Plane.obj";
+	_saveObj(ObjName, m_Mesh);
+}

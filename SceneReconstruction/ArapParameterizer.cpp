@@ -5,12 +5,11 @@
 #include <igl/readOBJ.h>
 #include <igl/boundary_loop.h>
 
-#include <fstream>	//remove
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/vector.hpp>
 #include <iomanip>
-#include<Eigen/IterativeLinearSolvers>
+#include <Eigen/IterativeLinearSolvers>
 
 
 using namespace hiveObliquePhotography::SceneReconstruction;
@@ -20,7 +19,7 @@ _REGISTER_NORMAL_PRODUCT(CArapParameterizer, KEYWORD::ARAP_MESH_PARAMETERIZATION
 using namespace hiveObliquePhotography::SceneReconstruction;
 
 //*****************************************************************
-//FUNCTION: 执行函数；
+//FUNCTION: 
 Eigen::MatrixXd CArapParameterizer::execute()
 {
 	buildHalfEdge();
@@ -31,23 +30,19 @@ Eigen::MatrixXd CArapParameterizer::execute()
 	
 	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
 	
-	//DELETEBEGIN
-	for (auto Index : BoundarySet)
-		std::cout << "(" << InitialUV.row(Index).x() << " " << InitialUV.row(Index).y() << ") ";
-	//DELETEEND
-
-	////NOTE:利用ARAP得到UV
+	////NOTE:利用ARAP方法得到UV；
 	//auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV, BoundarySet);
+
 	return InitialUV;
 }
 
 //*****************************************************************
-//FUNCTION: 将Mesh表示为半边结构；
+//FUNCTION: 
 void CArapParameterizer::buildHalfEdge()
 {
 	m_VertexInfoTable.resize(m_Mesh.m_Vertices.size());
 	m_HalfEdgeTable.clear();
-	m_HalfEdgeTable.reserve(m_Mesh.m_Vertices.size() * 3);
+	m_HalfEdgeTable.reserve(m_Mesh.m_Vertices.size() * 3);      //QUESTION:3的由来？据无向图中顶点与边的数量关系为e=n(n-1)/2，半边数目应为n(n-1);
 	std::vector Traversed(m_Mesh.m_Vertices.size(), false);
 	for(size_t FaceId = 0; FaceId < m_Mesh.m_Faces.size(); ++FaceId)
 	{
@@ -57,6 +52,7 @@ void CArapParameterizer::buildHalfEdge()
 		const auto& VertexC = m_Mesh.m_Vertices[Face[2]];
 		Eigen::Vector3f FaceNormal = (VertexC.xyz() - VertexB.xyz()).cross(VertexA.xyz() - VertexB.xyz());
 
+		//QUESTION:这段代码的作用？防止翻转？保证逆时针方向？ 怎么判断的？
 		if (VertexA.normal().dot(FaceNormal) < 0 && VertexB.normal().dot(FaceNormal) < 0 && VertexC.normal().dot(FaceNormal) < 0)
 			std::swap(Face[1], Face[2]);
 
@@ -66,10 +62,10 @@ void CArapParameterizer::buildHalfEdge()
 			HalfEdge._VertexId = Face[i];
 			HalfEdge._Face = FaceId;
 			auto Index = m_HalfEdgeTable.size();
-			m_VertexInfoTable[Face[i]].push_back(Index);
+			m_VertexInfoTable[Face[i]].push_back(Index);        //QUESTION:什么意思？
 			HalfEdge._Prev = Index + ((i == 0) ? (2) : (-1));
 			HalfEdge._Next = Index + ((i == 2) ? (-2) : (1));
-			if(Traversed[Face[i]] && Traversed[Face[(i + 1) % 3]])
+			if(Traversed[Face[i]] && Traversed[Face[(i + 1) % 3]])  //半边存的起始顶点，那没事了；
 			{
 				HalfEdge._Conj = __findTwinRef(Face[i], Face[(i + 1) % 3]);
 				if(HalfEdge._Conj >= 0)
@@ -101,22 +97,10 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 	//	}
 	//}
 
-	////Note:调用libigl库来实现寻找边界点；
-	//DELETEBEGIN:V好像没用到啊
-	Eigen::MatrixXd V = m_Mesh.getVerticesMatrix();
-	//DELETEEND
+	//Note:调用libigl库来实现寻找边界点；
 	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
 	std::vector<int> Boundary;
 	igl::boundary_loop(F, Boundary);
-	//__findValidBoundary(Boundary, ValidSet);
-
-	//DELETEBEGIN
-	std::ofstream file("BoundaryPoints.txt");
-	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(Boundary);
-	file.close();
-	//DELETEEND
-
 
 	return Boundary;
 }
@@ -145,14 +129,13 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 	std::vector<TWeight> WeightTriplet;
 	WeightTriplet.reserve(NumVertices * 10);
 
-	//DELETEBEGIN:好像没用到啊；
+	//Note:均匀赋值方案；
 	auto Uniform = []()
 	{
 		return 1.0;
 	};
-	//DELETEEND
 
-	//QUESTION:Tutte的L矩阵是怎么计算的；
+	//Note：平均值赋值方案；
 	auto MeanWalue = [&](int vHalfEdge, int vVertex, int vNextVertex)
 	{
 		auto CalcAngle = [&](int vFaceId) -> double
@@ -239,18 +222,31 @@ Eigen::VectorXd CArapParameterizer::__solveSparseMatrix(const Eigen::SparseMatri
 {
 	auto CompressMatrix = vMatrix;
 	CompressMatrix.makeCompressed();
-
-	//Eigen::ConjugateGradient<Eigen::SparseMatrix<double, Eigen::ColMajor>>Solver;
-	//Eigen::SimplicialLLT<Eigen::SparseMatrix<double, Eigen::ColMajor>> Solver;
 	
 	Eigen::BiCGSTAB<Eigen::SparseMatrix<double, Eigen::ColMajor>>Solver;
 	Solver.analyzePattern(CompressMatrix);
 	Solver.factorize(CompressMatrix);
-	//_ASSERTE(Solver.info() == Eigen::Success);	//fixme: NumericalIssue
 	auto Solution = Solver.solve(vVector);
-	//_ASSERTE(Solver.info() == Eigen::Success);
-	auto Info = Solver.info();
 
+	switch (Solver.info())
+	{
+	case Eigen::Success:
+		hiveEventLogger::hiveOutputEvent("Computation was successful.");
+		break;
+	case Eigen::NumericalIssue:
+		hiveEventLogger::hiveOutputEvent("The provided data did not satisfy the prerequisites.");
+		break;
+	case Eigen::NoConvergence:
+		hiveEventLogger::hiveOutputEvent("Iterative procedure did not converge.");
+		break;
+	case Eigen::InvalidInput:
+		hiveEventLogger::hiveOutputEvent("The inputs are invalid, or the algorithm has been improperly called.");
+		break;
+	default:
+		hiveEventLogger::hiveOutputEvent("Unexpected error.");
+		break;
+	}
+	
 	return Solution;
 }
 
