@@ -75,25 +75,26 @@ void CBasicMeshSuture::__executeIntersection(CMesh& vioMesh, const Eigen::Vector
 void CBasicMeshSuture::__generatePublicVertices(const std::vector<SVertex>& vLhs, const std::vector<SVertex>& vRhs, std::vector<SVertex>& voPublicVertices)
 {
 	voPublicVertices.clear();
-	std::vector<SVertex> MajorPoints, MinorPoints, PairedMinorPoints;
+	const std::vector<SVertex>* pMajorPoints = &vLhs;
+	const std::vector<SVertex>* pMinorPoints = &vRhs;
+	if (vLhs.size() < vRhs.size())
+		std::swap(pMajorPoints, pMinorPoints);
+	std::vector<SVertex> PairedMinorPoints;
 	std::map<SVertex, SVertex> PairingPoints, PairingPointsAmended;
-	bool Comparation = vLhs.size() > vRhs.size();
-	MajorPoints = Comparation ? vLhs : vRhs;
-	MinorPoints = Comparation ? vRhs : vLhs;
 
-	for (const auto& MajorPoint : MajorPoints)
+	for (const auto& MajorPoint : *pMajorPoints)
 	{
-		SVertex NearestPoint = __findNearestPoint(MinorPoints, MajorPoint);
+		SVertex NearestPoint = __findNearestPoint(*pMinorPoints, MajorPoint);
 		PairingPoints.insert(std::pair(MajorPoint, NearestPoint));
 		PairedMinorPoints.push_back(NearestPoint);
 	}
 
-	for (const auto& MinorPoint : MinorPoints)
+	for (const auto& MinorPoint : *pMinorPoints)
 	{
 		if (std::ranges::find(PairedMinorPoints, MinorPoint) != PairedMinorPoints.end())
 			continue;
 
-		SVertex NearestPoint = __findNearestPoint(MajorPoints, MinorPoint);
+		SVertex NearestPoint = __findNearestPoint(*pMajorPoints, MinorPoint);
 		PairingPointsAmended.insert(std::pair(NearestPoint, MinorPoint));
 	}
 
@@ -246,7 +247,7 @@ void CBasicMeshSuture::__sortDissociatedIndices(const CMesh& vMesh, std::vector<
 	{
 		return vMesh.m_Vertices[vLhs].xyz().dot(vDirection) < vMesh.m_Vertices[vRhs].xyz().dot(vDirection);
 	};
-	std::sort(vioDissociatedPoints.begin(), vioDissociatedPoints.end(), compareV);
+	std::ranges::sort(vioDissociatedPoints, compareV);
 
 	std::vector<SVertex> VertexSet;
 	for (auto Index : vioDissociatedPoints)
@@ -267,7 +268,7 @@ void CBasicMeshSuture::__sortIntersectionPoints(std::vector<SVertex>& vioInterse
 	{
 		return vLhs.xyz().dot(vDirection) < vRhs.xyz().dot(vDirection);
 	};
-	std::sort(vioIntersectionPoints.begin(), vioIntersectionPoints.end(), compareV);
+	std::ranges::sort(vioIntersectionPoints, compareV);
 	__sortByVertexLoop(LocalOrderIndices, vioIntersectionPoints);
 	for (auto Index : LocalOrderIndices)
 		OrderSet.push_back(vioIntersectionPoints[Index]);
@@ -276,7 +277,7 @@ void CBasicMeshSuture::__sortIntersectionPoints(std::vector<SVertex>& vioInterse
 
 //*****************************************************************
 //FUNCTION: 
-void CBasicMeshSuture::__sortByVertexLoop(std::vector<int>& vioOrderIndices, std::vector<SVertex>& vVertexSet)
+void CBasicMeshSuture::__sortByVertexLoop(std::vector<int>& vioOrderIndices, const std::vector<SVertex>& vVertexSet)
 {
 	if (vVertexSet.empty())
 		return;
@@ -322,6 +323,5 @@ void CBasicMeshSuture::__findSutureDirection(const CMesh& vMesh, Eigen::Vector3f
 		else
 			voDirection[i] = 0.0f;
 	}
-	Eigen::Vector3f PlaneNormal{ m_SegmentPlane[0],m_SegmentPlane[1],m_SegmentPlane[2] };
-	voDirection = voDirection.cross(PlaneNormal);
+	voDirection = voDirection.cross(Eigen::Vector3f(m_SegmentPlane[0], m_SegmentPlane[1], m_SegmentPlane[2]));
 }
