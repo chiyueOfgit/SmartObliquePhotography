@@ -13,7 +13,7 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 
 	auto [BoxMin, BoxMax] = vioMesh.calcAABB();
 	Eigen::Vector4f Plane = vPlane;
-	if (__calcSignedDistance((BoxMin + BoxMax) / 2.0f, vPlane) < 0)
+	if (__calcSignedDistance((BoxMin + BoxMax) / 2.0f, vPlane) > 0)
 		Plane *= -1;
 	
 	std::set<SVertex> IntersectionPoints;
@@ -77,7 +77,7 @@ void CMeshPlaneIntersection::dumpDissociatedPoints(std::vector<int>& vioDissocia
 
 //*****************************************************************
 //FUNCTION: intersections may repeat
-std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcIntersectionPoints(const std::array<Eigen::Vector3f, 3>& vFace, const Eigen::Vector4f& vPlane)
+auto CMeshPlaneIntersection::__calcIntersectionPoints(const std::array<Eigen::Vector3f, 3>& vFace, const Eigen::Vector4f& vPlane) const -> std::vector<SVertex>
 {
 	std::vector<SVertex> HitPointSet;
 	for(size_t i = 0; i < vFace.size(); ++i)
@@ -105,10 +105,10 @@ std::vector<hiveObliquePhotography::SVertex> CMeshPlaneIntersection::__calcInter
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<int> CMeshPlaneIntersection::__tellDissociatedPoint(const std::array<Eigen::Vector3f, 3>& vFace, const Eigen::Vector4f& vPlane)
+std::vector<int> CMeshPlaneIntersection::__tellDissociatedPoint(const std::array<Eigen::Vector3f, 3>& vFace, const Eigen::Vector4f& vPlane) const
 {
 	std::vector<int> DissociatedIndices;
-	for(int i = 0; i < vFace.size(); i++)
+	for(size_t i = 0; i < vFace.size(); ++i)
 		if (__calcSignedDistance(vFace[i], vPlane) < 0)
 			DissociatedIndices.push_back(i);
 	return DissociatedIndices;

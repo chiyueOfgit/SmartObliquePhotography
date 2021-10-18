@@ -21,8 +21,8 @@ namespace hiveObliquePhotography
 			std::vector<SVertex> m_IntersectionPoints;
 			Eigen::Vector3f m_Direction;
 			
-			std::vector<SVertex> __calcIntersectionPoints(const std::array<Eigen::Vector3f, 3>& vFace, const Eigen::Vector4f& vPlane);
-			std::vector<int> __tellDissociatedPoint(const std::array<Eigen::Vector3f, 3>& vFace, const Eigen::Vector4f& vPlane);
+			std::vector<SVertex> __calcIntersectionPoints(const std::array<Eigen::Vector3f, 3>& vFace, const Eigen::Vector4f& vPlane) const;
+			std::vector<int> __tellDissociatedPoint(const std::array<Eigen::Vector3f, 3>& vFace, const Eigen::Vector4f& vPlane) const;
 			float __calcSignedDistance(const Eigen::Vector3f& vPoint, const Eigen::Vector4f& vPlane) const;
 		};
 	}
