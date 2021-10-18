@@ -17,60 +17,56 @@ void CMeshPlaneIntersection::execute(CMesh& vioMesh, const Eigen::Vector4f& vPla
 		Plane *= -1;
 	
 	std::set<SVertex> IntersectionPoints;
-	std::set<int> Indices;
+	std::set<int> DissociatedPoints;
 	for(auto FaceIter = vioMesh.m_Faces.begin(); FaceIter != vioMesh.m_Faces.end();)
 	{
 		std::array TempFace{ vioMesh.m_Vertices[FaceIter->a].xyz(), vioMesh.m_Vertices[FaceIter->b].xyz(), vioMesh.m_Vertices[FaceIter->c].xyz() };
-		auto TempIntersectionSet = __calcIntersectionPoints(TempFace, Plane);
-		bool bIsIntersected = false;
-		if(!TempIntersectionSet.empty())
+		auto IntersectionsOfFace = __calcIntersectionPoints(TempFace, Plane);
+		auto DissociatedIndicesOfFace = __tellDissociatedPoint(TempFace, Plane);
+
+		const auto NumIntersection = IntersectionsOfFace.size();
+		if (NumIntersection == 0)
 		{
-			bIsIntersected = true;
-			if (TempIntersectionSet.size() == 2)
+			if (DissociatedIndicesOfFace.empty())
+				FaceIter = vioMesh.m_Faces.erase(FaceIter);
+			else
+				++FaceIter;
+		}
+		else
+		{
+			for (size_t i = 0; i < TempFace.size(); ++i)
+				if (std::ranges::find(DissociatedIndicesOfFace, i) != DissociatedIndicesOfFace.end())
+					DissociatedPoints.insert(FaceIter->at(i));
+			FaceIter = vioMesh.m_Faces.erase(FaceIter);
+			
+			if (NumIntersection == 1)
+				IntersectionPoints.insert(IntersectionsOfFace.front());
+			else// if (NumIntersection == 2)
 			{
-				auto FirstIter = TempIntersectionSet.begin();
+				auto FirstIter = IntersectionsOfFace.begin();
 				auto SecondIter = FirstIter + 1;
 				IntersectionPoints.insert(SVertex{
 					.x = (FirstIter->x + SecondIter->x) / 2,
 					.y = (FirstIter->y + SecondIter->y) / 2,
 					.z = (FirstIter->z + SecondIter->z) / 2,
-				});
+					});
 			}
-			else
-				IntersectionPoints.insert(TempIntersectionSet.begin(), TempIntersectionSet.end());
 		}
-		auto DissociatedSet = __tellDissociatedPoint(TempFace, Plane);
-		if (bIsIntersected)
-		{
-			for (int i = 0; i < TempFace.size(); i++)
-			{
-				if (std::ranges::find(DissociatedSet, i) != DissociatedSet.end())
-					Indices.insert(FaceIter->at(i));
-			}
-			FaceIter = vioMesh.m_Faces.erase(FaceIter);
-		}
-		else
-		{
-			if(DissociatedSet.empty())
-				FaceIter = vioMesh.m_Faces.erase(FaceIter);
-			else
-				++FaceIter;
-		}	
 	}
 	m_IntersectionPoints.assign(IntersectionPoints.begin(), IntersectionPoints.end());
-	m_DissociatedPoints.assign(Indices.begin(), Indices.end());
+	m_DissociatedPoints.assign(DissociatedPoints.begin(), DissociatedPoints.end());
 }
 
 //*****************************************************************
 //FUNCTION: 
-void CMeshPlaneIntersection::dumpIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints)
+void CMeshPlaneIntersection::dumpIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints) const
 {
 	vioIntersectionPoints = m_IntersectionPoints;
 }
 
 //*****************************************************************
 //FUNCTION: 
-void CMeshPlaneIntersection::dumpDissociatedPoints(std::vector<int>& vioDissociatedPoints)
+void CMeshPlaneIntersection::dumpDissociatedPoints(std::vector<int>& vioDissociatedPoints) const
 {
 	vioDissociatedPoints = m_DissociatedPoints;
 }

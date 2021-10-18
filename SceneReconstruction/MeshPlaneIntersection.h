@@ -13,8 +13,8 @@ namespace hiveObliquePhotography
 
 			void execute(CMesh& vioMesh, const Eigen::Vector4f& vPlane);
 
-			void dumpIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints);
-			void dumpDissociatedPoints(std::vector<int>& vioDissociatedPoints);
+			void dumpIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints) const;
+			void dumpDissociatedPoints(std::vector<int>& vioDissociatedPoints) const;
 
 		private:
 			std::vector<int> m_DissociatedPoints;
