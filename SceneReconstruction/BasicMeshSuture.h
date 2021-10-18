@@ -1,6 +1,5 @@
 #pragma once
 #include "MeshSuture.h"
-#include "MeshPlaneIntersection.h"
 
 namespace hiveObliquePhotography::SceneReconstruction
 {
@@ -15,7 +14,7 @@ namespace hiveObliquePhotography::SceneReconstruction
 		void dumpMeshes(CMesh& voLhsMesh, CMesh& voRhsMesh) const;
 
 	private:
-		void __executeIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<int>& voDissociatedIndices, std::vector<SVertex>& voIntersectionPoints);
+		void __executeIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<SVertex>& voIntersectionPoints, std::vector<int>& voDissociatedIndices);
 		void __generatePublicVertices(const std::vector<SVertex>& vLhs, const std::vector<SVertex>& vRhs, std::vector<SVertex>& voPublicVertices);
 		void __connectVerticesWithMesh(CMesh& vioMesh, std::vector<int>& vDissociatedIndices, std::vector<SVertex>& vPublicVertices, const Eigen::Vector3f& vDirection);
 		void __removeUnreferencedVertex(CMesh& vioMesh);

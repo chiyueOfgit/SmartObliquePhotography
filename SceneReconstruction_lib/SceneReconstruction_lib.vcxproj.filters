@@ -45,7 +45,7 @@
     <ClCompile Include="..\SceneReconstruction\MeshSuture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\SceneReconstruction\MeshPlaneIntersection.cpp">
+    <ClCompile Include="..\SceneReconstruction\IntersectMeshAndPlane.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\SceneReconstruction\BasicMeshSuture.cpp">
@@ -101,7 +101,7 @@
     <ClInclude Include="..\SceneReconstruction\MeshSuture.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\SceneReconstruction\MeshPlaneIntersection.h">
+    <ClInclude Include="..\SceneReconstruction\IntersectMeshAndPlane.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\SceneReconstruction\BasicMeshSuture.h">

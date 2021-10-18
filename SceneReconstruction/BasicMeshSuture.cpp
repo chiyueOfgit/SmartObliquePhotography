@@ -1,13 +1,12 @@
 #include "pch.h"
 #include "BasicMeshSuture.h"
-#include <vcg/complex/algorithms/clean.h>
-#include "FindSplitPlane.h"
-#include "VcgMesh.hpp"
-
-#include <fstream>	//remove
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/vector.hpp>
+#include <vcg/complex/algorithms/clean.h>
+#include "FindSplitPlane.h"
+#include "IntersectMeshAndPlane.h"
+#include "VcgMesh.hpp"
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -19,10 +18,10 @@ void CBasicMeshSuture::sutureMeshesV()
 {
 	_ASSERTE(m_SegmentPlane.norm());
 
-	std::vector<int> LhsDissociatedIndices, RhsDissociatedIndices;
 	std::vector<SVertex> LhsIntersectionPoints, RhsIntersectionPoints, PublicVertices;
-	__executeIntersection(m_LhsMesh, m_SegmentPlane, LhsDissociatedIndices, LhsIntersectionPoints);
-	__executeIntersection(m_RhsMesh, m_SegmentPlane, RhsDissociatedIndices, RhsIntersectionPoints);
+	std::vector<int> LhsDissociatedIndices, RhsDissociatedIndices;
+	__executeIntersection(m_LhsMesh, m_SegmentPlane, LhsIntersectionPoints, LhsDissociatedIndices);
+	__executeIntersection(m_RhsMesh, m_SegmentPlane, RhsIntersectionPoints, RhsDissociatedIndices);
 
 	Eigen::Vector3f Direction;
 	__findSutureDirection(m_LhsMesh, Direction);
@@ -66,12 +65,9 @@ void CBasicMeshSuture::dumpMeshes(CMesh& voLhsMesh, CMesh& voRhsMesh) const
 
 //*****************************************************************
 //FUNCTION: 
-void CBasicMeshSuture::__executeIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<int>& voDissociatedIndices, std::vector<SVertex>& voIntersectionPoints)
+void CBasicMeshSuture::__executeIntersection(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<SVertex>& voIntersectionPoints, std::vector<int>& voDissociatedIndices)
 {
-	CMeshPlaneIntersection MeshPlaneIntersection;
-	MeshPlaneIntersection.execute(vioMesh, vPlane);
-	MeshPlaneIntersection.dumpDissociatedPoints(voDissociatedIndices);
-	MeshPlaneIntersection.dumpIntersectionPoints(voIntersectionPoints);
+	intersectMeshAndPlane(vioMesh, vPlane, voIntersectionPoints, voDissociatedIndices);
 }
 
 //*****************************************************************
