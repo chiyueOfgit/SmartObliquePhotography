@@ -52,6 +52,8 @@ namespace hiveObliquePhotography
 			std::pair<flann::Index<flann::L2<float>>*, Eigen::Matrix<float, -1, -1, Eigen::RowMajor>> m_KdTree;
 
 			float m_SurfelRadius = 1.0f;
+			float m_SearchRadius = 5.0f;
+			float m_DistanceThreshold = 0.5f;
 			int m_NumSample = 4;
 		};
 	}

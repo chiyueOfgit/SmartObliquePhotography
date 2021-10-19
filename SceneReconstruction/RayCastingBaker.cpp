@@ -6,10 +6,6 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
-//TODO: magic number
-constexpr float SearchRadius = 5.0f;
-constexpr float DistanceThreshold = 0.5f;
-
 //*****************************************************************
 //FUNCTION: 
 hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution)
@@ -19,6 +15,8 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 
 	m_SurfelRadius = m_pConfig->getAttribute<float>(KEYWORD::SURFEL_RADIUS).value();
 	m_NumSample = m_pConfig->getAttribute<int>(KEYWORD::NUM_SAMPLE).value();
+	m_SearchRadius = m_pConfig->getAttribute<float>(KEYWORD::SEARCH_RADIUS).value();
+	m_DistanceThreshold = m_pConfig->getAttribute<float>(KEYWORD::DISTANCE_THRESHOLD).value();
 
 	auto Res = m_pConfig->getAttribute<std::tuple<int, int>>(KEYWORD::RESOLUTION).value();
 	Eigen::Vector2i Resolution = { std::get<0>(Res), std::get<1>(Res) };
@@ -32,8 +30,12 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 			for (const auto& Ray : PerTexel.RaySet)
 			{
 				auto Candidates = executeIntersection(Ray);
+				if (Candidates.empty())
+					continue;
 				TexelColorSet.push_back(calcTexelColor(Candidates, Ray));
 			}
+			if (TexelColorSet.empty())
+				continue;
 			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = __mixSamplesColor(TexelColorSet);
 		}
 	
@@ -42,6 +44,8 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 	return ResultTexture;
 }
 
+//*****************************************************************
+//FUNCTION: 
 std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace, const Eigen::Vector2i& vResolution) const
 {
 	const auto& VertexA = m_Mesh.m_Vertices[vFace.a];
@@ -56,6 +60,26 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 		for (auto k = FromCoord.y(); k < ToCoord.y(); ++k)
 			if (i >= 0 && i < vResolution.x() && k >= 0 && k < vResolution.y())
 			{
+				/*std::vector<Eigen::Vector3f> SampleSet;
+				SampleSet.reserve(m_NumSample);
+
+				auto BarycentricCoord = hiveMath::hiveGenerateRandomRealSet(0.0f, (float)vResolution.x(), m_NumSample * 3);
+				for (int m = 0; m < m_NumSample; m++)
+				{
+					auto Sum = BarycentricCoord[m * 3] + BarycentricCoord[m * 3 + 1] + BarycentricCoord[m * 3 + 2];
+					if (Sum > 0)
+						SampleSet.emplace_back(BarycentricCoord[m * 3] / Sum, BarycentricCoord[m * 3 + 1] / Sum, BarycentricCoord[m * 3 + 2] / Sum);
+				}
+
+				std::vector<SRay> RaySet;
+				RaySet.reserve(m_NumSample);
+
+				for (const auto& Sample : SampleSet)
+					RaySet.push_back(__calcRay(vFace, Sample));
+
+				if (!RaySet.empty())
+					ResultSet.emplace_back(Eigen::Vector2i{ i, k }, RaySet);*/
+
 				std::vector<Eigen::Vector2f> SampleSet;
 				SampleSet.reserve(m_NumSample);
 				SampleSet.emplace_back((i + 0.5f) / vResolution.x(), (k + 0.5f) / vResolution.y());
@@ -80,6 +104,8 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 	return ResultSet;
 }
 
+//*****************************************************************
+//FUNCTION: 
 std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const SRay& vRay) const
 {
 	const auto RayOrigin = vRay.Origin;
@@ -127,8 +153,8 @@ std::array<int, 3> CRayCastingBaker::calcTexelColor(const std::vector<SCandidate
 	}
 
 	//交点剔除, 计算权重
-	const auto Min = RayOrigin + (NearestSigenedDistance - DistanceThreshold) * RayDirection;
-	const auto Max = RayOrigin + (NearestSigenedDistance + DistanceThreshold) * RayDirection;
+	const auto Min = RayOrigin + (NearestSigenedDistance - m_DistanceThreshold) * RayDirection;
+	const auto Max = RayOrigin + (NearestSigenedDistance + m_DistanceThreshold) * RayDirection;
 	std::vector<std::pair<Eigen::Vector3i, float>> CulledCandidates;
 	for (const auto& [Intersection, SurfelIndex] : vCandidates)
 		if ((Intersection - Min).dot(Intersection - Max) <= 0)
@@ -227,7 +253,7 @@ SRay CRayCastingBaker::__calcRay(const SFace& vFace, const Eigen::Vector3f& vBar
 std::vector<pcl::index_t> CRayCastingBaker::__cullPointsByRay(const Eigen::Vector3f& vRayOrigin, const Eigen::Vector3f& vRayDirection) const
 {
 	//暂用仅光线起点的半径搜索
-	const float Radius = SearchRadius;	//to config or calculate
+	const float Radius = m_SearchRadius;	//to config or calculate
 	Eigen::Matrix<float, 1, 3, Eigen::RowMajor> SearchPos = vRayOrigin;
 	flann::Matrix Query(SearchPos.data(), SearchPos.rows(), SearchPos.cols());
 	std::vector<std::vector<pcl::index_t>> Indices;
@@ -255,5 +281,6 @@ std::array<int, 3> CRayCastingBaker::__mixSamplesColor(const std::vector<std::ar
 		for (auto& i : AverageColor)
 			i /= vColorSet.size();
 	}
+
 	return AverageColor;
 }
