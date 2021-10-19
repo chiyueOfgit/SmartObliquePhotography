@@ -20,7 +20,7 @@ void CBasicMeshSuture::sutureMeshesV()
 
 	auto [LhsIntersectionPoints, LhsDissociatedIndices] = intersectMeshAndPlane(m_SegmentPlane, m_LhsMesh);
 	auto [RhsIntersectionPoints, RhsDissociatedIndices] = intersectMeshAndPlane(m_SegmentPlane, m_RhsMesh);
-	m_Direction = __calcSutureDirection(m_LhsMesh);
+	m_Direction = Eigen::Vector3f(m_SegmentPlane[0], m_SegmentPlane[1], m_SegmentPlane[2]).cross(__calcUpVector(m_LhsMesh));
 	
 	__sortDissociatedIndices(m_LhsMesh, LhsDissociatedIndices);
 	__sortDissociatedIndices(m_RhsMesh, RhsDissociatedIndices);
@@ -140,11 +140,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(const std::vector<int>& vDissoc
 	__serializeIndices(PublicIndices, "Model_" + std::to_string(Count++) + "_PublicPoints.txt");
 #endif
 
-	int Height;
-	std::pair<int, int> UV;
-	vioMesh.calcModelPlaneAxis(UV, Height);
-	Eigen::Vector3f Up = { 0.0f, 0.0f, 0.0f };
-	Up.data()[Height] = 1.0f;
+	auto Up = __calcUpVector(vioMesh);
 	auto calcOrder = [&](const SFace& vFace) -> bool
 	{
 		const auto& A = vioMesh.m_Vertices[vFace.a];
@@ -288,13 +284,13 @@ void CBasicMeshSuture::__sortByVertexLoop(std::vector<int>& vioOrderIndices, con
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::Vector3f CBasicMeshSuture::__calcSutureDirection(const CMesh& vMesh)
+Eigen::Vector3f CBasicMeshSuture::__calcUpVector(const CMesh& vMesh)
 {
 	std::pair<int, int> UV; int Height;
 	vMesh.calcModelPlaneAxis(UV, Height);
 
-	Eigen::Vector3f Direction = Eigen::Vector3f::Zero();
-	Direction.data()[Height] = 1.0f;
+	Eigen::Vector3f Up = Eigen::Vector3f::Zero();
+	Up.data()[Height] = 1.0f;
 
-	return Direction.cross(Eigen::Vector3f(m_SegmentPlane[0], m_SegmentPlane[1], m_SegmentPlane[2]));
+	return Up;
 }

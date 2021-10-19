@@ -23,7 +23,7 @@ namespace hiveObliquePhotography::SceneReconstruction
 		void __sortDissociatedIndices(const CMesh& vMesh, std::vector<int>& vioDissociatedPoints);
 		void __sortIntersectionPoints(std::vector<SVertex>& vioIntersectionPoints);
 		void __sortByVertexLoop(std::vector<int>& vioOrderIndices, const std::vector<SVertex>& vVertexSet);
-		Eigen::Vector3f __calcSutureDirection(const CMesh& vMesh);
+		Eigen::Vector3f __calcUpVector(const CMesh& vMesh);
 
 		Eigen::Vector4f m_SegmentPlane = Eigen::Vector4f::Zero();
 		Eigen::Vector3f m_Direction = Eigen::Vector3f::Zero();
