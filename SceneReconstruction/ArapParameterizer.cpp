@@ -42,7 +42,7 @@ void CArapParameterizer::buildHalfEdge()
 {
 	m_VertexInfoTable.resize(m_Mesh.m_Vertices.size());
 	m_HalfEdgeTable.clear();
-	m_HalfEdgeTable.reserve(m_Mesh.m_Vertices.size() * 3);      //QUESTION:3的由来？据无向图中顶点与边的数量关系为e=n(n-1)/2，半边数目应为n(n-1);
+	m_HalfEdgeTable.reserve(m_Mesh.m_Faces.size() * 3);
 	std::vector Traversed(m_Mesh.m_Vertices.size(), false);
 	for(size_t FaceId = 0; FaceId < m_Mesh.m_Faces.size(); ++FaceId)
 	{
@@ -52,7 +52,6 @@ void CArapParameterizer::buildHalfEdge()
 		const auto& VertexC = m_Mesh.m_Vertices[Face[2]];
 		Eigen::Vector3f FaceNormal = (VertexC.xyz() - VertexB.xyz()).cross(VertexA.xyz() - VertexB.xyz());
 
-		//QUESTION:这段代码的作用？防止翻转？保证逆时针方向？ 怎么判断的？
 		if (VertexA.normal().dot(FaceNormal) < 0 && VertexB.normal().dot(FaceNormal) < 0 && VertexC.normal().dot(FaceNormal) < 0)
 			std::swap(Face[1], Face[2]);
 
@@ -62,10 +61,10 @@ void CArapParameterizer::buildHalfEdge()
 			HalfEdge._VertexId = Face[i];
 			HalfEdge._Face = FaceId;
 			auto Index = m_HalfEdgeTable.size();
-			m_VertexInfoTable[Face[i]].push_back(Index);        //QUESTION:什么意思？
+			m_VertexInfoTable[Face[i]].push_back(Index);
 			HalfEdge._Prev = Index + ((i == 0) ? (2) : (-1));
 			HalfEdge._Next = Index + ((i == 2) ? (-2) : (1));
-			if(Traversed[Face[i]] && Traversed[Face[(i + 1) % 3]])  //半边存的起始顶点，那没事了；
+			if(Traversed[Face[i]] && Traversed[Face[(i + 1) % 3]])  
 			{
 				HalfEdge._Conj = __findTwinRef(Face[i], Face[(i + 1) % 3]);
 				if(HalfEdge._Conj >= 0)
@@ -84,20 +83,6 @@ void CArapParameterizer::buildHalfEdge()
 //FUNCTION: 寻找边界点；
 std::vector<int> CArapParameterizer::findBoundaryPoint()
 {
-	////Note:自己实现寻找边界点；
-	//std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
-	//std::set<int> BoundarySet;
-	//std::vector<int> ValidSet;
-	//for(auto& HalfEdge : m_HalfEdgeTable)
-	//{
-	//	if(HalfEdge._Conj < 0)
-	//	{
-	//		BoundarySet.insert(HalfEdge._VertexId);
-	//		BoundarySet.insert(m_HalfEdgeTable[HalfEdge._Next]._VertexId);
-	//	}
-	//}
-
-	//Note:调用libigl库来实现寻找边界点；
 	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
 	std::vector<int> Boundary;
 	igl::boundary_loop(F, Boundary);
@@ -127,15 +112,31 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 
 	typedef Eigen::Triplet<double> TWeight;
 	std::vector<TWeight> WeightTriplet;
-	WeightTriplet.reserve(NumVertices * 10);
 
-	//Note:均匀赋值方案；
+	auto MaxNonZeroValueAmountOfRow = [&]()
+	{
+		int MaxNumber = 0;
+		for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
+		{
+			if (!vBoundaryStatus[VertexId]) //interior
+			{
+				if (MaxNumber < m_VertexInfoTable[VertexId].size())
+					MaxNumber = m_VertexInfoTable[VertexId].size();
+			}
+		}
+
+		return MaxNumber;
+	};
+	
+	WeightTriplet.reserve(NumVertices * MaxNonZeroValueAmountOfRow());
+
+	//Note:均匀权重方案；
 	auto Uniform = []()
 	{
 		return 1.0;
 	};
 
-	//Note：平均值赋值方案；
+	//Note：平均权重方案；
 	auto MeanWalue = [&](int vHalfEdge, int vVertex, int vNextVertex)
 	{
 		auto CalcAngle = [&](int vFaceId) -> double
@@ -167,9 +168,9 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 
 	for (size_t VertexId = 0; VertexId < NumVertices; ++VertexId)
 	{
-		if (vBoundaryStatus[VertexId]) //boundary
+		if (vBoundaryStatus[VertexId])
 			WeightTriplet.push_back(TWeight(VertexId, VertexId, 1.0));
-		else //interior
+		else 
 		{
 			const auto& NeighborHalfEdgeSet = m_VertexInfoTable[VertexId];
 
@@ -268,8 +269,6 @@ Eigen::MatrixXd CArapParameterizer::__switch2UVMatrix(const CMesh& vMesh, const 
 	{
 		float U = (vX(VertexId) - BeginX) / WidthU;
 		float V = (vY(VertexId) - BeginY) / HeightV;
-		//float U = vX(VertexId);
-		//float V = vY(VertexId);
 
 		UVMatrix.row(VertexId) = Eigen::Vector2d(U, V);
 	}
@@ -278,85 +277,11 @@ Eigen::MatrixXd CArapParameterizer::__switch2UVMatrix(const CMesh& vMesh, const 
 }
 
 //*****************************************************************
-//FUNCTION: 
+//FUNCTION: 寻找相反的半边；
 int CArapParameterizer::__findTwinRef(int vStartIndex, int vEndIndex)
 {
 	for(auto EdgeIndex : m_VertexInfoTable[vEndIndex])
 		if (m_HalfEdgeTable[m_HalfEdgeTable[EdgeIndex]._Next]._VertexId == vStartIndex)
 			return EdgeIndex;
 	return -1;
-}
-
-//*****************************************************************
-//FUNCTION: 
-Eigen::MatrixXd CArapParameterizer::__solveARAP(const Eigen::MatrixXd& vVertexPos, const Eigen::MatrixXi& vFaces, const Eigen::MatrixXd& vInitialUV, const std::vector<int>& vBoundarySet)
-{
-	igl::ARAPData arap_data;
-	arap_data.with_dynamics = false;
-	int Size = vBoundarySet.size();
-	Eigen::VectorXi Boundary(Size);
-	Eigen::MatrixXd BoundaryCoord(Size, 2);
-	arap_data.max_iter = 100;
-	for (int i = 0; i < Size; i++)
-	{
-		Boundary[i] = vBoundarySet[i];
-		BoundaryCoord.row(i) = vInitialUV.row(vBoundarySet[i]);
-	}
-	// 2 means 2d
-	igl::arap_precomputation(vVertexPos, vFaces, 2, Boundary, arap_data);
-	auto UV = vInitialUV;
-	igl::arap_solve(BoundaryCoord, arap_data, UV);
-
-	//__normalizeUV(UV);
-	return UV;
-}
-
-void CArapParameterizer::__findValidBoundary(std::set<int>& vBoundarySet, std::vector<int>& voValidBoundary)
-{
-	int Sum = 0;
-	auto Aabb = m_Mesh.calcAABB();
-	auto Offset = (Aabb.second - Aabb.first) / 100.0;
-
-	std::pair<int, int> XYAxis;
-	int HeightAxis;
-	m_Mesh.calcModelPlaneAxis(XYAxis, HeightAxis);
-	
-	for (auto& Boundary : vBoundarySet)
-	{
-		auto VetrexPosition = m_Mesh.m_Vertices[Boundary].xyz();
-		auto MinX = std::min(abs(VetrexPosition.data()[XYAxis.first] - Aabb.second.data()[XYAxis.first]), abs(VetrexPosition.data()[XYAxis.first] - Aabb.first.data()[XYAxis.first]));
-		auto MinY = std::min(abs(VetrexPosition.data()[XYAxis.second] - Aabb.second.data()[XYAxis.second]), abs(VetrexPosition.data()[XYAxis.second] - Aabb.first.data()[XYAxis.second]));
-		if (MinX > Offset.x() && MinY > Offset.y())
-			Sum++;
-		else
-			voValidBoundary.push_back(Boundary);
-	}
-}
-
-void CArapParameterizer::__normalizeUV(Eigen::MatrixXd& vioUVMatrix)
-{
-	Eigen::Vector2d MinUV{ DBL_MAX, DBL_MAX };
-	Eigen::Vector2d MaxUV{ -DBL_MAX, -DBL_MAX };
-	auto update = [&](const Eigen::Vector2d& vUV)
-	{
-		for (int i = 0; i < 2; i++)
-		{
-			if (vUV.data()[i] < MinUV.data()[i])
-				MinUV.data()[i] = vUV.data()[i];
-			if (vUV.data()[i] > MaxUV.data()[i])
-				MaxUV.data()[i] = vUV.data()[i];
-		}
-	};
-	for (int VertexId = 0; VertexId < vioUVMatrix.rows(); VertexId++)
-		update(vioUVMatrix.row(VertexId));
-
-	auto WidthU = MaxUV[0] - MinUV[0];
-	auto HeightV = MaxUV[1] - MinUV[1];
-
-	for (int VertexId = 0; VertexId < vioUVMatrix.rows(); VertexId++)
-	{
-		float U = (vioUVMatrix.row(VertexId).x() - MinUV[0]) / WidthU;
-		float V = (vioUVMatrix.row(VertexId).y() - MinUV[1]) / HeightV;
-		vioUVMatrix.row(VertexId) = Eigen::Vector2d(U, V);
-	}
 }
