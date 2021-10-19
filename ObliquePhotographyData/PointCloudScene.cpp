@@ -27,9 +27,9 @@ std::vector<PointCloud_t::Ptr> CPointCloudScene::loadScene(const std::vector<std
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Fail to load file [%1%] because it does not exist.", FileName));
 			continue;
 		}
-		transform(LowerFileName.begin(), LowerFileName.end(), LowerFileName.begin(), ::tolower);
+		std::ranges::transform(LowerFileName, LowerFileName.begin(), ::tolower);
 
-		if (find(LoadedFileSet.begin(), LoadedFileSet.end(), LowerFileName) != LoadedFileSet.end())
+		if (std::ranges::find(LoadedFileSet, LowerFileName) != LoadedFileSet.end())
 		{
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("[%1%] has already been loaded.", FileName));
 			continue;

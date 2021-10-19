@@ -12,7 +12,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMeshOBJLoader, OBJ_LOADER)
 //FUNCTION:
 int CMeshOBJLoader::__loadDataFromFileV(const std::string& vFileName, CMesh& voMesh)
 {
-	auto Split = vFileName.find_last_of("/") + 1;
+	auto Split = vFileName.find_last_of('/') + 1;
 	auto FolderPath = vFileName.substr(0, Split);
 	auto PureName = vFileName.substr(Split);
 	
