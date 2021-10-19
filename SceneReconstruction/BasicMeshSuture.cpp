@@ -174,9 +174,7 @@ std::vector<SFace> CBasicMeshSuture::__genConnectionFace(const CMesh& vMesh, con
 	if (!vIsClockwise)
 		return __genConnectionFace(vMesh, vRight, vLeft, !vIsClockwise);
 
-	auto NumLeft = vLeft.size(), NumRight = vRight.size();
 	auto SignedDirection = m_Direction;
-
 	auto calcDistance = [&](int vVertexIndex)
 	{
 		return vMesh.m_Vertices[vVertexIndex].xyz().dot(SignedDirection);
@@ -185,24 +183,23 @@ std::vector<SFace> CBasicMeshSuture::__genConnectionFace(const CMesh& vMesh, con
 		SignedDirection = -SignedDirection;
 
 	std::vector<SFace> ConnectionFaceSet;
-	for (IndexType LeftCursor = 0, RightCursor = 0; LeftCursor < NumLeft && RightCursor < NumRight; )
+	std::pair<size_t, size_t> FromTo[] =
 	{
-		if (calcDistance(vLeft[LeftCursor]) <= calcDistance(vRight[RightCursor]))
-		{
-			if (LeftCursor + 1 >= NumLeft)
-				break;
+		{ 0, vLeft.size() },
+		{ 0, vRight.size() },
+	};
+	while (true)
+	{
+		bool LeftAsBase = calcDistance(vLeft[FromTo[0].first]) < calcDistance(vRight[FromTo[1].first]);
+		size_t Index = LeftAsBase ? 0 : 1;
 
-			ConnectionFaceSet.emplace_back(vLeft[LeftCursor], vRight[RightCursor], vLeft[LeftCursor + 1]);
-			++LeftCursor;
-		}
-		else
-		{
-			if (RightCursor + 1 >= NumRight)
-				break;
+		if (FromTo[Index].first + 1 >= FromTo[Index].second)
+			break;
 
-			ConnectionFaceSet.emplace_back(vLeft[LeftCursor], vRight[RightCursor], vRight[RightCursor + 1]);
-			++RightCursor;
-		}
+		auto NextVertex = LeftAsBase ? vLeft[FromTo[0].first + 1] : vRight[FromTo[1].first + 1];
+		ConnectionFaceSet.emplace_back(vLeft[FromTo[0].first], vRight[FromTo[1].first], NextVertex);
+
+		++FromTo[Index].first;
 	}
 	return ConnectionFaceSet;
 }
