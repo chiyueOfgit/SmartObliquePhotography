@@ -1,5 +1,8 @@
 #pragma once
 #include "MeshSuture.h"
+#include <fstream>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
 
 namespace hiveObliquePhotography::SceneReconstruction
 {

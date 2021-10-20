@@ -265,6 +265,7 @@ Eigen::MatrixXd CArapParameterizer::__switch2UVMatrix(const CMesh& vMesh, const 
 
 	return UVMatrix;
 }
+
 //*****************************************************************
 //FUNCTION: 
 int CArapParameterizer::__findTwinRef(int vStartIndex, int vEndIndex)
@@ -299,6 +300,8 @@ Eigen::MatrixXd CArapParameterizer::__solveARAP(const Eigen::MatrixXd& vVertexPo
 	return UV;
 }
 
+//*****************************************************************
+//FUNCTION: 
 void CArapParameterizer::__findValidBoundary(std::set<int>& vBoundarySet, std::vector<int>& voValidBoundary)
 {
 	int Sum = 0;
@@ -321,6 +324,8 @@ void CArapParameterizer::__findValidBoundary(std::set<int>& vBoundarySet, std::v
 	}
 }
 
+//*****************************************************************
+//FUNCTION: 
 void CArapParameterizer::__normalizeUV(Eigen::MatrixXd& vioUVMatrix)
 {
 	Eigen::Vector2d MinUV{ DBL_MAX, DBL_MAX };
