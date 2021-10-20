@@ -2,6 +2,7 @@
 #include "VisualizationExport.h"
 #include "VisualizationConfig.h"
 #include "VisualizationCommon.h"
+#include "Mesh.h"
 
 namespace hiveObliquePhotography
 {
@@ -35,6 +36,6 @@ namespace hiveObliquePhotography
 
 		VISUALIZATION_DECLSPEC bool hiveGetVisualizationConfig(CVisualizationConfig*& voConfig);
 
-		VISUALIZATION_DECLSPEC void TestInterface(const std::string& vObj, const std::string& vBoundary);
+		VISUALIZATION_DECLSPEC void TestInterface(const CMesh& vMesh, const std::string& vIndicesPath);
 	}
 }

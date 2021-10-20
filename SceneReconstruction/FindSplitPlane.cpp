@@ -2,44 +2,64 @@
 #include "FindSplitPlane.h"
 #include "PointCloudBoundingBox.hpp"
 
-void __judgeSplitPlane(int vAxisFlag, float vMinAxisValueCloudOne, float vMaxAxisValueCloudOne, float vMinAxisValueCloudTwo, float vMaxAxisValueCloudTwo, Eigen::Vector4f& voSplitPlane);
+Eigen::Vector3f __findCentre(const std::pair<pcl::PointXYZ, pcl::PointXYZ>& vLhs, const std::pair<pcl::PointXYZ, pcl::PointXYZ>& vRhs);
+Eigen::Vector3f __findMainAxis(const Eigen::Vector3f& vPositive, const Eigen::Vector3f& vNegative);
 
 //*****************************************************************
 //FUNCTION: 找到两个相邻点云模型之间的切割平面；
-Eigen::Vector4f hiveObliquePhotography::SceneReconstruction::findSplitPlane(pcl::PointCloud<pcl::PointXYZ>::Ptr vLhs, pcl::PointCloud<pcl::PointXYZ>::Ptr vRhs)
+Eigen::Vector4f hiveObliquePhotography::SceneReconstruction::findSplitPlane(pcl::PointCloud<pcl::PointXYZ>::ConstPtr vLhs, pcl::PointCloud<pcl::PointXYZ>::ConstPtr vRhs)
 {
-	auto AabbOfCloudOne = getAABB<pcl::PointXYZ>(vLhs);
-	auto AabbOfCloudTwo = getAABB<pcl::PointXYZ>(vRhs);
+	const auto AabbLhs = getAabb(vLhs);
+	const auto AabbRhs = getAabb(vRhs);
+	const auto Centre = __findCentre(AabbLhs, AabbRhs);
+	const auto MainAxis = __findMainAxis(
+		(AabbLhs.first.getVector3fMap() + AabbLhs.second.getVector3fMap()) / 2,
+		(AabbRhs.first.getVector3fMap() + AabbRhs.second.getVector3fMap()) / 2
+		);
 
-	Eigen::Vector4f SplitPlane;
-	int AxisFlag = 0;
-	__judgeSplitPlane(AxisFlag, AabbOfCloudOne.first.x, AabbOfCloudOne.second.x, AabbOfCloudTwo.first.x, AabbOfCloudTwo.second.x, SplitPlane);
-	AxisFlag = 1;
-	__judgeSplitPlane(AxisFlag, AabbOfCloudOne.first.y, AabbOfCloudOne.second.y, AabbOfCloudTwo.first.y, AabbOfCloudTwo.second.y, SplitPlane);
-	AxisFlag = 2;
-	__judgeSplitPlane(AxisFlag, AabbOfCloudOne.first.z, AabbOfCloudOne.second.z, AabbOfCloudTwo.first.z, AabbOfCloudTwo.second.z, SplitPlane);
-
-	return SplitPlane;
+	return { MainAxis.x(), MainAxis.y(), MainAxis.z(), -MainAxis.dot(Centre) };
 }
 
 //*****************************************************************
-//FUNCTION:判断分割平面垂直于哪个轴，未确定则返回原值，确定则返回切割平面；
-void __judgeSplitPlane(int vAxisFlag,float vMinAxisValueCloudOne, float vMaxAxisValueCloudOne, float vMinAxisValueCloudTwo, float vMaxAxisValueCloudTwo, Eigen::Vector4f& voSplitPlane)
+//FUNCTION: 
+Eigen::Vector3f __findCentre(const std::pair<pcl::PointXYZ, pcl::PointXYZ>& vLhs, const std::pair<pcl::PointXYZ, pcl::PointXYZ>& vRhs)
 {
-	float HalfModelSize = 25;
-	float BoundingBoxError = 2;
-	if ((fabs(vMinAxisValueCloudOne - vMaxAxisValueCloudTwo) < BoundingBoxError) || (fabs(vMinAxisValueCloudTwo - vMaxAxisValueCloudOne) < BoundingBoxError))
+	auto calcVolume = [](const pcl::PointXYZ& vLhs, const pcl::PointXYZ& vRhs)
 	{
-		if (fabs((vMinAxisValueCloudOne + vMaxAxisValueCloudOne) / 2 - (vMinAxisValueCloudTwo + vMaxAxisValueCloudTwo) / 2) > HalfModelSize)
-		{
-			float SplitPlaneValue = (vMinAxisValueCloudOne + vMaxAxisValueCloudOne + vMinAxisValueCloudTwo + vMaxAxisValueCloudTwo) / 4;
+		Eigen::Vector3f DeltaPosition = vLhs.getVector3fMap() - vRhs.getVector3fMap();
+		return abs(DeltaPosition.x() * DeltaPosition.y() * DeltaPosition.z());
+	};
 
-			voSplitPlane = Eigen::Vector4f(0, 0, 0, -SplitPlaneValue);
-			//ASSERT vAxisFlag == 0/1/2
-			voSplitPlane[vAxisFlag] = 1;
-			//规定法向量方向
-			if (std::signbit(SplitPlaneValue - vMinAxisValueCloudOne))
-				voSplitPlane *= -1;
+	std::pair<pcl::PointXYZ, pcl::PointXYZ> BoundingBox;
+	if (calcVolume(vLhs.first, vRhs.second) < calcVolume(vRhs.first, vLhs.second))
+		BoundingBox = { vLhs.first, vRhs.second };
+	else
+		BoundingBox = { vRhs.first, vLhs.second };
+	
+	return (BoundingBox.first.getVector3fMap() + BoundingBox.second.getVector3fMap()) / 2;
+}
+
+//*****************************************************************
+//FUNCTION: 
+Eigen::Vector3f __findMainAxis(const Eigen::Vector3f& vPositive, const Eigen::Vector3f& vNegative)
+{
+	const Eigen::Vector3f CandidateNormalSet[] =
+	{
+		{ 1, 0, 0 },
+		{ 0, 1, 0 },
+		{ 0, 0, 1 },
+	};
+
+	const Eigen::Vector3f* MainAxis = nullptr;
+	float MaxDistance = -std::numeric_limits<float>::max();
+	for (const auto& Candidate : CandidateNormalSet)
+	{
+		auto Distance = abs(Candidate.dot(vPositive - vNegative));
+		if (MaxDistance < Distance)
+		{
+			MaxDistance = Distance;
+			MainAxis = &Candidate;
 		}
 	}
+	return *MainAxis;
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include "MeshSaver.h"
-#include "Mesh.h"
 
 namespace hiveObliquePhotography
 {

@@ -31,7 +31,7 @@ namespace hiveObliquePhotography
 
 		bool operator < (const SVertex& Vertex) const
 		{
-			if (this->y < Vertex.y)
+			if (this->xyz().norm() < Vertex.xyz().norm())
 				return true;
 			else 
 				return false;
@@ -44,7 +44,7 @@ namespace hiveObliquePhotography
 					return false;
 			return true;
 		}
-		
+
 		SVertex lerp(const SVertex& vOther, float vMix = 0.5f) const
 		{
 			using std::lerp;
@@ -83,6 +83,9 @@ namespace hiveObliquePhotography
 			else
 				throw("[] out of range.");
 		}
+
+		IndexType& at(IndexType i) { return operator[](i); }
+		const IndexType& at(IndexType i) const { return operator[](i); }
 	};
 
 	class OPDATA_DECLSPEC CMesh
@@ -100,7 +103,9 @@ namespace hiveObliquePhotography
 		std::pair<Eigen::Vector3f, Eigen::Vector3f> calcAABB() const;
 		void calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const;
 		void setMaterial(const pcl::TexMaterial& vMaterial) { m_Material = vMaterial; }
-
+		void saveMaterial(const std::string& vPath) const;
+		const std::string& getMaterialName() const { return m_Material.tex_name; }
+		
 		Eigen::MatrixXd getVerticesMatrix() const;
 		Eigen::MatrixXi getFacesMatrix() const;
 

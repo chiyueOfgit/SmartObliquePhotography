@@ -28,7 +28,7 @@
 using namespace hiveObliquePhotography::SceneReconstruction;
 
 const auto PlaneMeshPath = TESTMODEL_DIR + std::string("/Test024_Model/Plane/Plane100.obj");
-const auto CloudPath = TESTMODEL_DIR + std::string("");
+const auto CloudPath = TESTMODEL_DIR + std::string("/Test024_Model/100RGPointCloud.ply");
 
 class TestCastingTextureBaker : public testing::Test
 {
@@ -37,7 +37,7 @@ protected:
 	{
 		m_Mesh = _loadMesh(PlaneMeshPath);
 
-		m_pCloud = hiveObliquePhotography::hiveInitPointCloudScene({ CloudPath });
+		m_TileSet = hiveObliquePhotography::hiveInitPointCloudScene({ CloudPath });
 
 		m_pTextureBaker = _createBaker(m_Mesh);
 	}
@@ -93,7 +93,7 @@ protected:
 	}
 
 	hiveObliquePhotography::CMesh m_Mesh;
-	PointCloud_t::Ptr m_pCloud = nullptr;
+	std::vector<PointCloud_t::Ptr> m_TileSet;
 
 	CRayCastingBaker* m_pTextureBaker = nullptr;
 };
@@ -137,11 +137,11 @@ TEST_F(TestCastingTextureBaker, TestFindTexelsPerFace)
 				Eigen::Vector2f DeltaPos = { PointUV.x() * 100.0f, -PointUV.y() * 100.0f };
 				Eigen::Vector2f BeginPos{ -50.0f, 50.0f };
 				Eigen::Vector3f TexelPosInPlane = { BeginPos.x() + DeltaPos.x(), 0.0f, BeginPos.y() + DeltaPos.y() };
-                const float ErrorScope = 1.0f;
+                const float ErrorScope = 50.0f;
 				for (auto& Ray : Texel.RaySet)
 				{
                    for (int i = 0; i < 3; i++)
-					  ASSERT_NEAR(Ray.Origin.data()[i], TexelPosInPlane.data()[i], ErrorScope);
+					  EXPECT_NEAR(Ray.Origin.data()[i], TexelPosInPlane.data()[i], ErrorScope);
 				}
 			}
 		}
@@ -167,7 +167,7 @@ TEST_F(TestCastingTextureBaker, TestExecuteIntersection_1)
 	auto pTileSet = hiveObliquePhotography::hiveInitPointCloudScene({ TESTMODEL_DIR + std::string("/Test024_Model/TestPointCloud.ply") });
 	m_pTextureBaker->setPointCloud(pTileSet.front());
 	
-	SRay TestRay{ {48.0f, 0.0f, 48.0f},{0.0f, 1.0f, 0.0f}};
+	SRay TestRay{ {48.0f, 2.0f, 48.0f},{0.0f, 1.0f, 0.0f}};
 	auto CandidateSet = m_pTextureBaker->executeIntersection(TestRay);
 	ASSERT_EQ(CandidateSet.size(), 3);
 	sort(CandidateSet.begin(), CandidateSet.end(), [](SCandidateInfo& vA, SCandidateInfo& vB) {return vA.SurfelIndex < vB.SurfelIndex; });

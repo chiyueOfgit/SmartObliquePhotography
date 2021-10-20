@@ -163,7 +163,7 @@
     <ClCompile Include="MeshParameterizer.cpp" />
     <ClCompile Include="MeshSimplification.cpp" />
     <ClCompile Include="MeshSuture.cpp" />
-    <ClCompile Include="MeshPlaneIntersection.cpp" />
+    <ClCompile Include="IntersectMeshAndPlane.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -184,7 +184,7 @@
     <ClInclude Include="MeshParameterizer.h" />
     <ClInclude Include="MeshSimplification.h" />
     <ClInclude Include="MeshSuture.h" />
-    <ClInclude Include="MeshPlaneIntersection.h" />
+    <ClInclude Include="IntersectMeshAndPlane.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PoissonSurfaceReconstructor.h" />
     <ClInclude Include="RayCastingBaker.h" />
@@ -194,7 +194,6 @@
     <ClInclude Include="SurfaceReconstructor.h" />
     <ClInclude Include="SceneReconstructionConfig.h" />
     <ClInclude Include="TextureBaker.h" />
-    <ClInclude Include="VcgMesh.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,5 +1,6 @@
 #pragma once
 #include <vcg/complex/complex.h>
+#include <wrap/io_trimesh/io_material.h>
 #include "Mesh.h"
 
 namespace hiveObliquePhotography
@@ -56,5 +57,37 @@ namespace hiveObliquePhotography
 		}
 		
 		vcg::tri::UpdateTopology<CVcgMesh>::FaceFace(vTo);
+	}
+
+	inline pcl::TexMaterial fromVcgMaterial(const vcg::tri::io::Material& vFrom)
+	{
+		return
+		{
+			.tex_name  = vFrom.materialName,
+			.tex_file  = vFrom.map_Kd,
+			.tex_Ka    = { vFrom.Ka.X(), vFrom.Ka.Y(), vFrom.Ka.Z() },
+			.tex_Kd    = { vFrom.Kd.X(), vFrom.Kd.Y(), vFrom.Kd.Z() },
+			.tex_Ks    = { vFrom.Ks.X(), vFrom.Ks.Y(), vFrom.Ks.Z() },
+			.tex_d     = vFrom.d,
+			.tex_Ns    = vFrom.Ns,
+			.tex_illum = vFrom.illum,
+		};
+	}
+
+	inline vcg::tri::io::Material toVcgMaterial(const pcl::TexMaterial& vFrom)
+	{
+		return
+		{
+			.index        = 0,
+			.materialName = vFrom.tex_name,
+			.Ka           = { vFrom.tex_Ka.r, vFrom.tex_Ka.g, vFrom.tex_Ka.b },
+			.Kd           = { vFrom.tex_Kd.r, vFrom.tex_Kd.g, vFrom.tex_Kd.b },
+			.Ks           = { vFrom.tex_Ks.r, vFrom.tex_Ks.g, vFrom.tex_Ks.b },
+			.d            = vFrom.tex_d,
+			.Tr           = vFrom.tex_d,
+			.illum        = vFrom.tex_illum,
+			.Ns           = vFrom.tex_Ns,
+			.map_Kd       = vFrom.tex_file,
+		};
 	}
 }
