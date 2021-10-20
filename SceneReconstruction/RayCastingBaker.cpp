@@ -69,6 +69,7 @@ std::vector<STexelInfo> CRayCastingBaker::__findSamplesPerFace(const SFace& vFac
 				SampleSet.reserve(m_NumSample);
 				SampleSet.emplace_back((i + 0.5f) / vResolution.x(), (k + 0.5f) / vResolution.y());
 
+				// TODO: 随机采样点可能不在Face内，导致采样点被剔除
 				auto USampleSet = hiveMath::hiveGenerateRandomRealSet((i + 0.0f) / vResolution.x(), (i + 1.0f) / vResolution.x(), m_NumSample - 1);
 				auto VSampleSet = hiveMath::hiveGenerateRandomRealSet((k + 0.0f) / vResolution.y(), (k + 1.0f) / vResolution.y(), m_NumSample - 1);
 				for (int m = 0; m < m_NumSample - 1; ++m)
