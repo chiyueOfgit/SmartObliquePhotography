@@ -10,6 +10,11 @@ _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 //FUNCTION: 
 hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution)
 {
+	CImage<std::array<int, 3>> ResultTexture;
+
+	if (!(vResolution.array() > 0).all() || vPointCloud->size() <= 0)
+		return ResultTexture;
+
 	m_pCloud = vPointCloud;
 	__buildKdTree(m_pCloud);
 
@@ -17,36 +22,36 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 	m_NumSample = m_pConfig->getAttribute<int>(KEYWORD::NUM_SAMPLE).value();
 	m_SearchRadius = m_pConfig->getAttribute<float>(KEYWORD::SEARCH_RADIUS).value();
 	m_DistanceThreshold = m_pConfig->getAttribute<float>(KEYWORD::DISTANCE_THRESHOLD).value();
+	m_WeightCoefficient = m_pConfig->getAttribute<float>(KEYWORD::WEIGHT_COEFFICIENT).value();
 
-	auto Res = m_pConfig->getAttribute<std::tuple<int, int>>(KEYWORD::RESOLUTION).value();
-	Eigen::Vector2i Resolution = { std::get<0>(Res), std::get<1>(Res) };
+	/*auto Res = m_pConfig->getAttribute<std::tuple<int, int>>(KEYWORD::RESOLUTION).value();
+	Eigen::Vector2i Resolution = { std::get<0>(Res), std::get<1>(Res) };*/
 
-	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(Resolution.y(), Resolution.x());
+	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(vResolution.y(), vResolution.x());
 	for (const auto& Face : m_Mesh.m_Faces)
-		for (const auto& PerTexel : findSamplesPerFace(Face, Resolution))
+		for (const auto& PerTexel : __findSamplesPerFace(Face, vResolution))
 		{
 			std::vector<std::array<int, 3>> TexelColorSet;
 			TexelColorSet.reserve(PerTexel.RaySet.size());
 			for (const auto& Ray : PerTexel.RaySet)
 			{
-				auto Candidates = executeIntersection(Ray);
+				auto Candidates = __executeIntersection(Ray);
 				if (Candidates.empty())
 					continue;
-				TexelColorSet.push_back(calcTexelColor(Candidates, Ray));
+				TexelColorSet.push_back(__calcTexelColor(Candidates, Ray));
 			}
 			if (TexelColorSet.empty())
 				continue;
 			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = __mixSamplesColor(TexelColorSet);
 		}
 	
-	CImage<std::array<int, 3>> ResultTexture;
-	ResultTexture.fillColor(Resolution.y(), Resolution.x(), Texture.data());
+	ResultTexture.fillColor(vResolution.y(), vResolution.x(), Texture.data());
 	return ResultTexture;
 }
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace, const Eigen::Vector2i& vResolution) const
+std::vector<STexelInfo> CRayCastingBaker::__findSamplesPerFace(const SFace& vFace, const Eigen::Vector2i& vResolution) const
 {
 	const auto& VertexA = m_Mesh.m_Vertices[vFace.a];
 	const auto& VertexB = m_Mesh.m_Vertices[vFace.b];
@@ -60,26 +65,6 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 		for (auto k = FromCoord.y(); k < ToCoord.y(); ++k)
 			if (i >= 0 && i < vResolution.x() && k >= 0 && k < vResolution.y())
 			{
-				/*std::vector<Eigen::Vector3f> SampleSet;
-				SampleSet.reserve(m_NumSample);
-
-				auto BarycentricCoord = hiveMath::hiveGenerateRandomRealSet(0.0f, (float)vResolution.x(), m_NumSample * 3);
-				for (int m = 0; m < m_NumSample; m++)
-				{
-					auto Sum = BarycentricCoord[m * 3] + BarycentricCoord[m * 3 + 1] + BarycentricCoord[m * 3 + 2];
-					if (Sum > 0)
-						SampleSet.emplace_back(BarycentricCoord[m * 3] / Sum, BarycentricCoord[m * 3 + 1] / Sum, BarycentricCoord[m * 3 + 2] / Sum);
-				}
-
-				std::vector<SRay> RaySet;
-				RaySet.reserve(m_NumSample);
-
-				for (const auto& Sample : SampleSet)
-					RaySet.push_back(__calcRay(vFace, Sample));
-
-				if (!RaySet.empty())
-					ResultSet.emplace_back(Eigen::Vector2i{ i, k }, RaySet);*/
-
 				std::vector<Eigen::Vector2f> SampleSet;
 				SampleSet.reserve(m_NumSample);
 				SampleSet.emplace_back((i + 0.5f) / vResolution.x(), (k + 0.5f) / vResolution.y());
@@ -106,7 +91,7 @@ std::vector<STexelInfo> CRayCastingBaker::findSamplesPerFace(const SFace& vFace,
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const SRay& vRay) const
+std::vector<SCandidateInfo> CRayCastingBaker::__executeIntersection(const SRay& vRay) const
 {
 	const auto RayOrigin = vRay.Origin;
 	const auto RayDirection = vRay.Direction;
@@ -138,7 +123,7 @@ std::vector<SCandidateInfo> CRayCastingBaker::executeIntersection(const SRay& vR
 
 //*****************************************************************
 //FUNCTION: 
-std::array<int, 3> CRayCastingBaker::calcTexelColor(const std::vector<SCandidateInfo>& vCandidates, const SRay& vRay) const
+std::array<int, 3> CRayCastingBaker::__calcTexelColor(const std::vector<SCandidateInfo>& vCandidates, const SRay& vRay) const
 {
 	const auto RayOrigin = vRay.Origin;
 	const auto RayDirection = vRay.Direction;
@@ -161,7 +146,7 @@ std::array<int, 3> CRayCastingBaker::calcTexelColor(const std::vector<SCandidate
 		{
 			auto& Point = m_pCloud->points[SurfelIndex];
 			float Distance = (Intersection - Point.getVector3fMap()).norm() / m_SurfelRadius;
-			float Weight = std::exp(-Distance * Distance * 20); //TODO: magic number
+			float Weight = std::exp(-Distance * Distance * m_WeightCoefficient);
 
 			CulledCandidates.emplace_back(Point.getRGBVector3i(), Weight);
 		}
@@ -175,7 +160,8 @@ std::array<int, 3> CRayCastingBaker::calcTexelColor(const std::vector<SCandidate
 		SumWeight += Weight;
 	}
 
-	Eigen::Vector3i Color = (WeightedColor / SumWeight).cast<int>();
+	Eigen::Vector3f Round(0.5, 0.5, 0.5);
+	Eigen::Vector3i Color = (WeightedColor / SumWeight + Round).cast<int>();
 	return { Color.x(), Color.y(), Color.z() };
 }
 

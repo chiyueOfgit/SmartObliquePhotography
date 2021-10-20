@@ -18,6 +18,7 @@ namespace hiveObliquePhotography
 			const std::string NUM_SAMPLE = "NUM_SAMPLE";
 			const std::string SEARCH_RADIUS = "SEARCH_RADIUS";
 			const std::string DISTANCE_THRESHOLD = "DISTANCE_THRESHOLD";
+			const std::string WEIGHT_COEFFICIENT = "WEIGHT_COEFFICIENT";
 
 			const std::string SUTURE = "SUTURE";
 

@@ -667,6 +667,12 @@ void CQTInterface::onActionBakeTexture()
             *pResult += *m_TileSet.TileSet[Index];
         auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 512, 512 });
         
+        if (Texture.getHeight() <= 0 || Texture.getWidth() <= 0)
+        {
+            __messageDockWidgetOutputText("Bake Texture failed.");
+            return;
+        }
+        
         {
             const auto Width = Texture.getWidth();
             const auto Height = Texture.getHeight();
