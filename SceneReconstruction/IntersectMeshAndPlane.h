@@ -3,5 +3,6 @@
 
 namespace hiveObliquePhotography::SceneReconstruction
 {
-	void intersectMeshAndPlane(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<SVertex>& voIntersectionPoints, std::vector<int>& voDissociatedIndices);
+	void intersectMeshAndPlane(const Eigen::Vector4f& vPlane, CMesh& vioMesh, std::vector<SVertex>& voIntersectionPoints, std::vector<int>& voDissociatedIndices);
+	std::pair<std::vector<SVertex>, std::vector<int>> intersectMeshAndPlane(const Eigen::Vector4f& vPlane, CMesh& vioMesh);
 }

@@ -10,8 +10,19 @@ std::vector<int> __tellDissociatedPoint(const std::array<Eigen::Vector3f, 3>& vF
 
 //*****************************************************************
 //FUNCTION: 
+std::pair<std::vector<SVertex>, std::vector<int>> hiveObliquePhotography::SceneReconstruction::intersectMeshAndPlane
+	(const Eigen::Vector4f& vPlane, CMesh& vioMesh)
+{
+	std::vector<SVertex> IntersectionPoints;
+	std::vector<int> DissociatedIndices;
+	intersectMeshAndPlane(vPlane, vioMesh, IntersectionPoints, DissociatedIndices);
+	return { std::move(IntersectionPoints), std::move(DissociatedIndices) };
+}
+
+//*****************************************************************
+//FUNCTION: 
 void hiveObliquePhotography::SceneReconstruction::intersectMeshAndPlane
-	(CMesh& vioMesh, const Eigen::Vector4f& vPlane, std::vector<SVertex>& voIntersectionPoints, std::vector<int>& voDissociatedIndices)
+	(const Eigen::Vector4f& vPlane, CMesh& vioMesh, std::vector<SVertex>& voIntersectionPoints, std::vector<int>& voDissociatedIndices)
 {
 	auto [BoxMin, BoxMax] = vioMesh.calcAABB();
 	Eigen::Vector4f Plane = vPlane;
