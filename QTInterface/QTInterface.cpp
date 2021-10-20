@@ -634,9 +634,15 @@ void CQTInterface::onActionParameterization()
     {
         for (auto Index : m_SelectedMeshIndices)
         {
-            SceneReconstruction::hiveMeshParameterization(m_MeshSet.MeshSet[Index]);
-            hiveSaveMeshModel(m_MeshSet.MeshSet[Index], Directory + "/" + m_MeshSet.NameSet[Index]);
-            __messageDockWidgetOutputText("Mesh parameterization succeed.");
+            if (SceneReconstruction::hiveMeshParameterization(m_MeshSet.MeshSet[Index]))
+            {
+                hiveSaveMeshModel(m_MeshSet.MeshSet[Index], Directory + "/" + m_MeshSet.NameSet[Index]);
+                __messageDockWidgetOutputText("Mesh parameterization succeed.");
+            }
+            else
+            {
+                __messageDockWidgetOutputText("Mesh parameterization failed! Check the log for more information.");
+            }
         }
 
     }

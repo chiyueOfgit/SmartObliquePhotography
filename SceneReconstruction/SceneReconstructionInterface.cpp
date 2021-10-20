@@ -38,19 +38,22 @@ pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(cons
 
 //*****************************************************************
 //FUNCTION: 
-void hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vioMesh)
+bool hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vioMesh)
 {
 	_ASSERTE(!vioMesh.m_Vertices.empty());
 	auto pParameterizater = hiveDesignPattern::hiveCreateProduct<CArapParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("Parameterization"), vioMesh);
 	_ASSERTE(pParameterizater);
 
-	auto UV = pParameterizater->execute();
+	Eigen::MatrixXd UV;
+	if (!(pParameterizater->execute(UV))) return false;
+
 	_ASSERTE(UV.rows() == vioMesh.m_Vertices.size());
 	for (int i = 0; i < UV.rows(); i++)
 	{
 		vioMesh.m_Vertices[i].u = UV.row(i).x();
 		vioMesh.m_Vertices[i].v = UV.row(i).y();
 	}
+	return true;
 }
 
 //*****************************************************************

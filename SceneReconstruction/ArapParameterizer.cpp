@@ -20,20 +20,15 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::MatrixXd CArapParameterizer::execute()
+ bool CArapParameterizer::execute(Eigen::MatrixXd& voUV)
 {
 	buildHalfEdge();
 	auto BoundarySet = findBoundaryPoint();
 	std::vector<bool> BoundaryStatus(m_Mesh.m_Vertices.size(), false);
 	for (auto& Index : BoundarySet)
 		BoundaryStatus[Index] = true;
-	
-	auto InitialUV = calcInitialUV(m_Mesh, BoundaryStatus);
-	
-	////NOTE:利用ARAP方法得到UV；
-	//auto UV = __solveARAP(m_Mesh.getVerticesMatrix(), m_Mesh.getFacesMatrix(), InitialUV, BoundarySet);
 
-	return InitialUV;
+	return calcInitialUV(m_Mesh, BoundaryStatus, voUV);
 }
 
 //*****************************************************************
@@ -80,7 +75,7 @@ void CArapParameterizer::buildHalfEdge()
 }
 
 //*****************************************************************
-//FUNCTION: 寻找边界点；
+//FUNCTION:
 std::vector<int> CArapParameterizer::findBoundaryPoint()
 {
 	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
@@ -92,15 +87,17 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::MatrixXd CArapParameterizer::calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus)
+bool CArapParameterizer::calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus, Eigen::MatrixXd& voUV)
 {
 	auto TutteMatrix = __buildTutteSolveMatrix(m_HalfEdgeTable, vBoundaryStatus);
-	Eigen::VectorXd VectorX, VectorY;
+	Eigen::VectorXd VectorX, VectorY,AnswerX,AnswerY;
 	__fillTutteSolveVectors(VectorX, VectorY, vMesh, vBoundaryStatus);
-	auto X = __solveSparseMatrix(TutteMatrix, VectorX);
-	auto Y = __solveSparseMatrix(TutteMatrix, VectorY);
-	
-	return __switch2UVMatrix(vMesh, X, Y);
+
+	if (!(__solveSparseMatrix(TutteMatrix, VectorX, AnswerX) && __solveSparseMatrix(TutteMatrix, VectorY, AnswerY)))
+		return false;
+
+	voUV= __switch2UVMatrix(vMesh, AnswerX, AnswerY);
+	return true;
 }
 
 //*****************************************************************
@@ -219,7 +216,7 @@ void CArapParameterizer::__fillTutteSolveVectors(Eigen::VectorXd& vVectorX, Eige
 
 //*****************************************************************
 //FUNCTION: 
-Eigen::VectorXd CArapParameterizer::__solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor>& vMatrix, const Eigen::VectorXd& vVector)
+bool CArapParameterizer::__solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor>& vMatrix, const Eigen::VectorXd& vVector, Eigen::VectorXd& voAnswer)
 {
 	auto CompressMatrix = vMatrix;
 	CompressMatrix.makeCompressed();
@@ -227,28 +224,32 @@ Eigen::VectorXd CArapParameterizer::__solveSparseMatrix(const Eigen::SparseMatri
 	Eigen::BiCGSTAB<Eigen::SparseMatrix<double, Eigen::ColMajor>>Solver;
 	Solver.analyzePattern(CompressMatrix);
 	Solver.factorize(CompressMatrix);
-	auto Solution = Solver.solve(vVector);
+	voAnswer = Solver.solve(vVector);
 
 	switch (Solver.info())
 	{
 	case Eigen::Success:
-		hiveEventLogger::hiveOutputEvent("Computation was successful.");
+		hiveEventLogger::hiveOutputEvent("Parameterization:Computation was successful.");
+		return true;
 		break;
 	case Eigen::NumericalIssue:
-		hiveEventLogger::hiveOutputEvent("The provided data did not satisfy the prerequisites.");
+		hiveEventLogger::hiveOutputEvent("Parameterization:The provided data did not satisfy the prerequisites.");
+		return false;
 		break;
 	case Eigen::NoConvergence:
-		hiveEventLogger::hiveOutputEvent("Iterative procedure did not converge.");
+		hiveEventLogger::hiveOutputEvent("Parameterization:Iterative procedure did not converge.");
+		return false;
 		break;
 	case Eigen::InvalidInput:
-		hiveEventLogger::hiveOutputEvent("The inputs are invalid, or the algorithm has been improperly called.");
+		hiveEventLogger::hiveOutputEvent("Parameterization:The inputs are invalid, or the algorithm has been improperly called.");
+		return false;
 		break;
 	default:
-		hiveEventLogger::hiveOutputEvent("Unexpected error.");
+		hiveEventLogger::hiveOutputEvent("Parameterization:Unexpected error.");
+		return false;
 		break;
 	}
 	
-	return Solution;
 }
 
 //*****************************************************************
