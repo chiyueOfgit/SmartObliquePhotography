@@ -1,6 +1,7 @@
 #pragma once
+#include "Mesh.h"
 
 namespace hiveObliquePhotography::SceneReconstruction
 {
-	Eigen::Vector4f findSplitPlane(pcl::PointCloud<pcl::PointXYZ>::ConstPtr vLhs, pcl::PointCloud<pcl::PointXYZ>::ConstPtr vRhs);
+	Eigen::Vector4f findSplitPlane(const CMesh& vLhs, const CMesh& vRhs);
 }

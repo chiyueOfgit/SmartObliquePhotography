@@ -16,6 +16,7 @@ _REGISTER_NORMAL_PRODUCT(CBasicMeshSuture, KEYWORD::BASIC_MESH_SUTURE)
 //FUNCTION: 
 void CBasicMeshSuture::sutureMeshesV()
 {
+	m_SegmentPlane = findSplitPlane(m_LhsMesh, m_RhsMesh);
 	_ASSERTE(!m_SegmentPlane.isZero());
 
 	auto [LhsIntersectionPoints, LhsDissociatedIndices] = intersectMeshAndPlane(m_SegmentPlane, m_LhsMesh);
@@ -39,19 +40,6 @@ void CBasicMeshSuture::sutureMeshesV()
 
 	__removeUnreferencedVertex(m_LhsMesh);
 	__removeUnreferencedVertex(m_RhsMesh);
-}
-
-//*****************************************************************
-//FUNCTION: 
-void CBasicMeshSuture::setCloud4SegmentPlane(PointCloud_t::ConstPtr vLhs, PointCloud_t::ConstPtr vRhs)
-{
-	using SimpleCloudType = pcl::PointCloud<pcl::PointXYZ>;
-	
-	SimpleCloudType::Ptr SimpleLhs(new SimpleCloudType);
-	SimpleCloudType::Ptr SimpleRhs(new SimpleCloudType);
-	copyPointCloud(*vLhs, *SimpleLhs);
-	copyPointCloud(*vRhs, *SimpleRhs);
-	m_SegmentPlane = findSplitPlane(SimpleLhs, SimpleRhs);
 }
 
 //*****************************************************************
