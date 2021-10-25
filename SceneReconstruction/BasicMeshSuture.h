@@ -13,7 +13,6 @@ namespace hiveObliquePhotography::SceneReconstruction
 		~CBasicMeshSuture() override = default;
 
 		void sutureMeshesV() override;
-		void setCloud4SegmentPlane(PointCloud_t::ConstPtr vLhs, PointCloud_t::ConstPtr vRhs);
 		void dumpMeshes(CMesh& voLhsMesh, CMesh& voRhsMesh) const;
 
 	private:

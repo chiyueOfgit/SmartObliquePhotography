@@ -363,7 +363,6 @@ void CQTInterface::onActionOpen()
             m_UI.actionOutlierDetection->setEnabled(true);
             m_UI.actionRepairHole->setEnabled(true);
             m_UI.actionReconstruction->setEnabled(true);
-            m_UI.actionSutureMesh->setEnabled(true);
             m_UI.actionBakeTexture->setEnabled(true);
 
             m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
@@ -607,18 +606,15 @@ void CQTInterface::onActionOpenMesh()
 
 void CQTInterface::onActionSutureMesh()
 {
-    if (m_SelectedMeshIndices.size() == 2 && m_SelectedTileIndices.size() == 2)
+    if (m_SelectedMeshIndices.size() == 2)
     {
         auto MeshIter = m_SelectedMeshIndices.begin();
         auto MeshOneIndex = *MeshIter++;
         auto MeshTwoIndex = *MeshIter;
         auto& MeshOne = m_MeshSet.MeshSet[MeshOneIndex];
         auto& MeshTwo = m_MeshSet.MeshSet[MeshTwoIndex];
-        auto TileIter = m_SelectedTileIndices.begin();
-        auto CloudOne = m_TileSet.TileSet[*TileIter++];
-        auto CloudTwo = m_TileSet.TileSet[*TileIter];
 
-        SceneReconstruction::hiveSutureMesh(MeshOne, MeshTwo, CloudOne, CloudTwo);
+        SceneReconstruction::hiveSutureMesh(MeshOne, MeshTwo);
 
         hiveSaveMeshModel(MeshOne, m_MeshSet.NameSet[MeshOneIndex]);
         hiveSaveMeshModel(MeshTwo, m_MeshSet.NameSet[MeshTwoIndex]);
