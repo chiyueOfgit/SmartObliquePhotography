@@ -12,7 +12,7 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 {
 	CImage<std::array<int, 3>> ResultTexture;
 
-	if (!(vResolution.array() > 0).all() || vPointCloud->size() <= 0)
+	if (!(vResolution.array() > 0).all() || vPointCloud->size() <= 0 || !(m_Mesh.m_Vertices[0].uv().array() >= 0).all())
 		return ResultTexture;
 
 	m_pCloud = vPointCloud;

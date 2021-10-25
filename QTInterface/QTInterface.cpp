@@ -667,14 +667,9 @@ void CQTInterface::onActionBakeTexture()
         PointCloud_t::Ptr pResult(new PointCloud_t);
         for (auto Index : m_SelectedTileIndices)
             *pResult += *m_TileSet.TileSet[Index];
-        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 512, 512 });
+        CImage<std::array<int, 3>> Texture;
         
-        if (Texture.getHeight() <= 0 || Texture.getWidth() <= 0)
-        {
-            __messageDockWidgetOutputText("Bake Texture failed.");
-            return;
-        }
-        
+        if (SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 512, 512 }, Texture))
         {
             const auto Width = Texture.getWidth();
             const auto Height = Texture.getHeight();
@@ -691,9 +686,10 @@ void CQTInterface::onActionBakeTexture()
 
             stbi_write_png(TexturePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
             stbi_image_free(ResultImage);
+            __messageDockWidgetOutputText("Bake Texture finished.");
         }
-
-        __messageDockWidgetOutputText("Bake Texture finished.");
+        else
+            __messageDockWidgetOutputText("Bake Texture failed.");      
     }
 }
 
