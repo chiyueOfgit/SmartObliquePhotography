@@ -21,7 +21,8 @@ namespace hiveObliquePhotography
 			const std::string OUTLIER_DETECTOR = "OUTLIER_DETECTOR";
 			const std::string BOUNDARY_DETECTOR = "BOUNDARY_DETECTOR";
 			const std::string HOLE_REPAIRER = "HOLE_REPAIRER";
-
+			const std::string GROUND_OBJECT_EXTRACTOR = "GROUND_OBJECT_EXTRACTOR";
+			
 			const std::string TEMP_FOLDER = "Temp/";
 
 		}
