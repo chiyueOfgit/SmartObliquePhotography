@@ -152,6 +152,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -167,6 +168,7 @@
     <ClInclude Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="..\PointCloudRetouch\Feature.h" />
     <ClInclude Include="..\PointCloudRetouch\framework.h" />
+    <ClInclude Include="..\PointCloudRetouch\GroundObjectExtractor.h" />
     <ClInclude Include="..\PointCloudRetouch\HoleRepairer.h" />
     <ClInclude Include="..\PointCloudRetouch\InitialClusterCreator.h" />
     <ClInclude Include="..\PointCloudRetouch\MipmapGenerator.h" />
@@ -203,6 +205,7 @@
     <ClCompile Include="..\PointCloudRetouch\ColorFeature.cpp" />
     <ClCompile Include="..\PointCloudRetouch\dllmain.cpp" />
     <ClCompile Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\GroundObjectExtractor.cpp" />
     <ClCompile Include="..\PointCloudRetouch\HoleRepairer.cpp" />
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp" />
     <ClCompile Include="..\PointCloudRetouch\MipmapGenerator.cpp" />

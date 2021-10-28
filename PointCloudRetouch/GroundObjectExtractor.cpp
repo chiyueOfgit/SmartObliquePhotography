@@ -2,7 +2,7 @@
 #include "GroundObjectExtractor.h"
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
-_REGISTER_EXCLUSIVE_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTOR)
+_REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTOR)
 
 //*****************************************************************
 //FUNCTION:
@@ -18,6 +18,7 @@ void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, Eigen::Vector2i
 hiveObliquePhotography::CImage<std::array<int, 3>> CGroundObjectExtractor::__generateElevationMap(Eigen::Vector2i& vResolution)
 {
 	CImage<std::array<int, 3>> ResultImage;
+	
 	return ResultImage;
 }
 
