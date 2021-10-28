@@ -30,37 +30,43 @@ void hiveObliquePhotography::SceneReconstruction::hiveMeshSimplication(CMesh& vi
 
 //*****************************************************************
 //FUNCTION: 
-RECONSTRUCTION_DECLSPEC void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo, PointCloud_t::Ptr vCloudOne, PointCloud_t::Ptr vCloudTwo)
+RECONSTRUCTION_DECLSPEC void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo)
 {
 	auto pSuturator = hiveDesignPattern::hiveCreateProduct<CBasicMeshSuture>(KEYWORD::BASIC_MESH_SUTURE, CSceneReconstructionConfig::getInstance()->getSubConfigByName("BasicSuture"), vioMeshOne, vioMeshTwo);
-	pSuturator->setCloud4SegmentPlane(vCloudOne, vCloudTwo);
 	pSuturator->sutureMeshesV();
 	pSuturator->dumpMeshes(vioMeshOne, vioMeshTwo);
 }
 
 //*****************************************************************
 //FUNCTION: 
-void hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vioMesh)
+bool hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vioMesh)
 {
 	_ASSERTE(!vioMesh.m_Vertices.empty());
 	auto pParameterizater = hiveDesignPattern::hiveCreateProduct<CArapParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("Parameterization"), vioMesh);
 	_ASSERTE(pParameterizater);
 
-	auto UV = pParameterizater->execute();
+	Eigen::MatrixXd UV;
+	if (!(pParameterizater->execute(UV))) return false;
+
 	_ASSERTE(UV.rows() == vioMesh.m_Vertices.size());
 	for (int i = 0; i < UV.rows(); i++)
 	{
 		vioMesh.m_Vertices[i].u = UV.row(i).x();
 		vioMesh.m_Vertices[i].v = UV.row(i).y();
 	}
+	return true;
 }
 
 //*****************************************************************
 //FUNCTION: 
-hiveObliquePhotography::CImage<std::array<int, 3>> hiveObliquePhotography::SceneReconstruction::hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, Eigen::Vector2i vResolution)
+bool hiveObliquePhotography::SceneReconstruction::hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, Eigen::Vector2i vResolution, CImage<std::array<int, 3>>& voImage)
 {
 	auto pBaker = hiveDesignPattern::hiveCreateProduct<CRayCastingBaker>(KEYWORD::RAYCASTING_TEXTUREBAKER, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
-	return pBaker->bakeTexture(vSceneCloud, vResolution);
+	voImage = pBaker->bakeTexture(vSceneCloud, vResolution);
+	if (voImage.getHeight() <= 0 || voImage.getWidth() <= 0)
+		return false;
+	else
+		return true;
 }
 
 //*****************************************************************

@@ -74,7 +74,6 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 {
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	//Input
-	//auto InputBox = __calcOBBByIndices(vInputIndices);
 	auto InputBox = pManager->calcOBBByIndices(vInputIndices);
 	auto InputPlane = __calculatePlaneByIndices(vInputIndices, std::get<0>(InputBox));
 	auto InputBoxMax = std::get<2>(InputBox);
@@ -93,9 +92,8 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	__projectPoints2PlaneLattices({}, InputPlaneInfos, InputPlaneLattices);
 
 	//Boundary
-	//auto BoundaryBox = __calcOBBByIndices(vBoundaryIndices);	//可以和indices无关
 	auto BoundaryBox = pManager->calcOBBByIndices(vBoundaryIndices);
-	auto BoundaryPlane = __calculatePlaneByIndices(vBoundaryIndices, std::get<0>(BoundaryBox));	//可以从别的地方给
+	auto BoundaryPlane = __calculatePlaneByIndices(vBoundaryIndices, std::get<0>(BoundaryBox));	
 	auto BoundaryBoxMax = std::get<2>(BoundaryBox);
 	auto BoundaryBoxMin = std::get<1>(BoundaryBox);
 	
@@ -110,14 +108,13 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 	const Eigen::Vector2i HoleResolution{ (int)sqrtf(HolePlanePoints), (int)sqrtf(HolePlanePoints) };
 	SPlaneInfos BoundaryPlaneInfos;
 	std::vector<std::vector<SLattice>> BoundaryPlaneLattices;
-	__generatePlaneLattices(BoundaryPlane, BoundaryBox, HoleResolution, BoundaryPlaneInfos, BoundaryPlaneLattices);	//生成平面格子
-	__projectPoints2PlaneLattices({}, BoundaryPlaneInfos, BoundaryPlaneLattices);	//用包围盒里的点投点进格子
-	Eigen::MatrixXi Mask = __genMask((1.0f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices);	//Mask输出仍为Boundary的分辨率，只是以设定的进行计算
+	__generatePlaneLattices(BoundaryPlane, BoundaryBox, HoleResolution, BoundaryPlaneInfos, BoundaryPlaneLattices);	//Generate plane lattice
+	__projectPoints2PlaneLattices({}, BoundaryPlaneInfos, BoundaryPlaneLattices);	//Throw points into the grid with the points in the Bounding Box
+	Eigen::MatrixXi Mask = __genMask((1.0f * HoleResolution.cast<float>()).cast<int>(), BoundaryPlaneLattices);	
 
-	//input高度校正
 	__inputHeightCorrection(InputPlaneLattices, BoundaryPlaneLattices);
 
-	//生成颜色
+	//Generate color
 	{
 		auto InputColorMatrix = __extractMatrixFromLattices<Eigen::Vector3i>(InputPlaneLattices, offsetof(SLattice, Color));
 		auto BoundaryColorMatrix = __extractMatrixFromLattices<Eigen::Vector3i>(BoundaryPlaneLattices, offsetof(SLattice, Color));
@@ -126,9 +123,6 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		__outputImage(BoundaryColorMatrix, "Temp/output_before.png");
 		__outputImage(Mask, "Temp/mask.png");
 
-		//CTextureSynthesizer<int, 3> ColorSynthesizer;
-		//COrderIndependentTextureSynthesizer<int, 3> ColorSynthesizer;
-		//CMultithreadTextureSynthesizer<int, 3> ColorSynthesizer;
 		CTreeBasedTextureSynthesizer<int, 3> ColorSynthesizer;
 		ColorSynthesizer.execute(InputColorMatrix, Mask, BoundaryColorMatrix);
 		__fillLatticesByMatrix<Eigen::Vector3i>(BoundaryColorMatrix, BoundaryPlaneLattices, offsetof(SLattice, Color));
@@ -136,7 +130,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		__outputImage(BoundaryColorMatrix, "Temp/output_after.png");
 	}
 
-	//生成高度
+	//Generate height
 	{
 		auto InputHeightMatrix = __extractMatrixFromLattices<Eigen::Matrix<float, 1, 1>>(InputPlaneLattices, offsetof(SLattice, Height));
 		auto BoundaryHeightMatrix = __extractMatrixFromLattices<Eigen::Matrix<float, 1, 1>>(BoundaryPlaneLattices, offsetof(SLattice, Height));
@@ -144,11 +138,8 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 		__outputImage(InputHeightMatrix, "Temp/inputH.png");
 		__outputImage(BoundaryHeightMatrix, "Temp/output_beforeH.png");
 
-		//COrderIndependentTextureSynthesizer<float, 1> HeightSynthesizer;
-		//CMultithreadTextureSynthesizer<float, 1> HeightSynthesizer;
 		CTreeBasedTextureSynthesizer<float, 1> HeightSynthesizer;
 		HeightSynthesizer.execute(InputHeightMatrix, Mask, BoundaryHeightMatrix);
-		//__fillLatticesByMatrix<Eigen::Matrix<float, 1, 1>>(BoundaryHeightMatrix, BoundaryPlaneLattices, offsetof(SLattice, Height));
 		__gaussBlurbyHeightMatrix(BoundaryHeightMatrix, BoundaryPlaneLattices);
 
 		__outputImage(BoundaryHeightMatrix, "Temp/output_afterH.png");
@@ -161,7 +152,7 @@ void CHoleRepairer::repairHoleByBoundaryAndInput(const std::vector<pcl::index_t>
 //FUNCTION: 
 void CHoleRepairer::__generatePlaneLattices(const Eigen::Vector4f& vPlane, const std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f>& vBox, const Eigen::Vector2i& vResolution, SPlaneInfos& voPlaneInfos, std::vector<std::vector<SLattice>>& voPlaneLattices)
 {
-	std::vector<std::vector<SLattice>> PlaneLattices(vResolution.y(), std::vector<SLattice>(vResolution.x()));	//行优先
+	std::vector<std::vector<SLattice>> PlaneLattices(vResolution.y(), std::vector<SLattice>(vResolution.x()));	//row-major
 
 	Eigen::Vector3f PlaneNormal{ vPlane.x(), vPlane.y(), vPlane.z() };
 	
@@ -187,7 +178,7 @@ void CHoleRepairer::__generatePlaneLattices(const Eigen::Vector4f& vPlane, const
 		LatticeWorldPos.data()[X] = BoxMin.data()[X] + (LatticeCoord.x() + 0.5f) * LatticeWidth;
 		LatticeWorldPos.data()[Y] = BoxMin.data()[Y] + (LatticeCoord.y() + 0.5f) * LatticeHeight;
 		LatticeWorldPos.data()[Z] = -(vPlane.w() + vPlane.data()[X] * LatticeWorldPos.data()[X] + vPlane.data()[Y] * LatticeWorldPos.data()[Y]) / vPlane.data()[Z];
-		PlaneLattices[LatticeCoord.y()][LatticeCoord.x()].CenterPos = LatticeWorldPos;	//行优先
+		PlaneLattices[LatticeCoord.y()][LatticeCoord.x()].CenterPos = LatticeWorldPos;	//row-major
 	}
 
 	voPlaneInfos.AxisOrder = AxisOrder;
@@ -249,7 +240,7 @@ void CHoleRepairer::__projectPoints2PlaneLattices(const std::vector<pcl::index_t
 			}
 		}
 	}
-	//变回世界坐标
+	//Change back to world coordinates
 	__restoreWorldCoord(vioPlaneInfos, vioPlaneLattices, RotationMatrix);
 	__fillLatticesOriginInfos(vioPlaneInfos.Normal, vioPlaneLattices);
 }
@@ -310,7 +301,6 @@ void CHoleRepairer::__fixTextureColorAndHeight(std::vector<std::vector<SLattice>
 				std::vector<Eigen::Vector3i> Colors;
 				float SumHeights = 0.0f;
 				std::size_t NumNoValue = 0;
-				//在原始信息里查找
 				for (int i = Y - Delta; i <= Y + Delta; i++)
 					for (int k = X - Delta; k <= X + Delta; k++)
 						if (k >= 0 && k < Resolution.x() && i >= 0 && i < Resolution.y())
@@ -388,7 +378,7 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vPlan
 	_ASSERTE(!vPlaneLattices.empty());
 	Eigen::Vector2i Resolution{ vPlaneLattices.front().size(), vPlaneLattices.size() };
 
-	const float K = 1.0f, B = 0.0f;	//线性系数
+	const float K = 1.0f, B = 0.0f;	//Linear coefficient
 
 	Eigen::Vector3f PointNormal = vPlaneNormal;
 	if (PointNormal.z() < 0)
@@ -402,7 +392,7 @@ void CHoleRepairer::__generateNewPointsFromLattices(const Eigen::Vector3f& vPlan
 			auto& Lattice = vPlaneLattices[Y][X];
 			if (Lattice.Indices.empty())
 			{
-				Eigen::Vector3f RealPos = Lattice.CenterPos + vPlaneNormal * (K * Lattice.Height(0, 0) + B);	//取出加偏移
+				Eigen::Vector3f RealPos = Lattice.CenterPos + vPlaneNormal * (K * Lattice.Height(0, 0) + B);	
 				pcl::PointXYZRGBNormal TempPoint;
 				TempPoint.x = RealPos.x();
 				TempPoint.y = RealPos.y();
@@ -446,7 +436,7 @@ std::vector<std::size_t> CHoleRepairer::__calcAxisOrder(const Eigen::Vector4f& v
 {
 	Eigen::Vector3f PlaneNormal{ vPlane.x(), vPlane.y(), vPlane.z() };
 	auto MinAxis = PlaneNormal.maxCoeff();
-	std::vector<std::size_t> AxisOrder(3);	//Min在最后
+	std::vector<std::size_t> AxisOrder(3);	//Min is at the end
 	if (MinAxis == PlaneNormal.x())
 		AxisOrder = { 1, 2, 0 };
 	else if (MinAxis == PlaneNormal.y())
@@ -503,34 +493,6 @@ Eigen::MatrixXi CHoleRepairer::__genMask(const Eigen::Vector2i& vResolution, con
 	for (int Y = 0; Y < Mask.rows(); Y++)
 		for (int X = 0; X < Mask.cols(); X++)
 			Mask(Y, X) = 1;
-
-	//for (float Y = 0.5f; Y < vResolution.y(); Y++)
-	//	for (float X = 0.5f; X < vResolution.x(); X++)
-	//	{
-	//		Eigen::Vector2f BeginCoord{ X - 0.5f, Y - 0.5f };
-	//		Eigen::Vector2f EndCoord{ X + 0.5f, Y + 0.5f };
-
-	//		Eigen::Vector2f BeginInLattices = (ResampleRate.array() * BeginCoord.array());
-	//		Eigen::Vector2f EndInLattices = ResampleRate.array() * EndCoord.array();
-
-	//		bool bHasPoints = false;
-	//		for (float i = (int)(BeginInLattices.y() + 0.5f) + 0.5f; i <= EndInLattices.y() && !bHasPoints; i++)
-	//		{
-	//			for (float k = (int)(BeginInLattices.x() + 0.5f) + 0.5f; k <= EndInLattices.x(); k++)
-	//			{
-	//				if (!vPlaneLattices[int(i - 0.5f)][int(k - 0.5f)].Indices.empty())
-	//				{
-	//					bHasPoints = true;
-	//					break;
-	//				}
-	//			}
-	//		}
-
-	//		if (bHasPoints)
-	//			for (float i = (int)BeginInLattices.y() + 0.5f; i <= EndInLattices.y(); i++)
-	//				for (float k = (int)BeginInLattices.x() + 0.5f; k <= EndInLattices.x(); k++)
-	//					Mask((int)(i - 0.5f), (int)(k - 0.5f)) = 0;
-	//	}
 
 	for (int Y = 0; Y < Mask.rows(); Y++)
 		for (int X = 0; X < Mask.cols(); X++)

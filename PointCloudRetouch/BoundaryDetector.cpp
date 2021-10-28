@@ -47,7 +47,7 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vec
 		std::string SearchMode = m_pBoundaryDetectorConfig->getAttribute<std::string>("SEARCH_MODE_BOUNDARY_DETECTOR").value();
 		int NearestK = m_pBoundaryDetectorConfig->getAttribute<int>("NEAREST_N_BOUNDARY_DETECTOR").value();;
 		auto NeighborSet = pManager->buildNeighborhood(Index, SearchMode, NearestK);
-		//FitNormalÔÝÊ±ÓÃCenterNormal´úÌæ
+		//Fitnormal is temporarily replaced by Centernormal
 		Eigen::Vector3f FitNormal = CenterNormal;
 		
 		auto HomoStandardPos = pManager->getScene().getPositionAt(NeighborSet[1]);
@@ -101,9 +101,6 @@ void CBoundaryDetector::runV(std::vector<pcl::index_t>& vioBoundarySet, std::vec
 	vioBoundarySet.swap(TempSet) ;
 	
 	__divideBoundary(BoundarySet, voHoleSet);
-	//for (auto& Hole : voHoleSet)
-	//    for (auto Index : Hole)
-	//		pManager->tagPointLabel(Index, EPointLabel::KEPT, 0, 0);
 }
 
 Eigen::Vector3f CBoundaryDetector::__calcProjectivePoint(Eigen::Vector3f& vCenterPosition, Eigen::Vector3f& vCenterNormal, Eigen::Vector3f& vProjectPosition)

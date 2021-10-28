@@ -363,7 +363,6 @@ void CQTInterface::onActionOpen()
             m_UI.actionOutlierDetection->setEnabled(true);
             m_UI.actionRepairHole->setEnabled(true);
             m_UI.actionReconstruction->setEnabled(true);
-            m_UI.actionSutureMesh->setEnabled(true);
             m_UI.actionBakeTexture->setEnabled(true);
 
             m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
@@ -607,18 +606,15 @@ void CQTInterface::onActionOpenMesh()
 
 void CQTInterface::onActionSutureMesh()
 {
-    if (m_SelectedMeshIndices.size() == 2 && m_SelectedTileIndices.size() == 2)
+    if (m_SelectedMeshIndices.size() == 2)
     {
         auto MeshIter = m_SelectedMeshIndices.begin();
         auto MeshOneIndex = *MeshIter++;
         auto MeshTwoIndex = *MeshIter;
         auto& MeshOne = m_MeshSet.MeshSet[MeshOneIndex];
         auto& MeshTwo = m_MeshSet.MeshSet[MeshTwoIndex];
-        auto TileIter = m_SelectedTileIndices.begin();
-        auto CloudOne = m_TileSet.TileSet[*TileIter++];
-        auto CloudTwo = m_TileSet.TileSet[*TileIter];
 
-        SceneReconstruction::hiveSutureMesh(MeshOne, MeshTwo, CloudOne, CloudTwo);
+        SceneReconstruction::hiveSutureMesh(MeshOne, MeshTwo);
 
         hiveSaveMeshModel(MeshOne, m_MeshSet.NameSet[MeshOneIndex]);
         hiveSaveMeshModel(MeshTwo, m_MeshSet.NameSet[MeshTwoIndex]);
@@ -648,9 +644,15 @@ void CQTInterface::onActionParameterization()
     {
         for (auto Index : m_SelectedMeshIndices)
         {
-            SceneReconstruction::hiveMeshParameterization(m_MeshSet.MeshSet[Index]);
-            hiveSaveMeshModel(m_MeshSet.MeshSet[Index], Directory + "/" + m_MeshSet.NameSet[Index]);
-            __messageDockWidgetOutputText("Mesh parameterization succeed.");
+            if (SceneReconstruction::hiveMeshParameterization(m_MeshSet.MeshSet[Index]))
+            {
+                hiveSaveMeshModel(m_MeshSet.MeshSet[Index], Directory + "/" + m_MeshSet.NameSet[Index]);
+                __messageDockWidgetOutputText("Mesh parameterization succeed.");
+            }
+            else
+            {
+                __messageDockWidgetOutputText("Mesh parameterization failed! Check the log for more information.");
+            }
         }
 
     }
@@ -665,8 +667,9 @@ void CQTInterface::onActionBakeTexture()
         PointCloud_t::Ptr pResult(new PointCloud_t);
         for (auto Index : m_SelectedTileIndices)
             *pResult += *m_TileSet.TileSet[Index];
-        auto Texture = SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 512, 512 });
+        CImage<std::array<int, 3>> Texture;
         
+        if (SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 512, 512 }, Texture))
         {
             const auto Width = Texture.getWidth();
             const auto Height = Texture.getHeight();
@@ -683,9 +686,10 @@ void CQTInterface::onActionBakeTexture()
 
             stbi_write_png(TexturePath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
             stbi_image_free(ResultImage);
+            __messageDockWidgetOutputText("Bake Texture finished.");
         }
-
-        __messageDockWidgetOutputText("Bake Texture finished.");
+        else
+            __messageDockWidgetOutputText("Bake Texture failed.");      
     }
 }
 

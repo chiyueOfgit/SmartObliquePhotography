@@ -30,9 +30,9 @@ std::vector<Eigen::Vector3f> CPoissonSurfaceReconstructor::__calcVertexNormal(co
 	_ASSERTE(!vMesh.m_Vertices.empty());
 	std::pair<int, int> XY;
 	int Height;
-	vMesh.calcModelPlaneAxis(XY, Height);
+	vMesh.calcModelPlaneAxis(XY, Height);     
 	Eigen::Vector3f HeightAxis = { 0.0f ,0.0f, 0.0f };
-	HeightAxis.data()[Height] = 1.0f;
+	HeightAxis.data()[Height] = 1.0f;      
 	std::vector<Eigen::Vector3f> VertexNormals(vMesh.m_Vertices.size(), { 0.0f, 0.0f, 0.0f });
 	std::vector<int> NumNormals(vMesh.m_Vertices.size(), 0);
 	for (auto& Face : vMesh.m_Faces)
