@@ -12,8 +12,8 @@
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
-const auto LhsMeshPath = TESTMODEL_DIR + std::string("Test028_Model/005006.obj");
-const auto RhsMeshPath = TESTMODEL_DIR + std::string("Test028_Model/006006.obj");
+const auto LhsMeshPath = TESTMODEL_DIR + std::string("Test028_Model/006006.obj");
+const auto RhsMeshPath = TESTMODEL_DIR + std::string("Test028_Model/005006.obj");
 
 class TestMeshLegality : public testing::Test
 {

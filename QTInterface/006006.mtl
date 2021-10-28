@@ -1,9 +1,8 @@
-newmtl 006006
-Ka 0.2 0.2 0.2
-Kd 1.0 1.0 1.0
-Ks 0.2 0.2 0.2
-d 1.0
-Ns 32.0
-Ni 1.0
-illum 2
+newmtl 
+	Ns 0
+	d 0
+	illum 2
+	Ka 0.2 0.2 0.2
+	Kd 1 1 1
+	Ks 1 1 1
 map_Kd 
