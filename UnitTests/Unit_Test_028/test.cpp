@@ -34,7 +34,7 @@ protected:
 
 TEST_F(TestMeshLegality, Test_NoHoles)
 {
-	LoadMesh(RhsMeshPath);
+	LoadMesh(LhsMeshPath);
 	int HolesCount = vcg::tri::Clean<hiveObliquePhotography::CVcgMesh>::CountHoles(m_VcgMesh);
 	EXPECT_EQ(HolesCount, 0);
 }
