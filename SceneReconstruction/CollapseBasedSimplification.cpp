@@ -10,17 +10,18 @@ _REGISTER_NORMAL_PRODUCT(CCollapseBasedSimplification, KEYWORD::COLLAPSE_BASED_S
 
 //*****************************************************************
 //FUNCTION: 
-void CCollapseBasedSimplification::__toManifold(CMesh& vioMesh)
+void CCollapseBasedSimplification::__toManifold(CMesh& vioMesh)         
 {
+	_ASSERTE(!(vioMesh.m_Vertices.empty() || vioMesh.m_Faces.empty()));
 	CVcgMesh VcgMesh;
-	toVcgMesh(m_Mesh, VcgMesh);
+	toVcgMesh(vioMesh, VcgMesh);                                   
 	vcg::tri::Clean<CVcgMesh>::SplitNonManifoldVertex(VcgMesh, 0.1);
-	hiveObliquePhotography::fromVcgMesh(VcgMesh, m_Mesh);
+	hiveObliquePhotography::fromVcgMesh(VcgMesh, vioMesh);
 }
 
 //*****************************************************************
 //FUNCTION: 
-hiveObliquePhotography::CMesh CCollapseBasedSimplification::simplifyMesh()
+hiveObliquePhotography::CMesh CCollapseBasedSimplification::simplifyMesh()     
 {
 	__toManifold(m_Mesh);
 

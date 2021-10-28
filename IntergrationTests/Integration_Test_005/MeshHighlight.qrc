@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/MeshHighlight">
+        <file>Icon/open.png</file>
+        <file>Icon/save.png</file>
+        <file>Icon/setting.png</file>
+        <file>Icon/delete.png</file>
+        <file>Icon/brush.png</file>
+        <file>Icon/dichotomy.png</file>
+        <file>Icon/update.png</file>
+        <file>Icon/regionGrowing.png</file>
+        <file>Icon/rubber.png</file>
+        <file>Icon/blend.png</file>
+        <file>Icon/circleAreaPicking.png</file>
+        <file>Icon/pointPicking.png</file>
+        <file>Icon/instructions.png</file>
+        <file>Icon/Outlier.png</file>
+        <file>Icon/delete_bg.png</file>
+        <file>Icon/Bake.png</file>
+        <file>Icon/Hole.png</file>
+        <file>Icon/OpenMesh.png</file>
+        <file>Icon/Reconstruction.png</file>
+        <file>Icon/Reconstructor.png</file>
+    </qresource>
+</RCC>

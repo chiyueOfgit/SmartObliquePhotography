@@ -28,6 +28,9 @@
     <Filter Include="Operation\Expander">
       <UniqueIdentifier>{b2eea53f-b834-45d9-a571-0bac94d0973e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Operation\GroundobjectExtract">
+      <UniqueIdentifier>{d928619e-1e27-4db3-b53d-4c419d059ffc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PointCluster.h">
@@ -120,6 +123,9 @@
     <ClInclude Include="MutableKernelSizeTextureSynthesizer.h">
       <Filter>Utility</Filter>
     </ClInclude>
+    <ClInclude Include="GroundObjectExtractor.h">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -198,6 +204,9 @@
     </ClCompile>
     <ClCompile Include="MutableKernelSizeTextureSynthesizer.cpp">
       <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="GroundObjectExtractor.cpp">
+      <Filter>Operation\GroundobjectExtract</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

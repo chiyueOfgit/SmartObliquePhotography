@@ -150,6 +150,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <OpenMPSupport>true</OpenMPSupport>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BoundaryDetector.h" />
+    <ClInclude Include="GroundObjectExtractor.h" />
     <ClInclude Include="ColorFeature.h" />
     <ClInclude Include="EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="Feature.h" />
@@ -202,6 +204,7 @@
     <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EuclideanNeighborhoodBuilder.cpp" />
+    <ClCompile Include="GroundObjectExtractor.cpp" />
     <ClCompile Include="HoleRepairer.cpp" />
     <ClCompile Include="InitialClusterCreator.cpp" />
     <ClCompile Include="MipmapGenerator.cpp" />

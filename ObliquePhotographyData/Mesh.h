@@ -14,8 +14,8 @@ namespace hiveObliquePhotography
 		DataType nx = 0;
 		DataType ny = 0;
 		DataType nz = 0;
-		DataType u  = 0;
-		DataType v  = 0;
+		DataType u  = -1;
+		DataType v  = -1;
 
 		Eigen::Vector3f xyz() const { return { x, y, z }; }
 		Eigen::Vector3f normal() const { return { nx, ny, nz }; }
