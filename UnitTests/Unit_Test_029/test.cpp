@@ -60,26 +60,60 @@ protected:
 		delete pConfig;
 	}
 };
-
-
-TEST_F(TestOutlierDetector, DeathTest_InvalidInput)
+void _saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<std::array<int, 1>>& vTexture, bool vIsReverse)
 {
-	initTest(TESTMODEL_DIR + std::string("Test029_Model/test1.pcd"));
+	const auto Width = vTexture.getWidth();
+	const auto Height = vTexture.getHeight();
+	const auto BytesPerPixel = 1;
+	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+	for (auto i = 0; i < Height; i++)
+		for (auto k = 0; k < Width; k++)
+		{
+			auto I = i;
+			if (vIsReverse)
+				I = Height - 1 - I;
+			auto Offset = (I * Width + k) * BytesPerPixel;
+			ResultImage[Offset] = vTexture.getColor(i, k)[0];
+			//ResultImage[Offset + 1] = vTexture.getColor(i, k)[1];
+			//ResultImage[Offset + 2] = vTexture.getColor(i, k)[2];
+		}
+
+	stbi_write_png(vPath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+	stbi_image_free(ResultImage);
+}
+
+//TEST_F(TestOutlierDetector, OverallTest_generateElevationMap_1)
+//{
+//	initTest(TESTMODEL_DIR + std::string("Test029_Model/test1.pcd"));
+//	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
+//	EXPECT_NE(pExtractor, nullptr);
+//	if (!pExtractor)
+//		std::cerr << "create baker error." << std::endl;
+//	Eigen::Vector2i Resolution{ 10, 10 };
+//	CImage<std::array<int, 1>> ResultImage;
+//	ResultImage = pExtractor->generateElevationMap(Resolution);
+//
+//	auto PNGFilePath = TESTMODEL_DIR + std::string("Test029_Model/100RG.png");
+//	int Channels = 3;
+//	unsigned char* GtData = stbi_load(PNGFilePath.c_str(), &Resolution.x(), &Resolution.y(), &Channels, 0);
+//	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)
+//	{
+//		std::array<int, 3> GtColor{ GtData[i * 3], GtData[i * 3 + 1], GtData[i * 3 + 2] };
+//		auto Color = ResultImage.getColor(i / Resolution.x(), i % Resolution.x());
+//		EXPECT_EQ(Color, GtColor);
+//	}
+//}
+
+TEST_F(TestOutlierDetector, GenerateMap)
+{
+	initTest(TESTMODEL_DIR + std::string("Test029_Model/005006.pcd"));
 	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
 	EXPECT_NE(pExtractor, nullptr);
 	if (!pExtractor)
 		std::cerr << "create baker error." << std::endl;
-	Eigen::Vector2i Resolution{ 10, 10 };
-	CImage<std::array<int, 3>> ResultImage;
+	Eigen::Vector2i Resolution{ 1024, 1024 };
+	CImage<std::array<int, 1>> ResultImage;
 	ResultImage = pExtractor->generateElevationMap(Resolution);
 
-	auto PNGFilePath = TESTMODEL_DIR + std::string("Test029_Model/100RG.png");
-	int Channels = 3;
-	unsigned char* GtData = stbi_load(PNGFilePath.c_str(), &Resolution.x(), &Resolution.y(), &Channels, 0);
-	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)
-	{
-		std::array<int, 3> GtColor{ GtData[i * 3], GtData[i * 3 + 1], GtData[i * 3 + 2] };
-		auto Color = ResultImage.getColor(i / Resolution.x(), i % Resolution.x());
-		EXPECT_EQ(Color, GtColor);
-	}
+	_saveTexture("test1.png", ResultImage, false);
 }
