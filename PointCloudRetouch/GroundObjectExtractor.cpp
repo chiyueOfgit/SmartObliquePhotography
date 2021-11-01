@@ -9,23 +9,23 @@ _REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTO
 void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices,const Eigen::Vector2i& vResolution)
 {
 	_ASSERTE((vResolution.array() > 0).all());
-	CImage<std::array<int, 1>> ElevationMap = __generateElevationMap(vResolution);
+	CImage<std::array<int, 3>> ElevationMap = __generateElevationMap(vResolution);
 	__extractObjectIndices(ElevationMap, voObjectIndices);
 }
 
 //*****************************************************************
 //FUNCTION:
-hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__generateElevationMap(const Eigen::Vector2i& vResolution)
+hiveObliquePhotography::CImage<std::array<int, 3>> CGroundObjectExtractor::__generateElevationMap(const Eigen::Vector2i& vResolution)
 {
-	CImage<std::array<int, 1>> ResultImage;
+	CImage<std::array<int, 3>> ResultImage;
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	std::vector<pcl::index_t> Indices;
-	Eigen::Matrix<std::array<int, 1>, -1, -1> Texture(vResolution.y(), vResolution.x());
+	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(vResolution.y(), vResolution.x());
 	auto Box = pManager->getScene().getBoundingBox(Indices);
 	Eigen::Vector2f Offset{ (Box.second - Box.first).x() / vResolution.x(),(Box.second - Box.first).y() / vResolution.y() };
 	Eigen::Vector2f HeightRange{ Box.first.z(), Box.second.z() };
 
-	std::vector<std::vector<float>> HeightSet(vResolution.y(), std::vector<float>(vResolution.x(), -FLT_MAX));
+	std::vector<std::vector<float>> HeightSet(vResolution.y(), std::vector<float>(vResolution.x(), HeightRange.x()));
 	Eigen::Vector2f MinXY{ Box.first.x(),Box.first.y() };
 	__calcAreaElevation(MinXY, Offset, HeightSet);
 	
@@ -37,13 +37,14 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 			Texture(k, i) = __transElevation2Color(Elevation - HeightRange.x(), HeightRange.y() - HeightRange.x());
 		}
 	}
+
 	ResultImage.fillColor(vResolution.y(), vResolution.x(), Texture.data());
 	return ResultImage;
 }
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices)
+void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 3>>& vElevationMap, pcl::Indices& voIndices)
 {
 	
 }
@@ -76,7 +77,7 @@ std::array<int, 3> CGroundObjectExtractor::__transElevation2Color(float vElevati
 	Color = Percentage * 255;
 	return { Color };*/
 
-	std::array Color(0, 0, 0);
+	std::array Color = { 0, 0, 0 };
 	auto Percentage = vElevation / vHeightDiff;
 	switch (static_cast<int>(Percentage * 4))
 	{
@@ -92,7 +93,7 @@ std::array<int, 3> CGroundObjectExtractor::__transElevation2Color(float vElevati
 		Color[0] = (Percentage - 0.5) * 1020;
 		Color[1] = 255;
 		break;
-	case 4:
+	case 3:
 		Color[0] = 255;
 		Color[1] = 255 - (Percentage - 0.75) * 1020;
 		break;
@@ -101,20 +102,5 @@ std::array<int, 3> CGroundObjectExtractor::__transElevation2Color(float vElevati
 	}
 
 	return Color;
-
-	//auto Percentage = vElevation / vHeightDiff;
-	//switch (static_cast<int>(Percentage * 4))
-	//{
-	//case 0:
-	//	return std::array<int, 3>(0, Percentage * 1020, 255);
-	//case 1:
-	//	return std::array<int, 3>(0, 255, 255 - (Percentage - 0.25) * 1020);
-	//case 2:
-	//	return std::array<int, 3>((Percentage - 0.5) * 1020, 255, 0);
-	//case 3:
-	//	return std::array<int, 3>(255, 255 - (Percentage - 0.75) * 1020, 0);
-	//default:
-	//	break;
-	//}
 
 }
