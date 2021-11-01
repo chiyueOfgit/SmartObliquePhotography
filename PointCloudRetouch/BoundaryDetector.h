@@ -11,7 +11,7 @@ namespace hiveObliquePhotography
 			CBoundaryDetector() = default;
 			~CBoundaryDetector() = default;
 
-			bool init(const hiveConfig::CHiveConfig* vConfig);
+			bool init(const hiveConfig::CHiveConfig* vConfig);  //FIXME: 这个用法就很难受
 			virtual void runV(std::vector<pcl::index_t>& vioBoundarySet, std::vector<std::vector<pcl::index_t>>& voHoleSet);
 
 		private:

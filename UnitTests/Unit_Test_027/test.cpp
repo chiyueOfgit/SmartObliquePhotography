@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "SceneReconstructionConfig.h"
-#include "MeshPlaneIntersection.h"
+#include "IntersectMeshAndPlane.h"
 #include "ObliquePhotographyDataInterface.h"
 
 using namespace hiveObliquePhotography::SceneReconstruction;
@@ -34,14 +34,10 @@ TEST_F(TestMeshPlaneIntersection, Test_NoIntersection)
 {
 	LoadMesh(SimpleMeshPath);
 
-	hiveObliquePhotography::CMesh Mesh;
+	hiveObliquePhotography::CMesh Mesh = m_Mesh;
 	Eigen::Vector4f Plane(1.0, 0.0, 0.0, 3.0);
-	std::vector<hiveObliquePhotography::SVertex> IntersectionPoints;
-	CMeshPlaneIntersection MeshPlaneIntersection;
-	Mesh = m_Mesh;
-	MeshPlaneIntersection.execute(Mesh, Plane);
+	auto [IntersectionPoints, _] = intersectMeshAndPlane(Plane, Mesh);
 
-	MeshPlaneIntersection.dumpIntersectionPoints(IntersectionPoints);
 	EXPECT_EQ(IntersectionPoints.size(), 0);
 }
 
@@ -49,48 +45,43 @@ TEST_F(TestMeshPlaneIntersection, Test_SeveralIntersections)
 {
 	LoadMesh(SimpleMeshPath);
 	hiveObliquePhotography::CMesh Mesh;
-	std::vector<hiveObliquePhotography::SVertex> IntersectionPoints;
-	CMeshPlaneIntersection MeshPlaneIntersection;
 
-	Eigen::Vector4f PlaneWithOneIntersection(1.0, 0.0, 0.0, -2.0);
-	Mesh = m_Mesh;
-	MeshPlaneIntersection.execute(Mesh, PlaneWithOneIntersection);
-	MeshPlaneIntersection.dumpIntersectionPoints(IntersectionPoints);
-	EXPECT_EQ(IntersectionPoints.size(), 1);
-
-	Eigen::Vector4f PlaneWithSeveralIntersections(1.0, 0.0, 0.0, -1.5);
-	Mesh = m_Mesh;
-	MeshPlaneIntersection.execute(Mesh, PlaneWithSeveralIntersections);
-	MeshPlaneIntersection.dumpIntersectionPoints(IntersectionPoints);
-	EXPECT_EQ(IntersectionPoints.size(), 2);
-
-	Eigen::Vector4f PlaneWithSeveralIntersectionsOverlapWithOrigin(-1.0, 0.0, 0.0, 0.0);
-	Mesh = m_Mesh;
-	MeshPlaneIntersection.execute(Mesh, PlaneWithSeveralIntersectionsOverlapWithOrigin);
-	MeshPlaneIntersection.dumpIntersectionPoints(IntersectionPoints);
-	EXPECT_EQ(IntersectionPoints.size(), 3);
-
+	{
+		Mesh = m_Mesh;
+		Eigen::Vector4f PlaneWithOneIntersection(1.0, 0.0, 0.0, -2.0);
+		auto [IntersectionPoints, _] = intersectMeshAndPlane(PlaneWithOneIntersection, Mesh);
+		EXPECT_EQ(IntersectionPoints.size(), 1);
+	}
+	{
+		Mesh = m_Mesh;
+		Eigen::Vector4f PlaneWithSeveralIntersections(1.0, 0.0, 0.0, -1.5);
+		auto [IntersectionPoints, _] = intersectMeshAndPlane(PlaneWithSeveralIntersections, Mesh);
+		EXPECT_EQ(IntersectionPoints.size(), 1);
+	}
+	{
+		Mesh = m_Mesh;
+		Eigen::Vector4f PlaneWithSeveralIntersectionsOverlapWithOrigin(-1.0, 0.0, 0.0, 0.0);
+		auto [IntersectionPoints, _] = intersectMeshAndPlane(PlaneWithSeveralIntersectionsOverlapWithOrigin, Mesh);
+		EXPECT_EQ(IntersectionPoints.size(), 3);
+	}
 }
 
 TEST_F(TestMeshPlaneIntersection, Test_TerrainModel)
 {
 	LoadMesh(SceneMeshPath);
-	hiveObliquePhotography::CMesh Mesh;
-	std::vector<hiveObliquePhotography::SVertex> IntersectionPoints;
-	CMeshPlaneIntersection MeshPlaneIntersection;
-
+	
+	hiveObliquePhotography::CMesh Mesh = m_Mesh;
 	Eigen::Vector4f Plane(1.0, 0.0, 0.0, 132.0);
-	Mesh = m_Mesh;
-	MeshPlaneIntersection.execute(Mesh, Plane);
-	MeshPlaneIntersection.dumpIntersectionPoints(IntersectionPoints);
-	EXPECT_EQ(IntersectionPoints.size(), 205);
+	auto [IntersectionPoints, _] = intersectMeshAndPlane(Plane, Mesh);
+
+	EXPECT_EQ(IntersectionPoints.size(), 204);
 }
 
 TEST_F(TestMeshPlaneIntersection, Test_SortByVertexLoop)
 {
 	LoadMesh(SimpleMeshPath);
 	hiveObliquePhotography::CMesh Mesh;
-	CMeshPlaneIntersection MeshPlaneIntersection;
+	//CMeshPlaneIntersection MeshPlaneIntersection;
 	std::vector<int> DissociatedIndices{ 0,3,4,2 };
 	std::vector<hiveObliquePhotography::SVertex> VertexSet;
 	for (auto Index : DissociatedIndices)
@@ -98,14 +89,14 @@ TEST_F(TestMeshPlaneIntersection, Test_SortByVertexLoop)
 	//MeshPlaneIntersection.sortByVertexLoop(DissociatedIndices, VertexSet);
 	if(DissociatedIndices[0] == 0)
 	{
-		EXPECT_EQ(DissociatedIndices[1], 2);
-		EXPECT_EQ(DissociatedIndices[2], 3);
-		EXPECT_EQ(DissociatedIndices[3], 4);
+		EXPECT_EQ(DissociatedIndices[1], 3);
+		EXPECT_EQ(DissociatedIndices[2], 4);
+		EXPECT_EQ(DissociatedIndices[3], 2);
 	}
 	else
 	{
 		EXPECT_EQ(DissociatedIndices[1], 3);
 		EXPECT_EQ(DissociatedIndices[2], 2);
-		EXPECT_EQ(DissociatedIndices[3], 0);	
+		EXPECT_EQ(DissociatedIndices[3], 0);
 	}
 }

@@ -12,8 +12,8 @@
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
-const auto LhsMeshPath = TESTMODEL_DIR + std::string("Test028_Model/005006.obj");
-const auto RhsMeshPath = TESTMODEL_DIR + std::string("Test028_Model/006006.obj");
+const auto LhsMeshPath = TESTMODEL_DIR + std::string("Test028_Model/006006.obj");
+const auto RhsMeshPath = TESTMODEL_DIR + std::string("Test028_Model/005006.obj");
 
 class TestMeshLegality : public testing::Test
 {
@@ -34,7 +34,7 @@ protected:
 
 TEST_F(TestMeshLegality, Test_NoHoles)
 {
-	LoadMesh(RhsMeshPath);
+	LoadMesh(LhsMeshPath);
 	int HolesCount = vcg::tri::Clean<hiveObliquePhotography::CVcgMesh>::CountHoles(m_VcgMesh);
 	EXPECT_EQ(HolesCount, 0);
 }

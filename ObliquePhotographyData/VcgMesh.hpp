@@ -10,8 +10,8 @@ namespace hiveObliquePhotography
 		vcg::Use<SVcgFace>::AsFaceType,
 		vcg::Use<SVcgEdge>::AsEdgeType>
 	{};
-	struct SVcgVertex : public vcg::Vertex<SVcgUsedTypes, vcg::vertex::Coord3f, vcg::vertex::Normal3f, vcg::vertex::TexCoord2f, vcg::vertex::BitFlags> {};
-	struct SVcgFace : public vcg::Face<SVcgUsedTypes, vcg::face::FFAdj, vcg::face::VertexRef, vcg::vertex::BitFlags> {};
+	struct SVcgVertex : public vcg::Vertex<SVcgUsedTypes, vcg::vertex::Coord3f, vcg::vertex::Normal3f, vcg::vertex::TexCoord2f, vcg::vertex::BitFlags, vcg::vertex::Mark> {};
+	struct SVcgFace : public vcg::Face<SVcgUsedTypes, vcg::face::FFAdj, vcg::face::VertexRef, vcg::vertex::BitFlags, vcg::face::Mark> {};
 	struct SVcgEdge : public vcg::Edge<SVcgUsedTypes> {};
 	class CVcgMesh : public vcg::tri::TriMesh<std::vector<SVcgVertex>, std::vector<SVcgFace>, std::vector<SVcgEdge>> {};
 
