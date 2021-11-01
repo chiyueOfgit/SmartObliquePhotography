@@ -69,10 +69,52 @@ void CGroundObjectExtractor::__calcAreaElevation(Eigen::Vector2f& vMinCoord, Eig
 
 //*****************************************************************
 //FUNCTION:
-std::array<int, 1> CGroundObjectExtractor::__transElevation2Color(float vElevation, float vHeightDiff)
+std::array<int, 3> CGroundObjectExtractor::__transElevation2Color(float vElevation, float vHeightDiff)
 {
-	int Color;
+	/*int Color;
 	auto Percentage = vElevation / vHeightDiff;
 	Color = Percentage * 255;
-	return { Color };
+	return { Color };*/
+
+	std::array Color(0, 0, 0);
+	auto Percentage = vElevation / vHeightDiff;
+	switch (static_cast<int>(Percentage * 4))
+	{
+	case 0:
+		Color[1] = Percentage * 1020;
+		Color[2] = 255;
+		break;
+	case 1:
+		Color[1] = 255;
+		Color[2] = 255 - (Percentage - 0.25) * 1020;
+		break;
+	case 2:
+		Color[0] = (Percentage - 0.5) * 1020;
+		Color[1] = 255;
+		break;
+	case 4:
+		Color[0] = 255;
+		Color[1] = 255 - (Percentage - 0.75) * 1020;
+		break;
+	default:
+		break;
+	}
+
+	return Color;
+
+	//auto Percentage = vElevation / vHeightDiff;
+	//switch (static_cast<int>(Percentage * 4))
+	//{
+	//case 0:
+	//	return std::array<int, 3>(0, Percentage * 1020, 255);
+	//case 1:
+	//	return std::array<int, 3>(0, 255, 255 - (Percentage - 0.25) * 1020);
+	//case 2:
+	//	return std::array<int, 3>((Percentage - 0.5) * 1020, 255, 0);
+	//case 3:
+	//	return std::array<int, 3>(255, 255 - (Percentage - 0.75) * 1020, 0);
+	//default:
+	//	break;
+	//}
+
 }

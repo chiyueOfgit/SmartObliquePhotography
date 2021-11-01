@@ -23,7 +23,7 @@ namespace hiveObliquePhotography
 			void __extractObjectIndices(CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices);
 
 			void __calcAreaElevation(Eigen::Vector2f& vMinCoord, Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet);
-			std::array<int, 1> __transElevation2Color(float vElevation, float vHeightDiff);
+			std::array<int, 3> __transElevation2Color(float vElevation, float vHeightDiff);
 		};
 	}
 }
