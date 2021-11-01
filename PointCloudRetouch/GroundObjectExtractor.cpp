@@ -6,7 +6,7 @@ _REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTO
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, Eigen::Vector2i& vResolution)
+void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices,const Eigen::Vector2i& vResolution)
 {
 	_ASSERTE((vResolution.array() > 0).all());
 	CImage<std::array<int, 1>> ElevationMap = __generateElevationMap(vResolution);
@@ -15,7 +15,7 @@ void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, Eigen::Vector2i
 
 //*****************************************************************
 //FUNCTION:
-hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__generateElevationMap(Eigen::Vector2i& vResolution)
+hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__generateElevationMap(const Eigen::Vector2i& vResolution)
 {
 	CImage<std::array<int, 1>> ResultImage;
 	auto pManager = CPointCloudRetouchManager::getInstance();
@@ -43,14 +43,14 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__extractObjectIndices(CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices)
+void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices)
 {
 	
 }
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__calcAreaElevation(Eigen::Vector2f& vMinCoord, Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet)
+void CGroundObjectExtractor::__calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet)
 {
 	auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
 	for(int j = 0; j < Scene.getNumPoint(); j++)
