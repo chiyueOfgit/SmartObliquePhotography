@@ -114,6 +114,8 @@ namespace hiveObliquePhotography
             void onActionReconstruction();
             void onActionParameterization();
             void onActionBakeTexture();
+            void onActionReconstructionStitching();
+            void onActionParameterizationBake();
             void onResourceSpaceItemDoubleClick(QModelIndex);
             void onResourceSpaceItemClick(QModelIndex vIndex);
             void onResourceSpaceItemChange(QStandardItem* vItem);

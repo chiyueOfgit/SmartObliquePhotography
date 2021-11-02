@@ -102,6 +102,8 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionInstructions, SIGNAL(triggered()), this, SLOT(onActionInstructions()));
     QObject::connect(m_UI.actionOutlierDetection, SIGNAL(triggered()), this, SLOT(onActionOutlierDetection()));
     QObject::connect(m_UI.actionRepairHole, SIGNAL(triggered()), this, SLOT(onActionStartRepairHole()));
+    QObject::connect(m_UI.actionReconstructionStitching, SIGNAL(triggered()), this, SLOT(onActionReconstructionStitching()));
+    QObject::connect(m_UI.actionParameterizationBake, SIGNAL(triggered()), this, SLOT(onActionParameterizationBake()));
 }
 
 void CQTInterface::__initialVTKWidget()
@@ -691,6 +693,116 @@ void CQTInterface::onActionBakeTexture()
         else
             __messageDockWidgetOutputText("Bake Texture failed.");      
     }
+}
+
+void CQTInterface::onActionReconstructionStitching()
+{
+    if (m_TileSet.TileSet.size() != 2)
+    {
+        __messageDockWidgetOutputText("Please load 2 Tile.");
+        return;
+    }
+
+    std::vector<std::string> MeshPaths;
+    int MeshIndex;
+    for (int i = 0; i < m_TileSet.TileSet.size(); i++)
+        MeshPaths.push_back(QFileDialog::getSaveFileName(this, tr("SaveMesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)")).toStdString());
+        
+    for (int i = 0; i < m_TileSet.TileSet.size(); i++)
+    {
+        CMesh Mesh;
+        SceneReconstruction::hiveSurfaceReconstruction(m_TileSet.TileSet[i], Mesh);
+        m_MeshSet.NameSet.push_back(__getFileNameWithSuffix(MeshPaths[i]));
+        m_MeshSet.MeshSet.push_back(Mesh);
+        MeshIndex = m_MeshSet.MeshSet.size() - 1;
+        //hiveSaveMeshModel(Mesh, MeshPaths[i]);
+    }
+
+    __messageDockWidgetOutputText("Reconstruction finished.");
+
+    auto& MeshOne = m_MeshSet.MeshSet[MeshIndex - 1];
+    auto& MeshTwo = m_MeshSet.MeshSet[MeshIndex];
+
+    SceneReconstruction::hiveSutureMesh(MeshOne, MeshTwo);
+
+    hiveSaveMeshModel(MeshOne, MeshPaths[MeshIndex - 1]);
+    hiveSaveMeshModel(MeshTwo, MeshPaths[MeshIndex]);
+
+    __messageDockWidgetOutputText("Suture mesh " + m_MeshSet.NameSet[MeshIndex - 1] + " and " + m_MeshSet.NameSet[MeshIndex] + " succeed");
+}
+
+// TODO::copy-paste
+void CQTInterface::onActionParameterizationBake()
+{
+    if (m_MeshSet.MeshSet.size() != 1)
+    {
+        __messageDockWidgetOutputText("Please load one Tile.");
+        return;
+    }
+
+    if (m_TileSet.TileSet.empty())
+    {
+        __messageDockWidgetOutputText("No Tile Loaded.");
+        return;
+    }
+
+    std::vector<std::string> MeshPaths;
+    std::vector<std::string> TexturePaths;
+    int MeshIndex;
+    for (int i = 0; i < m_MeshSet.MeshSet.size(); i++)
+    {
+        auto MeshPath = QFileDialog::getSaveFileName(this, tr("Save Mesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
+        if (MeshPath == "")
+            break;
+        MeshPaths.push_back(MeshPath);
+        auto Directory = __getDirectory(MeshPath);
+        auto FileName = __getFileName(MeshPath);
+        TexturePaths.push_back(Directory + "/" +  FileName + ".png");
+    }
+
+    if (MeshPaths.size() != m_MeshSet.MeshSet.size())
+    {
+        __messageDockWidgetOutputText("Please input Path.");
+        return;
+    }
+
+    for (int i = 0; i < m_MeshSet.MeshSet.size(); i++)
+    {
+        if (SceneReconstruction::hiveMeshParameterization(m_MeshSet.MeshSet[i]))
+        {
+            hiveSaveMeshModel(m_MeshSet.MeshSet[i], MeshPaths[i]);
+            __messageDockWidgetOutputText("Mesh parameterization succeed.");
+        }
+        else
+            __messageDockWidgetOutputText("Mesh parameterization failed! Check the log for more information.");
+    }
+
+    PointCloud_t::Ptr pResult(new PointCloud_t);
+    for (auto Tile : m_TileSet.TileSet)
+        *pResult += *Tile;
+    CImage<std::array<int, 3>> Texture;
+
+    if (SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 512, 512 }, Texture))
+    {
+        const auto Width = Texture.getWidth();
+        const auto Height = Texture.getHeight();
+        const auto BytesPerPixel = 3;
+        auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+        for (auto i = 0; i < Height; i++)
+            for (auto k = 0; k < Width; k++)
+            {
+                auto Offset = ((Height - 1 - i) * Width + k) * BytesPerPixel;
+                ResultImage[Offset] = Texture.getColor(i, k)[0];
+                ResultImage[Offset + 1] = Texture.getColor(i, k)[1];
+                ResultImage[Offset + 2] = Texture.getColor(i, k)[2];
+            }
+
+        stbi_write_png(TexturePaths[0].c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+        stbi_image_free(ResultImage);
+        __messageDockWidgetOutputText("Bake Texture finished.");
+    }
+    else
+        __messageDockWidgetOutputText("Bake Texture failed.");
 }
 
 void CQTInterface::onResourceSpaceItemDoubleClick(QModelIndex)

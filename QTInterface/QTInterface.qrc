@@ -19,6 +19,8 @@
         <file>Icon/Hole.png</file>
         <file>Icon/OpenMesh.png</file>
         <file>Icon/Reconstruction.png</file>
-        <file>Icon/Reconstructor.png</file>
+        <file>Icon/Parameterization.png</file>
+        <file>Icon/reconstruction&amp;stitching.png</file>
+        <file>Icon/parameterization&amp;bake.png</file>
     </qresource>
 </RCC>
