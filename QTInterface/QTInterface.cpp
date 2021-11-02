@@ -734,13 +734,13 @@ void CQTInterface::onActionReconstructionStitching()
 // TODO::copy-paste
 void CQTInterface::onActionParameterizationBake()
 {
-    if (m_MeshSet.MeshSet.size() != 1)
+    if (m_SelectedTileIndices.size() != 1)
     {
         __messageDockWidgetOutputText("Please load one Tile.");
         return;
     }
 
-    if (m_TileSet.TileSet.empty())
+    if (m_SelectedMeshIndices.size() != 1)
     {
         __messageDockWidgetOutputText("No Tile Loaded.");
         return;
@@ -749,7 +749,7 @@ void CQTInterface::onActionParameterizationBake()
     std::vector<std::string> MeshPaths;
     std::vector<std::string> TexturePaths;
     int MeshIndex;
-    for (int i = 0; i < m_MeshSet.MeshSet.size(); i++)
+    for (int i = 0; i < m_SelectedTileIndices.size(); i++)
     {
         auto MeshPath = QFileDialog::getSaveFileName(this, tr("Save Mesh"), m_MeshOpenPath.c_str(), tr("OBJ files(*.obj)")).toStdString();
         if (MeshPath == "")
@@ -760,17 +760,17 @@ void CQTInterface::onActionParameterizationBake()
         TexturePaths.push_back(Directory + "/" +  FileName + ".png");
     }
 
-    if (MeshPaths.size() != m_MeshSet.MeshSet.size())
+    if (MeshPaths.size() != m_SelectedMeshIndices.size())
     {
         __messageDockWidgetOutputText("Please input Path.");
         return;
     }
 
-    for (int i = 0; i < m_MeshSet.MeshSet.size(); i++)
+    for (auto Index : m_SelectedMeshIndices)
     {
-        if (SceneReconstruction::hiveMeshParameterization(m_MeshSet.MeshSet[i]))
+        if (SceneReconstruction::hiveMeshParameterization(m_MeshSet.MeshSet[Index]))
         {
-            hiveSaveMeshModel(m_MeshSet.MeshSet[i], MeshPaths[i]);
+            hiveSaveMeshModel(m_MeshSet.MeshSet[Index], MeshPaths[0]);
             __messageDockWidgetOutputText("Mesh parameterization succeed.");
         }
         else
@@ -778,8 +778,8 @@ void CQTInterface::onActionParameterizationBake()
     }
 
     PointCloud_t::Ptr pResult(new PointCloud_t);
-    for (auto Tile : m_TileSet.TileSet)
-        *pResult += *Tile;
+    for (auto Index : m_SelectedTileIndices)
+        *pResult += *m_TileSet.TileSet[Index];
     CImage<std::array<int, 3>> Texture;
 
     if (SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 512, 512 }, Texture))
