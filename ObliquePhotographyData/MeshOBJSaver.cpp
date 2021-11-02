@@ -11,7 +11,7 @@ _REGISTER_EXCLUSIVE_PRODUCT(CMeshOBJSaver, OBJ_SAVER);
 void CMeshOBJSaver::saveDataToFileV(const CMesh& vMesh, const std::string& vFilePath)
 {
 	//vFilePath: Path / Name . Suffix
-	//       (last of /)  (first of .)
+	//       (last of /)  (last of .)
 	std::string_view Name(vFilePath.begin() + vFilePath.find_last_of('/') + 1, vFilePath.begin() + vFilePath.find_last_of('.'));
 	std::string_view PathAndName(vFilePath.begin(), vFilePath.begin() + vFilePath.find_last_of('.'));
 	
