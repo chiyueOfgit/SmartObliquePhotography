@@ -40,7 +40,7 @@ pcl::TextureMesh CMesh::toTexMesh(const pcl::TexMaterial& vMaterial) const
 	__fillCloud(m_Vertices, TexMesh.cloud);
 	TexMesh.tex_polygons.resize(1);
 	__fillPolygons(m_Faces, TexMesh.tex_polygons[0]);
-	
+
 	//tex coord
 	std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f>> Coords;
 	for (int i = 0; i < m_Vertices.size(); i++)
@@ -98,7 +98,7 @@ void CMesh::calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const
 		AxisAndWidth.emplace_back(i, AABB.second.data()[i] - AABB.first.data()[i]);
 
 	std::ranges::sort(AxisAndWidth, [](auto& vLeft, auto& vRight) { return vLeft.second < vRight.second; });
-	
+
 	vHeight = AxisAndWidth[0].first;
 
 	vUV = { AxisAndWidth[1].first, AxisAndWidth[2].first };
@@ -108,6 +108,14 @@ void CMesh::calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const
 //FUNCTION: 
 void CMesh::saveMaterial(const std::string& vPath) const
 {
+	if (m_Material.tex_name == "")
+	{
+		auto NameBegin = vPath.find('/') + 1;
+		auto NameEnd = vPath.find_last_of('.');
+		const_cast<CMesh*>(this)->m_Material.tex_name = vPath.substr(NameBegin, NameEnd - NameBegin).c_str();
+		const_cast<CMesh*>(this)->m_Material.tex_file = vPath;
+	}
+
 	std::ofstream Out(vPath);
 	Out << std::format(
 		"newmtl {}\n"
@@ -122,8 +130,8 @@ void CMesh::saveMaterial(const std::string& vPath) const
 		m_Material.tex_Ka.r, m_Material.tex_Ka.g, m_Material.tex_Ka.b,
 		m_Material.tex_Kd.r, m_Material.tex_Kd.g, m_Material.tex_Kd.b,
 		m_Material.tex_Ks.r, m_Material.tex_Ks.g, m_Material.tex_Ks.b,
-		m_Material.tex_file.substr(m_Material.tex_file.find_last_of('/') + 1)
-		);
+		m_Material.tex_name + ".png"
+	);
 	Out.close();
 }
 
@@ -183,7 +191,7 @@ void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const pcl::TextureMe
 //FUNCTION: 
 void CMesh::__fillVertices(std::vector<SVertex>& vVertices, const Eigen::MatrixXd& vVerticesMatrix) const
 {
-	for(int i = 0; i < vVerticesMatrix.rows(); i++)
+	for (int i = 0; i < vVerticesMatrix.rows(); i++)
 	{
 		SVertex Vertex;
 		Vertex.x = vVerticesMatrix.row(i).x();
@@ -262,7 +270,7 @@ void CMesh::__fillCloud(const std::vector<SVertex>& vVertices, pcl::PCLPointClou
 	vCloud.height = 1;
 	vCloud.is_bigendian = 0;
 
-	const std::vector<std::string> AttributeNames = 
+	const std::vector<std::string> AttributeNames =
 	{
 		"x", "y", "z", "normal_x", "normal_y", "normal_z", "u", "v"
 	};
