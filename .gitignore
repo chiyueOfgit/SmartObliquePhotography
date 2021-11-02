@@ -3,7 +3,6 @@
 
 *.obj
 *.mtl
-*.ply
 *.pcd
 
 # User-specific files
