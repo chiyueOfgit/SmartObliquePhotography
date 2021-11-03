@@ -15,6 +15,7 @@ namespace hiveObliquePhotography
 	struct SVcgEdge : public vcg::Edge<SVcgUsedTypes> {};
 	class CVcgMesh : public vcg::tri::TriMesh<std::vector<SVcgVertex>, std::vector<SVcgFace>, std::vector<SVcgEdge>> {};
 
+	//precondition: compact face&vertex vector
 	inline void fromVcgMesh(const CVcgMesh& vFrom, CMesh& vTo)
 	{
 		vTo.m_Vertices.clear();

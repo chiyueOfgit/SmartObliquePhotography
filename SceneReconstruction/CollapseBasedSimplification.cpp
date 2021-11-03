@@ -16,6 +16,8 @@ void CCollapseBasedSimplification::__toManifold(CMesh& vioMesh)
 	CVcgMesh VcgMesh;
 	toVcgMesh(vioMesh, VcgMesh);                                   
 	vcg::tri::Clean<CVcgMesh>::SplitNonManifoldVertex(VcgMesh, 0.1);
+	vcg::tri::Allocator<CVcgMesh>::CompactFaceVector(VcgMesh);
+	vcg::tri::Allocator<CVcgMesh>::CompactVertexVector(VcgMesh);
 	hiveObliquePhotography::fromVcgMesh(VcgMesh, vioMesh);
 }
 

@@ -195,6 +195,8 @@ void CBasicMeshSuture::__removeUnreferencedVertex(CMesh& vioMesh)
 	CVcgMesh VcgMesh;
 	toVcgMesh(vioMesh, VcgMesh);
 	vcg::tri::Clean<CVcgMesh>::RemoveUnreferencedVertex(VcgMesh);
+	vcg::tri::Allocator<CVcgMesh>::CompactFaceVector(VcgMesh);
+	vcg::tri::Allocator<CVcgMesh>::CompactVertexVector(VcgMesh);
 	fromVcgMesh(VcgMesh, vioMesh);
 }
 

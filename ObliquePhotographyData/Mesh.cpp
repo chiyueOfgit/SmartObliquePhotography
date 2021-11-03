@@ -116,6 +116,13 @@ void CMesh::saveMaterial(const std::string& vPath) const
 		const_cast<CMesh*>(this)->m_Material.tex_file = vPath;
 	}
 
+	if(m_Material.tex_Kd.r == 0 && m_Material.tex_Kd.g == 0 && m_Material.tex_Kd.b == 0)
+	{
+		const_cast<CMesh*>(this)->m_Material.tex_Kd.r = 1;
+		const_cast<CMesh*>(this)->m_Material.tex_Kd.g = 1;
+		const_cast<CMesh*>(this)->m_Material.tex_Kd.b = 1;
+	}
+	
 	std::ofstream Out(vPath);
 	Out << std::format(
 		"newmtl {}\n"
