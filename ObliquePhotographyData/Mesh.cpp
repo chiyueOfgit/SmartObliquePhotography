@@ -110,7 +110,7 @@ void CMesh::saveMaterial(const std::string& vPath) const
 {
 	if (m_Material.tex_name == "")
 	{
-		auto NameBegin = vPath.find('/') + 1;
+		auto NameBegin = vPath.find_last_of('/') + 1;
 		auto NameEnd = vPath.find_last_of('.');
 		const_cast<CMesh*>(this)->m_Material.tex_name = vPath.substr(NameBegin, NameEnd - NameBegin).c_str();
 		const_cast<CMesh*>(this)->m_Material.tex_file = vPath;
