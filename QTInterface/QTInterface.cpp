@@ -671,7 +671,7 @@ void CQTInterface::onActionBakeTexture()
             *pResult += *m_TileSet.TileSet[Index];
         CImage<std::array<int, 3>> Texture;
         
-        if (SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 512, 512 }, Texture))
+        if (SceneReconstruction::hiveBakeColorTexture(m_MeshSet.MeshSet[*m_SelectedMeshIndices.begin()], pResult, { 2048, 2048 }, Texture))
         {
             const auto Width = Texture.getWidth();
             const auto Height = Texture.getHeight();
