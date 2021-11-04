@@ -7,7 +7,8 @@
 #include <vcg/complex/algorithms/clean.h>
 
 //测试用例列表：
-//
+//*Test_buildHalfEdgeTest: 测试建立的半边数据结构是否符合预期。
+
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
