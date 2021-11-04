@@ -67,41 +67,6 @@ protected:
 		return IntData;
 	}
 
-	void _testHalfEdgeTable()
-	{
-		std::string PerLine, PerVertexId, PerPrev, PerNext, PerConj, PerFace;
-		std::vector<SHalfEdge> TestHalfEdgeTable;
-		int TestHalfEdgeTableSize;
-		TestHalfEdgeTableSize = 36;
-		std::ifstream TestFile;
-		TestFile.open(CubeTestDataPath);
-		while (getline(TestFile, PerLine))
-		{
-			std::istringstream ContentPerLine(PerLine);
-			SHalfEdge TestHalfEdge;
-
-			ContentPerLine >> PerVertexId >> PerPrev >> PerNext >> PerConj >> PerFace;
-			TestHalfEdge._VertexId = _stringToInt(PerVertexId);
-			TestHalfEdge._Prev = _stringToInt(PerPrev);
-			TestHalfEdge._Next = _stringToInt(PerNext);
-			TestHalfEdge._Conj = _stringToInt(PerConj);
-			TestHalfEdge._Face = _stringToInt(PerFace);
-			TestHalfEdgeTable.push_back(TestHalfEdge);
-		}
-		TestFile.close();
-		EXPECT_EQ(TestHalfEdgeTable.size(), TestHalfEdgeTableSize);
-		EXPECT_EQ(m_pMeshParameterization->getHalfEdgeTable().size(), TestHalfEdgeTableSize);
-		for (int HalfEdgeId = 0; HalfEdgeId < TestHalfEdgeTableSize; HalfEdgeId++)
-		{
-			EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._VertexId, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._VertexId);
-			EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._Prev, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._Prev);
-			EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._Next, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._Next);
-			EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._Conj, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._Conj);
-			EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._Face, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._Face);
-		}
-		
-	}
-
 	hiveObliquePhotography::CMesh m_Mesh;
 	pcl::TexMaterial m_Material;
 	std::string m_MeshPath;
@@ -112,5 +77,33 @@ protected:
 TEST_F(TestArapParameterization, Test_buildHalfEdgeTest)
 {
 	m_pMeshParameterization->buildHalfEdge();
-	_testHalfEdgeTable();
+	std::string PerLine, PerVertexId, PerPrev, PerNext, PerConj, PerFace;
+	std::vector<SHalfEdge> TestHalfEdgeTable;
+	int TestHalfEdgeTableSize;
+	TestHalfEdgeTableSize = 36;
+	std::ifstream TestFile;
+	TestFile.open(CubeTestDataPath);
+	while (getline(TestFile, PerLine))
+	{
+		std::istringstream ContentPerLine(PerLine);
+		SHalfEdge TestHalfEdge;
+
+		ContentPerLine >> PerVertexId >> PerPrev >> PerNext >> PerConj >> PerFace;
+		TestHalfEdge._VertexId = _stringToInt(PerVertexId);
+		TestHalfEdge._Prev = _stringToInt(PerPrev);
+		TestHalfEdge._Next = _stringToInt(PerNext);
+		TestHalfEdge._Conj = _stringToInt(PerConj);
+		TestHalfEdge._Face = _stringToInt(PerFace);
+		TestHalfEdgeTable.emplace_back(TestHalfEdge);
+	}
+	TestFile.close();
+	EXPECT_EQ(m_pMeshParameterization->getHalfEdgeTable().size(), TestHalfEdgeTableSize);
+	for (int HalfEdgeId = 0; HalfEdgeId < TestHalfEdgeTableSize; HalfEdgeId++)
+	{
+		EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._VertexId, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._VertexId);
+		EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._Prev, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._Prev);
+		EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._Next, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._Next);
+		EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._Conj, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._Conj);
+		EXPECT_EQ(TestHalfEdgeTable[HalfEdgeId]._Face, m_pMeshParameterization->getHalfEdgeTable()[HalfEdgeId]._Face);
+	}
 }
