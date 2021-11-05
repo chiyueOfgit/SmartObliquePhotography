@@ -15,20 +15,24 @@ namespace hiveObliquePhotography
 			virtual void runV(pcl::Indices& voObjectIndices,const Eigen::Vector2i& vResolution);
 
 #ifdef _UNIT_TEST
-			CImage<std::array<int, 3>> generateElevationMap(Eigen::Vector2i& vResolution) { return __generateElevationMap(vResolution); }
 			void map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates) { return __map2Cloud(vTexture, voCandidates); }
+			CImage<std::array<int, 1>> generateElevationMap(Eigen::Vector2i& vResolution) { return __generateElevationMap(vResolution); }
 #endif
 		
 		private: 
-			CImage<std::array<int, 3>> __generateElevationMap(const Eigen::Vector2i& vResolution);
-			void __extractObjectIndices(const CImage<std::array<int, 3>>& vElevationMap, pcl::Indices& voIndices);
+			CImage<std::array<int, 1>> __generateElevationMap(const Eigen::Vector2i& vResolution);
+			void __extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices);
 
-			std::array<int, 3> __transElevation2Color(float vElevation, float vHeightDiff);
+			std::array<int, 1> __transElevation2Color(float vElevation, float vHeightDiff);
 			void __calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet);
+			
+			Eigen::Vector2i __findStartPoint(const CImage<std::array<int, 1>>& vImage);
+			CImage<std::array<int, 1>> __generateMaskByGrowing(const CImage<std::array<int, 1>>& vOriginImage, int vThreshold);
+			void __extractObjectByMask(const CImage<std::array<int, 1>>& vOriginImage, CImage<std::array<int, 1>>& vioMaskImage);
+			
 
 			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates);
 
-			std::pair<Eigen::Vector3f, Eigen::Vector3f> m_Box;
 		};
 	}
 }
