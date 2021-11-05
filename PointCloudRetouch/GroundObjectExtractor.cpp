@@ -21,12 +21,12 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CGroundObjectExtractor::__gen
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	std::vector<pcl::index_t> Indices;
 	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(vResolution.y(), vResolution.x());
-	auto Box = pManager->getScene().getBoundingBox(Indices);
-	Eigen::Vector2f Offset{ (Box.second - Box.first).x() / vResolution.x(),(Box.second - Box.first).y() / vResolution.y() };
-	Eigen::Vector2f HeightRange{ Box.first.z(), Box.second.z() };
+	m_Box = pManager->getScene().getBoundingBox(Indices);
+	Eigen::Vector2f Offset{ (m_Box.second - m_Box.first).x() / vResolution.x(),(m_Box.second - m_Box.first).y() / vResolution.y() };
+	Eigen::Vector2f HeightRange{ m_Box.first.z(), m_Box.second.z() };
 
 	std::vector<std::vector<float>> HeightSet(vResolution.y(), std::vector<float>(vResolution.x(), HeightRange.x()));
-	Eigen::Vector2f MinXY{ Box.first.x(),Box.first.y() };
+	Eigen::Vector2f MinXY{ m_Box.first.x(),m_Box.first.y() };
 	__calcAreaElevation(MinXY, Offset, HeightSet);
 	
 	for (int i = 0; i < vResolution.x(); i++)
@@ -68,6 +68,11 @@ void CGroundObjectExtractor::__calcAreaElevation(const Eigen::Vector2f& vMinCoor
 	}
 }
 
+bool confirmInRange(float vNumber, const Eigen::Vector2f& vRange)
+{
+	return (vNumber - vRange[0]) * (vNumber - vRange[1]) < 0;
+}
+
 //*****************************************************************
 //FUNCTION:
 std::array<int, 3> CGroundObjectExtractor::__transElevation2Color(float vElevation, float vHeightDiff)
@@ -103,4 +108,29 @@ std::array<int, 3> CGroundObjectExtractor::__transElevation2Color(float vElevati
 
 	return Color;
 
+}
+
+void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates)
+{
+	auto pManager = CPointCloudRetouchManager::getInstance();
+	std::vector<pcl::index_t> Indices;
+	m_Box = pManager->getScene().getBoundingBox(Indices);
+	for (int i = 0; i < vTexture.getHeight(); i++)
+		for (int k = 0; k < vTexture.getWidth(); k++)
+		{
+			if (!vTexture.getColor(i, k)[0])
+				continue;
+
+			Eigen::Vector2f XRange{ static_cast<float>(k) / vTexture.getWidth() * (m_Box.second - m_Box.first).x() + m_Box.first.x(), static_cast<float>(k + 1) / vTexture.getWidth() * (m_Box.second - m_Box.first).x() + m_Box.first.x() };
+			Eigen::Vector2f YRange{ static_cast<float>(i) / vTexture.getHeight() * (m_Box.second - m_Box.first).y() + m_Box.first.y(), static_cast<float>(i + 1) / vTexture.getHeight() * (m_Box.second - m_Box.first).y() + m_Box.first.y() };
+			Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)[0]) / 255 * (m_Box.second - m_Box.first).z() + m_Box.second.z(), static_cast<float>(vTexture.getColor(i,k)[0] + 1) / 255 * (m_Box.second - m_Box.first).z() + m_Box.second.z() };
+
+			auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
+			for (int m = 0; m < Scene.getNumPoint(); m++)
+			{
+				auto Position = Scene.getPositionAt(m);
+				if (confirmInRange(Position.x(), XRange) && confirmInRange(Position.y(), YRange) && confirmInRange(Position.z(), ZRange))
+					voCandidates.push_back(m);
+			}
+		}
 }

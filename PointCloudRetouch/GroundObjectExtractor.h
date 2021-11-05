@@ -16,6 +16,7 @@ namespace hiveObliquePhotography
 
 #ifdef _UNIT_TEST
 			CImage<std::array<int, 3>> generateElevationMap(Eigen::Vector2i& vResolution) { return __generateElevationMap(vResolution); }
+			void map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates) { return __map2Cloud(vTexture, voCandidates); }
 #endif
 		
 		private: 
@@ -24,6 +25,10 @@ namespace hiveObliquePhotography
 
 			std::array<int, 3> __transElevation2Color(float vElevation, float vHeightDiff);
 			void __calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet);
+
+			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates);
+
+			std::pair<Eigen::Vector3f, Eigen::Vector3f> m_Box;
 		};
 	}
 }
