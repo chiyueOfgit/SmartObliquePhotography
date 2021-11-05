@@ -60,11 +60,11 @@ protected:
 		delete pConfig;
 	}
 };
-void _saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<std::array<int, 3>>& vTexture, bool vIsReverse)
+void _saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<std::array<int, 1>>& vTexture, bool vIsReverse)
 {
 	const auto Width = vTexture.getWidth();
 	const auto Height = vTexture.getHeight();
-	const auto BytesPerPixel = 3;
+	const auto BytesPerPixel = 1;
 	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
 	for (auto i = 0; i < Height; i++)
 		for (auto k = 0; k < Width; k++)
@@ -74,8 +74,8 @@ void _saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage
 				I = Height - 1 - I;
 			auto Offset = (I * Width + k) * BytesPerPixel;
 			ResultImage[Offset] = vTexture.getColor(i, k)[0];
-			ResultImage[Offset + 1] = vTexture.getColor(i, k)[1];
-			ResultImage[Offset + 2] = vTexture.getColor(i, k)[2];
+			//ResultImage[Offset + 1] = vTexture.getColor(i, k)[1];
+			//ResultImage[Offset + 2] = vTexture.getColor(i, k)[2];
 		}
 
 	stbi_write_png(vPath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
@@ -106,14 +106,14 @@ void _saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage
 
 TEST_F(TestOutlierDetector, GenerateMap)
 {
-	initTest(TESTMODEL_DIR + std::string("Test029_Model/005006.pcd"));
+	initTest(TESTMODEL_DIR + std::string("Test029_Model/005004.pcd"));
 	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
 	EXPECT_NE(pExtractor, nullptr);
 	if (!pExtractor)
 		std::cerr << "create baker error." << std::endl;
 	Eigen::Vector2i Resolution{ 1024, 1024 };
-	CImage<std::array<int, 3>> ResultImage;
+	CImage<std::array<int, 1>> ResultImage;
 	ResultImage = pExtractor->generateElevationMap(Resolution);
-
-	_saveTexture("test1.png", ResultImage, false);
+	
+	_saveTexture("005004.png", ResultImage, false);
 }
