@@ -20,7 +20,7 @@ namespace hiveObliquePhotography
 #endif
 		
 		private: 
-			std::vector<std::vector<pcl::index_t>> m_PointDistributionSet;
+			std::vector<std::vector<std::vector<pcl::index_t>>> m_PointDistributionSet;
 
 			CImage<std::array<int, 1>> __generateElevationMap(const Eigen::Vector2i& vResolution);
 			void __extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices);
