@@ -182,7 +182,7 @@ TEST_F(TestObjectExtractor, Growing)
 		std::cerr << "create Extractor error." << std::endl;
 	pExtractor->map2Cloud(Texture, FeatureGenerationSet);
 
-	/*CPointCluster* pInitialCluster = new CPointCluster;
+	CPointCluster* pInitialCluster = new CPointCluster;
 	const hiveConfig::CHiveConfig* pClusterConfig = pManager->getLitterMarker().getClusterConfig();;
 
 	std::vector<pcl::index_t>::iterator Iter = FeatureGenerationSet.begin();
@@ -191,7 +191,7 @@ TEST_F(TestObjectExtractor, Growing)
 
 	CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
 	pInitialCluster->init(pClusterConfig, 0, EPointLabel::UNWANTED, FeatureGenerationSet, ValidationSet, pManager->addAndGetTimestamp());
-	pPointClusterExpanderMultithread->execute<CPointClusterExpanderMultithread>(pInitialCluster);*/
+	pPointClusterExpanderMultithread->execute<CPointClusterExpanderMultithread>(pInitialCluster);
 
 	/*std::vector<std::size_t> PointLabel;
 	PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
