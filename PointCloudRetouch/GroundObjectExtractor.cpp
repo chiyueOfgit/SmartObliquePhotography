@@ -243,7 +243,7 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 
 			auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
 			auto Position = Scene.getPositionAt(m_PointDistributionSet[i][k]);
-			Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)[0]) / 255 * (Box.second - Box.first).z() + Box.second.z(), static_cast<float>(vTexture.getColor(i,k)[0] + 1) / 255 * (Box.second - Box.first).z() + Box.second.z() };
+			Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)[0]) / 255 * (Box.second - Box.first).z() + Box.first.z(), static_cast<float>(vTexture.getColor(i,k)[0] + 1) / 255 * (Box.second - Box.first).z() + Box.first.z() };
 
 			if ((Position.z() - ZRange.x()) * (Position.z() - ZRange.y()) <= 0)
 				voCandidates.push_back(m_PointDistributionSet[i][k]);
