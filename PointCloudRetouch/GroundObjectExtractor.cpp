@@ -25,7 +25,7 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 	std::vector<pcl::index_t> Indices;
 	Eigen::Matrix<std::array<int, 1>, -1, -1> Texture(vResolution.y(), vResolution.x());
 	auto Box = pManager->getScene().getBoundingBox(Indices);
-	Eigen::Vector2f Offset{ (Box.second - Box.first).x() / vResolution.x(),(Box.second - Box.first).y() / vResolution.y() };
+	Eigen::Vector2f Offset{ (Box.second - Box.first).x() / vResolution.x(), (Box.second - Box.first).y() / vResolution.y() };
 	Eigen::Vector2f HeightRange{ Box.first.z(), Box.second.z() };
 
 	std::vector<std::vector<float>> HeightSet(vResolution.y(), std::vector<float>(vResolution.x(), HeightRange.x()));
@@ -77,17 +77,16 @@ void CGroundObjectExtractor::__calcAreaElevation(const Eigen::Vector2f& vMinCoor
 		if (ColBegin > vioHeightSet[0].size()) ColBegin = vioHeightSet[0].size();
 		if (ColEnd > vioHeightSet[0].size()) ColEnd = vioHeightSet[0].size();
 
+		if (RowRaw == vioHeightSet.size())
+			RowRaw = RowRaw - 1;
+		if (ColRaw == vioHeightSet[0].size())
+			ColRaw = ColRaw - 1;
+		m_PointDistributionSet[RowRaw][ColRaw].push_back(j);
+
 		for (int i = ColBegin; i < ColEnd; i++)
-		{
 			for (int k = RowBegin; k < RowEnd; k++)
-			{
 				if (Position.z() > vioHeightSet[k][i])
-				{
 					vioHeightSet[k][i] = Position.z();
-					m_PointDistributionSet[RowRaw][ColRaw].push_back(j);
-				}
-			}
-		}
 	}
 }
 
