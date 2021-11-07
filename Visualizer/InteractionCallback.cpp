@@ -110,6 +110,12 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			}
 		}
 
+		if (KeyString == "m")
+		{
+			PointCloudRetouch::hiveAutoMarkLitter();
+			RefreshFlag = true;
+		}
+
 		/*if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_MAIN_VIEW).value())
 		{
 			m_pVisualizer->jumpToThreeView(EView::MainView);

@@ -31,7 +31,7 @@ using namespace  hiveObliquePhotography::PointCloudRetouch;
 using namespace  hiveObliquePhotography;
 
 const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test029_PointCloudRetouchConfig.xml");
-const std::string PointCloudPath = std::string("D:/SmartObliquePhotography/Models/11.4/Tile_+005_+005.ply");
+const std::string PointCloudPath = std::string("Tile_+005_+005.ply");
 const std::string ImagePath = TESTMODEL_DIR + std::string("Test029_Model/005005.png");
 
 class TestObjectExtractor : public testing::Test
@@ -163,37 +163,43 @@ TEST_F(TestObjectExtractor, OutPutIndices)
 	EXPECT_NE(pExtractor, nullptr);
 	if (!pExtractor)
 		std::cerr << "create Extractor error." << std::endl;
+
+	auto ResultImage = pExtractor->generateElevationMap(Resolution);
+	_saveTexture("test1.png", ResultImage, false);
+	auto GrownImage = pExtractor->generateGrownImage(ResultImage);
+	_saveTexture("test2.png", GrownImage, false);
+	
 	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, Resolution);
 
 	__serializeIndices(OutPutIndices, "005005Seed.txt");
 }
 
-TEST_F(TestObjectExtractor, Growing)
-{
-	CImage<std::array<int, 1>> Texture;
-	initTest(PointCloudPath);
-	_loadTexture(ImagePath, Texture);
-
-	std::vector<pcl::index_t> FeatureGenerationSet, ValidationSet;
-
-	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
-	EXPECT_NE(pExtractor, nullptr);
-	if (!pExtractor)
-		std::cerr << "create Extractor error." << std::endl;
-	pExtractor->map2Cloud(Texture, FeatureGenerationSet);
-
-	CPointCluster* pInitialCluster = new CPointCluster;
-	const hiveConfig::CHiveConfig* pClusterConfig = pManager->getLitterMarker().getClusterConfig();;
-
-	std::vector<pcl::index_t>::iterator Iter = FeatureGenerationSet.begin();
-	ValidationSet.push_back(*Iter);
-	FeatureGenerationSet.erase(Iter);
-
-	CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
-	pInitialCluster->init(pClusterConfig, 0, EPointLabel::UNWANTED, FeatureGenerationSet, ValidationSet, pManager->addAndGetTimestamp());
-	pPointClusterExpanderMultithread->execute<CPointClusterExpanderMultithread>(pInitialCluster);
-
-	/*std::vector<std::size_t> PointLabel;
-	PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
-	m_pVisualizer->refresh(WhichTile, PointLabel);*/
-}
+//TEST_F(TestObjectExtractor, Growing)
+//{
+//	CImage<std::array<int, 1>> Texture;
+//	initTest(PointCloudPath);
+//	_loadTexture(ImagePath, Texture);
+//
+//	std::vector<pcl::index_t> FeatureGenerationSet, ValidationSet;
+//
+//	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
+//	EXPECT_NE(pExtractor, nullptr);
+//	if (!pExtractor)
+//		std::cerr << "create Extractor error." << std::endl;
+//	pExtractor->map2Cloud(Texture, FeatureGenerationSet);
+//
+//	CPointCluster* pInitialCluster = new CPointCluster;
+//	const hiveConfig::CHiveConfig* pClusterConfig = pManager->getLitterMarker().getClusterConfig();;
+//
+//	std::vector<pcl::index_t>::iterator Iter = FeatureGenerationSet.begin();
+//	ValidationSet.push_back(*Iter);
+//	FeatureGenerationSet.erase(Iter);
+//
+//	CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
+//	pInitialCluster->init(pClusterConfig, 0, EPointLabel::UNWANTED, FeatureGenerationSet, ValidationSet, pManager->addAndGetTimestamp());
+//	pPointClusterExpanderMultithread->execute<CPointClusterExpanderMultithread>(pInitialCluster);
+//
+//	/*std::vector<std::size_t> PointLabel;
+//	PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
+//	m_pVisualizer->refresh(WhichTile, PointLabel);*/
+//}

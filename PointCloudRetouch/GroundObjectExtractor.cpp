@@ -49,7 +49,7 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 //FUNCTION:
 void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices)
 {
-	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
+	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 6);
 	__extractObjectByMask(vElevationMap, ExtractedImage);
 	__map2Cloud(ExtractedImage, voIndices);
 }

@@ -6,6 +6,7 @@
 #include "InitialClusterCreator.h"
 #include "PointSetPreprocessor.h"
 #include "HoleRepairer.h"
+#include "GroundObjectExtractor.h"
 #include "PrecomputeManager.h"
 
 namespace hiveObliquePhotography
@@ -43,6 +44,7 @@ namespace hiveObliquePhotography
 			void executeHoleRepairerSetRegion(const std::vector<pcl::index_t>& vHoleRegion);
 			void executeHoleRepairerSetInput(const std::vector<pcl::index_t>& vInput);
 			void executeHoleRepairer(std::vector<pcl::PointXYZRGBNormal>& voNewPoints);
+			void executeAutoMarker();
 			void recordCurrentStatus();
 			bool undo();
 			void recoverMarkedPoints2Undetermined(EPointLabel vLabel);
