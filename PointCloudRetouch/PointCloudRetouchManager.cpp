@@ -208,7 +208,6 @@ bool CPointCloudRetouchManager::dumpPointLabelAt(std::size_t& voPointLabel, std:
 		return false;
 }
 
-
 //*****************************************************************
 //FUNCTION: 
 bool CPointCloudRetouchManager::executePreprocessor(std::vector<pcl::index_t>& vioPointSet, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vSignedDistanceFunc, const Eigen::Vector3d& vViewPos)
@@ -429,6 +428,8 @@ void CPointCloudRetouchManager::executeHoleRepairer(std::vector<pcl::PointXYZRGB
 	m_HoleRepairer.repairHole(voNewPoints);
 }
 
+//*****************************************************************
+//FUNCTION: 
 std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CPointCloudRetouchManager::calcOBBByIndices(const std::vector<pcl::index_t>& vIndices)
 {
 	std::vector<Eigen::Vector3f> PosSet;

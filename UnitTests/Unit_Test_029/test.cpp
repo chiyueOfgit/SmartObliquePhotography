@@ -136,19 +136,19 @@ void __serializeIndices(const std::vector<int>& vData, const std::string& vFileN
 //	}
 //}
 
-TEST_F(TestObjectExtractor, GenerateMap)
-{
-	initTest(TESTMODEL_DIR + std::string("Test029_Model/005004.pcd"));
-	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
-	EXPECT_NE(pExtractor, nullptr);
-	if (!pExtractor)
-		std::cerr << "create Extractor error." << std::endl;
-	Eigen::Vector2i Resolution{ 1024, 1024 };
-	CImage<std::array<int, 1>> ResultImage;
-	ResultImage = pExtractor->generateElevationMap(Resolution);
-
-	_saveTexture("test1.png", ResultImage, false);
-}
+//TEST_F(TestOutlierDetector, GenerateMap)
+//{
+//	initTest(TESTMODEL_DIR + std::string("Test029_Model/005004.pcd"));
+//	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
+//	EXPECT_NE(pExtractor, nullptr);
+//	if (!pExtractor)
+//		std::cerr << "create Extractor error." << std::endl;
+//	Eigen::Vector2i Resolution{ 1024, 1024 };
+//	CImage<std::array<int, 1>> ResultImage;
+//	ResultImage = pExtractor->generateElevationMap(Resolution);
+//
+//	_saveTexture("test1.png", ResultImage, false);
+//}
 
 TEST_F(TestObjectExtractor, OutPutIndices)
 {
@@ -197,20 +197,3 @@ TEST_F(TestObjectExtractor, Growing)
 	PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
 	m_pVisualizer->refresh(WhichTile, PointLabel);*/
 }
-
-/*
-CPointClusterExpanderMultithread* pPointClusterExpanderMultithread = new CPointClusterExpanderMultithread;
-
-	std::vector<pcl::index_t> UserMarkedRegion{ 1,2,3,4 };
-	auto UserSpecifiedCluster = pManager->generateInitialCluster(UserMarkedRegion, PV, [](auto) { return 1; }, EPointLabel::KEPT);
-
-	std::vector<pcl::index_t> CandidateQueue = pPointClusterExpanderMultithread->initExpandingCandidateQueue(UserSpecifiedCluster);
-	int Sum = 0;
-	for (auto Index : CandidateQueue)
-	{
-		if (std::find(UserSpecifiedCluster->getCoreRegion().begin(), UserSpecifiedCluster->getCoreRegion().end(), Index) != UserSpecifiedCluster->getCoreRegion().end())
-			Sum++;
-	}
-	ASSERT_EQ(Sum, 0);
-}
-*/

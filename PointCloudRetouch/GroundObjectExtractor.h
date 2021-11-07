@@ -20,6 +20,8 @@ namespace hiveObliquePhotography
 #endif
 		
 		private: 
+			std::vector<std::vector<pcl::index_t>> m_PointDistributionSet;
+
 			CImage<std::array<int, 1>> __generateElevationMap(const Eigen::Vector2i& vResolution);
 			void __extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices);
 
@@ -30,7 +32,6 @@ namespace hiveObliquePhotography
 			CImage<std::array<int, 1>> __generateMaskByGrowing(const CImage<std::array<int, 1>>& vOriginImage, int vThreshold);
 			void __extractObjectByMask(const CImage<std::array<int, 1>>& vOriginImage, CImage<std::array<int, 1>>& vioMaskImage);
 			
-
 			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates);
 
 		};
