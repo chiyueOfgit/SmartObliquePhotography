@@ -13,6 +13,7 @@ void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices,const Eigen::Vec
 	_ASSERTE((vResolution.array() > 0).all());
 	CImage<std::array<int, 1>> ElevationMap = __generateElevationMap(vResolution);
 	__extractObjectIndices(ElevationMap, voObjectIndices);
+	_ASSERTE(!voObjectIndices.empty());
 }
 
 //*****************************************************************
@@ -50,6 +51,7 @@ void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int,
 {
 	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
 	__extractObjectByMask(vElevationMap, ExtractedImage);
+	__map2Cloud(ExtractedImage, voIndices);
 }
 
 //*****************************************************************
@@ -151,6 +153,7 @@ Eigen::Vector2i CGroundObjectExtractor::__findStartPoint(const CImage<std::array
 //FUNCTION:
 hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__generateMaskByGrowing(const CImage<std::array<int, 1>>& vOriginImage, int vThreshold)
 {
+
 	Eigen::Vector2i CurrentSeed = __findStartPoint(vOriginImage);
 	Eigen::Vector2i NeighborSeed;						
 	std::array<int, 1> Flag;

@@ -20,7 +20,7 @@ private:
     std::vector<std::string> m_FilePathList;
     std::string m_CloudPath = "../TestModel/Test001/General";
     std::string m_IndicesPath = "../TestModel/Test001/Indices";
-    PointCloud_t::Ptr m_pCloud = nullptr;
+    std::vector<PointCloud_t::Ptr> m_pCloudSet;
 
     hiveObliquePhotography::Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
     hiveConfig::CHiveConfig* m_pPointCloudRetouchConfig = nullptr;

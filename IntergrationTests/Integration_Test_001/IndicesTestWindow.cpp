@@ -159,12 +159,12 @@ void CSingleStepWindow::__onActionClear()
 
 void CSingleStepWindow::__loadCloud(const std::vector<std::string>& vFilePathSet)
 {
-    m_pCloud = hiveInitPointCloudScene(vFilePathSet);
+    m_pCloudSet = hiveInitPointCloudScene(vFilePathSet);
 
-    if (m_pCloud)
+    if (!m_pCloudSet.empty())
     {
-        PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(m_pCloud, true);
+        PointCloudRetouch::hiveInit(m_pCloudSet, m_pPointCloudRetouchConfig);
+        Visualization::hiveInitVisualizer(m_pCloudSet, true);
         CSingleStepWindow::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);

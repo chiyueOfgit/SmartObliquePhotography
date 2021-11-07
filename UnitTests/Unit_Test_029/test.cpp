@@ -9,7 +9,9 @@
 #include "PointCluster.h"
 #include "PointClusterSet.h"
 #include "PointClusterExpanderMultithread.h"
-
+#include <fstream>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include "stb_image.h"
 #define STB_IMAGE_STATIC
@@ -32,7 +34,7 @@ const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test029_Point
 const std::string PointCloudPath = std::string("D:/SmartObliquePhotography/Models/11.4/Tile_+005_+005.ply");
 const std::string ImagePath = TESTMODEL_DIR + std::string("Test029_Model/005005.png");
 
-class TestOutlierDetector : public testing::Test
+class TestObjectExtractor : public testing::Test
 {
 public:
 	hiveConfig::CHiveConfig* pConfig = nullptr;
@@ -104,7 +106,15 @@ void _loadTexture(const std::string& vPath, hiveObliquePhotography::CImage<std::
 	voTexture.fillColor(Height, Width, Image.data());
 }
 
-//TEST_F(TestOutlierDetector, OverallTest_generateElevationMap_1)
+void __serializeIndices(const std::vector<int>& vData, const std::string& vFileName)
+{
+	std::ofstream Out(vFileName);
+	boost::archive::text_oarchive Oarchive(Out);
+	Oarchive& BOOST_SERIALIZATION_NVP(vData);
+	Out.close();
+}
+
+//TEST_F(TestObjectExtractor, OverallTest_generateElevationMap_1)
 //{
 //	initTest(TESTMODEL_DIR + std::string("Test029_Model/test1.pcd"));
 //	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
@@ -140,7 +150,25 @@ void _loadTexture(const std::string& vPath, hiveObliquePhotography::CImage<std::
 //	_saveTexture("test1.png", ResultImage, false);
 //}
 
-TEST_F(TestOutlierDetector, Growing)
+TEST_F(TestObjectExtractor, OutPutIndices)
+{
+	CImage<std::array<int, 1>> InputImage;
+	initTest(PointCloudPath);
+	_loadTexture(ImagePath, InputImage);
+
+	Eigen::Vector2i Resolution{ 1024,1024 };
+	std::vector<pcl::index_t> OutPutIndices;
+
+	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
+	EXPECT_NE(pExtractor, nullptr);
+	if (!pExtractor)
+		std::cerr << "create Extractor error." << std::endl;
+	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, Resolution);
+
+	__serializeIndices(OutPutIndices, "005005Seed.txt");
+}
+
+TEST_F(TestObjectExtractor, Growing)
 {
 	CImage<std::array<int, 1>> Texture;
 	initTest(PointCloudPath);
