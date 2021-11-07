@@ -30,7 +30,7 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 	Eigen::Vector2f HeightRange{ Box.first.z(), Box.second.z() };
 
 	std::vector<std::vector<float>> HeightSet(vResolution.y(), std::vector<float>(vResolution.x(), HeightRange.x()));
-	Eigen::Vector2f MinXY{ m_Box.first.x(),m_Box.first.y() };
+	Eigen::Vector2f MinXY{ Box.first.x(),Box.first.y() };
 	__calcAreaElevation(MinXY, Offset, HeightSet);
 	
 	for (int i = 0; i < vResolution.x(); i++)
@@ -219,16 +219,16 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 {
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	std::vector<pcl::index_t> Indices;
-	m_Box = pManager->getScene().getBoundingBox(Indices);
+	auto Box = pManager->getScene().getBoundingBox(Indices);
 	for (int i = 0; i < vTexture.getHeight(); i++)
 		for (int k = 0; k < vTexture.getWidth(); k++)
 		{
 			if (!vTexture.getColor(i, k)[0])
 				continue;
 
-			Eigen::Vector2f XRange{ static_cast<float>(k) / vTexture.getWidth() * (m_Box.second - m_Box.first).x() + m_Box.first.x(), static_cast<float>(k + 1) / vTexture.getWidth() * (m_Box.second - m_Box.first).x() + m_Box.first.x() };
-			Eigen::Vector2f YRange{ static_cast<float>(i) / vTexture.getHeight() * (m_Box.second - m_Box.first).y() + m_Box.first.y(), static_cast<float>(i + 1) / vTexture.getHeight() * (m_Box.second - m_Box.first).y() + m_Box.first.y() };
-			Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)[0]) / 255 * (m_Box.second - m_Box.first).z() + m_Box.second.z(), static_cast<float>(vTexture.getColor(i,k)[0] + 1) / 255 * (m_Box.second - m_Box.first).z() + m_Box.second.z() };
+			Eigen::Vector2f XRange{ static_cast<float>(k) / vTexture.getWidth() * (Box.second - Box.first).x() + Box.first.x(), static_cast<float>(k + 1) / vTexture.getWidth() * (Box.second - Box.first).x() + Box.first.x() };
+			Eigen::Vector2f YRange{ static_cast<float>(i) / vTexture.getHeight() * (Box.second - Box.first).y() + Box.first.y(), static_cast<float>(i + 1) / vTexture.getHeight() * (Box.second - Box.first).y() + Box.first.y() };
+			Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)[0]) / 255 * (Box.second - Box.first).z() + Box.second.z(), static_cast<float>(vTexture.getColor(i,k)[0] + 1) / 255 * (Box.second - Box.first).z() + Box.second.z() };
 
 			auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
 			for (int m = 0; m < Scene.getNumPoint(); m++)
