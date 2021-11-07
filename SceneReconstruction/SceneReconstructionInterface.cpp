@@ -62,10 +62,10 @@ bool hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh
 
 //*****************************************************************
 //FUNCTION: 
-bool hiveObliquePhotography::SceneReconstruction::hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, Eigen::Vector2i vResolution, CImage<std::array<int, 3>>& voImage)
+bool hiveObliquePhotography::SceneReconstruction::hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, CImage<std::array<int, 3>>& voImage)
 {
 	auto pBaker = hiveDesignPattern::hiveCreateProduct<CRayCastingBaker>(KEYWORD::RAYCASTING_TEXTUREBAKER, CSceneReconstructionConfig::getInstance()->getSubConfigByName("RayCasting"), vMesh);
-	voImage = pBaker->bakeTexture(vSceneCloud, vResolution);
+	voImage = pBaker->bakeTexture(vSceneCloud);
 	if (voImage.getHeight() <= 0 || voImage.getWidth() <= 0)
 		return false;
 	else

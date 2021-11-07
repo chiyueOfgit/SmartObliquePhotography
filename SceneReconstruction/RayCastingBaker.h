@@ -30,7 +30,7 @@ namespace hiveObliquePhotography
 			CRayCastingBaker() = default;
 			~CRayCastingBaker() = default;
 
-			CImage<std::array<int, 3>> bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution) override;
+			CImage<std::array<int, 3>> bakeTexture(PointCloud_t::Ptr vPointCloud) override;
 			
 			
 #ifdef _UNIT_TEST

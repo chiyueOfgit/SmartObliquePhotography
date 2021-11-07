@@ -11,7 +11,7 @@ namespace hiveObliquePhotography
 		RECONSTRUCTION_DECLSPEC void hiveMeshSimplication(CMesh& vioMesh);
 		RECONSTRUCTION_DECLSPEC bool hiveMeshParameterization(CMesh& vioMesh);
 		RECONSTRUCTION_DECLSPEC void hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo);
-		RECONSTRUCTION_DECLSPEC bool hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, Eigen::Vector2i vResolution, CImage<std::array<int, 3>>& voImage);
+		RECONSTRUCTION_DECLSPEC bool hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, CImage<std::array<int, 3>>& voImage);
 		RECONSTRUCTION_DECLSPEC pcl::TextureMesh hiveTestCMesh(const std::string& vPath);
 
 	}

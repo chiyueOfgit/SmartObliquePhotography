@@ -8,11 +8,14 @@ _REGISTER_NORMAL_PRODUCT(CRayCastingBaker, KEYWORD::RAYCASTING_TEXTUREBAKER)
 
 //*****************************************************************
 //FUNCTION: 
-hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution)
+hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture(PointCloud_t::Ptr vPointCloud)
 {
 	CImage<std::array<int, 3>> ResultTexture;
 
-	if (!(vResolution.array() > 0).all() || vPointCloud->size() <= 0 || !(m_Mesh.m_Vertices[0].uv().array() >= 0).all())
+	auto Res = m_pConfig->getAttribute<std::tuple<int, int>>(KEYWORD::RESOLUTION).value();
+	Eigen::Vector2i Resolution = { std::get<0>(Res), std::get<1>(Res) };
+
+	if (!(Resolution.array() > 0).all() || vPointCloud->size() <= 0 || !(m_Mesh.m_Vertices[0].uv().array() >= 0).all())
 		return ResultTexture;
 
 	m_pCloud = vPointCloud;
@@ -24,12 +27,9 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 	m_DistanceThreshold = m_pConfig->getAttribute<float>(KEYWORD::DISTANCE_THRESHOLD).value();
 	m_WeightCoefficient = m_pConfig->getAttribute<float>(KEYWORD::WEIGHT_COEFFICIENT).value();
 
-	/*auto Res = m_pConfig->getAttribute<std::tuple<int, int>>(KEYWORD::RESOLUTION).value();
-	Eigen::Vector2i Resolution = { std::get<0>(Res), std::get<1>(Res) };*/
-
-	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(vResolution.y(), vResolution.x());
+	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(Resolution.y(), Resolution.x());
 	for (const auto& Face : m_Mesh.m_Faces)
-		for (const auto& PerTexel : __findSamplesPerFace(Face, vResolution))
+		for (const auto& PerTexel : __findSamplesPerFace(Face, Resolution))
 		{
 			std::vector<std::array<int, 3>> TexelColorSet;
 			TexelColorSet.reserve(PerTexel.RaySet.size());
@@ -43,9 +43,10 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 			if (TexelColorSet.empty())
 				continue;
 			Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x()) = __mixSamplesColor(TexelColorSet);
+			std::cout << PerTexel.TexelCoord.y() << ", " << PerTexel.TexelCoord.x() << ": " << Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x())[0] << ", " << Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x())[1] << ", " << Texture(PerTexel.TexelCoord.y(), PerTexel.TexelCoord.x())[0] << std::endl;
 		}
 	
-	ResultTexture.fillColor(vResolution.y(), vResolution.x(), Texture.data());
+	ResultTexture.fillColor(Resolution.y(), Resolution.x(), Texture.data());
 	return ResultTexture;
 }
 

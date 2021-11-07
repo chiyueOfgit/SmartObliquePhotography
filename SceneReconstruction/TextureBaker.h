@@ -13,7 +13,7 @@ namespace hiveObliquePhotography
 			virtual ~ITextureBaker() = default;
 
 			virtual bool onProductCreatedV(const hiveConfig::CHiveConfig* vConfig, const CMesh& vMesh);
-			virtual CImage<std::array<int, 3>> bakeTexture(PointCloud_t::Ptr vPointCloud, const Eigen::Vector2i& vResolution) = 0;
+			virtual CImage<std::array<int, 3>> bakeTexture(PointCloud_t::Ptr vPointCloud) = 0;
 
 		protected:
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
