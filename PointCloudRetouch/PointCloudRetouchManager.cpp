@@ -440,3 +440,25 @@ std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CPointCloudRetouch
 	}
 	return calcOBB(PosSet);
 }
+
+//*****************************************************************
+//FUNCTION: 
+void CPointCloudRetouchManager::executeAutoMarker()
+{
+	Eigen::Vector2i Resolution{ 1024,1024 };
+	std::vector<pcl::index_t> OutPutIndices;
+	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
+	if (!pExtractor)
+		std::cerr << "create Extractor error." << std::endl;
+	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, Resolution);
+
+	std::vector<pcl::index_t> ValidationSet;
+	std::vector<pcl::index_t>::iterator Iter = OutPutIndices.begin();
+	ValidationSet.push_back(*Iter);
+	OutPutIndices.erase(Iter);
+	
+    CPointCluster* pInitialCluster = new CPointCluster;
+	const hiveConfig::CHiveConfig* pClusterConfig = m_LitterMarker.getClusterConfig();
+	pInitialCluster->init(pClusterConfig, 0, EPointLabel::UNWANTED, OutPutIndices, ValidationSet, addAndGetTimestamp());
+	m_LitterMarker.execute(pInitialCluster);
+}

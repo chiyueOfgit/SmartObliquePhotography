@@ -138,7 +138,8 @@ void CSingleStepWindow::__onActionLoad()
 
     for (auto& IndicesPath : IndicesPathSet)
     {
-        auto RandomColor = hiveMath::hiveGenerateRandomIntegerSet(100, 255, 3);
+        //auto RandomColor = hiveMath::hiveGenerateRandomIntegerSet(100, 255, 3);
+        std::vector<int> RandomColor{ 255,0,0 };
         Visualization::hiveHighlightPointSet(__loadIndices(IndicesPath), { RandomColor[0], RandomColor[1], RandomColor[2] });
     }
 

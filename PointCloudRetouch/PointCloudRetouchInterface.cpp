@@ -173,3 +173,8 @@ void hiveObliquePhotography::PointCloudRetouch::hiveTagLabel(const std::vector<p
 	for (auto Index : vPoints)
 		CPointCloudRetouchManager::getInstance()->tagPointLabel(Index, AimLabel, 0, 0);
 }
+
+void hiveObliquePhotography::PointCloudRetouch::hiveAutoMarkLitter()
+{
+	CPointCloudRetouchManager::getInstance()->executeAutoMarker();
+}
