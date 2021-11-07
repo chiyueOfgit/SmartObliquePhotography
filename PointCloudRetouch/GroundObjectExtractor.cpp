@@ -59,7 +59,7 @@ void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int,
 void CGroundObjectExtractor::__calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet)
 {
 	const float Radius = 0.3;
-	m_PointDistributionSet.resize(vioHeightSet.size(), std::vector<pcl::index_t>(vioHeightSet[0].size()));
+	m_PointDistributionSet.resize(vioHeightSet.size(), std::vector<std::vector<pcl::index_t>>(vioHeightSet[0].size()));
 	auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
 	for(int j = 0; j < Scene.getNumPoint(); j++)
 	{
@@ -84,7 +84,7 @@ void CGroundObjectExtractor::__calcAreaElevation(const Eigen::Vector2f& vMinCoor
 				if (Position.z() > vioHeightSet[k][i])
 				{
 					vioHeightSet[k][i] = Position.z();
-					m_PointDistributionSet[RowRaw][ColRaw] = j;
+					m_PointDistributionSet[RowRaw][ColRaw].push_back(j);
 				}
 			}
 		}
@@ -242,10 +242,13 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 				continue;
 
 			auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
-			auto Position = Scene.getPositionAt(m_PointDistributionSet[i][k]);
 			Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)[0]) / 255 * (Box.second - Box.first).z() + Box.first.z(), static_cast<float>(vTexture.getColor(i,k)[0] + 1) / 255 * (Box.second - Box.first).z() + Box.first.z() };
 
-			if ((Position.z() - ZRange.x()) * (Position.z() - ZRange.y()) <= 0)
-				voCandidates.push_back(m_PointDistributionSet[i][k]);
+			for (auto PointIndex : m_PointDistributionSet[i][k])
+			{
+				auto Position = Scene.getPositionAt(PointIndex);
+				if ((Position.z() - ZRange.x()) * (Position.z() - ZRange.y()) <= 0)
+					voCandidates.push_back(PointIndex);
+			}
 		}
 }
