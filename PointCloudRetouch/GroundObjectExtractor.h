@@ -15,7 +15,7 @@ namespace hiveObliquePhotography
 			virtual void runV(pcl::Indices& voObjectIndices,const Eigen::Vector2i& vResolution);
 
 #ifdef _UNIT_TEST
-			void map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates) { return __map2Cloud(vTexture, voCandidates); }
+			void map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject) { return __map2Cloud(vTexture, voCandidates, vIfObject); }
 			CImage<std::array<int, 1>> generateElevationMap(Eigen::Vector2i& vResolution) { return __generateElevationMap(vResolution); }
 			CImage<std::array<int, 1>> generateGrownImage(const CImage<std::array<int, 1>>& vElevationMap)
 			{
@@ -38,8 +38,7 @@ namespace hiveObliquePhotography
 			CImage<std::array<int, 1>> __generateMaskByGrowing(const CImage<std::array<int, 1>>& vOriginImage, int vThreshold);
 			void __extractObjectByMask(const CImage<std::array<int, 1>>& vOriginImage, CImage<std::array<int, 1>>& vioMaskImage);
 			
-			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates);
-
+			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject);
 		};
 	}
 }
