@@ -133,7 +133,7 @@ void CSingleStepWindow::__onActionOpen()
 
 void CSingleStepWindow::__onActionMark()
 {
-    if (m_pCloud)
+    if (!m_pCloud.empty())
     {
         if (m_WindowUI.actionMark->isChecked())
         {
@@ -156,7 +156,7 @@ void CSingleStepWindow::__onActionMark()
 
 void CSingleStepWindow::__onActionShow()
 {
-    if (m_pCloud)
+    if (!m_pCloud.empty())
     {
         if (m_pPointPickingDockWidget)
         {
@@ -203,7 +203,7 @@ void CSingleStepWindow::__onActionShow()
 
 void CSingleStepWindow::__onActionClear()
 {
-    if (m_pCloud)
+    if (!m_pCloud.empty())
     {
         PointCloudRetouch::hiveClearMark();
         Visualization::hiveCancelAllHighlighting();
@@ -216,7 +216,7 @@ void CSingleStepWindow::__loadCloud(const std::vector<std::string>& vFilePathSet
 {
     m_pCloud = hiveInitPointCloudScene(vFilePathSet);
 
-    if (m_pCloud)
+    if (!m_pCloud.empty())
     {
         PointCloudRetouch::hiveInit(m_pCloud, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer(m_pCloud, true);
