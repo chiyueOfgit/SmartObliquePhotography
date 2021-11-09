@@ -2,6 +2,13 @@
 #include "GroundObjectExtractor.h"
 
 #include <flann/util/matrix.h>
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_STATIC
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTOR)
@@ -49,9 +56,9 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 //FUNCTION:
 void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices)
 {
-	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 6);
+	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, );
 	__extractObjectByMask(vElevationMap, ExtractedImage);
-	__map2Cloud(ExtractedImage, voIndices);
+	__map2Cloud(ExtractedImage, voIndices, false);
 }
 
 //*****************************************************************
@@ -210,14 +217,14 @@ void CGroundObjectExtractor::__extractObjectByMask(const CImage<std::array<int, 
 			if (vioMaskImage.getColor(k, i)[0] == 0)
 				vioMaskImage.fetchColor(k, i)[0] = vOriginImage.getColor(k, i)[0];
 			else
-				vioMaskImage.fetchColor(k, i)[0] = 0;
+				vioMaskImage.fetchColor(k, i)[0] = 0; 
 		}
 	}
 }
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates)
+void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject)
 {
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	std::vector<pcl::index_t> Indices;
@@ -237,17 +244,24 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 	for (int i = 0; i < vTexture.getHeight(); i++)
 		for (int k = 0; k < vTexture.getWidth(); k++)
 		{
-			if (!vTexture.getColor(i, k)[0])
+			if (!(vIfObject * vTexture.getColor(i, k)[0]) && (vIfObject + vTexture.getColor(i, k)[0]))
 				continue;
 
 			auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
-			Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)[0]) / 255 * (Box.second - Box.first).z() + Box.first.z(), static_cast<float>(vTexture.getColor(i,k)[0] + 1) / 255 * (Box.second - Box.first).z() + Box.first.z() };
 
-			for (auto PointIndex : m_PointDistributionSet[i][k])
+			if (vIfObject)
 			{
-				auto Position = Scene.getPositionAt(PointIndex);
-				if ((Position.z() - ZRange.x()) * (Position.z() - ZRange.y()) <= 0)
-					voCandidates.push_back(PointIndex);
+				Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)[0]) / 255 * (Box.second - Box.first).z() + Box.first.z(), static_cast<float>(vTexture.getColor(i,k)[0] + 1) / 255 * (Box.second - Box.first).z() + Box.first.z() };
+
+				for (auto PointIndex : m_PointDistributionSet[i][k])
+				{
+					auto Position = Scene.getPositionAt(PointIndex);
+					if ((Position.z() - ZRange.x()) * (Position.z() - ZRange.y()) <= 0)
+						voCandidates.push_back(PointIndex);
+				}
 			}
+			else
+				for (auto PointIndex : m_PointDistributionSet[i][k])
+					voCandidates.push_back(PointIndex);
 		}
 }
