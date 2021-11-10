@@ -51,7 +51,7 @@ protected:
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 			return;
 		}
-;	}
+;	}  
 
 	void initTest(const std::string& vModelPath)
 	{

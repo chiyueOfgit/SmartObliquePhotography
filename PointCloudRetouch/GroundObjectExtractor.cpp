@@ -61,13 +61,6 @@ void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int,
 	auto GroundEdgeImage = __extractGroundEdgeImage(ExtractedImage);
 	__map2Cloud(ExtractedImage, voIndices, false);
 	__map2Cloud(GroundEdgeImage, voEdgeIndices, false);
-	//std::vector<std::vector<pcl::index_t>> EdgeSet;
-	//__divideBoundary(voEdgeIndices, EdgeSet);
-	//voEdgeIndices.clear();
-	//for(auto& Edge: EdgeSet)
-	//{
-	//	voEdgeIndices.insert(voEdgeIndices.end(), Edge.begin(), Edge.end());
-	//}
 }
 
 //*****************************************************************
@@ -315,76 +308,3 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__ext
 	}
 	return GroundEdgeImage;
 }
-
-void CGroundObjectExtractor::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPointSet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
-{
-	if (vBoundaryPointSet.empty())
-		return;
-
-	std::vector<std::vector<pcl::index_t>> TempHoleSet;
-	std::map<int, bool> TraversedFlag;
-	for (auto Index : vBoundaryPointSet)
-	{
-		TraversedFlag.insert(std::make_pair(Index, false));
-	}
-	std::queue<pcl::index_t> ExpandingCandidateQueue;
-	auto DistanceTolerance = 0.5;
-
-	while (!vBoundaryPointSet.empty())
-	{
-		ExpandingCandidateQueue.push(vBoundaryPointSet[0]);
-
-		std::vector<pcl::index_t> TempBoundary;
-		while (!ExpandingCandidateQueue.empty())
-		{
-
-			pcl::index_t Candidate = ExpandingCandidateQueue.front();
-			ExpandingCandidateQueue.pop();
-
-			TempBoundary.push_back(Candidate);
-
-			std::vector<pcl::index_t> NeighborSet;
-			__findNearestBoundaryPoint(Candidate, vBoundaryPointSet, NeighborSet, DistanceTolerance);
-			if (NeighborSet.empty())
-				continue;
-
-			for (auto Index : NeighborSet)
-			{
-				if (TraversedFlag[Index] == true)
-					continue;
-				else
-				{
-					TraversedFlag[Index] = true;
-					ExpandingCandidateQueue.push(Index);
-				}
-			}
-		}
-		if (TempBoundary.size() > 20)
-			TempHoleSet.push_back(TempBoundary);
-
-		for (auto Iter = vBoundaryPointSet.begin(); Iter != vBoundaryPointSet.end(); )
-		{
-			if (TraversedFlag[*Iter] == true)
-				Iter = vBoundaryPointSet.erase(Iter);
-			else
-				++Iter;
-		}
-
-	}
-}
-
-void CGroundObjectExtractor::__findNearestBoundaryPoint(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet, float vTolerance)
-{
-	std::map<float, pcl::index_t> DistanceMap;
-	auto pManager = CPointCloudRetouchManager::getInstance();
-	auto SeedPos = pManager->getScene().getPositionAt(vSeed);
-	for (auto Index : vTotalSet)
-	{
-		auto TempPos = pManager->getScene().getPositionAt(Index);
-		if ((SeedPos - TempPos).norm() < vTolerance)
-			DistanceMap.insert(std::make_pair((SeedPos - TempPos).norm(), Index));
-	}
-	for (auto Pair : DistanceMap)
-		voNeighborSet.push_back(Pair.second);
-}
-
