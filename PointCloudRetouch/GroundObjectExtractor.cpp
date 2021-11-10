@@ -15,11 +15,11 @@ _REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTO
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices,const Eigen::Vector2i& vResolution)
+void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, pcl::Indices& voEdgeIndices, const Eigen::Vector2i& vResolution)
 {
 	_ASSERTE((vResolution.array() > 0).all());
 	CImage<std::array<int, 1>> ElevationMap = __generateElevationMap(vResolution);
-	__extractObjectIndices(ElevationMap, voObjectIndices);
+	__extractObjectIndices(ElevationMap, voObjectIndices, voEdgeIndices);
 	_ASSERTE(!voObjectIndices.empty());
 }
 
@@ -54,11 +54,20 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices)
+void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, pcl::Indices& voEdgeIndices)
 {
-	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, );
+	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
 	__extractObjectByMask(vElevationMap, ExtractedImage);
+	auto GroundEdgeImage = __extractGroundEdgeImage(ExtractedImage);
 	__map2Cloud(ExtractedImage, voIndices, false);
+	__map2Cloud(GroundEdgeImage, voEdgeIndices, false);
+	//std::vector<std::vector<pcl::index_t>> EdgeSet;
+	//__divideBoundary(voEdgeIndices, EdgeSet);
+	//voEdgeIndices.clear();
+	//for(auto& Edge: EdgeSet)
+	//{
+	//	voEdgeIndices.insert(voEdgeIndices.end(), Edge.begin(), Edge.end());
+	//}
 }
 
 //*****************************************************************
@@ -159,7 +168,6 @@ Eigen::Vector2i CGroundObjectExtractor::__findStartPoint(const CImage<std::array
 //FUNCTION:
 hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__generateMaskByGrowing(const CImage<std::array<int, 1>>& vOriginImage, int vThreshold)
 {
-
 	Eigen::Vector2i CurrentSeed = __findStartPoint(vOriginImage);
 	Eigen::Vector2i NeighborSeed;						
 	std::array<int, 1> Flag;
@@ -265,3 +273,118 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 					voCandidates.push_back(PointIndex);
 		}
 }
+
+//*****************************************************************
+//FUNCTION:
+hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__extractGroundEdgeImage(const CImage<std::array<int, 1>>& vExtractedImage)
+{
+    auto Width = vExtractedImage.getWidth();
+	auto Height = vExtractedImage.getHeight();
+	Eigen::Matrix<std::array<int, 1>, -1, -1> WhiteSet(Height, Width);
+	for (int i = 0; i < Width; i++)
+		for (int k = 0; k < Height; k++)
+			WhiteSet(k, i) = { 255 };
+	CImage<std::array<int, 1>> GroundEdgeImage;
+	GroundEdgeImage.fillColor(Height, Width, WhiteSet.data());
+
+	int Direction[8][2] = { {-1,-1}, {0,-1}, {1,-1}, {1,0}, {1,1}, {0,1}, {-1,1}, {-1,0} };
+	for (int i = 0; i < Width; i++)
+	{
+		for (int k = 0; k < Height; k++)
+		{
+			Eigen::Vector2i CurrentPixel{ i,k };
+			int IsEdge = 0;
+			int NeighborNum = 8;
+			for (int m = 0; m < 8; m++)
+			{
+				Eigen::Vector2i NeighborPixel;
+				NeighborPixel.x() = CurrentPixel.x() + Direction[m][0];
+				NeighborPixel.y() = CurrentPixel.y() + Direction[m][1];
+				if (NeighborPixel.x() < 0 || NeighborPixel.y() < 0 || NeighborPixel.x() > (Width - 1) || (NeighborPixel.y() > Height - 1))
+				{
+					NeighborNum--;
+					continue;
+				}
+				auto Flag = vExtractedImage.getColor(NeighborPixel.y(), NeighborPixel.x());
+				if (Flag[0] != 0)
+					IsEdge ++;
+			}
+			if (IsEdge != NeighborNum && IsEdge != 0)
+				GroundEdgeImage.fetchColor(k, i) = { 0 };
+		}
+	}
+	return GroundEdgeImage;
+}
+
+void CGroundObjectExtractor::__divideBoundary(std::vector<pcl::index_t>& vBoundaryPointSet, std::vector<std::vector<pcl::index_t>>& voHoleSet)
+{
+	if (vBoundaryPointSet.empty())
+		return;
+
+	std::vector<std::vector<pcl::index_t>> TempHoleSet;
+	std::map<int, bool> TraversedFlag;
+	for (auto Index : vBoundaryPointSet)
+	{
+		TraversedFlag.insert(std::make_pair(Index, false));
+	}
+	std::queue<pcl::index_t> ExpandingCandidateQueue;
+	auto DistanceTolerance = 0.5;
+
+	while (!vBoundaryPointSet.empty())
+	{
+		ExpandingCandidateQueue.push(vBoundaryPointSet[0]);
+
+		std::vector<pcl::index_t> TempBoundary;
+		while (!ExpandingCandidateQueue.empty())
+		{
+
+			pcl::index_t Candidate = ExpandingCandidateQueue.front();
+			ExpandingCandidateQueue.pop();
+
+			TempBoundary.push_back(Candidate);
+
+			std::vector<pcl::index_t> NeighborSet;
+			__findNearestBoundaryPoint(Candidate, vBoundaryPointSet, NeighborSet, DistanceTolerance);
+			if (NeighborSet.empty())
+				continue;
+
+			for (auto Index : NeighborSet)
+			{
+				if (TraversedFlag[Index] == true)
+					continue;
+				else
+				{
+					TraversedFlag[Index] = true;
+					ExpandingCandidateQueue.push(Index);
+				}
+			}
+		}
+		if (TempBoundary.size() > 20)
+			TempHoleSet.push_back(TempBoundary);
+
+		for (auto Iter = vBoundaryPointSet.begin(); Iter != vBoundaryPointSet.end(); )
+		{
+			if (TraversedFlag[*Iter] == true)
+				Iter = vBoundaryPointSet.erase(Iter);
+			else
+				++Iter;
+		}
+
+	}
+}
+
+void CGroundObjectExtractor::__findNearestBoundaryPoint(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet, float vTolerance)
+{
+	std::map<float, pcl::index_t> DistanceMap;
+	auto pManager = CPointCloudRetouchManager::getInstance();
+	auto SeedPos = pManager->getScene().getPositionAt(vSeed);
+	for (auto Index : vTotalSet)
+	{
+		auto TempPos = pManager->getScene().getPositionAt(Index);
+		if ((SeedPos - TempPos).norm() < vTolerance)
+			DistanceMap.insert(std::make_pair((SeedPos - TempPos).norm(), Index));
+	}
+	for (auto Pair : DistanceMap)
+		voNeighborSet.push_back(Pair.second);
+}
+

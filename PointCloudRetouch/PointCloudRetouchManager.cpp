@@ -7,6 +7,7 @@
 #include "OutlierDetector.h"
 
 #include "ColorFeature.h"
+#include "PointClusterExpanderMultithread4Auto.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -447,10 +448,11 @@ void CPointCloudRetouchManager::executeAutoMarker()
 {
 	Eigen::Vector2i Resolution{ 1024,1024 };
 	std::vector<pcl::index_t> OutPutIndices;
+	std::vector<pcl::index_t> EdgeIndices;
 	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
 	if (!pExtractor)
 		std::cerr << "create Extractor error." << std::endl;
-	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, Resolution);
+	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices,Resolution);
 
 	std::vector<pcl::index_t> ValidationSet;
 	std::vector<pcl::index_t>::iterator Iter = OutPutIndices.begin();
@@ -458,7 +460,10 @@ void CPointCloudRetouchManager::executeAutoMarker()
 	OutPutIndices.erase(Iter);
 	
     CPointCluster* pInitialCluster = new CPointCluster;
-	const hiveConfig::CHiveConfig* pClusterConfig = m_LitterMarker.getClusterConfig();
+	const hiveConfig::CHiveConfig* pClusterConfig = m_BackgroundMarker.getClusterConfig();
 	pInitialCluster->init(pClusterConfig, 0, EPointLabel::UNWANTED, OutPutIndices, ValidationSet, addAndGetTimestamp());
-	m_LitterMarker.execute(pInitialCluster);
+
+    CPointClusterExpanderMultithread4Auto* m_pPointClusterExpander = dynamic_cast<CPointClusterExpanderMultithread4Auto*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("CLUSTER_EXPANDER_MULTITHREAD4AUTO"));
+	m_pPointClusterExpander->setInitialCandidate(EdgeIndices);
+	m_pPointClusterExpander->runV(pInitialCluster);
 }

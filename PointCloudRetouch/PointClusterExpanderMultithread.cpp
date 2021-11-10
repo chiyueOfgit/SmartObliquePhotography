@@ -4,6 +4,9 @@
 #include "common/CpuTimer.h"
 #include "PointCluster.h"
 #include "PointCloudRetouchManager.h"
+#include <fstream>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -19,6 +22,12 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)  //FI
 	m_ExpandedPointSet.clear();
 	CPointCloudRetouchManager* pManager = CPointCloudRetouchManager::getInstance();
 	const auto ExpandingCandidateQueue = __initExpandingCandidateQueue(vCluster);
+
+	std::ofstream Out("initcandidate.txt");
+	boost::archive::text_oarchive Oarchive(Out);
+	Oarchive& BOOST_SERIALIZATION_NVP(ExpandingCandidateQueue);
+	Out.close();
+
 	std::vector<std::atomic_flag> TraversedFlag(pManager->getScene().getNumPoint());
 	std::deque ExpandedFlag(pManager->getScene().getNumPoint(), false);
 

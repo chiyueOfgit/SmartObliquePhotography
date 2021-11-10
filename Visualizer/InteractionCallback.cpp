@@ -110,7 +110,7 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			}
 		}
 
-		if (KeyString == "m")
+		if (KeyString == "p")
 		{
 			PointCloudRetouch::hiveAutoMarkLitter();
 			RefreshFlag = true;

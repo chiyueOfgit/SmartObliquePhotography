@@ -126,6 +126,9 @@
     <ClInclude Include="GroundObjectExtractor.h">
       <Filter>Operation\GroundobjectExtract</Filter>
     </ClInclude>
+    <ClInclude Include="PointClusterExpanderMultithread4Auto.h">
+      <Filter>Operation\Expander</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -207,6 +210,9 @@
     </ClCompile>
     <ClCompile Include="GroundObjectExtractor.cpp">
       <Filter>Operation\GroundobjectExtract</Filter>
+    </ClCompile>
+    <ClCompile Include="PointClusterExpanderMultithread4Auto.cpp">
+      <Filter>Operation\Expander</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
