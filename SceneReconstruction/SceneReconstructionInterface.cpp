@@ -87,3 +87,21 @@ pcl::TextureMesh hiveObliquePhotography::SceneReconstruction::hiveTestCMesh(cons
 
 	return M.toTexMesh(Material);
 }
+
+//*****************************************************************
+//FUNCTION:
+bool hiveObliquePhotography::SceneReconstruction::hiveGetSceneReconstructionConfig(CSceneReconstructionConfig*& voConfig)
+{
+	auto pConfig = CSceneReconstructionConfig::getInstance();
+	_ASSERTE(pConfig);
+	if (pConfig)
+	{
+		voConfig = CSceneReconstructionConfig::getInstance();
+		return true;
+	}
+	else
+	{
+		voConfig = nullptr;
+		return false;
+	}
+}

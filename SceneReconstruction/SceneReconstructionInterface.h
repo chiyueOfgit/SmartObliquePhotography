@@ -1,5 +1,6 @@
 #pragma once
 #include "SceneReconstructionExport.h"
+#include "SceneReconstructionConfig.h"
 #include "Mesh.h"
 #include "Image.h"
 
@@ -13,6 +14,6 @@ namespace hiveObliquePhotography
 		RECONSTRUCTION_DECLSPEC void hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo);
 		RECONSTRUCTION_DECLSPEC bool hiveBakeColorTexture(const CMesh& vMesh, PointCloud_t::Ptr vSceneCloud, CImage<std::array<int, 3>>& voImage);
 		RECONSTRUCTION_DECLSPEC pcl::TextureMesh hiveTestCMesh(const std::string& vPath);
-
+		RECONSTRUCTION_DECLSPEC bool hiveGetSceneReconstructionConfig(CSceneReconstructionConfig*& voConfig);
 	}
 }

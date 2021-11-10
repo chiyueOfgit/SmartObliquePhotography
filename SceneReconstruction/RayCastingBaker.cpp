@@ -21,11 +21,11 @@ hiveObliquePhotography::CImage<std::array<int, 3>> CRayCastingBaker::bakeTexture
 	m_pCloud = vPointCloud;
 	__buildKdTree(m_pCloud);
 
-	m_SurfelRadius = m_pConfig->getAttribute<float>(KEYWORD::SURFEL_RADIUS).value();
+	m_SurfelRadius = m_pConfig->getAttribute<double>(KEYWORD::SURFEL_RADIUS).value();
 	m_NumSample = m_pConfig->getAttribute<int>(KEYWORD::NUM_SAMPLE).value();
-	m_SearchRadius = m_pConfig->getAttribute<float>(KEYWORD::SEARCH_RADIUS).value();
-	m_DistanceThreshold = m_pConfig->getAttribute<float>(KEYWORD::DISTANCE_THRESHOLD).value();
-	m_WeightCoefficient = m_pConfig->getAttribute<float>(KEYWORD::WEIGHT_COEFFICIENT).value();
+	m_SearchRadius = m_pConfig->getAttribute<double>(KEYWORD::SEARCH_RADIUS).value();
+	m_DistanceThreshold = m_pConfig->getAttribute<double>(KEYWORD::DISTANCE_THRESHOLD).value();
+	m_WeightCoefficient = m_pConfig->getAttribute<double>(KEYWORD::WEIGHT_COEFFICIENT).value();
 
 	Eigen::Matrix<std::array<int, 3>, -1, -1> Texture(Resolution.y(), Resolution.x());
 	for (const auto& Face : m_Mesh.m_Faces)
