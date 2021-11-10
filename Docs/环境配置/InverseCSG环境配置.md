@@ -30,20 +30,26 @@
 为了使用以前版本而非最新版的Sketch库，需要手动下载安装。  
 前往官网下载[Sketch库](https://people.csail.mit.edu/asolar/sketch-1.7.6.tar.gz)。并按照压缩包内的README文件的指引安装。
 ![](pic/20211028113924.png)  
-注意，需要按照指引添加环境变量。
+注意，需要按照指引添加环境变量SKETCH_HOME。
 
-## 6. 安装其他依赖
+## 6. 调整Sketch库目录
+Sketch库默认的目录排布与InverseCSG库期待的不同，需要调整。
+![](pic/20211108124043.png)
+将runtime与sketchlib文件夹从sketch-frontend目录移动至sketch-frontend/src下
+
+## 7. 安装其他依赖
 在命令行输入`sudo apt-get install unzip`；
 `sudo apt-get install openjdk-8-jdk-headless`；
 
-## 7. 下载InverseCSG库
-前往github下载[InverseCSG库](https://github.com/yijiangh/InverseCSG)即可。  
-我这里放在了E:/repos/InverseCSG-master。
+## 8. 下载InverseCSG库
+前往github下载[InverseCSG库](https://github.com/WaferLi/InverseCSG)即可。这个版本我预先配好了一些东西。  
 
-## 8. 运行安装脚本
+## 9. 更改环境变量
+打开InverseCSG-master/build目录下的ENVIRONMENT文件，将这些目录改成你实际安装的目录即可。（作为示例，我是安装在E:/repos下）
+![](pic/20211108131251.png)
+
+## 10. 运行测试脚本
 先输入`conda activate inv_csg_env`启用conda环境。  
 再进入InverseCSG的下载路径。
-最后输入`python3 install.py -d ./build`即可安装InverseCSG。
-![](pic/20211028114506.png)  
-一路输入`y`确认，最后输入sketch-frontend与sketch-backend的地址即可。
-![](pic/20211028163001.png)
+最后输入`python3 run_tests.py ./build one_cube`即可运行最简单的测试用例。
+![](pic/20211108125653.png)
