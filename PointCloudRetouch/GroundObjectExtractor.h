@@ -12,25 +12,26 @@ namespace hiveObliquePhotography
 			CGroundObjectExtractor() = default;
 			~CGroundObjectExtractor() = default;
 
-			virtual void runV(pcl::Indices& voObjectIndices, pcl::Indices& voEdgeIndices, const Eigen::Vector2i& vResolution);
+			virtual void runV(pcl::Indices& voObjectIndices, std::vector<std::vector<pcl::Indices>>& voEdgeIndices, const Eigen::Vector2i& vResolution);
 
 #ifdef _UNIT_TEST
 			void map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject) { return __map2Cloud(vTexture, voCandidates, vIfObject); }
 			CImage<std::array<int, 1>> generateElevationMap(Eigen::Vector2i& vResolution) { return __generateElevationMap(vResolution); }
 			CImage<std::array<int, 1>> generateGrownImage(const CImage<std::array<int, 1>>& vElevationMap)
 			{
-				auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 6);
+				auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
 				__extractObjectByMask(vElevationMap, ExtractedImage);
 				return ExtractedImage;
 			}
 			CImage<std::array<int, 1>> generateEdgeImage(const CImage<std::array<int, 1>>& vGrownImage) { return __extractGroundEdgeImage(vGrownImage); }
+			std::vector<std::vector<Eigen::Vector2i>> divide2EdgeSet(const CImage<std::array<int, 1>>& vEdgeImage) { return __divide2EdgeSet(vEdgeImage); };
 #endif
 		
 		private: 
 			std::vector<std::vector<std::vector<pcl::index_t>>> m_PointDistributionSet;
 
 			CImage<std::array<int, 1>> __generateElevationMap(const Eigen::Vector2i& vResolution);
-			void __extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, pcl::Indices& voEdgeIndices);
+			void __extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::Indices>>& voEdgeIndices);
 
 			std::array<int, 1> __transElevation2Color(float vElevation, float vHeightDiff);
 			void __calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet);
@@ -42,8 +43,8 @@ namespace hiveObliquePhotography
 				
 			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject);
 
-			void __divideBoundary(std::vector<pcl::index_t>& vBoundaryPointSet, std::vector<std::vector<pcl::index_t>>& voHoleSet);
-			void __findNearestBoundaryPoint(pcl::index_t vSeed, std::vector<pcl::index_t>& vTotalSet, std::vector<pcl::index_t>& voNeighborSet, float vTolerance);
+			std::vector<std::vector<Eigen::Vector2i>> __divide2EdgeSet(const CImage<std::array<int, 1>>& vEdgeImage);
+			
 		};
 	}
 }

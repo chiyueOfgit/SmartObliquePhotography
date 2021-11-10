@@ -452,7 +452,7 @@ void CPointCloudRetouchManager::executeAutoMarker()
 	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
 	if (!pExtractor)
 		std::cerr << "create Extractor error." << std::endl;
-	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices,Resolution);
+	//pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices,Resolution);
 
 	std::vector<pcl::index_t> ValidationSet;
 	std::vector<pcl::index_t>::iterator Iter = OutPutIndices.begin();

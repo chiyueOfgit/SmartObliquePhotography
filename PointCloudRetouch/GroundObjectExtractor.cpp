@@ -15,7 +15,7 @@ _REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTO
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, pcl::Indices& voEdgeIndices, const Eigen::Vector2i& vResolution)
+void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, std::vector<std::vector<pcl::Indices>>& voEdgeIndices, const Eigen::Vector2i& vResolution)
 {
 	_ASSERTE((vResolution.array() > 0).all());
 	CImage<std::array<int, 1>> ElevationMap = __generateElevationMap(vResolution);
@@ -54,13 +54,14 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, pcl::Indices& voEdgeIndices)
+void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::Indices>>& voEdgeIndices)
 {
 	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
 	__extractObjectByMask(vElevationMap, ExtractedImage);
 	auto GroundEdgeImage = __extractGroundEdgeImage(ExtractedImage);
 	__map2Cloud(ExtractedImage, voIndices, false);
-	__map2Cloud(GroundEdgeImage, voEdgeIndices, false);
+	auto EdgeSet = __divide2EdgeSet(ExtractedImage);
+    //TODO:添加新的map函数
 }
 
 //*****************************************************************
@@ -307,4 +308,50 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__ext
 		}
 	}
 	return GroundEdgeImage;
+}
+
+//*****************************************************************
+//FUNCTION:
+std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeSet(const CImage<std::array<int, 1>>& vEdgeImage)
+{
+	std::vector<std::vector<Eigen::Vector2i>> OutputEdgeSet;
+	auto TempImage = vEdgeImage;
+	Eigen::Vector2i CurrentSeed;
+	Eigen::Vector2i NeighborSeed;
+	int Height = TempImage.getHeight();
+	int Width = TempImage.getWidth();
+	int Direction[8][2] = { {-1,-1}, {0,-1}, {1,-1}, {1,0}, {1,1}, {0,1}, {-1,1}, {-1,0} };
+
+	while(1)
+	{
+		CurrentSeed = __findStartPoint(TempImage);
+		if(TempImage.getColor(CurrentSeed.y(), CurrentSeed.x())[0] == 255)
+			break;
+		std::vector<Eigen::Vector2i> SeedStack;
+		SeedStack.push_back(CurrentSeed);
+		std::vector<Eigen::Vector2i> EdgeSet;
+	
+		while (!SeedStack.empty())
+		{
+			CurrentSeed = SeedStack.back();
+			SeedStack.pop_back();
+			EdgeSet.push_back(CurrentSeed);
+			for (int i = 0; i < 8; i++)
+			{
+				NeighborSeed.x() = CurrentSeed.x() + Direction[i][0];
+				NeighborSeed.y() = CurrentSeed.y() + Direction[i][1];
+				if (NeighborSeed.x() < 0 || NeighborSeed.y() < 0 || NeighborSeed.x() > (Width - 1) || (NeighborSeed.y() > Height - 1))
+					continue;
+				auto Color = TempImage.getColor(NeighborSeed.y(), NeighborSeed.x());
+				if (Color[0] == 0)
+				{
+					SeedStack.push_back(NeighborSeed);
+					TempImage.fetchColor(NeighborSeed.y(), NeighborSeed.x())[0] = 255;
+				}
+			}
+		}
+		if(EdgeSet.size() > 20)
+		    OutputEdgeSet.push_back(EdgeSet);
+	}
+	return OutputEdgeSet;
 }

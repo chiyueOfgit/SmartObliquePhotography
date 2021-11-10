@@ -136,40 +136,42 @@ void __serializeIndices(const std::vector<int>& vData, const std::string& vFileN
 //	}
 //}
 
-//TEST_F(TestObjectExtractor, GenerateMap)
-//{
-//	initTest(PointCloudPath);
-//	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
-//	EXPECT_NE(pExtractor, nullptr);
-//	if (!pExtractor)
-//		std::cerr << "create Extractor error." << std::endl;
-//	Eigen::Vector2i Resolution{ 1024, 1024 };
-//	CImage<std::array<int, 1>> ResultImage;
-//	ResultImage = pExtractor->generateElevationMap(Resolution);
-//	auto GrownImage = pExtractor->generateGrownImage(ResultImage);
-//	auto EdgeImage = pExtractor->generateEdgeImage(GrownImage);
-//	_saveTexture("GrownImage.png", GrownImage, false);
-//	_saveTexture("EdgeImage.png", EdgeImage, false);
-//}
-
-TEST_F(TestObjectExtractor, OutPutIndices)
+TEST_F(TestObjectExtractor, GenerateMap)
 {
 	initTest(PointCloudPath);
-
-	Eigen::Vector2i Resolution{ 1024,1024 };
-	std::vector<pcl::index_t> OutPutIndices;
-	std::vector<pcl::index_t> EdgeIndices;
-	
 	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
 	EXPECT_NE(pExtractor, nullptr);
 	if (!pExtractor)
 		std::cerr << "create Extractor error." << std::endl;
-
-    pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices, Resolution);
-
-	__serializeIndices(OutPutIndices, "005006SeedObject.txt");
-	__serializeIndices(EdgeIndices, "005006EdgeIndices.txt");
+	Eigen::Vector2i Resolution{ 1024, 1024 };
+	CImage<std::array<int, 1>> ResultImage;
+	ResultImage = pExtractor->generateElevationMap(Resolution);
+	auto GrownImage = pExtractor->generateGrownImage(ResultImage);
+	auto EdgeImage = pExtractor->generateEdgeImage(GrownImage);
+	auto EdgeSet = pExtractor->divide2EdgeSet(EdgeImage);
+	
+	_saveTexture("GrownImage.png", GrownImage, false);
+	_saveTexture("EdgeImage.png", EdgeImage, false);
 }
+
+//TEST_F(TestObjectExtractor, OutPutIndices)
+//{
+//	initTest(PointCloudPath);
+//
+//	Eigen::Vector2i Resolution{ 1024,1024 };
+//	std::vector<pcl::index_t> OutPutIndices;
+//	std::vector<pcl::index_t> EdgeIndices;
+//	
+//	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
+//	EXPECT_NE(pExtractor, nullptr);
+//	if (!pExtractor)
+//		std::cerr << "create Extractor error." << std::endl;
+//
+//    pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices, Resolution);
+//
+//	__serializeIndices(OutPutIndices, "005006SeedObject.txt");
+//	__serializeIndices(EdgeIndices, "005006EdgeIndices.txt");
+//}
 
 //TEST_F(TestObjectExtractor, Growing)
 //{
