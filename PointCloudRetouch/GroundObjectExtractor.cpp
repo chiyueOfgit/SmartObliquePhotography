@@ -295,7 +295,7 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 	{
 		std::vector<pcl::index_t> EdgePointSet;
 		for (auto EdgePoint : Edge)
-			for (auto PointIndex : m_PointDistributionSet[EdgePoint[0]][EdgePoint[1]])
+			for (auto PointIndex : m_PointDistributionSet[EdgePoint[1]][EdgePoint[0]])
 				EdgePointSet.push_back(PointIndex);
 		voEdgeIndices.push_back(EdgePointSet);
 	}
@@ -368,6 +368,8 @@ std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeS
 			CurrentSeed = SeedStack.back();
 			SeedStack.pop_back();
 			EdgeSet.push_back(CurrentSeed);
+			/*if (EdgeSet.size() > 100)
+				break;*/
 			for (int i = 0; i < 8; i++)
 			{
 				NeighborSeed.x() = CurrentSeed.x() + Direction[i][0];
