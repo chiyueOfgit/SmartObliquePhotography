@@ -292,14 +292,13 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 	}
 
 	for (auto Edge : vEdgeSet)
+	{
+		std::vector<pcl::index_t> EdgePointSet;
 		for (auto EdgePoint : Edge)
-		{
-			std::vector<pcl::index_t> EdgePointSet;
 			for (auto PointIndex : m_PointDistributionSet[EdgePoint[0]][EdgePoint[1]])
 				EdgePointSet.push_back(PointIndex);
-			voEdgeIndices.push_back(EdgePointSet);
-		}
-			
+		voEdgeIndices.push_back(EdgePointSet);
+	}
 }
 
 //*****************************************************************
