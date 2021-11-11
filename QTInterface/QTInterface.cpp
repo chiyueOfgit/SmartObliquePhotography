@@ -938,6 +938,7 @@ void CQTInterface::onChangeCameraPosition()
     }
 
     pViewer->resetCamera();
+    pViewer->updateCamera();
 }
 
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)
