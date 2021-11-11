@@ -7,6 +7,14 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 bool CDisplayOptionsSettingDialog::m_ColorStatus = false;
 bool CDisplayOptionsSettingDialog::m_NormalStatus = true;
+CSceneReconstructionConfig* CDisplayOptionsSettingDialog::m_pSceneReconstructionConfig = nullptr;
+int CDisplayOptionsSettingDialog::m_OctreeDepth = 0;
+std::tuple<int, int> CDisplayOptionsSettingDialog::m_Resolution = std::tuple<int, int>(0, 0);
+double CDisplayOptionsSettingDialog::m_SurfelRadius = 0.0;
+int CDisplayOptionsSettingDialog::m_NumSample = 0;
+double CDisplayOptionsSettingDialog::m_SearchRadius = 0.0;
+double CDisplayOptionsSettingDialog::m_DistanceThreshold = 0.0;
+double CDisplayOptionsSettingDialog::m_WeightCoefficient = 0.0;
 
 void CDisplayOptionsSettingDialog::onActionColorFeatureCheckBox()
 {

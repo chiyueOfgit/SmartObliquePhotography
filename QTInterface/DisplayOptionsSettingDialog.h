@@ -66,14 +66,14 @@ namespace hiveObliquePhotography::QTInterface
 
 		static bool m_ColorStatus;
 		static bool m_NormalStatus;
-		SceneReconstruction::CSceneReconstructionConfig* m_pSceneReconstructionConfig;
-		int m_OctreeDepth;
-		std::tuple<int, int> m_Resolution;
-		double m_SurfelRadius;
-		int m_NumSample;
-		double m_SearchRadius;
-		double m_DistanceThreshold;
-		double m_WeightCoefficient;
+		static SceneReconstruction::CSceneReconstructionConfig* m_pSceneReconstructionConfig;
+		static int m_OctreeDepth;
+		static std::tuple<int, int> m_Resolution;
+		static double m_SurfelRadius;
+		static int m_NumSample;
+		static double m_SearchRadius;
+		static double m_DistanceThreshold;
+		static double m_WeightCoefficient;
 
 	private slots:
 		void onActionColorFeatureCheckBox();
