@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>960</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -58,6 +58,12 @@
     <property name="title">
      <string>Display</string>
     </property>
+    <addaction name="actionViewFromPositiveX"/>
+    <addaction name="actionViewFromNegativeX"/>
+    <addaction name="actionViewFromPositiveY"/>
+    <addaction name="actionViewFromNegativeY"/>
+    <addaction name="actionViewFromPositiveZ"/>
+    <addaction name="actionViewFromNegativeZ"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -499,6 +505,54 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>reconstruction&amp;stitching</string>
+   </property>
+  </action>
+  <action name="actionViewFromPositiveX">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>+X(back)</string>
+   </property>
+  </action>
+  <action name="actionViewFromNegativeX">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>-X(front)</string>
+   </property>
+  </action>
+  <action name="actionViewFromPositiveY">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>+Y(left)</string>
+   </property>
+  </action>
+  <action name="actionViewFromNegativeY">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>-Y(right)</string>
+   </property>
+  </action>
+  <action name="actionViewFromPositiveZ">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>+Z(bottom)</string>
+   </property>
+  </action>
+  <action name="actionViewFromNegativeZ">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>-Z(top)</string>
    </property>
   </action>
  </widget>
