@@ -60,7 +60,7 @@ void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int,
 	__extractObjectByMask(vElevationMap, ExtractedImage);
 	auto GroundEdgeImage = __extractGroundEdgeImage(ExtractedImage);
 	__map2Cloud(ExtractedImage, voIndices, false);
-	auto EdgeSet = __divide2EdgeSet(ExtractedImage);
+	auto EdgeSet = __divide2EdgeSet(GroundEdgeImage);
     //TODO:添加新的map函数
 	__map2Cloud(ExtractedImage, voEdgeIndices, EdgeSet);
 }
@@ -358,8 +358,7 @@ std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeS
 
 	while(1)
 	{
-		CurrentSeed = __findStartPoint(TempImage);
-		if(TempImage.getColor(CurrentSeed.y(), CurrentSeed.x())[0] == 255)
+		if(!__findBlackPoint(TempImage,CurrentSeed))
 			break;
 		std::vector<Eigen::Vector2i> SeedStack;
 		SeedStack.push_back(CurrentSeed);
@@ -388,4 +387,21 @@ std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeS
 		    OutputEdgeSet.push_back(EdgeSet);
 	}
 	return OutputEdgeSet;
+}
+
+bool CGroundObjectExtractor::__findBlackPoint(const CImage<std::array<int, 1>>& vImage, Eigen::Vector2i& voBlackPoint)
+{
+	for (int i = 0; i < vImage.getWidth(); i++)
+	{
+		for (int k = 0; k < vImage.getHeight(); k++)
+		{
+			if (vImage.getColor(k, i)[0] == 0)
+			{
+				voBlackPoint.x() = i;
+				voBlackPoint.y() = k;
+				return true;
+			}
+		}
+	}
+	return false;
 }

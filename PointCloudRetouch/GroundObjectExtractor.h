@@ -43,7 +43,8 @@ namespace hiveObliquePhotography
 				
 			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject);
 			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<std::vector<pcl::index_t>>& voEdgeIndices, const std::vector<std::vector<Eigen::Vector2i>>& vEdgeSet);
-
+			
+			bool __findBlackPoint(const CImage<std::array<int, 1>>& vImage, Eigen::Vector2i& voBlackPoint);
 			std::vector<std::vector<Eigen::Vector2i>> __divide2EdgeSet(const CImage<std::array<int, 1>>& vEdgeImage);
 			
 		};
