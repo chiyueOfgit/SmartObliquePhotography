@@ -597,6 +597,18 @@ void CQTInterface::onActionOpenMesh()
         __initialVTKWidget();
     }
 
+    //enable ui icons
+    {
+        m_UI.actionViewFromNegativeX->setEnabled(true);
+        m_UI.actionViewFromPositiveX->setEnabled(true);
+        m_UI.actionViewFromNegativeY->setEnabled(true);
+        m_UI.actionViewFromPositiveY->setEnabled(true);
+        m_UI.actionViewFromNegativeZ->setEnabled(true);
+        m_UI.actionViewFromPositiveZ->setEnabled(true);
+
+        m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
+    }
+
     m_MeshOpenPath = __getDirectory(FilePathSet.front());
     for (const auto& FilePath : FilePathSet)
     {
