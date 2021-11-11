@@ -15,7 +15,7 @@ _REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTO
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, std::vector<std::vector<pcl::Indices>>& voEdgeIndices, const Eigen::Vector2i& vResolution)
+void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices, const Eigen::Vector2i& vResolution)
 {
 	_ASSERTE((vResolution.array() > 0).all());
 	CImage<std::array<int, 1>> ElevationMap = __generateElevationMap(vResolution);
@@ -54,7 +54,7 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::Indices>>& voEdgeIndices)
+void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices)
 {
 	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
 	__extractObjectByMask(vElevationMap, ExtractedImage);
@@ -62,6 +62,7 @@ void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int,
 	__map2Cloud(ExtractedImage, voIndices, false);
 	auto EdgeSet = __divide2EdgeSet(ExtractedImage);
     //TODO:添加新的map函数
+	__map2Cloud(ExtractedImage, voEdgeIndices, EdgeSet);
 }
 
 //*****************************************************************
@@ -266,6 +267,39 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 				for (auto PointIndex : m_PointDistributionSet[i][k])
 					voCandidates.push_back(PointIndex);
 		}
+}
+
+//*****************************************************************
+//FUNCTION:
+void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<std::vector<pcl::index_t>>& voEdgeIndices, const std::vector<std::vector<Eigen::Vector2i>>& vEdgeSet)
+{
+	// TODO:COPY-PASTE
+	if (voEdgeIndices.size())
+		voEdgeIndices.clear();
+	auto pManager = CPointCloudRetouchManager::getInstance();
+	std::vector<pcl::index_t> Indices;
+	auto Box = pManager->getScene().getBoundingBox(Indices);
+
+	if (m_PointDistributionSet.empty())
+	{
+		// TODO:COPY-PASTE
+		Eigen::Vector2f Offset{ (Box.second - Box.first).x() / vTexture.getWidth(),(Box.second - Box.first).y() / vTexture.getHeight() };
+		Eigen::Vector2f HeightRange{ Box.first.z(), Box.second.z() };
+
+		std::vector<std::vector<float>> HeightSet(vTexture.getHeight(), std::vector<float>(vTexture.getWidth(), HeightRange.x()));
+		Eigen::Vector2f MinXY{ Box.first.x(),Box.first.y() };
+		__calcAreaElevation(MinXY, Offset, HeightSet);
+	}
+
+	for (auto Edge : vEdgeSet)
+		for (auto EdgePoint : Edge)
+		{
+			std::vector<pcl::index_t> EdgePointSet;
+			for (auto PointIndex : m_PointDistributionSet[EdgePoint[0]][EdgePoint[1]])
+				EdgePointSet.push_back(PointIndex);
+			voEdgeIndices.push_back(EdgePointSet);
+		}
+			
 }
 
 //*****************************************************************

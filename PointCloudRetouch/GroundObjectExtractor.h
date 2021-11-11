@@ -12,7 +12,7 @@ namespace hiveObliquePhotography
 			CGroundObjectExtractor() = default;
 			~CGroundObjectExtractor() = default;
 
-			virtual void runV(pcl::Indices& voObjectIndices, std::vector<std::vector<pcl::Indices>>& voEdgeIndices, const Eigen::Vector2i& vResolution);
+			virtual void runV(pcl::Indices& voObjectIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices, const Eigen::Vector2i& vResolution);
 
 #ifdef _UNIT_TEST
 			void map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject) { return __map2Cloud(vTexture, voCandidates, vIfObject); }
@@ -31,7 +31,7 @@ namespace hiveObliquePhotography
 			std::vector<std::vector<std::vector<pcl::index_t>>> m_PointDistributionSet;
 
 			CImage<std::array<int, 1>> __generateElevationMap(const Eigen::Vector2i& vResolution);
-			void __extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::Indices>>& voEdgeIndices);
+			void __extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices);
 
 			std::array<int, 1> __transElevation2Color(float vElevation, float vHeightDiff);
 			void __calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet);
@@ -42,6 +42,7 @@ namespace hiveObliquePhotography
 			CImage<std::array<int, 1>> __extractGroundEdgeImage(const CImage<std::array<int, 1>>& vExtractedImage);
 				
 			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject);
+			void __map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<std::vector<pcl::index_t>>& voEdgeIndices, const std::vector<std::vector<Eigen::Vector2i>>& vEdgeSet);
 
 			std::vector<std::vector<Eigen::Vector2i>> __divide2EdgeSet(const CImage<std::array<int, 1>>& vEdgeImage);
 			
