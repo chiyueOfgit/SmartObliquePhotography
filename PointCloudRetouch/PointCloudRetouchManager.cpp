@@ -7,7 +7,7 @@
 #include "OutlierDetector.h"
 
 #include "ColorFeature.h"
-#include "PointClusterExpanderMultithread4Auto.h"
+#include "PointClusterExpanderMultithread.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -448,22 +448,28 @@ void CPointCloudRetouchManager::executeAutoMarker()
 {
 	Eigen::Vector2i Resolution{ 1024,1024 };
 	std::vector<pcl::index_t> OutPutIndices;
-	std::vector<pcl::index_t> EdgeIndices;
+	std::vector< std::vector<pcl::index_t>> EdgeIndices;
 	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
 	if (!pExtractor)
 		std::cerr << "create Extractor error." << std::endl;
-	//pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices,Resolution);
+	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices,Resolution);
 
-	std::vector<pcl::index_t> ValidationSet;
-	std::vector<pcl::index_t>::iterator Iter = OutPutIndices.begin();
-	ValidationSet.push_back(*Iter);
-	OutPutIndices.erase(Iter);
+	for (auto Index : OutPutIndices)
+		tagPointLabel(Index, EPointLabel::KEPT, 0, 1.0);
 	
-    CPointCluster* pInitialCluster = new CPointCluster;
-	const hiveConfig::CHiveConfig* pClusterConfig = m_BackgroundMarker.getClusterConfig();
-	pInitialCluster->init(pClusterConfig, 0, EPointLabel::UNWANTED, OutPutIndices, ValidationSet, addAndGetTimestamp());
-
-    CPointClusterExpanderMultithread4Auto* m_pPointClusterExpander = dynamic_cast<CPointClusterExpanderMultithread4Auto*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("CLUSTER_EXPANDER_MULTITHREAD4AUTO"));
-	m_pPointClusterExpander->setInitialCandidate(EdgeIndices);
-	m_pPointClusterExpander->runV(pInitialCluster);
+	CPointCluster* pInitialCluster = new CPointCluster;
+    const hiveConfig::CHiveConfig* pClusterConfig = m_BackgroundMarker.getClusterConfig();
+	CPointClusterExpanderMultithread* pPointClusterExpander = dynamic_cast<CPointClusterExpanderMultithread*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("CLUSTER_EXPANDER_MULTITHREAD"));
+	for(auto& EdgeSet: EdgeIndices)
+	{
+		std::vector<pcl::index_t> ValidationSet;
+		std::vector<pcl::index_t>::iterator Iter = EdgeSet.begin();
+		ValidationSet.push_back(*Iter);
+		EdgeSet.erase(Iter);
+	
+		pInitialCluster->init(pClusterConfig, 0, EPointLabel::KEPT, EdgeSet, ValidationSet, addAndGetTimestamp());
+		pPointClusterExpander->runV(pInitialCluster);
+	}
+	switchLabel(EPointLabel::UNWANTED, EPointLabel::UNDETERMINED);
+	recoverMarkedPoints2Undetermined(EPointLabel::KEPT);
 }
