@@ -30,7 +30,7 @@ void hiveObliquePhotography::SceneReconstruction::hiveMeshSimplication(CMesh& vi
 
 //*****************************************************************
 //FUNCTION: 
-RECONSTRUCTION_DECLSPEC void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo)
+void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo)
 {
 	auto pSuturator = hiveDesignPattern::hiveCreateProduct<CBasicMeshSuture>(KEYWORD::BASIC_MESH_SUTURE, CSceneReconstructionConfig::getInstance()->getSubConfigByName("BasicSuture"), vioMeshOne, vioMeshTwo);
 	pSuturator->sutureMeshesV();

@@ -448,11 +448,11 @@ void CPointCloudRetouchManager::executeAutoMarker()
 {
 	Eigen::Vector2i Resolution{ 1024,1024 };
 	std::vector<pcl::index_t> OutPutIndices;
-	std::vector< std::vector<pcl::index_t>> EdgeIndices;
+	std::vector<std::vector<pcl::index_t>> EdgeIndices;
 	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
 	if (!pExtractor)
 		std::cerr << "create Extractor error." << std::endl;
-	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices,Resolution);
+	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices, Resolution);
 
 	for (auto Index : OutPutIndices)
 		tagPointLabel(Index, EPointLabel::KEPT, 0, 1.0);
