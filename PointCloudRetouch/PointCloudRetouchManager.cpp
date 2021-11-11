@@ -467,9 +467,9 @@ void CPointCloudRetouchManager::executeAutoMarker()
 		ValidationSet.push_back(*Iter);
 		EdgeSet.erase(Iter);
 	
-		pInitialCluster->init(pClusterConfig, 0, EPointLabel::KEPT, EdgeSet, ValidationSet, addAndGetTimestamp());
+		pInitialCluster->init(pClusterConfig, 0, EPointLabel::UNWANTED, EdgeSet, ValidationSet, addAndGetTimestamp());
 		pPointClusterExpander->runV(pInitialCluster);
 	}
-	switchLabel(EPointLabel::UNWANTED, EPointLabel::UNDETERMINED);
-	recoverMarkedPoints2Undetermined(EPointLabel::KEPT);
+	/*switchLabel(EPointLabel::UNWANTED, EPointLabel::UNDETERMINED);
+	recoverMarkedPoints2Undetermined(EPointLabel::KEPT);*/
 }
