@@ -134,20 +134,25 @@ std::array<int, 1> CGroundObjectExtractor::__transElevation2Color(float vElevati
 //FUNCTION:
 Eigen::Vector2i CGroundObjectExtractor::__findStartPoint(const CImage<std::array<int, 1>>& vImage)
 {
-	int Min = INT_MAX;
+	std::vector<int> Sum(256,0);
+	int StartColor = 0;
 	Eigen::Vector2i LowestPosition;
 	for (int i = 0; i < vImage.getWidth(); i++)
-	{
+		for (int k = 0; k < vImage.getHeight(); k++)
+			Sum[vImage.getColor(k, i)[0]]++;
+	for (; StartColor < 252; StartColor++)
+		if (Sum[StartColor] > 100 && Sum[StartColor + 1] > 100 && Sum[StartColor + 2] > 100 && Sum[StartColor + 3] > 100)
+			break;
+	for (int i = 0; i < vImage.getWidth(); i++)
 		for (int k = 0; k < vImage.getHeight(); k++)
 		{
-			if(vImage.getColor(k,i)[0] < Min)
+			if (vImage.getColor(k, i)[0] == StartColor)
 			{
-				Min = vImage.getColor(k, i)[0];
 				LowestPosition.x() = i;
 				LowestPosition.y() = k;
 			}
 		}
-	}
+			
 	return LowestPosition;
 }
 
