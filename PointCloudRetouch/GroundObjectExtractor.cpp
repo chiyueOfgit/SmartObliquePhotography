@@ -1,14 +1,6 @@
 #include "pch.h"
 #include "GroundObjectExtractor.h"
 
-#include <flann/util/matrix.h>
-#define STB_IMAGE_STATIC
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#define STB_IMAGE_WRITE_STATIC
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTOR)
@@ -188,7 +180,7 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 		CurrentSeed = SeedStack.back();
 		SeedStack.pop_back();
 		SrcValue = vOriginImage.getColor(CurrentSeed.y(), CurrentSeed.x());
-		for (int i = 0; i < 9; ++i)
+		for (int i = 0; i < 8; i++)
 		{
 			NeighborSeed.x() = CurrentSeed.x() + Direction[i][0];
 			NeighborSeed.y() = CurrentSeed.y() + Direction[i][1];

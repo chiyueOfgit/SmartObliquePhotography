@@ -462,14 +462,17 @@ void CPointCloudRetouchManager::executeAutoMarker()
 	CPointClusterExpanderMultithread* pPointClusterExpander = dynamic_cast<CPointClusterExpanderMultithread*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("CLUSTER_EXPANDER_MULTITHREAD"));
 	for(auto& EdgeSet: EdgeIndices)
 	{
-		std::vector<pcl::index_t> ValidationSet;
-		std::vector<pcl::index_t>::iterator Iter = EdgeSet.begin();
-		ValidationSet.push_back(*Iter);
-		EdgeSet.erase(Iter);
+		if(EdgeSet.size())
+		{
+			std::vector<pcl::index_t> ValidationSet;
+			std::vector<pcl::index_t>::iterator Iter = EdgeSet.begin();
+			ValidationSet.push_back(*Iter);
+			EdgeSet.erase(Iter);
 	
-		pInitialCluster->init(pClusterConfig, 0, EPointLabel::UNWANTED, EdgeSet, ValidationSet, addAndGetTimestamp());
-		pPointClusterExpander->runV(pInitialCluster);
+			pInitialCluster->init(pClusterConfig, 0, EPointLabel::KEPT, EdgeSet, ValidationSet, addAndGetTimestamp());
+			pPointClusterExpander->runV(pInitialCluster);
+		}
 	}
-	/*switchLabel(EPointLabel::UNWANTED, EPointLabel::UNDETERMINED);
-	recoverMarkedPoints2Undetermined(EPointLabel::KEPT);*/
+	switchLabel(EPointLabel::UNWANTED, EPointLabel::UNDETERMINED);
+	recoverMarkedPoints2Undetermined(EPointLabel::KEPT);
 }
