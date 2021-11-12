@@ -21,7 +21,7 @@ namespace hiveObliquePhotography
 			CImage<std::array<int, 1>> generateElevationMap(Eigen::Vector2i& vResolution) { return __generateElevationMap(vResolution); }
 			CImage<std::array<int, 1>> generateGrownImage(const CImage<std::array<int, 1>>& vElevationMap)
 			{
-				auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
+				auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 5);
 				__extractObjectByMask(vElevationMap, ExtractedImage);
 				return ExtractedImage;
 			}

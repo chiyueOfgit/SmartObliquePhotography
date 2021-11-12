@@ -30,7 +30,7 @@ using namespace  hiveObliquePhotography::PointCloudRetouch;
 using namespace  hiveObliquePhotography;
 
 const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test029_PointCloudRetouchConfig.xml");
-const std::string PointCloudPath = std::string("Tile_+004_+007_L23.ply");
+const std::string PointCloudPath = std::string("Tile_+005_+005.ply");
 const std::string ImagePath = TESTMODEL_DIR + std::string("Test029_Model/005005.png");
 
 class TestObjectExtractor : public testing::Test
