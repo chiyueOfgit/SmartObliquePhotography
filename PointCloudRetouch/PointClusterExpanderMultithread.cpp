@@ -44,7 +44,7 @@ void CPointClusterExpanderMultithread::runV(const CPointCluster* vCluster)  //FI
 
 			std::size_t CandidateLabel;
 			pManager->dumpPointLabelAt(CandidateLabel, vCandidate);
-			if (vCluster->getLabel() == EPointLabel::UNWANTED && static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
+			if (/*vCluster->getLabel() == EPointLabel::UNWANTED &&*/ static_cast<EPointLabel>(CandidateLabel) == EPointLabel::KEPT)
 				return;
 
 			std::uint32_t OldClusterIndex = pManager->getClusterIndexAt(vCandidate);
