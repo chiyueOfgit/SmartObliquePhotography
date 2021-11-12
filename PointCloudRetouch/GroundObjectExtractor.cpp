@@ -1,9 +1,38 @@
 #include "pch.h"
 #include "GroundObjectExtractor.h"
 
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_STATIC
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTOR)
+
+void saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<std::array<int, 1>>& vTexture, bool vIsReverse)
+{
+	const auto Width = vTexture.getWidth();
+	const auto Height = vTexture.getHeight();
+	const auto BytesPerPixel = 1;
+	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+	for (auto i = 0; i < Height; i++)
+		for (auto k = 0; k < Width; k++)
+		{
+			auto I = i;
+			if (vIsReverse)
+				I = Height - 1 - I;
+			auto Offset = (I * Width + k) * BytesPerPixel;
+			ResultImage[Offset] = vTexture.getColor(i, k)[0];
+			//ResultImage[Offset + 1] = vTexture.getColor(i, k)[1];
+			//ResultImage[Offset + 2] = vTexture.getColor(i, k)[2];
+		}
+
+	stbi_write_png(vPath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+	stbi_image_free(ResultImage);
+}
 
 //*****************************************************************
 //FUNCTION:
@@ -11,6 +40,9 @@ void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, std::vector<std
 {
 	_ASSERTE((vResolution.array() > 0).all());
 	CImage<std::array<int, 1>> ElevationMap = __generateElevationMap(vResolution);
+
+	saveTexture("ElevatioMap.png", ElevationMap, false);
+
 	__extractObjectIndices(ElevationMap, voObjectIndices, voEdgeIndices);
 	_ASSERTE(!voObjectIndices.empty());
 }
@@ -382,6 +414,8 @@ std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeS
 	return OutputEdgeSet;
 }
 
+//*****************************************************************
+//FUNCTION:
 bool CGroundObjectExtractor::__findBlackPoint(const CImage<std::array<int, 1>>& vImage, Eigen::Vector2i& voBlackPoint)
 {
 	for (int i = 0; i < vImage.getWidth(); i++)

@@ -13,7 +13,6 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/vector.hpp>
 
-#include "stb_image.h"
 #define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -68,6 +67,7 @@ protected:
 		delete pConfig;
 	}
 };
+
 void _saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<std::array<int, 1>>& vTexture, bool vIsReverse)
 {
 	const auto Width = vTexture.getWidth();
