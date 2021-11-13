@@ -39,7 +39,7 @@
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/obj_io.h>
 #include <regex>
-
+#include <qmessagebox.h>//这里一会记得删掉
 #define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -104,6 +104,12 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionRepairHole, SIGNAL(triggered()), this, SLOT(onActionStartRepairHole()));
     QObject::connect(m_UI.actionReconstructionStitching, SIGNAL(triggered()), this, SLOT(onActionReconstructionStitching()));
     QObject::connect(m_UI.actionParameterizationBake, SIGNAL(triggered()), this, SLOT(onActionParameterizationBake()));
+    QObject::connect(m_UI.actionViewFromPositiveX, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
+    QObject::connect(m_UI.actionViewFromNegativeX, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
+    QObject::connect(m_UI.actionViewFromPositiveY, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
+    QObject::connect(m_UI.actionViewFromNegativeY, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
+    QObject::connect(m_UI.actionViewFromPositiveZ, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
+    QObject::connect(m_UI.actionViewFromNegativeZ, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
     QObject::connect(m_UI.actionAutoModeling, SIGNAL(triggered()), this, SLOT(onActionAutoModeling()));
 }
 
@@ -367,6 +373,12 @@ void CQTInterface::onActionOpen()
             m_UI.actionRepairHole->setEnabled(true);
             m_UI.actionReconstruction->setEnabled(true);
             m_UI.actionBakeTexture->setEnabled(true);
+            m_UI.actionViewFromNegativeX->setEnabled(true);
+            m_UI.actionViewFromPositiveX->setEnabled(true);
+            m_UI.actionViewFromNegativeY->setEnabled(true);
+            m_UI.actionViewFromPositiveY->setEnabled(true);
+            m_UI.actionViewFromNegativeZ->setEnabled(true);
+            m_UI.actionViewFromPositiveZ->setEnabled(true);
 
             m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
         }
@@ -629,6 +641,18 @@ void CQTInterface::onActionOpenMesh()
         PointCloudRetouch::hiveInit({ Temp }, m_pPointCloudRetouchConfig);
         Visualization::hiveInitVisualizer({ Temp }, true);
         __initialVTKWidget();
+    }
+
+    //enable ui icons
+    {
+        m_UI.actionViewFromNegativeX->setEnabled(true);
+        m_UI.actionViewFromPositiveX->setEnabled(true);
+        m_UI.actionViewFromNegativeY->setEnabled(true);
+        m_UI.actionViewFromPositiveY->setEnabled(true);
+        m_UI.actionViewFromNegativeZ->setEnabled(true);
+        m_UI.actionViewFromPositiveZ->setEnabled(true);
+
+        m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
     }
 
     m_MeshOpenPath = __getDirectory(FilePathSet.front());
@@ -922,6 +946,45 @@ void CQTInterface::onResourceSpaceItemChange(QStandardItem* vItem)
         processSelect(m_TileSet.NameSet, m_SelectedTileIndices, "tile");
     else if (__getSuffix(ModelName) == "obj")
         processSelect(m_MeshSet.NameSet, m_SelectedMeshIndices, "mesh");
+}
+
+void CQTInterface::onChangeCameraPosition()
+{
+    QAction* Action = qobject_cast<QAction*>(sender());
+
+    std::unordered_map<std::string, size_t> ActionNameMap = {
+        {"actionViewFromPositiveX",1},{"actionViewFromNegativeX",2},
+        {"actionViewFromPositiveY",3},{"actionViewFromNegativeY",4},
+        {"actionViewFromPositiveZ",5},{"actionViewFromNegativeZ",6} };
+
+    auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
+    
+    switch (ActionNameMap.at(Action->objectName().toStdString()))
+    {
+    case 1:
+        pViewer->setCameraPosition(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        break;
+    case 2:
+        pViewer->setCameraPosition(0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        break;
+    case 3:
+        pViewer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
+        break;
+    case 4:
+        pViewer->setCameraPosition(0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0);
+        break;
+    case 5:
+        pViewer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+        break;
+    case 6:
+        pViewer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0);
+        break;
+    default:
+        break;
+    }
+
+    pViewer->resetCamera();
+    pViewer->updateCamera();
 }
 
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)
