@@ -96,6 +96,7 @@
    <addaction name="actionShowMeshIndices"/>
    <addaction name="actionReconstructionStitching"/>
    <addaction name="actionParameterizationBake"/>
+   <addaction name="actionAutoModeling"/>
    <addaction name="actionSetting"/>
    <addaction name="actionInstructions"/>
   </widget>
@@ -499,6 +500,15 @@ background-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>reconstruction&amp;stitching</string>
+   </property>
+  </action>
+  <action name="actionAutoModeling">
+   <property name="icon">
+    <iconset>
+     <normaloff>Icon/AutoModeling.png</normaloff>Icon/AutoModeling.png</iconset>
+   </property>
+   <property name="text">
+    <string>AutoModeling</string>
    </property>
   </action>
  </widget>

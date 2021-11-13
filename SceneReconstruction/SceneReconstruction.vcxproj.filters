@@ -40,6 +40,9 @@
     <ClCompile Include="CollapseBasedSimplification.cpp">
       <Filter>Simplification</Filter>
     </ClCompile>
+    <ClCompile Include="MeshSutureManager.cpp">
+      <Filter>Suture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
@@ -85,9 +88,13 @@
     <ClInclude Include="CollapseBasedSimplification.h">
       <Filter>Simplification</Filter>
     </ClInclude>
+    <ClInclude Include="MeshSutureManager.h">
+      <Filter>Suture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Surface">

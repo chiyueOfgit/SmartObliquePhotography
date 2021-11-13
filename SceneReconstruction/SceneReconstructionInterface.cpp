@@ -6,6 +6,7 @@
 #include "BasicMeshSuture.h"
 #include "ArapParameterizer.h"
 #include "RayCastingBaker.h"
+#include "MeshSutureManager.h"
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/obj_io.h>
@@ -33,7 +34,7 @@ void hiveObliquePhotography::SceneReconstruction::hiveMeshSimplication(CMesh& vi
 
 //*****************************************************************
 //FUNCTION: 
-RECONSTRUCTION_DECLSPEC void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo)
+void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshOne, CMesh& vioMeshTwo)
 {
 	auto pSuturator = hiveDesignPattern::hiveCreateProduct<CBasicMeshSuture>(KEYWORD::BASIC_MESH_SUTURE, CSceneReconstructionConfig::getInstance()->getSubConfigByName("BasicSuture"), vioMeshOne, vioMeshTwo);
 	pSuturator->sutureMeshesV();
@@ -104,4 +105,33 @@ bool hiveObliquePhotography::SceneReconstruction::hiveGetSceneReconstructionConf
 		voConfig = nullptr;
 		return false;
 	}
+}
+
+//*****************************************************************
+//FUNCTION:
+bool hiveObliquePhotography::SceneReconstruction::hiveRecordTileInfo(const PointCloud_t::Ptr vTileCloud, const std::string vName)
+{
+	auto pManager = CMeshSutureManager::getInstance();
+	_ASSERTE(pManager);
+	if (pManager)
+	{
+		pManager->calTileInfo(vTileCloud, vName);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//*****************************************************************
+//FUNCTION:
+bool hiveObliquePhotography::SceneReconstruction::hiveGetSutureSequence(std::vector<std::vector<std::string>> voSutureNames)
+{
+	auto pManager = CMeshSutureManager::getInstance();
+	_ASSERTE(pManager);
+	if (pManager && pManager->calSutureSequence(voSutureNames))
+		return true;
+
+	return false;
 }

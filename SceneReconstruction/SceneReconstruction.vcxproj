@@ -171,6 +171,7 @@
     <ClCompile Include="PoissonSurfaceReconstructor.cpp" />
     <ClCompile Include="RayCastingBaker.cpp" />
     <ClCompile Include="SceneReconstructionInterface.cpp" />
+    <ClCompile Include="MeshSutureManager.cpp" />
     <ClCompile Include="SurfaceReconstructor.cpp" />
     <ClCompile Include="TextureBaker.cpp" />
   </ItemGroup>
@@ -191,11 +192,13 @@
     <ClInclude Include="SceneReconstructionCommon.h" />
     <ClInclude Include="SceneReconstructionExport.h" />
     <ClInclude Include="SceneReconstructionInterface.h" />
+    <ClInclude Include="MeshSutureManager.h" />
     <ClInclude Include="SurfaceReconstructor.h" />
     <ClInclude Include="SceneReconstructionConfig.h" />
     <ClInclude Include="TextureBaker.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
