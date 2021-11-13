@@ -401,51 +401,6 @@ void CQTInterface::onActionOpen()
     }
 }
 
-void CQTInterface::onActionAutoModeling()
-{
-    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud or Mesh"), QString::fromStdString(m_CloudOpenPath), tr("PointCloud Files(*.pcd *.ply);;"));
-    if (FilePathList.empty())
-        return;
-    
-    foreach(QString FilePathQString, FilePathList)
-    {
-        std::vector<std::string> FilePath = { FilePathQString.toStdString() };
-        std::vector<PointCloud_t::Ptr> Tile = hiveInitPointCloudScene(FilePath);
-        m_CloudOpenPath = __getDirectory(FilePath.back());
-        if (!Tile.empty())
-        {
-            SceneReconstruction::hiveRecordTileInfo(Tile.back(), __getFileName(FilePath.back()));
-            
-            CMesh Mesh;
-            SceneReconstruction::hiveSurfaceReconstruction(Tile.back(), Mesh);
-            hiveSaveMeshModel(Mesh, __getDirectory(FilePath.back()) + std::string("Output/") + __getFileName(FilePath.back()) + std::string(".obj"));
-            __messageDockWidgetOutputText("Reconstruction of " + __getFileNameWithSuffix(FilePath.back()) + std::string(" is finished."));
-
-            //TODO: delete µãÔÆ
-            FilePath.clear();
-            Tile.clear();
-        }
-    }
-    
-    std::vector<std::vector<std::string>> SutureSequence;
-    SceneReconstruction::hiveGetSutureSequence(SutureSequence);
-
-    std::string DirPath = __getDirectory(FilePathList.back().toStdString()) + std::string("Output/");
-    for (auto it = SutureSequence.begin(); it != SutureSequence.end(); ++it)
-    {
-        std::string NameOne = *(it->begin());
-        std::string NameTwo = *(it->end());
-        CMesh MeshOne, MeshTwo;
-        hiveLoadMeshModel(MeshOne, DirPath + NameOne + std::string(".obj"));
-        hiveLoadMeshModel(MeshTwo, DirPath + NameTwo + std::string(".obj"));
-        SceneReconstruction::hiveSutureMesh(MeshOne, MeshTwo);
-        hiveSaveMeshModel(MeshOne, DirPath + NameOne + std::string(".obj"));
-        hiveSaveMeshModel(MeshTwo, DirPath + NameTwo + std::string(".obj"));
-
-        __messageDockWidgetOutputText("Suture mesh " + NameOne + " and " + NameTwo + " succeed");
-    }
-}
-
 void CQTInterface::onActionSave()
 {
     const auto& FilePath = QFileDialog::getSaveFileName(this, tr("Save PointCloud"), ".", tr("PLY files(*.ply);;""PCD files(*.pcd)")).toStdString();
@@ -799,6 +754,51 @@ void CQTInterface::onActionReconstructionStitching()
     hiveSaveMeshModel(MeshTwo, MeshPaths[MeshIndex]);
 
     __messageDockWidgetOutputText("Suture mesh " + m_MeshSet.NameSet[MeshIndex - 1] + " and " + m_MeshSet.NameSet[MeshIndex] + " succeed");
+}
+
+void CQTInterface::onActionAutoModeling()
+{
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud or Mesh"), QString::fromStdString(m_CloudOpenPath), tr("PointCloud Files(*.pcd *.ply);;"));
+    if (FilePathList.empty())
+        return;
+
+    foreach(QString FilePathQString, FilePathList)
+    {
+        std::vector<std::string> FilePath = { FilePathQString.toStdString() };
+        std::vector<PointCloud_t::Ptr> Tile = hiveInitPointCloudScene(FilePath);
+        m_CloudOpenPath = __getDirectory(FilePath.back());
+        if (!Tile.empty())
+        {
+            SceneReconstruction::hiveRecordTileInfo(Tile.back(), __getFileName(FilePath.back()));
+
+            CMesh Mesh;
+            SceneReconstruction::hiveSurfaceReconstruction(Tile.back(), Mesh);
+            hiveSaveMeshModel(Mesh, __getDirectory(FilePath.back()) + std::string("Output/") + __getFileName(FilePath.back()) + std::string(".obj"));
+            __messageDockWidgetOutputText("Reconstruction of " + __getFileNameWithSuffix(FilePath.back()) + std::string(" is finished."));
+
+            //TODO: delete µãÔÆ
+            FilePath.clear();
+            Tile.clear();
+        }
+    }
+
+    std::vector<std::pair<std::string, std::string>> SutureSequence;
+    SceneReconstruction::hiveGetSutureSequence(SutureSequence);
+
+    std::string DirPath = __getDirectory(FilePathList.back().toStdString()) + std::string("Output/");
+    for (auto it = SutureSequence.begin(); it != SutureSequence.end(); ++it)
+    {
+        std::string NameOne = it->first;
+        std::string NameTwo = it->second;
+        CMesh MeshOne, MeshTwo;
+        hiveLoadMeshModel(MeshOne, DirPath + NameOne + std::string(".obj"));
+        hiveLoadMeshModel(MeshTwo, DirPath + NameTwo + std::string(".obj"));
+        SceneReconstruction::hiveSutureMesh(MeshOne, MeshTwo);
+        hiveSaveMeshModel(MeshOne, DirPath + NameOne + std::string(".obj"));
+        hiveSaveMeshModel(MeshTwo, DirPath + NameTwo + std::string(".obj"));
+
+        __messageDockWidgetOutputText("Suture mesh " + NameOne + " and " + NameTwo + " succeed");
+    }
 }
 
 // TODO::copy-paste

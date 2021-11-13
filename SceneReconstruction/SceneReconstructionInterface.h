@@ -16,6 +16,6 @@ namespace hiveObliquePhotography
 		RECONSTRUCTION_DECLSPEC pcl::TextureMesh hiveTestCMesh(const std::string& vPath);
 		RECONSTRUCTION_DECLSPEC bool hiveGetSceneReconstructionConfig(CSceneReconstructionConfig*& voConfig);
 		RECONSTRUCTION_DECLSPEC bool hiveRecordTileInfo(const PointCloud_t::Ptr vTileCloud, const std::string vName);
-		RECONSTRUCTION_DECLSPEC bool hiveGetSutureSequence(std::vector<std::vector<std::string>> voSutureNames);
+		RECONSTRUCTION_DECLSPEC bool hiveGetSutureSequence(std::vector<std::pair<std::string, std::string>> voSutureNames);
 	}
 }

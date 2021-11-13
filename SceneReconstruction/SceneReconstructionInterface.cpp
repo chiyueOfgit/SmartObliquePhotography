@@ -126,7 +126,7 @@ bool hiveObliquePhotography::SceneReconstruction::hiveRecordTileInfo(const Point
 
 //*****************************************************************
 //FUNCTION:
-bool hiveObliquePhotography::SceneReconstruction::hiveGetSutureSequence(std::vector<std::vector<std::string>> voSutureNames)
+bool hiveObliquePhotography::SceneReconstruction::hiveGetSutureSequence(std::vector<pair<std::string, std::string>> voSutureNames)
 {
 	auto pManager = CMeshSutureManager::getInstance();
 	_ASSERTE(pManager);
