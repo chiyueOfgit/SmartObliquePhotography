@@ -75,6 +75,7 @@ void CQTInterface::init()
     __initialMessageDockWidget();
     __connectSignals();
     __parseConfigFile();
+    //m_UI.mainToolBar.setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 }
 
 void CQTInterface::__connectSignals()
@@ -104,12 +105,12 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionRepairHole, SIGNAL(triggered()), this, SLOT(onActionStartRepairHole()));
     QObject::connect(m_UI.actionReconstructionStitching, SIGNAL(triggered()), this, SLOT(onActionReconstructionStitching()));
     QObject::connect(m_UI.actionParameterizationBake, SIGNAL(triggered()), this, SLOT(onActionParameterizationBake()));
-    QObject::connect(m_UI.actionViewFromPositiveX, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
-    QObject::connect(m_UI.actionViewFromNegativeX, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
-    QObject::connect(m_UI.actionViewFromPositiveY, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
-    QObject::connect(m_UI.actionViewFromNegativeY, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
-    QObject::connect(m_UI.actionViewFromPositiveZ, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
-    QObject::connect(m_UI.actionViewFromNegativeZ, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
+    QObject::connect(m_UI.actionViewFromPositiveX, SIGNAL(triggered()), this, SLOT(onChangeCameraLookStraightAxis()));
+    QObject::connect(m_UI.actionViewFromNegativeX, SIGNAL(triggered()), this, SLOT(onChangeCameraLookStraightAxis()));
+    QObject::connect(m_UI.actionViewFromPositiveY, SIGNAL(triggered()), this, SLOT(onChangeCameraLookStraightAxis()));
+    QObject::connect(m_UI.actionViewFromNegativeY, SIGNAL(triggered()), this, SLOT(onChangeCameraLookStraightAxis()));
+    QObject::connect(m_UI.actionViewFromPositiveZ, SIGNAL(triggered()), this, SLOT(onChangeCameraLookStraightAxis()));
+    QObject::connect(m_UI.actionViewFromNegativeZ, SIGNAL(triggered()), this, SLOT(onChangeCameraLookStraightAxis()));
 }
 
 void CQTInterface::__initialVTKWidget()
@@ -597,6 +598,18 @@ void CQTInterface::onActionOpenMesh()
         __initialVTKWidget();
     }
 
+    //enable ui icons
+    {
+        m_UI.actionViewFromNegativeX->setEnabled(true);
+        m_UI.actionViewFromPositiveX->setEnabled(true);
+        m_UI.actionViewFromNegativeY->setEnabled(true);
+        m_UI.actionViewFromPositiveY->setEnabled(true);
+        m_UI.actionViewFromNegativeZ->setEnabled(true);
+        m_UI.actionViewFromPositiveZ->setEnabled(true);
+
+        m_pVisualizationConfig->overwriteAttribute(Visualization::REPAIR_MODE, false);
+    }
+
     m_MeshOpenPath = __getDirectory(FilePathSet.front());
     for (const auto& FilePath : FilePathSet)
     {
@@ -890,42 +903,16 @@ void CQTInterface::onResourceSpaceItemChange(QStandardItem* vItem)
         processSelect(m_MeshSet.NameSet, m_SelectedMeshIndices, "mesh");
 }
 
-void CQTInterface::onChangeCameraPosition()
+void CQTInterface::onChangeCameraLookStraightAxis()
 {
-    QAction* Action = qobject_cast<QAction*>(sender());
+    QAction* pAction = qobject_cast<QAction*>(sender());
 
     std::unordered_map<std::string, size_t> ActionNameMap = {
         {"actionViewFromPositiveX",1},{"actionViewFromNegativeX",2},
         {"actionViewFromPositiveY",3},{"actionViewFromNegativeY",4},
         {"actionViewFromPositiveZ",5},{"actionViewFromNegativeZ",6} };
 
-    auto pViewer = static_cast<pcl::visualization::PCLVisualizer*>(Visualization::hiveGetPCLVisualizer());
-    
-    switch (ActionNameMap.at(Action->objectName().toStdString()))
-    {
-    case 1:
-        pViewer->setCameraPosition(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-        break;
-    case 2:
-        pViewer->setCameraPosition(0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-        break;
-    case 3:
-        pViewer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
-        break;
-    case 4:
-        pViewer->setCameraPosition(0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0);
-        break;
-    case 5:
-        pViewer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
-        break;
-    case 6:
-        pViewer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0);
-        break;
-    default:
-        break;
-    }
-
-    pViewer->resetCamera();
+    hiveObliquePhotography::Visualization::hiveChangeCameraLookStraightAxis(ActionNameMap.at(pAction->objectName().toStdString()));
 }
 
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)

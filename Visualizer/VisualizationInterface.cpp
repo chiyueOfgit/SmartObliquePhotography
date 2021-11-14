@@ -142,3 +142,34 @@ void hiveObliquePhotography::Visualization::TestInterface(const CMesh& vMesh, co
 	pPCLVisualizer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, vIndicesPath);
 	pPCLVisualizer->updateCamera();
 }
+
+void hiveObliquePhotography::Visualization::hiveChangeCameraLookStraightAxis(size_t vAxis)
+{
+	auto pPCLVisualizer = hiveGetPCLVisualizer();
+	switch (vAxis)
+	{
+	case 1:
+		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+		break;
+	case 2:
+		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+		break;
+	case 3:
+		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
+		break;
+	case 4:
+		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0);
+		break;
+	case 5:
+		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+		break;
+	case 6:
+		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0);
+		break;
+	default:
+		break;
+	}
+
+	pPCLVisualizer->resetCamera();
+	pPCLVisualizer->updateCamera();
+}
