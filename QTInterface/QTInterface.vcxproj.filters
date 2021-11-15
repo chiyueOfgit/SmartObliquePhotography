@@ -61,6 +61,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="qtinterface_en.ts">
+      <Filter>Translation Files</Filter>
+    </None>
+    <None Include="qtinterface_zh.ts">
+      <Filter>Translation Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QTDockWidgetTitleBar.h">

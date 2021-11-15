@@ -17,7 +17,7 @@ namespace hiveObliquePhotography
 
 			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed, std::string& vType, float vPara) const;  //FIXME-014：对任何一种建立邻域的方法，如果要传入参数，只需要传入一个参数vPara就可以？
 			std::vector<pcl::index_t> buildNeighborhood(pcl::index_t vSeed) const;
-			void reset();
+			virtual void reset() {};
 
 		protected:
 			std::vector<std::size_t> m_OffsetSet;

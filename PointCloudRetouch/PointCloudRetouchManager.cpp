@@ -16,7 +16,7 @@ bool CPointCloudRetouchManager::init(const std::vector<PointCloud_t::Ptr>& vTile
 {
 	_ASSERTE(!vTileSet.empty() && vConfig);
 
-	bool Status = __reset();
+	bool Status = reset();
 	_ASSERTE(Status);
 
 	m_Scene.init(vTileSet);
@@ -96,7 +96,7 @@ bool CPointCloudRetouchManager::init(const std::vector<PointCloud_t::Ptr>& vTile
 
 //*****************************************************************
 //FUNCTION: 
-bool CPointCloudRetouchManager::__reset()
+bool CPointCloudRetouchManager::reset()
 {
 	try
 	{

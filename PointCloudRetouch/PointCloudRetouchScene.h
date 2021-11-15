@@ -14,7 +14,7 @@ namespace hiveObliquePhotography
 			~CPointCloudScene();
 
 			void init(const std::vector<PointCloud_t::Ptr>& vTileSet);
-			void reset() { m_TileSet.clear(); }
+			void reset();
 
 			Eigen::Vector4f getPositionAt(pcl::index_t vIndex) const;
 			Eigen::Vector4f getNormalAt(pcl::index_t vIndex) const;

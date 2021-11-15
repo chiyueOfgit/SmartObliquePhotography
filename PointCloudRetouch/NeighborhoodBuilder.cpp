@@ -69,9 +69,3 @@ std::vector<pcl::index_t> INeighborhoodBuilder::buildNeighborhood(pcl::index_t v
 	//·¢ÉúNRVO
 	return Neighborhood;
 }
-
-//*****************************************************************
-//FUNCTION: 
-void INeighborhoodBuilder::reset()
-{
-}

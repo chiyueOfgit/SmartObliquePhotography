@@ -122,6 +122,7 @@ namespace hiveObliquePhotography
             void onResourceSpaceItemChange(QStandardItem* vItem);
             void onChangeCameraPosition();
             void onActionAutoModeling();
+            void onChangeLanguage();
         };
     }
 }

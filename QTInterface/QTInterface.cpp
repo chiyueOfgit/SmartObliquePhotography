@@ -22,6 +22,7 @@
 #include <qevent.h>
 #include <qpainter.h>
 #include <vtkAxesActor.h>
+#include <QTranslator>
 
 #include "QTDockWidgetTitleBar.h"
 #include "QTInterfaceConfig.h"
@@ -111,6 +112,8 @@ void CQTInterface::__connectSignals()
     QObject::connect(m_UI.actionViewFromPositiveZ, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
     QObject::connect(m_UI.actionViewFromNegativeZ, SIGNAL(triggered()), this, SLOT(onChangeCameraPosition()));
     QObject::connect(m_UI.actionAutoModeling, SIGNAL(triggered()), this, SLOT(onActionAutoModeling()));
+    QObject::connect(m_UI.actionChinese, SIGNAL(triggered()), this, SLOT(onChangeLanguage()));
+    QObject::connect(m_UI.actionEnglish, SIGNAL(triggered()), this, SLOT(onChangeLanguage()));
 }
 
 void CQTInterface::__initialVTKWidget()
@@ -1013,6 +1016,31 @@ void CQTInterface::onChangeCameraPosition()
 
     pViewer->resetCamera();
     pViewer->updateCamera();
+}
+
+void CQTInterface::onChangeLanguage()
+{
+    QAction* pAction = qobject_cast<QAction*>(sender());
+    std::unordered_map<std::string, std::string> ActionNameMap = {
+        {"actionChinese","zh"},{"actionEnglish","en"},};
+
+    QTranslator* pTranslator = new QTranslator;
+    if (ActionNameMap.at(pAction->objectName().toStdString()) == "zh")
+    {
+        if (pTranslator->load("qtinterface_en.qm"))
+        {
+            qApp->installTranslator(pTranslator);
+        }
+    }
+    else if (ActionNameMap.at(pAction->objectName().toStdString()) == "en")
+    {
+        if (pTranslator->load("qtinterface_zh.qm"))
+        {
+            qApp->installTranslator(pTranslator);
+        }
+    }
+
+    m_UI.retranslateUi(this);
 }
 
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)

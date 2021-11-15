@@ -27,6 +27,7 @@ namespace hiveObliquePhotography
 
 		RETOUCH_DECLSPEC bool hiveDumpColorFeatureMainColors(std::vector<Eigen::Vector3i>& voMainColors);
 		RETOUCH_DECLSPEC bool hiveDumpColorFeatureNearestPoints(std::vector<pcl::index_t>& vNearestPoints);
+		RETOUCH_DECLSPEC bool hiveResetManager();
 
 		RETOUCH_DECLSPEC void hiveRunPrecompute(const std::string& vModelName);
 
