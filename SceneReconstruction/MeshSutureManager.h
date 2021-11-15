@@ -21,7 +21,7 @@ namespace hiveObliquePhotography
 		public:
 			~CMeshSutureManager() = default;
 			bool calTileInfo(const PointCloud_t::Ptr vTilePtr, const std::string vName);
-			bool calSutureSequence(vector<pair<string, string>> voSutureNames);
+			bool calSutureSequence(vector<pair<string, string>>& voSutureNames);
 
 		private:
 			CMeshSutureManager()
