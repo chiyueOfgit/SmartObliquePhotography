@@ -269,6 +269,7 @@ void hiveObliquePhotography::QTInterface::CQTInterface::__autoSutureMeshes(QStri
 
         SceneReconstruction::hiveSutureMesh(MeshOne, MeshTwo);
 
+        //TODO: delete mesh
         hiveSaveMeshModel(MeshOne, DirPath + NameOne + std::string(".obj"));
         if ((it + 1) != SutureSequence.end() && (it + 1)->first != NameTwo)
         {
@@ -656,11 +657,11 @@ void CQTInterface::onActionOpenMesh()
 
         CMesh Mesh;
         auto MeshName = __getFileNameWithSuffix(FilePath);
-        hiveLoadMeshModel(Mesh, FilePath);
+        hiveLoadMeshModel(Mesh, FilePath); //1
         m_MeshSet.NameSet.push_back(MeshName);
         m_MeshSet.MeshSet.push_back(Mesh);
 
-        Visualization::hiveAddTextureMesh(Mesh.toTexMesh({}));
+        Visualization::hiveAddTextureMesh(Mesh.toTexMesh({})); //2
         __addResourceSpaceMeshItem(MeshName);
         __messageDockWidgetOutputText("Open mesh " + FilePath + " succeed.");
     }
@@ -817,12 +818,15 @@ void CQTInterface::onActionAutoModeling()
             __messageDockWidgetOutputText("Reconstruction of " + __getFileNameWithSuffix(FilePath.back()) + std::string(" is finished."));
 
             //TODO: delete µ„‘∆
+
             FilePath.clear();
             Tile.clear();
         }
     }
 
     __autoSutureMeshes(FilePathList);
+
+    //TODO: Œ∆¿Ì∫Ê±∫
 }
 
 // TODO::copy-paste
