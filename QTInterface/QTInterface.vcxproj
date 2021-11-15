@@ -128,6 +128,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="qtinterface_en.ts" />
+    <None Include="qtinterface_zh.ts" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QTDockWidgetTitleBar.h" />
