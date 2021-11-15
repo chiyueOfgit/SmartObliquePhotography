@@ -10,6 +10,10 @@
 #include <pcl/io/obj_io.h>
 #include "PointCloudRetouchInterface.h"
 #include "ObliquePhotographyDataInterface.h"
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRendererCollection.h>
+#include <vtkCamera.h>
 
 using namespace hiveObliquePhotography::Visualization;
 
@@ -146,25 +150,50 @@ void hiveObliquePhotography::Visualization::TestInterface(const CMesh& vMesh, co
 void hiveObliquePhotography::Visualization::hiveChangeCameraLookStraightAxis(size_t vAxis)
 {
 	auto pPCLVisualizer = hiveGetPCLVisualizer();
+
+	//rewrite PCLVisualizer::setCameraPosition in order not to render now
+	auto setCameraPositionWithoutRender = [pPCLVisualizer](
+		double pos_x, double pos_y, double pos_z,
+		double view_x, double view_y, double view_z,
+		double up_x, double up_y, double up_z, int viewport = 0 )
+	{
+		auto rens_ = pPCLVisualizer->getRendererCollection();
+		rens_->InitTraversal();
+		vtkRenderer* renderer = nullptr;
+		int i = 0;
+		while ((renderer = rens_->GetNextItem()))
+		{
+			if (viewport == 0 || viewport == i)
+			{
+				vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera();
+				cam->SetPosition(pos_x, pos_y, pos_z);
+				cam->SetFocalPoint(view_x, view_y, view_z);
+				cam->SetViewUp(up_x, up_y, up_z);
+				renderer->ResetCameraClippingRange();
+			}
+			++i;
+		}
+	};
+
 	switch (vAxis)
 	{
 	case 1:
-		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+		setCameraPositionWithoutRender(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
 		break;
 	case 2:
-		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+		setCameraPositionWithoutRender(0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
 		break;
 	case 3:
-		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
+		setCameraPositionWithoutRender(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
 		break;
 	case 4:
-		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0);
+		setCameraPositionWithoutRender(0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 1.0);
 		break;
 	case 5:
-		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+		setCameraPositionWithoutRender(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
 		break;
 	case 6:
-		pPCLVisualizer->setCameraPosition(0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0);
+		setCameraPositionWithoutRender(0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0);
 		break;
 	default:
 		break;
