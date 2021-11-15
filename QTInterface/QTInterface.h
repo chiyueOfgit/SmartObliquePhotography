@@ -120,7 +120,7 @@ namespace hiveObliquePhotography
             void onResourceSpaceItemDoubleClick(QModelIndex);
             void onResourceSpaceItemClick(QModelIndex vIndex);
             void onResourceSpaceItemChange(QStandardItem* vItem);
-            void onChangeCameraPosition();
+            void onChangeCameraLookStraightAxis();
             void onActionAutoModeling();
             void onChangeLanguage();
         };

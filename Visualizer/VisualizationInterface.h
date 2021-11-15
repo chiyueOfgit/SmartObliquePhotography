@@ -37,5 +37,7 @@ namespace hiveObliquePhotography
 		VISUALIZATION_DECLSPEC bool hiveGetVisualizationConfig(CVisualizationConfig*& voConfig);
 
 		VISUALIZATION_DECLSPEC void TestInterface(const CMesh& vMesh, const std::string& vIndicesPath);
+
+		VISUALIZATION_DECLSPEC void hiveChangeCameraLookStraightAxis(size_t vAxis);
 	}
 }

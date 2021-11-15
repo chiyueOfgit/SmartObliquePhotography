@@ -92,14 +92,15 @@ std::pair<Eigen::Vector3f, Eigen::Vector3f> CMesh::calcAABB() const
 //FUNCTION: 
 void CMesh::calcModelPlaneAxis(std::pair<int, int>& vUV, int& vHeight) const
 {
-	auto AABB = calcAABB();
-	std::vector<std::pair<IndexType, DataType>> AxisAndWidth;
+	auto AABB = calcAABB();//计算包围盒
+	std::vector<std::pair<IndexType, DataType>> AxisAndWidth;//计算包围盒的长宽高
 	for (int i = 0; i < 3; i++)
 		AxisAndWidth.emplace_back(i, AABB.second.data()[i] - AABB.first.data()[i]);
 
+	//按照DataType进行排序
 	std::ranges::sort(AxisAndWidth, [](auto& vLeft, auto& vRight) { return vLeft.second < vRight.second; });
 
-	vHeight = AxisAndWidth[0].first;
+	vHeight = AxisAndWidth[0].first;//将最短的边作为高度，0x，1y，2z
 
 	vUV = { AxisAndWidth[1].first, AxisAndWidth[2].first };
 }
