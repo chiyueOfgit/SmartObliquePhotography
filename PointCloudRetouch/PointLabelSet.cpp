@@ -30,6 +30,7 @@ void CPointLabelSet::init(std::size_t vSize)
 void CPointLabelSet::clear()
 {
 	m_LabelSet.clear();
+	m_LabelSet.shrink_to_fit();
 }
 
 //*****************************************************************

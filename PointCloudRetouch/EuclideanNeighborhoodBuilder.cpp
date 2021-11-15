@@ -46,6 +46,8 @@ std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pc
 	return Neighborhood;
 }
 
+//*****************************************************************
+//FUNCTION: 
 std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pcl::index_t vSeed) const
 {
 	std::vector<pcl::index_t> Neighborhood;
@@ -63,4 +65,16 @@ std::vector<pcl::index_t> CEuclideanNeighborhoodBuilder::__buildNeighborhoodV(pc
 	for (auto& Index : Neighborhood)
 		Index += m_OffsetSet[WhichTile];
 	return Neighborhood;
+}
+
+//*****************************************************************
+//FUNCTION: 
+void CEuclideanNeighborhoodBuilder::reset()
+{
+	m_OffsetSet.clear();
+	m_OffsetSet.shrink_to_fit();
+	m_TileSet.clear();
+	m_TileSet.shrink_to_fit();
+	m_TreeSet.clear();
+	m_TreeSet.shrink_to_fit();
 }

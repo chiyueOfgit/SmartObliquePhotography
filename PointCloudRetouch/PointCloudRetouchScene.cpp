@@ -28,6 +28,14 @@ void CPointCloudScene::init(const std::vector<PointCloud_t::Ptr>& vTileSet)
 
 //*****************************************************************
 //FUNCTION: 
+void CPointCloudScene::reset()
+{
+	m_TileSet.clear();   
+	m_TileSet.shrink_to_fit(); 
+}
+
+//*****************************************************************
+//FUNCTION: 
 Eigen::Vector4f CPointCloudScene::getPositionAt(pcl::index_t vIndex) const
 {
 	auto Point = __getPoint(vIndex);

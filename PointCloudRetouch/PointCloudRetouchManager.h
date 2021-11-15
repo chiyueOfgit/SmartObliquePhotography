@@ -45,6 +45,7 @@ namespace hiveObliquePhotography
 			void executeHoleRepairer(std::vector<pcl::PointXYZRGBNormal>& voNewPoints);
 			void recordCurrentStatus();
 			bool undo();
+			bool reset();
 			void recoverMarkedPoints2Undetermined(EPointLabel vLabel);
 			std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> calcOBBByIndices(const std::vector<pcl::index_t>& vIndices);
 			
@@ -66,7 +67,7 @@ namespace hiveObliquePhotography
 			const auto& getPrecomputeManager() const { return m_pPrecomputeManager; }
 
 #ifdef _UNIT_TEST
-			void reset4UnitTest() { __reset(); }
+			void reset4UnitTest() { reset(); }
 			const auto& getOutlierConfig() const       { return m_pOutlierConfig; }
 			const auto& getClusterSet() const		   { return m_PointClusterSet; }
 			const auto& getLabelSet() const			   { return m_PointLabelSet; }
@@ -104,8 +105,6 @@ namespace hiveObliquePhotography
 			std::deque<std::pair<CPointLabelSet, std::uint32_t>> m_StatusQueue;
 			
 			CPointCluster* __generateInitialCluster(const std::vector<pcl::index_t>& vUserMarkedRegion, const Eigen::Matrix4d& vPvMatrix, const std::function<double(Eigen::Vector2d)>& vHardnessFunc, EPointLabel vTargetLabel);
-
-			bool __reset();
 
 		friend class hiveDesignPattern::CSingleton<CPointCloudRetouchManager>;
 		};

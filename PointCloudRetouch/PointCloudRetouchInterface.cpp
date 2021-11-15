@@ -135,6 +135,11 @@ bool hiveObliquePhotography::PointCloudRetouch::hiveUndo()
 	return CPointCloudRetouchManager::getInstance()->undo();
 }
 
+bool hiveObliquePhotography::PointCloudRetouch::hiveResetManager()
+{
+	return CPointCloudRetouchManager::getInstance()->reset();
+}
+
 void hiveObliquePhotography::PointCloudRetouch::hiveRunPrecompute(const std::string& vModelName)
 {
 	auto pFeature = dynamic_cast<CNormalComplexity*>(hiveDesignPattern::hiveGetOrCreateProduct<IFeature>(KEYWORD::NORMAL_COMPLEXITY));

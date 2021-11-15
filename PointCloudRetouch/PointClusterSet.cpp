@@ -41,4 +41,5 @@ void CPointClusterSet::reset()
 		delete pCluster;
 
 	m_ClusterSet.clear();
+	m_ClusterSet.shrink_to_fit();
 }
