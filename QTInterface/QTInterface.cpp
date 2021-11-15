@@ -992,6 +992,32 @@ void CQTInterface::onChangeCameraLookStraightAxis()
     hiveObliquePhotography::Visualization::hiveChangeCameraLookStraightAxis(ActionNameMap.at(pAction->objectName().toStdString()));
 }
 
+void CQTInterface::onChangeLanguage()
+{
+    QAction* pAction = qobject_cast<QAction*>(sender());
+    std::unordered_map<std::string, std::string> ActionNameMap = {
+        {"actionChinese","zh"},{"actionEnglish","en"}, };
+
+    QTranslator* pTranslator = new QTranslator;
+    if (ActionNameMap.at(pAction->objectName().toStdString()) == "zh")
+    {
+        if (pTranslator->load("qtinterface_en.qm"))
+        {
+            qApp->installTranslator(pTranslator);
+        }
+    }
+    else if (ActionNameMap.at(pAction->objectName().toStdString()) == "en")
+    {
+        if (pTranslator->load("qtinterface_zh.qm"))
+        {
+            qApp->installTranslator(pTranslator);
+        }
+    }
+
+    m_UI.retranslateUi(this);
+}
+
+
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)
 {
     switch (vEvent->key())
