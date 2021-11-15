@@ -30,7 +30,7 @@ using namespace  hiveObliquePhotography::PointCloudRetouch;
 using namespace  hiveObliquePhotography;
 
 const std::string ConfigPath = TESTMODEL_DIR + std::string("Config/Test029_PointCloudRetouchConfig.xml");
-const std::string PointCloudPath = std::string("Tile_+005_+005.ply");
+const std::string PointCloudPath = std::string("D:/Models/Cloud/Tile_+004_+004_L23.ply");
 const std::string ImagePath = TESTMODEL_DIR + std::string("Test029_Model/005005.png");
 
 class TestObjectExtractor : public testing::Test
@@ -136,48 +136,48 @@ void __serializeIndices(const std::vector<int>& vData, const std::string& vFileN
 //	}
 //}
 
-TEST_F(TestObjectExtractor, GenerateMap)
-{
-	initTest(PointCloudPath);
-	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
-	EXPECT_NE(pExtractor, nullptr);
-	if (!pExtractor)
-		std::cerr << "create Extractor error." << std::endl;
-	Eigen::Vector2i Resolution{ 1024, 1024 };
-	CImage<std::array<int, 1>> ResultImage;
-	ResultImage = pExtractor->generateElevationMap(Resolution);
-	auto GrownImage = pExtractor->generateGrownImage(ResultImage);
-	auto EdgeImage = pExtractor->generateEdgeImage(GrownImage);
-	auto EdgeSet = pExtractor->divide2EdgeSet(EdgeImage);
-	
-	_saveTexture("ResultImage.png", ResultImage, false);
-	_saveTexture("GrownImage.png", GrownImage, false);
-	_saveTexture("EdgeImage.png", EdgeImage, false);
-}
-
-//TEST_F(TestObjectExtractor, OutPutIndices)
+//TEST_F(TestObjectExtractor, GenerateMap)
 //{
 //	initTest(PointCloudPath);
-//
-//	Eigen::Vector2i Resolution{ 1024,1024 };
-//	std::vector<pcl::index_t> OutPutIndices;
-//	std::vector<std::vector<pcl::index_t>> EdgeIndices;
-//	std::vector<pcl::index_t> SumSet;
-//	
 //	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
 //	EXPECT_NE(pExtractor, nullptr);
 //	if (!pExtractor)
 //		std::cerr << "create Extractor error." << std::endl;
-//
-//    pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices, Resolution);
-//	for(auto& Edges: EdgeIndices)
-//	{
-//		SumSet.insert(SumSet.end(), Edges.begin(), Edges.end());
-//	}
-//
-//	__serializeIndices(OutPutIndices, "005005SeedObject.txt");
-//	__serializeIndices(SumSet, "005005EdgeIndices.txt");
+//	Eigen::Vector2i Resolution{ 1024, 1024 };
+//	CImage<std::array<int, 1>> ResultImage;
+//	ResultImage = pExtractor->generateElevationMap(Resolution);
+//	auto GrownImage = pExtractor->generateGrownImage(ResultImage);
+//	auto EdgeImage = pExtractor->generateEdgeImage(GrownImage);
+//	auto EdgeSet = pExtractor->divide2EdgeSet(EdgeImage);
+//	
+//	_saveTexture("ResultImage.png", ResultImage, false);
+//	_saveTexture("GrownImage.png", GrownImage, false);
+//	_saveTexture("EdgeImage.png", EdgeImage, false);
 //}
+
+TEST_F(TestObjectExtractor, OutPutIndices)
+{
+	initTest(PointCloudPath);
+
+	Eigen::Vector2i Resolution{ 1024,1024 };
+	std::vector<pcl::index_t> OutPutIndices;
+	std::vector<std::vector<pcl::index_t>> EdgeIndices;
+	std::vector<pcl::index_t> SumSet;
+	
+	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
+	EXPECT_NE(pExtractor, nullptr);
+	if (!pExtractor)
+		std::cerr << "create Extractor error." << std::endl;
+
+    pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices, Resolution);
+	for(auto& Edges: EdgeIndices)
+	{
+		SumSet.insert(SumSet.end(), Edges.begin(), Edges.end());
+	}
+
+	__serializeIndices(OutPutIndices, "005005SeedObject.txt");
+	__serializeIndices(SumSet, "005005EdgeIndices.txt");
+}
 
 //TEST_F(TestObjectExtractor, Growing)
 //{

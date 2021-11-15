@@ -80,12 +80,15 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 //FUNCTION:
 void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices)
 {
-	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 5);
+	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
 	__extractObjectByMask(vElevationMap, ExtractedImage);
+	saveTexture("ExtractedImage.png", ExtractedImage, false);
+
 	auto GroundEdgeImage = __extractGroundEdgeImage(ExtractedImage);
+	saveTexture("GroundEdgeImage.png", GroundEdgeImage, false);
+
 	__map2Cloud(ExtractedImage, voIndices, false);
 	auto EdgeSet = __divide2EdgeSet(GroundEdgeImage);
-    //TODO:添加新的map函数
 	__map2Cloud(ExtractedImage, voEdgeIndices, EdgeSet);
 }
 
@@ -173,7 +176,8 @@ Eigen::Vector2i CGroundObjectExtractor::__findStartPoint(const CImage<std::array
 		for (int k = 0; k < vImage.getHeight(); k++)
 			Sum[vImage.getColor(k, i)[0]]++;
 	for (; StartColor < 252; StartColor++)
-		if (Sum[StartColor] > 100 && Sum[StartColor + 1] > 100 && Sum[StartColor + 2] > 100 && Sum[StartColor + 3] > 100)
+		//if (Sum[StartColor] > 100 && Sum[StartColor + 1] > 100 && Sum[StartColor + 2] > 100 && Sum[StartColor + 3] > 100)
+		if (Sum[StartColor] > 100 && Sum[StartColor + 1] > 100 && Sum[StartColor + 2] > 100)
 			break;
 	for (int i = 0; i < vImage.getWidth(); i++)
 		for (int k = 0; k < vImage.getHeight(); k++)
