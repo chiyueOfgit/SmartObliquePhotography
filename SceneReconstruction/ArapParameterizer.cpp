@@ -22,10 +22,10 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 //FUNCTION: 
  bool CArapParameterizer::execute(Eigen::MatrixXd& voUV)
 {
-	buildHalfEdge();
-	auto BoundarySet = findBoundaryPoint();
+	buildHalfEdge();//根据m_mesh初始化m_HalfEdgeTable
+	auto BoundarySet = findBoundaryPoint();//找到边界点的索引
 	std::vector<bool> BoundaryStatus(m_Mesh.m_Vertices.size(), false);
-	for (auto& Index : BoundarySet)
+	for (auto& Index : BoundarySet)//建立辅助vector，将所有边界点置为true
 		BoundaryStatus[Index] = true;
 
 	return calcInitialUV(m_Mesh, BoundaryStatus, voUV);
@@ -56,7 +56,7 @@ void CArapParameterizer::buildHalfEdge()
 			HalfEdge._VertexId = Face[i];
 			HalfEdge._Face = FaceId;
 			auto Index = m_HalfEdgeTable.size();
-			m_VertexInfoTable[Face[i]].push_back(Index);
+			m_VertexInfoTable[Face[i]].push_back(Index);//二维vector，存储着每个顶点在被多次访问的时候当前以建立半边的数目
 			HalfEdge._Prev = Index + ((i == 0) ? (2) : (-1));
 			HalfEdge._Next = Index + ((i == 2) ? (-2) : (1));
 			if(Traversed[Face[i]] && Traversed[Face[(i + 1) % 3]])  
@@ -78,9 +78,9 @@ void CArapParameterizer::buildHalfEdge()
 //FUNCTION:
 std::vector<int> CArapParameterizer::findBoundaryPoint()
 {
-	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();
+	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();//获取mesh所有顶点的坐标存为一个矩阵
 	std::vector<int> Boundary;
-	igl::boundary_loop(F, Boundary);
+	igl::boundary_loop(F, Boundary);//根据矩阵计算出所有边界点
 
 	return Boundary;
 }
@@ -89,10 +89,12 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 //FUNCTION: 
 bool CArapParameterizer::calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus, Eigen::MatrixXd& voUV)
 {
-	auto TutteMatrix = __buildTutteSolveMatrix(m_HalfEdgeTable, vBoundaryStatus);
+	auto TutteMatrix = __buildTutteSolveMatrix(m_HalfEdgeTable, vBoundaryStatus);//计算映射矩阵，n*n
 	Eigen::VectorXd VectorX, VectorY,AnswerX,AnswerY;
+	//VectorX，VectorY用于固定边界坐标
 	__fillTutteSolveVectors(VectorX, VectorY, vMesh, vBoundaryStatus);
 
+	//解方程，这里也是调库
 	if (!(__solveSparseMatrix(TutteMatrix, VectorX, AnswerX) && __solveSparseMatrix(TutteMatrix, VectorY, AnswerY)))
 		return false;
 
@@ -110,6 +112,7 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 	typedef Eigen::Triplet<double> TWeight;
 	std::vector<TWeight> WeightTriplet;
 
+	//在这里为什么要使用匿名函数呢？
 	auto MaxNonZeroValueAmountOfRow = [&]()
 	{
 		int MaxNumber = 0;
@@ -117,7 +120,7 @@ Eigen::SparseMatrix<double, Eigen::ColMajor> CArapParameterizer::__buildTutteSol
 		{
 			if (!vBoundaryStatus[VertexId]) //interior
 			{
-				if (MaxNumber < m_VertexInfoTable[VertexId].size())
+				if (MaxNumber < m_VertexInfoTable[VertexId].size())//代表这顶点被多少个mesh所共用
 					MaxNumber = m_VertexInfoTable[VertexId].size();
 			}
 		}
@@ -202,7 +205,7 @@ void CArapParameterizer::__fillTutteSolveVectors(Eigen::VectorXd& vVectorX, Eige
 	for (int VertexId = 0; VertexId < NumVertices; VertexId++)
 	{
 		if (vBoundaryStatus[VertexId])
-		{
+		{//边界点计算出两个对应的坐标存入
 			vVectorX(VertexId) = vMesh.m_Vertices[VertexId][XYAxis.first];
 			vVectorY(VertexId) = vMesh.m_Vertices[VertexId][XYAxis.second];
 		}
@@ -266,6 +269,7 @@ Eigen::MatrixXd CArapParameterizer::__switch2UVMatrix(const CMesh& vMesh, const 
 	float HeightV = BoundingBox.second.data()[XYAxis.second] - BoundingBox.first.data()[XYAxis.second];
 	float BeginX = BoundingBox.first.data()[XYAxis.first], BeginY = BoundingBox.first.data()[XYAxis.second];
 
+	//归一化到[0,1]
 	for (int VertexId = 0; VertexId < vX.size(); VertexId++)
 	{
 		float U = (vX(VertexId) - BeginX) / WidthU;
