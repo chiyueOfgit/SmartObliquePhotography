@@ -108,13 +108,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\Configs\AutoRetouchConfig.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
     <Xml Include="..\Configs\QTInterfaceConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
     <Xml Include="..\Configs\VisualizationConfig.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="Config\NormalFeature\PointCloudRetouchConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>

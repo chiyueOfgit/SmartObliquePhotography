@@ -190,7 +190,6 @@
     <ClInclude Include="PointClusterExpander.h" />
     <ClInclude Include="PointClusterExpanderBase.h" />
     <ClInclude Include="PointClusterExpanderMultithread.h" />
-    <ClInclude Include="PointClusterExpanderMultithread4Auto.h" />
     <ClInclude Include="PointClusterSet.h" />
     <ClInclude Include="PointLabelSet.h" />
     <ClInclude Include="PointSetPreprocessor.h" />
@@ -230,7 +229,6 @@
     <ClCompile Include="PointCluster.cpp" />
     <ClCompile Include="PointClusterExpander.cpp" />
     <ClCompile Include="PointClusterExpanderMultithread.cpp" />
-    <ClCompile Include="PointClusterExpanderMultithread4Auto.cpp" />
     <ClCompile Include="PointClusterSet.cpp" />
     <ClCompile Include="PointLabelSet.cpp" />
     <ClCompile Include="PointSetPreprocessor.cpp" />

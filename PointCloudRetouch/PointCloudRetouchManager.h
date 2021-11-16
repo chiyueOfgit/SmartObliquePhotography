@@ -102,6 +102,7 @@ namespace hiveObliquePhotography
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 			const hiveConfig::CHiveConfig* m_pOutlierConfig = nullptr;
+			const hiveConfig::CHiveConfig* m_pAutoMarkerConfig = nullptr;
 			
 			std::deque<std::pair<CPointLabelSet, std::uint32_t>> m_StatusQueue;
 			

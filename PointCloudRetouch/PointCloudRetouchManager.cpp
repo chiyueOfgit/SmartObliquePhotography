@@ -52,16 +52,17 @@ bool CPointCloudRetouchManager::init(const std::vector<PointCloud_t::Ptr>& vTile
 				}
 				m_LitterMarker.init(pConfig);
 			}
+			else if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("BackgroundMarker")))
+			{
+				m_BackgroundMarker.init(pConfig);	
+			}
+			else if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("AutoMarker")))
+			{
+				m_pAutoMarkerConfig = pConfig;
+			}
 			else
 			{
-				if (_IS_STR_IDENTICAL(pConfig->getName(), std::string("BackgroundMarker")))
-				{
-					m_BackgroundMarker.init(pConfig);
-				}
-				else
-				{
-					_HIVE_EARLY_RETURN(true, _FORMAT_STR1("Unexpeced subconfiguration [%1%].", pConfig->getName()), false);
-				}
+				_HIVE_EARLY_RETURN(true, _FORMAT_STR1("Unexpeced subconfiguration [%1%].", pConfig->getName()), false);
 			}
 			continue;
 		}
@@ -446,7 +447,8 @@ std::tuple<Eigen::Matrix3f, Eigen::Vector3f, Eigen::Vector3f> CPointCloudRetouch
 //FUNCTION: 
 void CPointCloudRetouchManager::executeAutoMarker()
 {
-	Eigen::Vector2i Resolution{ 1024,1024 };
+	auto AutoMarkerResolution = m_pAutoMarkerConfig->getAttribute<std::tuple<int, int>>("AUTOMARKER_RESOLUTION").value();
+	Eigen::Vector2i Resolution = { std::get<0>(AutoMarkerResolution), std::get<1>(AutoMarkerResolution) };
 	std::vector<pcl::index_t> OutPutIndices;
 	std::vector<std::vector<pcl::index_t>> EdgeIndices;
 	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
