@@ -477,4 +477,5 @@ void CPointCloudRetouchManager::executeAutoMarker()
 	}
 	switchLabel(EPointLabel::UNWANTED, EPointLabel::UNDETERMINED);
 	recoverMarkedPoints2Undetermined(EPointLabel::KEPT);
+
 }
