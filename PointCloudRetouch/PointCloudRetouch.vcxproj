@@ -163,6 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BoundaryDetector.h" />
+    <ClInclude Include="ElevationMapGenerator.h" />
     <ClInclude Include="GroundObjectExtractor.h" />
     <ClInclude Include="ColorFeature.h" />
     <ClInclude Include="EuclideanNeighborhoodBuilder.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="BoundaryDetector.cpp" />
     <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="ElevationMapGenerator.cpp" />
     <ClCompile Include="EuclideanNeighborhoodBuilder.cpp" />
     <ClCompile Include="GroundObjectExtractor.cpp" />
     <ClCompile Include="HoleRepairer.cpp" />

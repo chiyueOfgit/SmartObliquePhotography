@@ -126,6 +126,9 @@
     <ClInclude Include="GroundObjectExtractor.h">
       <Filter>Operation\GroundobjectExtract</Filter>
     </ClInclude>
+    <ClInclude Include="ElevationMapGenerator.h">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -206,6 +209,9 @@
       <Filter>Utility</Filter>
     </ClCompile>
     <ClCompile Include="GroundObjectExtractor.cpp">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClCompile>
+    <ClCompile Include="ElevationMapGenerator.cpp">
       <Filter>Operation\GroundobjectExtract</Filter>
     </ClCompile>
   </ItemGroup>
