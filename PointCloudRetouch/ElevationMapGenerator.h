@@ -14,12 +14,16 @@ namespace hiveObliquePhotography
 			bool execute(const Eigen::Vector2i vResolution, const std::vector<pcl::index_t>& vPointIndexSet);
 			bool generateDistributionSet(const Eigen::Vector2i vResolution, const std::vector<pcl::index_t>& vPointIndexSet);
 
-			void dumpElevationMap(CImage<float>& voElevationMap);
-			void dumpPointDistributionSet(std::vector<std::vector<std::vector<pcl::index_t>>>& voPointDistributionSet);
+			bool dumpElevationMap(CImage<float>& voElevationMap);
+			bool dumpPointDistributionSet(std::vector<std::vector<std::vector<pcl::index_t>>>& voPointDistributionSet);
 
 		private:
 			CImage<float> m_ElevationMap;
+			std::pair<Eigen::Vector3f, Eigen::Vector3f> m_Box;
 			std::vector<std::vector<std::vector<pcl::index_t>>> m_PointDistributionSet;
+
+			void __calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet, const std::vector<pcl::index_t>& vPointIndexSet);
+			float __transElevation2Color(float vElevation, float vHeightDiff);
 		};
 	}
 }
