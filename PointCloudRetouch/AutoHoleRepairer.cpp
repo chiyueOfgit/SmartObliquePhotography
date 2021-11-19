@@ -18,9 +18,10 @@ void CAutoHoleRepairer::execute(const Eigen::Vector2i& vResolution, std::vector<
 	CImage<float> ElevationMap;
 	HoleMapGenerator.execute(vResolution, vPointCloudIndices);
     HoleMapGenerator.dumpElevationMap(ElevationMap);
-	saveTexture("New.png", ElevationMap, false);
+	saveTexture("Hole.png", ElevationMap, false);
 	std::vector<Eigen::Vector2i> HoleSet;
 	__repairImageByMipmap(ElevationMap, HoleSet);
+	saveTexture("WithoutHole.png", ElevationMap, false);
 	__executeMeanFilter(ElevationMap, 5);
 	if(m_PointDistributionSet.empty())
 	{
@@ -164,11 +165,13 @@ void CAutoHoleRepairer::__repairImageByMipmap(CImage<float>& vioHoleImage, std::
 		}
 	}
 	//TODO:Size大小由分辨率确定
-	int Size = 10;
+	int Layer = 0;
+	while (Width / pow(2, Layer) >= 1 && Height / pow(2, Layer) >= 1)
+		Layer++;
 	HiveTextureSynthesizer::CNewMipmapGenerator<float> MipmapGenerator;
-	auto MipmapSet = MipmapGenerator.computeMipmapPyramid(Texture, Size);
+	auto MipmapSet = MipmapGenerator.computeMipmapPyramid(Texture, Layer);
 
-	for(int i = 0; i < Size - 1; i++)
+	for(int i = 0; i < Layer - 1; i++)
 	{
 		auto CurrentTexture = MipmapSet[i];
 		auto& NextTexture = MipmapSet[i + 1];
@@ -205,7 +208,7 @@ void CAutoHoleRepairer::__repairImageByMipmap(CImage<float>& vioHoleImage, std::
 	{
 		for (int k = 0; k < Height; k++)
 		{
-			vioHoleImage.fetchColor(k, i) = MipmapSet[Size - 1].coeff(k, i);
+			vioHoleImage.fetchColor(k, i) = MipmapSet[Layer - 1].coeff(k, i);
 		}
 	}
 }
