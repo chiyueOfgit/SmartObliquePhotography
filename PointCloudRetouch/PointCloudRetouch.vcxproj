@@ -151,7 +151,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <OpenMPSupport>true</OpenMPSupport>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;..\TextureSynthesizer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,6 +162,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\TextureSynthesizer\NewGaussianBlur.h" />
+    <ClInclude Include="..\TextureSynthesizer\NewMipmapGenerator.h" />
+    <ClInclude Include="AutoHoleRepairer.h" />
     <ClInclude Include="BoundaryDetector.h" />
     <ClInclude Include="GroundObjectExtractor.h" />
     <ClInclude Include="ColorFeature.h" />
@@ -201,6 +204,7 @@
     <ClInclude Include="TreeBasedTextureSynthesizer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoHoleRepairer.cpp" />
     <ClCompile Include="BoundaryDetector.cpp" />
     <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />

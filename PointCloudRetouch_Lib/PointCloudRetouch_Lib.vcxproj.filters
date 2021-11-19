@@ -123,6 +123,15 @@
     <ClInclude Include="..\PointCloudRetouch\GroundObjectExtractor.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\PointCloudRetouch\AutoHoleRepairer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TextureSynthesizer\NewGaussianBlur.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TextureSynthesizer\NewMipmapGenerator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp">
@@ -213,6 +222,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\PointCloudRetouch\GroundObjectExtractor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PointCloudRetouch\AutoHoleRepairer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
