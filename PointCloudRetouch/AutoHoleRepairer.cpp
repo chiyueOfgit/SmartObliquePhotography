@@ -1,19 +1,35 @@
 #include "pch.h"
+#include "ElevationMapGenerator.h"
 #include "AutoHoleRepairer.h"
 #include "NewMipmapGenerator.h"
+
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_STATIC
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
 void CAutoHoleRepairer::execute(const Eigen::Vector2i& vResolution, std::vector<pcl::index_t>& vPointCloudIndices, std::vector<pcl::PointXYZRGBNormal>& voNewPointSet)
 {
-	//TODO:使用高程图生成类
+	CElevationMapGenerator HoleMapGenerator;
 	CImage<float> ElevationMap;
-	
+	HoleMapGenerator.execute(vResolution, vPointCloudIndices);
+    HoleMapGenerator.dumpElevationMap(ElevationMap);
+	saveTexture("New.png", ElevationMap, false);
 	std::vector<Eigen::Vector2i> HoleSet;
 	__repairImageByMipmap(ElevationMap, HoleSet);
 	__executeMeanFilter(ElevationMap, 5);
 	if(m_PointDistributionSet.empty())
-	{}
+	{
+		std::vector<pcl::index_t> SceneIndices;
+		for (int i = 0; i < CPointCloudRetouchManager::getInstance()->getScene().getNumPoint(); i++)
+			SceneIndices.push_back(i);
+		HoleMapGenerator.generateDistributionSet(vResolution, SceneIndices);
+		HoleMapGenerator.dumpPointDistributionSet(m_PointDistributionSet);
+	}
 	voNewPointSet = __generateNewPoint(HoleSet, ElevationMap);
 }
 
@@ -147,7 +163,7 @@ void CAutoHoleRepairer::__repairImageByMipmap(CImage<float>& vioHoleImage, std::
 			}
 		}
 	}
-
+	//TODO:Size大小由分辨率确定
 	int Size = 10;
 	HiveTextureSynthesizer::CNewMipmapGenerator<float> MipmapGenerator;
 	auto MipmapSet = MipmapGenerator.computeMipmapPyramid(Texture, Size);
@@ -161,8 +177,8 @@ void CAutoHoleRepairer::__repairImageByMipmap(CImage<float>& vioHoleImage, std::
 			{
 				auto CurrentColor = CurrentTexture.coeff(k, j);
 				float SumColor = 0.0f;
-				int BlackNum = 4;
 				std::vector<Eigen::Vector2i> CorrespondingCoord{ {2 * k,2 * j}, {2 * k + 1,2 * j}, {2 * k,2 * j + 1},{2 * k + 1,2 * j + 1} };
+				int BlackNum = CorrespondingCoord.size();
 				for(auto& Coord: CorrespondingCoord)
 				{
 					if(NextTexture.coeff(Coord.x(), Coord.y()) > 0)
@@ -185,7 +201,6 @@ void CAutoHoleRepairer::__repairImageByMipmap(CImage<float>& vioHoleImage, std::
 				}
 			}
 	}
-
 	for (int i = 0; i < Width; i++)
 	{
 		for (int k = 0; k < Height; k++)
@@ -199,9 +214,7 @@ std::vector<pcl::PointXYZRGBNormal> CAutoHoleRepairer::__generateNewPoint(const 
 {
 	std::vector<pcl::PointXYZRGBNormal> NewPointSet;
 	auto pManager = CPointCloudRetouchManager::getInstance();
-	//TODO:Dirty implement
-	std::vector<pcl::index_t> NullIndices;
-	auto Box = pManager->getScene().getBoundingBox(NullIndices);
+	auto Box = pManager->getScene().getBoundingBox(std::vector<pcl::index_t>());
 
 	for (auto& HolePos : vHoleSet)
 	{
@@ -256,4 +269,24 @@ void CAutoHoleRepairer::__executeMeanFilter(CImage<float>& vioWithoutHoleImage, 
 		}
 	}
 	vioWithoutHoleImage = TempImage;
+}
+
+void CAutoHoleRepairer::saveTexture(const std::string& vPath, const CImage<float>& vTexture, bool vIsReverse)
+{
+	const auto Width = vTexture.getWidth();
+	const auto Height = vTexture.getHeight();
+	const auto BytesPerPixel = 1;
+	auto ResultImage = new unsigned char[Width * Height * BytesPerPixel];
+	for (auto i = 0; i < Height; i++)
+		for (auto k = 0; k < Width; k++)
+		{
+			auto I = i;
+			if (vIsReverse)
+				I = Height - 1 - I;
+			auto Offset = (I * Width + k) * BytesPerPixel;
+			ResultImage[Offset] = vTexture.getColor(i, k);
+		}
+
+	stbi_write_png(vPath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
+	stbi_image_free(ResultImage);
 }

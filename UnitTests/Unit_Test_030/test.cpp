@@ -111,7 +111,6 @@ void __serializeIndices(const std::vector<int>& vData, const std::string& vFileN
 
 TEST_F(TestHoleAutoRepair, RepairImageByMipmap_Test_1)
 {
-	//initTest(TESTMODEL_DIR + std::string("Test029_Model/test1.pcd"));
 	CImage<float> HoleImage;
 	std::vector<Eigen::Vector2i> HoleSet;
 	_loadTexture("Hole.png", HoleImage);

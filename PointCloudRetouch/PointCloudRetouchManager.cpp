@@ -8,6 +8,7 @@
 
 #include "ColorFeature.h"
 #include "PointClusterExpanderMultithread.h"
+#include "AutoHoleRepairer.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -478,4 +479,13 @@ void CPointCloudRetouchManager::executeAutoMarker()
 	switchLabel(EPointLabel::UNWANTED, EPointLabel::UNDETERMINED);
 	recoverMarkedPoints2Undetermined(EPointLabel::KEPT);
 
+}
+
+void CPointCloudRetouchManager::executeAutoHoleRepair(std::vector<pcl::PointXYZRGBNormal>& voNewPointSet)
+{
+	std::vector<pcl::index_t> SceneIndices;
+	for (int i = 0; i < getScene().getNumPoint(); i++)
+		SceneIndices.push_back(i);
+	CAutoHoleRepairer AutoHoleRepairer;
+	AutoHoleRepairer.execute({ 1024,1024 }, SceneIndices, voNewPointSet);
 }

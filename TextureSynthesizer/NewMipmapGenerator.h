@@ -52,7 +52,7 @@ namespace HiveTextureSynthesizer
 			_THROW_RUNTIME_ERROR("Error: Illegal mipmap total layer");
 		std::vector<Texture_t> GaussianPyramid(1, vTexture);
 		for (int i = 0; i < vTotalLayer - 1; i++)
-			GaussianPyramid.push_back(downsampleTexture4New(GaussianPyramid.back()));
+			GaussianPyramid.push_back(downsampleTexture(GaussianPyramid.back()));
 
 		std::reverse(std::begin(GaussianPyramid), std::end(GaussianPyramid));
 		return GaussianPyramid;

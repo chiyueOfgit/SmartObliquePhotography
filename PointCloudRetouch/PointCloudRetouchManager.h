@@ -45,6 +45,7 @@ namespace hiveObliquePhotography
 			void executeHoleRepairerSetInput(const std::vector<pcl::index_t>& vInput);
 			void executeHoleRepairer(std::vector<pcl::PointXYZRGBNormal>& voNewPoints);
 			void executeAutoMarker();
+			void executeAutoHoleRepair(std::vector<pcl::PointXYZRGBNormal>& voNewPointSet);
 			void recordCurrentStatus();
 			bool undo();
 			void recoverMarkedPoints2Undetermined(EPointLabel vLabel);
