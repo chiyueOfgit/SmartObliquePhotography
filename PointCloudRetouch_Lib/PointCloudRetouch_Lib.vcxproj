@@ -166,6 +166,7 @@
     <ClInclude Include="..\PointCloudRetouch\AutoHoleRepairer.h" />
     <ClInclude Include="..\PointCloudRetouch\BoundaryDetector.h" />
     <ClInclude Include="..\PointCloudRetouch\ColorFeature.h" />
+    <ClInclude Include="..\PointCloudRetouch\ElevationMapGenerator.h" />
     <ClInclude Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="..\PointCloudRetouch\Feature.h" />
     <ClInclude Include="..\PointCloudRetouch\framework.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="..\PointCloudRetouch\BoundaryDetector.cpp" />
     <ClCompile Include="..\PointCloudRetouch\ColorFeature.cpp" />
     <ClCompile Include="..\PointCloudRetouch\dllmain.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\ElevationMapGenerator.cpp" />
     <ClCompile Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.cpp" />
     <ClCompile Include="..\PointCloudRetouch\GroundObjectExtractor.cpp" />
     <ClCompile Include="..\PointCloudRetouch\HoleRepairer.cpp" />

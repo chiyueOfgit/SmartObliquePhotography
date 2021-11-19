@@ -21,6 +21,7 @@ bool CElevationMapGenerator::execute(const Eigen::Vector2i vResolution, const st
 //FUNCTION:
 bool CElevationMapGenerator::generateDistributionSet(const Eigen::Vector2i vResolution, const std::vector<pcl::index_t>& vPointIndexSet)
 {
+	m_PointDistributionSet.clear();
 	m_Box = CPointCloudRetouchManager::getInstance()->getScene().getBoundingBox(std::vector<pcl::index_t>());
 
 	Eigen::Vector2f Offset{ (m_Box.second - m_Box.first).x() / vResolution.x(), (m_Box.second - m_Box.first).y() / vResolution.y() };

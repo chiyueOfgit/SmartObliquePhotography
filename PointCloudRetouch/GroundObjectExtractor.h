@@ -18,7 +18,7 @@ namespace hiveObliquePhotography
 			void map2Cloud(const CImage<float>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject) { return __map2Cloud(vTexture, voCandidates, vIfObject); }
 			void map2Cloud(const CImage<float>& vTexture, std::vector<std::vector<pcl::index_t>>& voEdgeIndices, const std::vector<std::vector<Eigen::Vector2i>>& vEdgeSet)
 			{  __map2Cloud(vTexture, voEdgeIndices, vEdgeSet); }
-			CImage<float> generateElevationMap(Eigen::Vector2i& vResolution) { return __generateElevationMap(vResolution); }
+			//CImage<float> generateElevationMap(Eigen::Vector2i& vResolution) { return __generateElevationMap(vResolution); }
 			CImage<float> generateGrownImage(const CImage<float>& vElevationMap)
 			{
 				auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 5);
