@@ -33,8 +33,6 @@ namespace hiveObliquePhotography
 			std::vector<std::vector<std::vector<pcl::index_t>>> m_PointDistributionSet;
 
 			void __extractObjectIndices(const CImage<float>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices);
-
-			void __calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet);
 			
 			Eigen::Vector2i __findStartPoint(const CImage<float>& vImage);
 			CImage<float> __generateMaskByGrowing(const CImage<float>& vOriginImage, int vThreshold);

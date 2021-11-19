@@ -182,7 +182,6 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<float>& vTexture, std::vec
 
 		std::vector<std::vector<float>> HeightSet(vTexture.getHeight(), std::vector<float>(vTexture.getWidth(), HeightRange.x()));
 		Eigen::Vector2f MinXY{ Box.first.x(),Box.first.y() };
-		__calcAreaElevation(MinXY, Offset, HeightSet);
 	}
 
 	for (int i = 0; i < vTexture.getHeight(); i++)
@@ -229,7 +228,7 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<float>& vTexture, std::vec
 
 		std::vector<std::vector<float>> HeightSet(vTexture.getHeight(), std::vector<float>(vTexture.getWidth(), HeightRange.x()));
 		Eigen::Vector2f MinXY{ Box.first.x(),Box.first.y() };
-		__calcAreaElevation(MinXY, Offset, HeightSet);
+		//__calcAreaElevation(MinXY, Offset, HeightSet);
 	}
 
 	for (auto Edge : vEdgeSet)
@@ -248,7 +247,7 @@ hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__extractGroundEdg
 {
     auto Width = vExtractedImage.getWidth();
 	auto Height = vExtractedImage.getHeight();
-	Eigen::Matrix<std::array<int, 1>, -1, -1> WhiteSet(Height, Width);
+	Eigen::Matrix<float, -1, -1> WhiteSet(Height, Width);
 	for (int i = 0; i < Width; i++)
 		for (int k = 0; k < Height; k++)
 			WhiteSet(k, i) = { 255 };
@@ -274,7 +273,7 @@ hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__extractGroundEdg
 					continue;
 				}
 				auto Flag = vExtractedImage.getColor(NeighborPixel.y(), NeighborPixel.x());
-				if (Flag[0] != 0)
+				if (Flag != 0)
 					IsEdge ++;
 			}
 			if (IsEdge != NeighborNum && IsEdge != 0)
@@ -318,10 +317,10 @@ std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeS
 				if (NeighborSeed.x() < 0 || NeighborSeed.y() < 0 || NeighborSeed.x() > (Width - 1) || (NeighborSeed.y() > Height - 1))
 					continue;
 				auto Color = TempImage.getColor(NeighborSeed.y(), NeighborSeed.x());
-				if (Color[0] == 0)
+				if (Color == 0)
 				{
 					SeedStack.push_back(NeighborSeed);
-					TempImage.fetchColor(NeighborSeed.y(), NeighborSeed.x())[0] = 255;
+					TempImage.fetchColor(NeighborSeed.y(), NeighborSeed.x()) = 255;
 				}
 			}
 		}
@@ -339,7 +338,7 @@ bool CGroundObjectExtractor::__findBlackPoint(const CImage<float>& vImage, Eigen
 	{
 		for (int k = 0; k < vImage.getHeight(); k++)
 		{
-			if (vImage.getColor(k, i)[0] == 0)
+			if (vImage.getColor(k, i) == 0)
 			{
 				voBlackPoint.x() = i;
 				voBlackPoint.y() = k;
