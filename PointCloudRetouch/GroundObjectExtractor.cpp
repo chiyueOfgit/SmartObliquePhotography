@@ -26,7 +26,7 @@ void saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<
 			if (vIsReverse)
 				I = Height - 1 - I;
 			auto Offset = (I * Width + k) * BytesPerPixel;
-			ResultImage[Offset] = vTexture.getColor(i, k);
+			ResultImage[Offset] = static_cast<int>(vTexture.getColor(i, k));
 			//ResultImage[Offset + 1] = vTexture.getColor(i, k)[1];
 			//ResultImage[Offset + 2] = vTexture.getColor(i, k)[2];
 		}
@@ -89,14 +89,14 @@ hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__generateMaskByGr
 	Eigen::Matrix<float, -1, -1> BlackSet(Height, Width);
 	for (int i = 0; i < Width; i++)
 		for (int k = 0; k < Height; k++)
-			BlackSet(k, i) = { 0 };
+			BlackSet(k, i) = 0.0f;
 	CImage<float> MaskImage;
 	MaskImage.fillColor(Height, Width, BlackSet.data());
 
-	int Direction[8][2] = { {-1,-1}, {0,-1}, {1,-1}, {1,0}, {1,1}, {0,1}, {-1,1}, {-1,0} };
+	int Direction[8][2] = { {-1, -1}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0} };
 	std::vector<Eigen::Vector2i> SeedStack;
 	SeedStack.push_back(CurrentSeed);
-	MaskImage.fetchColor(CurrentSeed.y(), CurrentSeed.x()) = { 255 };
+	MaskImage.fetchColor(CurrentSeed.y(), CurrentSeed.x()) = 255;
 
 	while (!SeedStack.empty())
 	{
@@ -115,7 +115,7 @@ hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__generateMaskByGr
 				CurValue = vOriginImage.getColor(NeighborSeed.y(), NeighborSeed.x());
 				if (abs(SrcValue - CurValue) < vThreshold)
 				{
-					MaskImage.fetchColor(NeighborSeed.y(), NeighborSeed.x()) = { 255 };
+					MaskImage.fetchColor(NeighborSeed.y(), NeighborSeed.x()) = 255;
 					SeedStack.push_back(NeighborSeed);
 				}
 			}
@@ -139,13 +139,11 @@ Eigen::Vector2i CGroundObjectExtractor::__findStartPoint(const CImage<float>& vI
 			break;
 	for (int i = 0; i < vImage.getWidth(); i++)
 		for (int k = 0; k < vImage.getHeight(); k++)
-		{
-			if (vImage.getColor(k, i) == StartColor)
+			if (static_cast<int>(vImage.getColor(k, i)) == StartColor)
 			{
 				LowestPosition.x() = i;
 				LowestPosition.y() = k;
 			}
-		}
 			
 	return LowestPosition;
 }
@@ -250,7 +248,7 @@ hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__extractGroundEdg
 	Eigen::Matrix<float, -1, -1> WhiteSet(Height, Width);
 	for (int i = 0; i < Width; i++)
 		for (int k = 0; k < Height; k++)
-			WhiteSet(k, i) = { 255 };
+			WhiteSet(k, i) = 255;
 	CImage<float> GroundEdgeImage;
 	GroundEdgeImage.fillColor(Height, Width, WhiteSet.data());
 
@@ -277,7 +275,7 @@ hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__extractGroundEdg
 					IsEdge ++;
 			}
 			if (IsEdge != NeighborNum && IsEdge != 0)
-				GroundEdgeImage.fetchColor(k, i) = { 0 };
+				GroundEdgeImage.fetchColor(k, i) = 0;
 		}
 	}
 	return GroundEdgeImage;
