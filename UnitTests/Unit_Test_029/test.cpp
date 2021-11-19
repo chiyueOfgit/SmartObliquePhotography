@@ -43,14 +43,15 @@ protected:
 
 	void SetUp() override
 	{
-		
+
 		pConfig = new CPointCloudRetouchConfig;
 		if (hiveConfig::hiveParseConfig(ConfigPath, hiveConfig::EConfigType::XML, pConfig) != hiveConfig::EParseResult::SUCCEED)
 		{
 			_HIVE_OUTPUT_WARNING(_FORMAT_STR1("Failed to parse config file [%1%].", ConfigPath));
 			return;
 		}
-;	}  
+		;
+	}
 
 	void initTest(const std::string& vModelPath)
 	{
@@ -163,14 +164,14 @@ TEST_F(TestObjectExtractor, OutPutIndices)
 	std::vector<pcl::index_t> OutPutIndices;
 	std::vector<std::vector<pcl::index_t>> EdgeIndices;
 	std::vector<pcl::index_t> SumSet;
-	
+
 	auto pExtractor = hiveDesignPattern::hiveCreateProduct<CGroundObjectExtractor>(KEYWORD::GROUND_OBJECT_EXTRACTOR);
 	EXPECT_NE(pExtractor, nullptr);
 	if (!pExtractor)
 		std::cerr << "create Extractor error." << std::endl;
 
-    pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices, Resolution);
-	for(auto& Edges: EdgeIndices)
+	pExtractor->execute<CGroundObjectExtractor>(OutPutIndices, EdgeIndices, Resolution);
+	for (auto& Edges : EdgeIndices)
 	{
 		SumSet.insert(SumSet.end(), Edges.begin(), Edges.end());
 	}

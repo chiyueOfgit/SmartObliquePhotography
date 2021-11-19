@@ -135,6 +135,9 @@
     <ClInclude Include="..\TextureSynthesizer\NewMipmapGenerator.h">
       <Filter>Operation\GroundobjectExtract</Filter>
     </ClInclude>
+    <ClInclude Include="ElevationMapGenerator.h">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -218,6 +221,9 @@
       <Filter>Operation\GroundobjectExtract</Filter>
     </ClCompile>
     <ClCompile Include="AutoHoleRepairer.cpp">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClCompile>
+    <ClCompile Include="ElevationMapGenerator.cpp">
       <Filter>Operation\GroundobjectExtract</Filter>
     </ClCompile>
   </ItemGroup>

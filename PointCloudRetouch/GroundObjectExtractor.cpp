@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GroundObjectExtractor.h"
+#include "ElevationMapGenerator.h"
 
 #define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
@@ -39,6 +40,9 @@ void saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<
 void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices, const Eigen::Vector2i& vResolution)
 {
 	_ASSERTE((vResolution.array() > 0).all());
+	
+	/*CElevationMapGenerator ElevationMapGenerator;
+	ElevationMapGenerator.execute(vResolution, );*/
 	CImage<std::array<int, 1>> ElevationMap = __generateElevationMap(vResolution);
 
 	saveTexture("ElevatioMap.png", ElevationMap, false);
