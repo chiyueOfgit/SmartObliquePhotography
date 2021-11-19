@@ -13,7 +13,7 @@ using namespace hiveObliquePhotography::PointCloudRetouch;
 
 _REGISTER_NORMAL_PRODUCT(CGroundObjectExtractor, KEYWORD::GROUND_OBJECT_EXTRACTOR)
 
-void saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<std::array<int, 1>>& vTexture, bool vIsReverse)
+void saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<float>& vTexture, bool vIsReverse)
 {
 	const auto Width = vTexture.getWidth();
 	const auto Height = vTexture.getHeight();
@@ -26,7 +26,7 @@ void saveTexture(const std::string& vPath, const hiveObliquePhotography::CImage<
 			if (vIsReverse)
 				I = Height - 1 - I;
 			auto Offset = (I * Width + k) * BytesPerPixel;
-			ResultImage[Offset] = vTexture.getColor(i, k)[0];
+			ResultImage[Offset] = vTexture.getColor(i, k);
 			//ResultImage[Offset + 1] = vTexture.getColor(i, k)[1];
 			//ResultImage[Offset + 2] = vTexture.getColor(i, k)[2];
 		}
@@ -41,9 +41,16 @@ void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, std::vector<std
 {
 	_ASSERTE((vResolution.array() > 0).all());
 	
-	/*CElevationMapGenerator ElevationMapGenerator;
-	ElevationMapGenerator.execute(vResolution, );*/
-	CImage<std::array<int, 1>> ElevationMap = __generateElevationMap(vResolution);
+	std::vector<pcl::index_t> PointIndexSet;
+	std::size_t NumPoint = CPointCloudRetouchManager::getInstance()->getScene().getNumPoint();
+	for (pcl::index_t i = 0; i < NumPoint; i++)
+		PointIndexSet.push_back(i);
+
+	CElevationMapGenerator ElevationMapGenerator;
+	ElevationMapGenerator.execute(vResolution, PointIndexSet);
+	CImage<float> ElevationMap;
+	ElevationMapGenerator.dumpElevationMap(ElevationMap);
+	ElevationMapGenerator.dumpPointDistributionSet(m_PointDistributionSet);
 
 	saveTexture("ElevatioMap.png", ElevationMap, false);
 
@@ -53,36 +60,7 @@ void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, std::vector<std
 
 //*****************************************************************
 //FUNCTION:
-hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__generateElevationMap(const Eigen::Vector2i& vResolution)
-{
-	CImage<std::array<int, 1>> ResultImage;
-	auto pManager = CPointCloudRetouchManager::getInstance();
-	std::vector<pcl::index_t> Indices;
-	Eigen::Matrix<std::array<int, 1>, -1, -1> Texture(vResolution.y(), vResolution.x());
-	auto Box = pManager->getScene().getBoundingBox(Indices);
-	Eigen::Vector2f Offset{ (Box.second - Box.first).x() / vResolution.x(), (Box.second - Box.first).y() / vResolution.y() };
-	Eigen::Vector2f HeightRange{ Box.first.z(), Box.second.z() };
-
-	std::vector<std::vector<float>> HeightSet(vResolution.y(), std::vector<float>(vResolution.x(), HeightRange.x()));
-	Eigen::Vector2f MinXY{ Box.first.x(),Box.first.y() };
-	__calcAreaElevation(MinXY, Offset, HeightSet);
-	
-	for (int i = 0; i < vResolution.x(); i++)
-	{
-		for (int k = 0; k < vResolution.y(); k++)
-		{
-			auto Elevation = HeightSet[k][i];
-			Texture(k, i) = __transElevation2Color(Elevation - HeightRange.x(), HeightRange.y() - HeightRange.x());
-		}
-	}
-
-	ResultImage.fillColor(vResolution.y(), vResolution.x(), Texture.data());
-	return ResultImage;
-}
-
-//*****************************************************************
-//FUNCTION:
-void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int, 1>>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices)
+void CGroundObjectExtractor::__extractObjectIndices(const CImage<float>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices)
 {
 	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
 	__extractObjectByMask(vElevationMap, ExtractedImage);
@@ -98,126 +76,26 @@ void CGroundObjectExtractor::__extractObjectIndices(const CImage<std::array<int,
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet)
-{
-	const float Radius = 0.3;
-	m_PointDistributionSet.resize(vioHeightSet.size(), std::vector<std::vector<pcl::index_t>>(vioHeightSet[0].size()));
-	auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
-	for(int j = 0; j < Scene.getNumPoint(); j++)
-	{
-		auto Position = Scene.getPositionAt(j);
-		
-		int RowBegin = (Position.y() - vMinCoord.y() - Radius) / vOffset.y();
-		int RowEnd = (Position.y() - vMinCoord.y() + Radius) / vOffset.y();
-		int ColBegin = (Position.x() - vMinCoord.x() - Radius) / vOffset.x();
-		int ColEnd = (Position.x() - vMinCoord.x() + Radius) / vOffset.x();
-		int RowRaw = (Position.y() - vMinCoord.y()) / vOffset.y();
-		int ColRaw = (Position.x() - vMinCoord.x()) / vOffset.x();
-		
-		if (RowBegin > vioHeightSet.size()) RowBegin = vioHeightSet.size();
-		if (RowEnd > vioHeightSet.size()) RowEnd = vioHeightSet.size();
-		if (ColBegin > vioHeightSet[0].size()) ColBegin = vioHeightSet[0].size();
-		if (ColEnd > vioHeightSet[0].size()) ColEnd = vioHeightSet[0].size();
-
-		if (RowRaw == vioHeightSet.size())
-			RowRaw = RowRaw - 1;
-		if (ColRaw == vioHeightSet[0].size())
-			ColRaw = ColRaw - 1;
-		m_PointDistributionSet[RowRaw][ColRaw].push_back(j);
-
-		for (int i = ColBegin; i < ColEnd; i++)
-			for (int k = RowBegin; k < RowEnd; k++)
-				if (Position.z() > vioHeightSet[k][i])
-					vioHeightSet[k][i] = Position.z();
-	}
-}
-
-//*****************************************************************
-//FUNCTION:
-std::array<int, 1> CGroundObjectExtractor::__transElevation2Color(float vElevation, float vHeightDiff)
-{
-	int Color;
-	auto Percentage = vElevation / vHeightDiff;
-	Color = Percentage * 255;
-	return { Color };
-
-	/*std::array Color = { 0, 0, 0 };
-	auto Percentage = vElevation / vHeightDiff;
-	switch (static_cast<int>(Percentage * 4))
-	{
-	case 0:
-		Color[1] = Percentage * 1020;
-		Color[2] = 255;
-		break;
-	case 1:
-		Color[1] = 255;
-		Color[2] = 255 - (Percentage - 0.25) * 1020;
-		break;
-	case 2:
-		Color[0] = (Percentage - 0.5) * 1020;
-		Color[1] = 255;
-		break;
-	case 3:
-		Color[0] = 255;
-		Color[1] = 255 - (Percentage - 0.75) * 1020;
-		break;
-	default:
-		break;
-	}
-
-	return Color;*/
-
-}
-
-//*****************************************************************
-//FUNCTION:
-Eigen::Vector2i CGroundObjectExtractor::__findStartPoint(const CImage<std::array<int, 1>>& vImage)
-{
-	std::vector<int> Sum(256,0);
-	int StartColor = 0;
-	Eigen::Vector2i LowestPosition;
-	for (int i = 0; i < vImage.getWidth(); i++)
-		for (int k = 0; k < vImage.getHeight(); k++)
-			Sum[vImage.getColor(k, i)[0]]++;
-	for (; StartColor < 252; StartColor++)
-		//if (Sum[StartColor] > 100 && Sum[StartColor + 1] > 100 && Sum[StartColor + 2] > 100 && Sum[StartColor + 3] > 100)
-		if (Sum[StartColor] > 100 && Sum[StartColor + 1] > 100 && Sum[StartColor + 2] > 100)
-			break;
-	for (int i = 0; i < vImage.getWidth(); i++)
-		for (int k = 0; k < vImage.getHeight(); k++)
-		{
-			if (vImage.getColor(k, i)[0] == StartColor)
-			{
-				LowestPosition.x() = i;
-				LowestPosition.y() = k;
-			}
-		}
-			
-	return LowestPosition;
-}
-
-//*****************************************************************
-//FUNCTION:
-hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__generateMaskByGrowing(const CImage<std::array<int, 1>>& vOriginImage, int vThreshold)
+hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__generateMaskByGrowing(const CImage<float>& vOriginImage, int vThreshold)
 {
 	Eigen::Vector2i CurrentSeed = __findStartPoint(vOriginImage);
-	Eigen::Vector2i NeighborSeed;						
-	std::array<int, 1> Flag;
-	std::array<int, 1> SrcValue = {0};
-	std::array<int, 1> CurValue = {0};  
+	Eigen::Vector2i NeighborSeed;
+	float Flag;
+	float SrcValue = 0.0f;
+	float CurValue = 0.0f;
 	int Height = vOriginImage.getHeight();
 	int Width = vOriginImage.getWidth();
-	
-	Eigen::Matrix<std::array<int, 1>, -1, -1> BlackSet(Height, Width);
+
+	Eigen::Matrix<float, -1, -1> BlackSet(Height, Width);
 	for (int i = 0; i < Width; i++)
 		for (int k = 0; k < Height; k++)
-			BlackSet(k, i) = {0};
-	CImage<std::array<int, 1>> MaskImage;
+			BlackSet(k, i) = { 0 };
+	CImage<float> MaskImage;
 	MaskImage.fillColor(Height, Width, BlackSet.data());
-	
+
 	int Direction[8][2] = { {-1,-1}, {0,-1}, {1,-1}, {1,0}, {1,1}, {0,1}, {-1,1}, {-1,0} };
-	std::vector<Eigen::Vector2i> SeedStack;						
-	SeedStack.push_back(CurrentSeed);			
+	std::vector<Eigen::Vector2i> SeedStack;
+	SeedStack.push_back(CurrentSeed);
 	MaskImage.fetchColor(CurrentSeed.y(), CurrentSeed.x()) = { 255 };
 
 	while (!SeedStack.empty())
@@ -229,15 +107,15 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 		{
 			NeighborSeed.x() = CurrentSeed.x() + Direction[i][0];
 			NeighborSeed.y() = CurrentSeed.y() + Direction[i][1];
-			if (NeighborSeed.x() < 0 || NeighborSeed.y() < 0 || NeighborSeed.x() >(Width - 1) || (NeighborSeed.y() > Height - 1))
+			if (NeighborSeed.x() < 0 || NeighborSeed.y() < 0 || NeighborSeed.x() > (Width - 1) || (NeighborSeed.y() > Height - 1))
 				continue;
 			Flag = MaskImage.getColor(NeighborSeed.y(), NeighborSeed.x());
-			if (Flag[0] == 0)					
+			if (Flag == 0)
 			{
 				CurValue = vOriginImage.getColor(NeighborSeed.y(), NeighborSeed.x());
-				if (abs(SrcValue[0] - CurValue[0]) < vThreshold)					
+				if (abs(SrcValue - CurValue) < vThreshold)
 				{
-					MaskImage.fetchColor(NeighborSeed.y(), NeighborSeed.x()) = {255};
+					MaskImage.fetchColor(NeighborSeed.y(), NeighborSeed.x()) = { 255 };
 					SeedStack.push_back(NeighborSeed);
 				}
 			}
@@ -248,23 +126,49 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__gen
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__extractObjectByMask(const CImage<std::array<int, 1>>& vOriginImage, CImage<std::array<int, 1>>& vioMaskImage)
+Eigen::Vector2i CGroundObjectExtractor::__findStartPoint(const CImage<float>& vImage)
+{
+	std::vector<int> Hist(256, 0);
+	int StartColor = 0;
+	Eigen::Vector2i LowestPosition;
+	for (int i = 0; i < vImage.getWidth(); i++)
+		for (int k = 0; k < vImage.getHeight(); k++)
+			Hist[vImage.getColor(k, i)]++;
+	for (; StartColor < 252; StartColor++)
+		if (Hist[StartColor] > 100 && Hist[StartColor + 1] > 100 && Hist[StartColor + 2] > 100)
+			break;
+	for (int i = 0; i < vImage.getWidth(); i++)
+		for (int k = 0; k < vImage.getHeight(); k++)
+		{
+			if (vImage.getColor(k, i) == StartColor)
+			{
+				LowestPosition.x() = i;
+				LowestPosition.y() = k;
+			}
+		}
+			
+	return LowestPosition;
+}
+
+//*****************************************************************
+//FUNCTION:
+void CGroundObjectExtractor::__extractObjectByMask(const CImage<float>& vOriginImage, CImage<float>& vioMaskImage)
 {
 	for (int i = 0; i < vOriginImage.getWidth(); i++)
 	{
 		for (int k = 0; k < vOriginImage.getHeight(); k++)
 		{
-			if (vioMaskImage.getColor(k, i)[0] == 0)
-				vioMaskImage.fetchColor(k, i)[0] = vOriginImage.getColor(k, i)[0];
+			if (vioMaskImage.getColor(k, i) == 0)
+				vioMaskImage.fetchColor(k, i) = vOriginImage.getColor(k, i);
 			else
-				vioMaskImage.fetchColor(k, i)[0] = 0; 
+				vioMaskImage.fetchColor(k, i) = 0; 
 		}
 	}
 }
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject)
+void CGroundObjectExtractor::__map2Cloud(const CImage<float>& vTexture, std::vector<pcl::index_t>& voCandidates, bool vIfObject)
 {
 	auto pManager = CPointCloudRetouchManager::getInstance();
 	std::vector<pcl::index_t> Indices;
@@ -278,20 +182,19 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 
 		std::vector<std::vector<float>> HeightSet(vTexture.getHeight(), std::vector<float>(vTexture.getWidth(), HeightRange.x()));
 		Eigen::Vector2f MinXY{ Box.first.x(),Box.first.y() };
-		__calcAreaElevation(MinXY, Offset, HeightSet);
 	}
 
 	for (int i = 0; i < vTexture.getHeight(); i++)
 		for (int k = 0; k < vTexture.getWidth(); k++)
 		{
-			if (!(vIfObject * vTexture.getColor(i, k)[0]) && (vIfObject + vTexture.getColor(i, k)[0]))
+			if (!(vIfObject * vTexture.getColor(i, k)) && (vIfObject + vTexture.getColor(i, k)))
 				continue;
 
 			auto Scene = CPointCloudRetouchManager::getInstance()->getScene();
 
 			if (vIfObject)
 			{
-				Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)[0]) / 255 * (Box.second - Box.first).z() + Box.first.z(), static_cast<float>(vTexture.getColor(i,k)[0] + 1) / 255 * (Box.second - Box.first).z() + Box.first.z() };
+				Eigen::Vector2f ZRange{ static_cast<float>(vTexture.getColor(i, k)) / 255 * (Box.second - Box.first).z() + Box.first.z(), static_cast<float>(vTexture.getColor(i,k) + 1) / 255 * (Box.second - Box.first).z() + Box.first.z() };
 
 				for (auto PointIndex : m_PointDistributionSet[i][k])
 				{
@@ -308,7 +211,7 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 
 //*****************************************************************
 //FUNCTION:
-void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vTexture, std::vector<std::vector<pcl::index_t>>& voEdgeIndices, const std::vector<std::vector<Eigen::Vector2i>>& vEdgeSet)
+void CGroundObjectExtractor::__map2Cloud(const CImage<float>& vTexture, std::vector<std::vector<pcl::index_t>>& voEdgeIndices, const std::vector<std::vector<Eigen::Vector2i>>& vEdgeSet)
 {
 	// TODO:COPY-PASTE
 	if (voEdgeIndices.size())
@@ -325,7 +228,7 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 
 		std::vector<std::vector<float>> HeightSet(vTexture.getHeight(), std::vector<float>(vTexture.getWidth(), HeightRange.x()));
 		Eigen::Vector2f MinXY{ Box.first.x(),Box.first.y() };
-		__calcAreaElevation(MinXY, Offset, HeightSet);
+		//__calcAreaElevation(MinXY, Offset, HeightSet);
 	}
 
 	for (auto Edge : vEdgeSet)
@@ -340,15 +243,15 @@ void CGroundObjectExtractor::__map2Cloud(const CImage<std::array<int, 1>>& vText
 
 //*****************************************************************
 //FUNCTION:
-hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__extractGroundEdgeImage(const CImage<std::array<int, 1>>& vExtractedImage)
+hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__extractGroundEdgeImage(const CImage<float>& vExtractedImage)
 {
     auto Width = vExtractedImage.getWidth();
 	auto Height = vExtractedImage.getHeight();
-	Eigen::Matrix<std::array<int, 1>, -1, -1> WhiteSet(Height, Width);
+	Eigen::Matrix<float, -1, -1> WhiteSet(Height, Width);
 	for (int i = 0; i < Width; i++)
 		for (int k = 0; k < Height; k++)
 			WhiteSet(k, i) = { 255 };
-	CImage<std::array<int, 1>> GroundEdgeImage;
+	CImage<float> GroundEdgeImage;
 	GroundEdgeImage.fillColor(Height, Width, WhiteSet.data());
 
 	int Direction[8][2] = { {-1,-1}, {0,-1}, {1,-1}, {1,0}, {1,1}, {0,1}, {-1,1}, {-1,0} };
@@ -370,7 +273,7 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__ext
 					continue;
 				}
 				auto Flag = vExtractedImage.getColor(NeighborPixel.y(), NeighborPixel.x());
-				if (Flag[0] != 0)
+				if (Flag != 0)
 					IsEdge ++;
 			}
 			if (IsEdge != NeighborNum && IsEdge != 0)
@@ -382,7 +285,7 @@ hiveObliquePhotography::CImage<std::array<int, 1>> CGroundObjectExtractor::__ext
 
 //*****************************************************************
 //FUNCTION:
-std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeSet(const CImage<std::array<int, 1>>& vEdgeImage)
+std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeSet(const CImage<float>& vEdgeImage)
 {
 	std::vector<std::vector<Eigen::Vector2i>> OutputEdgeSet;
 	auto TempImage = vEdgeImage;
@@ -414,10 +317,10 @@ std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeS
 				if (NeighborSeed.x() < 0 || NeighborSeed.y() < 0 || NeighborSeed.x() > (Width - 1) || (NeighborSeed.y() > Height - 1))
 					continue;
 				auto Color = TempImage.getColor(NeighborSeed.y(), NeighborSeed.x());
-				if (Color[0] == 0)
+				if (Color == 0)
 				{
 					SeedStack.push_back(NeighborSeed);
-					TempImage.fetchColor(NeighborSeed.y(), NeighborSeed.x())[0] = 255;
+					TempImage.fetchColor(NeighborSeed.y(), NeighborSeed.x()) = 255;
 				}
 			}
 		}
@@ -429,13 +332,13 @@ std::vector<std::vector<Eigen::Vector2i>> CGroundObjectExtractor::__divide2EdgeS
 
 //*****************************************************************
 //FUNCTION:
-bool CGroundObjectExtractor::__findBlackPoint(const CImage<std::array<int, 1>>& vImage, Eigen::Vector2i& voBlackPoint)
+bool CGroundObjectExtractor::__findBlackPoint(const CImage<float>& vImage, Eigen::Vector2i& voBlackPoint)
 {
 	for (int i = 0; i < vImage.getWidth(); i++)
 	{
 		for (int k = 0; k < vImage.getHeight(); k++)
 		{
-			if (vImage.getColor(k, i)[0] == 0)
+			if (vImage.getColor(k, i) == 0)
 			{
 				voBlackPoint.x() = i;
 				voBlackPoint.y() = k;

@@ -21,8 +21,9 @@ namespace hiveObliquePhotography
 			CImage<float> m_ElevationMap;
 			std::pair<Eigen::Vector3f, Eigen::Vector3f> m_Box;
 			std::vector<std::vector<std::vector<pcl::index_t>>> m_PointDistributionSet;
+			std::vector<std::vector<float>> m_HeightSet;
 
-			void __calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, std::vector<std::vector<float>>& vioHeightSet, const std::vector<pcl::index_t>& vPointIndexSet);
+			void __calcAreaElevation(const Eigen::Vector2f& vMinCoord, const Eigen::Vector2f& vOffset, const std::vector<pcl::index_t>& vPointIndexSet);
 			float __transElevation2Color(float vElevation, float vHeightDiff);
 		};
 	}
