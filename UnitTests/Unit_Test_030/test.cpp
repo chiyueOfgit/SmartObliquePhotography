@@ -113,10 +113,20 @@ TEST_F(TestHoleAutoRepair, RepairImageByMipmap_Test_1)
 {
 	CImage<float> HoleImage;
 	std::vector<Eigen::Vector2i> HoleSet;
-	_loadTexture("Hole.png", HoleImage);
+	_loadTexture("Input.png", HoleImage);
 	CAutoHoleRepairer AutoHoleRepairer;
 	AutoHoleRepairer.repairImageByMipmap(HoleImage, HoleSet);
-	_saveTexture("WithoutHole.png", HoleImage,false);
+
+	Eigen::Vector2i Resolution{ 4, 4 };
+	auto PNGFilePath = std::string("GroundTruth.png");
+	int Channels = 1;
+	unsigned char* GtData = stbi_load(PNGFilePath.c_str(), &Resolution.x(), &Resolution.y(), &Channels, 0);
+	for (int i = 0; i < Resolution.x() * Resolution.y(); i++)
+	{
+		float GtColor = GtData[i];
+		auto Color = HoleImage.getColor(i / Resolution.x(), i % Resolution.x());
+		EXPECT_EQ(Color, GtColor);
+	}
 }
 
 TEST_F(TestHoleAutoRepair, RepairImageByMipmap_Test_2)
