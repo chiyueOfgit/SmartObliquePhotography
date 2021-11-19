@@ -15,6 +15,7 @@ bool CElevationMapGenerator::execute(const Eigen::Vector2i vResolution, const st
 			Texture(k, i) = __transElevation2Color(HeightSet[k][i] - m_Box.first.z(), m_Box.second.z() - m_Box.first.z());
 
 	m_ElevationMap.fillColor(vResolution.y(), vResolution.x(), Texture.data());
+	return true;
 }
 
 //*****************************************************************
@@ -27,6 +28,7 @@ bool CElevationMapGenerator::generateDistributionSet(const Eigen::Vector2i vReso
 	std::vector<std::vector<float>> HeightSet(vResolution.y(), std::vector<float>(vResolution.x(), m_Box.first.z()));
 	Eigen::Vector2f MinXY{ m_Box.first.x(),m_Box.first.y() };
 	__calcAreaElevation(MinXY, Offset, HeightSet, vPointIndexSet);
+	return true;
 }
 
 //*****************************************************************

@@ -116,6 +116,24 @@ void CInteractionCallback::keyboardCallback(const pcl::visualization::KeyboardEv
 			RefreshFlag = true;
 		}
 
+		if (KeyString == "o")
+		{
+			std::vector<RetouchPoint_t> NewPoints;
+			PointCloudRetouch::hiveAutoHolerepair(NewPoints);
+			if (!NewPoints.empty())
+			{
+				RetouchCloud_t::Ptr RepairCloud(new RetouchCloud_t);
+				for (auto& Point : NewPoints)
+				{
+					if (Point.r == 0 && Point.g == 0 && Point.b == 0)
+						Point.rgba = -1;
+					RepairCloud->push_back(Point);
+				}
+
+				m_pVisualizer->addUserPointCloud(RepairCloud);
+				RefreshFlag = true;
+			}
+		}
 		/*if (KeyString == m_pVisualizationConfig->getAttribute<std::string>(JUMP_TO_MAIN_VIEW).value())
 		{
 			m_pVisualizer->jumpToThreeView(EView::MainView);
