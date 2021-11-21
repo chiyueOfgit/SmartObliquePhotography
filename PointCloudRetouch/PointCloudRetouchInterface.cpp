@@ -179,7 +179,7 @@ void hiveObliquePhotography::PointCloudRetouch::hiveAutoMarkLitter()
 	CPointCloudRetouchManager::getInstance()->executeAutoMarker();
 }
 
- void hiveObliquePhotography::PointCloudRetouch::hiveAutoHolerepair(std::vector<pcl::PointXYZRGBNormal>& voNewPointSet)
+void hiveObliquePhotography::PointCloudRetouch::hiveAutoHolerepair(std::vector<pcl::PointXYZRGBNormal>& voNewPointSet)
 {
 	 CPointCloudRetouchManager::getInstance()->executeAutoHoleRepair(voNewPointSet);
 }

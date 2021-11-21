@@ -77,14 +77,26 @@ float CElevationMapGenerator::__transElevation2Color(float vElevation, float vHe
 //FUNCTION:
 bool CElevationMapGenerator::dumpElevationMap(CImage<float>& voElevationMap)
 {
-	voElevationMap = m_ElevationMap;
-	return true;
+	if (m_ElevationMap.getHeight() && m_ElevationMap.getWidth())
+	{
+		voElevationMap = m_ElevationMap;
+		return true;
+	}
+	else
+		return false;
+		
 }
 
 //*****************************************************************
 //FUNCTION:
 bool CElevationMapGenerator::dumpPointDistributionSet(std::vector<std::vector<std::vector<pcl::index_t>>>& voPointDistributionSet)
 {
-	voPointDistributionSet = m_PointDistributionSet;
-	return true;
+	if (m_PointDistributionSet.size())
+	{
+		voPointDistributionSet = m_PointDistributionSet;
+		return true;
+	}
+	else
+		return false;
+		
 }
