@@ -979,6 +979,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unit_Test_028 (mesh_legalit
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Integration_Test_005(mesh_highlight)", "IntergrationTests\Integration_Test_005\Integration_Test_005.vcxproj", "{F1DCF982-08CC-419E-A70E-F552B361161A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GroundIdentification", "GroundIdentification\GroundIdentification.vcxproj", "{251C20C0-337F-4424-923B-3703D0275E2D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GroundIdentification_lib", "GroundIdentification_lib\GroundIdentification_lib.vcxproj", "{414AA04F-AB6C-471F-BCDE-06F4BC78B622}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -1285,6 +1289,22 @@ Global
 		{F1DCF982-08CC-419E-A70E-F552B361161A}.Release|x64.ActiveCfg = Release|x64
 		{F1DCF982-08CC-419E-A70E-F552B361161A}.Release|x64.Build.0 = Release|x64
 		{F1DCF982-08CC-419E-A70E-F552B361161A}.Release|x86.ActiveCfg = Release|x64
+		{251C20C0-337F-4424-923B-3703D0275E2D}.Debug|x64.ActiveCfg = Debug|x64
+		{251C20C0-337F-4424-923B-3703D0275E2D}.Debug|x64.Build.0 = Debug|x64
+		{251C20C0-337F-4424-923B-3703D0275E2D}.Debug|x86.ActiveCfg = Debug|Win32
+		{251C20C0-337F-4424-923B-3703D0275E2D}.Debug|x86.Build.0 = Debug|Win32
+		{251C20C0-337F-4424-923B-3703D0275E2D}.Release|x64.ActiveCfg = Release|x64
+		{251C20C0-337F-4424-923B-3703D0275E2D}.Release|x64.Build.0 = Release|x64
+		{251C20C0-337F-4424-923B-3703D0275E2D}.Release|x86.ActiveCfg = Release|Win32
+		{251C20C0-337F-4424-923B-3703D0275E2D}.Release|x86.Build.0 = Release|Win32
+		{414AA04F-AB6C-471F-BCDE-06F4BC78B622}.Debug|x64.ActiveCfg = Debug|x64
+		{414AA04F-AB6C-471F-BCDE-06F4BC78B622}.Debug|x64.Build.0 = Debug|x64
+		{414AA04F-AB6C-471F-BCDE-06F4BC78B622}.Debug|x86.ActiveCfg = Debug|Win32
+		{414AA04F-AB6C-471F-BCDE-06F4BC78B622}.Debug|x86.Build.0 = Debug|Win32
+		{414AA04F-AB6C-471F-BCDE-06F4BC78B622}.Release|x64.ActiveCfg = Release|x64
+		{414AA04F-AB6C-471F-BCDE-06F4BC78B622}.Release|x64.Build.0 = Release|x64
+		{414AA04F-AB6C-471F-BCDE-06F4BC78B622}.Release|x86.ActiveCfg = Release|Win32
+		{414AA04F-AB6C-471F-BCDE-06F4BC78B622}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
