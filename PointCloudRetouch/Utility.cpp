@@ -28,4 +28,5 @@ bool hiveObliquePhotography::PointCloudRetouch::saveTexture(const std::string& v
 
 	stbi_write_png(vPath.c_str(), Width, Height, BytesPerPixel, ResultImage, 0);
 	stbi_image_free(ResultImage);
+	return true;
 }
