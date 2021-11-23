@@ -22,7 +22,7 @@ namespace HiveTextureSynthesizer
 		void setKernalSize(const int vKernalSize) { m_KernalSize = vKernalSize; }
 
 	private:
-		int m_KernalSize = 9;
+		int m_KernalSize = 5;
 	};
 
 	template <mipmap_color TColor>

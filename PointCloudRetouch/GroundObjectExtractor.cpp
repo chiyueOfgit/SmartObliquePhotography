@@ -62,7 +62,7 @@ void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, std::vector<std
 //FUNCTION:
 void CGroundObjectExtractor::__extractObjectIndices(const CImage<float>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices)
 {
-	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 4);
+	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 3);
 	__extractObjectByMask(vElevationMap, ExtractedImage);
 	saveTexture("ExtractedImage.png", ExtractedImage, false);
 

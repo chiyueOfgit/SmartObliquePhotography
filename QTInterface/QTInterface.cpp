@@ -392,14 +392,12 @@ void CQTInterface::onActionSave()
 
     PointCloud_t::Ptr pCloud2Save(new PointCloud_t);
     PointCloudRetouch::hiveDumpPointCloudtoSave(pCloud2Save);
-    if (m_pVisualizationConfig->getAttribute<bool>(Visualization::REPAIR_MODE).value())
-    {
-        std::vector<PointCloud_t::Ptr> UserCloudSet;
-        Visualization::hiveDumpUserCloudSet(UserCloudSet);
+	
+    std::vector<PointCloud_t::Ptr> UserCloudSet;
+    Visualization::hiveDumpUserCloudSet(UserCloudSet);
 
-        for (auto pCloud : UserCloudSet)
-            pCloud2Save->insert(pCloud2Save->end(), pCloud->begin(), pCloud->end());
-    }
+    for (auto pCloud : UserCloudSet)
+        pCloud2Save->insert(pCloud2Save->end(), pCloud->begin(), pCloud->end());
 
     if (hiveObliquePhotography::hiveSavePointCloudScene(pCloud2Save, FilePath))
         __messageDockWidgetOutputText("Save scene successfully");
