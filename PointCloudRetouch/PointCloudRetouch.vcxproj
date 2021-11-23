@@ -203,6 +203,7 @@
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="TextureSynthesizer.h" />
     <ClInclude Include="TreeBasedTextureSynthesizer.h" />
+    <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AutoHoleRepairer.cpp" />
@@ -242,6 +243,7 @@
     <ClCompile Include="RetouchTask.cpp" />
     <ClCompile Include="TextureSynthesizer.cpp" />
     <ClCompile Include="TreeBasedTextureSynthesizer.cpp" />
+    <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
