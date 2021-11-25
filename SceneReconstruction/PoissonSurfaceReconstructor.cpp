@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "PoissonSurfaceReconstructor.h"
 #include <pcl/surface/poisson.h>
+#include <vcg/complex/algorithms/clean.h>
+
+#include "VcgMesh.hpp"
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -23,6 +26,7 @@ void CPoissonSurfaceReconstructor::constructSurface(CMesh& voMesh)
 		voMesh.m_Vertices[i].ny = VertexNormals[i].y();
 		voMesh.m_Vertices[i].nz = VertexNormals[i].z();
 	}
+	__removeIsolatedPieces(voMesh);
 }
 
 std::vector<Eigen::Vector3f> CPoissonSurfaceReconstructor::__calcVertexNormal(const CMesh& vMesh)
@@ -59,4 +63,15 @@ std::vector<Eigen::Vector3f> CPoissonSurfaceReconstructor::__calcVertexNormal(co
 		VertexNormals[i] /= NumNormals[i];
 
 	return VertexNormals;
+}
+
+void CPoissonSurfaceReconstructor::__removeIsolatedPieces(CMesh& vioMesh)
+{
+	CVcgMesh VcgMesh;
+	toVcgMesh(vioMesh, VcgMesh);
+	vcg::tri::Clean<CVcgMesh>::RemoveSmallConnectedComponentsDiameter(VcgMesh, 200);
+	vcg::tri::Clean<CVcgMesh>::RemoveUnreferencedVertex(VcgMesh);
+	vcg::tri::Allocator<CVcgMesh>::CompactFaceVector(VcgMesh);
+	vcg::tri::Allocator<CVcgMesh>::CompactVertexVector(VcgMesh);
+	fromVcgMesh(VcgMesh, vioMesh);
 }

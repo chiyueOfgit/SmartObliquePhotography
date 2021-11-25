@@ -15,6 +15,7 @@ namespace hiveObliquePhotography
 			
 		private:
 			std::vector<Eigen::Vector3f> __calcVertexNormal(const CMesh& vMesh);
+			void __removeIsolatedPieces(CMesh& vioMesh);
 		};
 	}
 }
