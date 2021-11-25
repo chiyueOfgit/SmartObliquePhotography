@@ -221,21 +221,30 @@ std::vector<pcl::PointXYZRGBNormal> CAutoHoleRepairer::__generateNewPoint(const 
 
 	for (auto& HolePos : vHoleSet)
 	{
+		float MaxZ = -FLT_MAX;
+		int Pos = 0;
 		auto Indices = m_PointDistributionSet[HolePos.y()][HolePos.x()];
 		for (auto Index : Indices)
 		{
-			pcl::PointXYZRGBNormal NewPoint;
-			NewPoint.x = pManager->getScene().getPositionAt(Index).x();
-			NewPoint.y = pManager->getScene().getPositionAt(Index).y();
-			NewPoint.z = (vWithoutHoleMap.getColor(HolePos.y(), HolePos.x())) / 255.0f * (Box.second - Box.first).z() + Box.first.z();
-			NewPoint.normal_x = pManager->getScene().getNormalAt(Index).x();
-			NewPoint.normal_y = pManager->getScene().getNormalAt(Index).y();
-			NewPoint.normal_z = pManager->getScene().getNormalAt(Index).z();
-			NewPoint.r = pManager->getScene().getColorAt(Index).x();
-			NewPoint.g = pManager->getScene().getColorAt(Index).y();
-			NewPoint.b = pManager->getScene().getColorAt(Index).z();
-			NewPointSet.push_back(NewPoint);
+			auto TempZ = pManager->getScene().getPositionAt(Index).z();
+			if(TempZ > MaxZ)
+			{
+				MaxZ = TempZ;
+				Pos = Index;
+			}
 		}
+        pcl::PointXYZRGBNormal NewPoint;
+		NewPoint.x = pManager->getScene().getPositionAt(Pos).x();
+		NewPoint.y = pManager->getScene().getPositionAt(Pos).y();
+		NewPoint.z = (vWithoutHoleMap.getColor(HolePos.y(), HolePos.x())) / 255.0f * (Box.second - Box.first).z() + Box.first.z();
+		NewPoint.normal_x = pManager->getScene().getNormalAt(Pos).x();
+		NewPoint.normal_y = pManager->getScene().getNormalAt(Pos).y();
+		NewPoint.normal_z = pManager->getScene().getNormalAt(Pos).z();
+		NewPoint.r = pManager->getScene().getColorAt(Pos).x();
+		NewPoint.g = pManager->getScene().getColorAt(Pos).y();
+		NewPoint.b = pManager->getScene().getColorAt(Pos).z();
+		NewPointSet.push_back(NewPoint);
+		
 	}
 	return NewPointSet;
 }

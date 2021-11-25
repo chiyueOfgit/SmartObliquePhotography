@@ -34,7 +34,7 @@ void CGroundObjectExtractor::runV(pcl::Indices& voObjectIndices, std::vector<std
 //FUNCTION:
 void CGroundObjectExtractor::__extractObjectIndices(const CImage<float>& vElevationMap, pcl::Indices& voIndices, std::vector<std::vector<pcl::index_t>>& voEdgeIndices)
 {
-	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 3);
+	auto ExtractedImage = __generateMaskByGrowing(vElevationMap, 3.0f);
 	__extractObjectByMask(vElevationMap, ExtractedImage);
 	saveTexture("ExtractedImage.png", ExtractedImage, false);
 
@@ -48,7 +48,7 @@ void CGroundObjectExtractor::__extractObjectIndices(const CImage<float>& vElevat
 
 //*****************************************************************
 //FUNCTION:
-hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__generateMaskByGrowing(const CImage<float>& vOriginImage, int vThreshold)
+hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__generateMaskByGrowing(const CImage<float>& vOriginImage, float vThreshold)
 {
 	Eigen::Vector2i CurrentSeed = __findStartPoint(vOriginImage, vThreshold);
 	CImage<float> MaskImage;
@@ -85,7 +85,7 @@ hiveObliquePhotography::CImage<float> CGroundObjectExtractor::__generateMaskByGr
 
 //*****************************************************************
 //FUNCTION:
-Eigen::Vector2i CGroundObjectExtractor::__findStartPoint(const CImage<float>& vImage, int vThreshold)
+Eigen::Vector2i CGroundObjectExtractor::__findStartPoint(const CImage<float>& vImage, float vThreshold)
 {
 	std::vector<int> Hist(256, 0);
 	Eigen::Vector2i LowestPosition;

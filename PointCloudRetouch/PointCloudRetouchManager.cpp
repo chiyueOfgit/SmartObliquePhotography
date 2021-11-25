@@ -9,6 +9,7 @@
 #include "ColorFeature.h"
 #include "PointClusterExpanderMultithread.h"
 #include "AutoHoleRepairer.h"
+#include "ElevationMapGenerator.h"
 
 using namespace hiveObliquePhotography::PointCloudRetouch;
 
@@ -460,7 +461,7 @@ void CPointCloudRetouchManager::executeAutoMarker()
 	for (auto Index : OutPutIndices)
 		tagPointLabel(Index, EPointLabel::KEPT, 0, 1.0);
 	
-	CPointCluster* pInitialCluster = new CPointCluster;
+	/*CPointCluster* pInitialCluster = new CPointCluster;
     const hiveConfig::CHiveConfig* pClusterConfig = m_BackgroundMarker.getClusterConfig();
 	CPointClusterExpanderMultithread* pPointClusterExpander = dynamic_cast<CPointClusterExpanderMultithread*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("CLUSTER_EXPANDER_MULTITHREAD"));
 	for(auto& EdgeSet: EdgeIndices)
@@ -475,15 +476,37 @@ void CPointCloudRetouchManager::executeAutoMarker()
 			pInitialCluster->init(pClusterConfig, 0, EPointLabel::KEPT, EdgeSet, ValidationSet, addAndGetTimestamp());
 			pPointClusterExpander->runV(pInitialCluster);
 		}
-	}
+	}*/
 	switchLabel(EPointLabel::UNWANTED, EPointLabel::UNDETERMINED);
 	recoverMarkedPoints2Undetermined(EPointLabel::KEPT);
 }
 
 void CPointCloudRetouchManager::executeAutoHoleRepair(std::vector<pcl::PointXYZRGBNormal>& voNewPointSet)
 {
-	std::vector<pcl::index_t> SceneIndices;
-	dumpIndicesByLabel(SceneIndices, EPointLabel::UNDETERMINED);
-	CAutoHoleRepairer AutoHoleRepairer;
-	AutoHoleRepairer.execute({ 1024,1024 }, SceneIndices, voNewPointSet);
+	if(getScene().getNumTile() == 1)
+	{
+		std::vector<pcl::index_t> SceneIndices;
+		dumpIndicesByLabel(SceneIndices, EPointLabel::UNDETERMINED);
+		CAutoHoleRepairer AutoHoleRepairer;
+		AutoHoleRepairer.execute({ 1024,1024 }, SceneIndices, voNewPointSet);
+	}
+	else
+	{
+		auto Num = getScene().getTileOffset(1);
+		std::vector<pcl::index_t>OriginIndices, HoleIndices;
+		CElevationMapGenerator ElevationMapGenerator;
+		for (int i = 0; i < Num; i++)
+			OriginIndices.push_back(i);
+		for (int i = Num; i < getScene().getNumPoint(); i++)
+			HoleIndices.push_back(i);
+		ElevationMapGenerator.generateDistributionSet({ 1024,1024 }, OriginIndices);
+		std::vector<std::vector<std::vector<pcl::index_t>>> PointDistributionSet;
+		ElevationMapGenerator.dumpPointDistributionSet(PointDistributionSet);
+		CAutoHoleRepairer AutoHoleRepairer;
+		AutoHoleRepairer.setPointDistributionSet(PointDistributionSet);
+		AutoHoleRepairer.execute({ 1024,1024 }, HoleIndices, voNewPointSet);
+		for (auto Index: OriginIndices)
+			tagPointLabel(Index, EPointLabel::UNWANTED, 0, 1.0);
+		switchLabel(EPointLabel::DISCARDED, EPointLabel::UNWANTED);
+	}
 }
