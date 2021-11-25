@@ -26,17 +26,14 @@ void CPoissonSurfaceReconstructor::constructSurface(CMesh& voMesh)
 		voMesh.m_Vertices[i].ny = VertexNormals[i].y();
 		voMesh.m_Vertices[i].nz = VertexNormals[i].z();
 	}
-	__removeIsolatedPieces(voMesh);
+	//__removeIsolatedPieces(voMesh);
 }
 
 std::vector<Eigen::Vector3f> CPoissonSurfaceReconstructor::__calcVertexNormal(const CMesh& vMesh)
 {
 	_ASSERTE(!vMesh.m_Vertices.empty());
-	std::pair<int, int> XY;
-	int Height;
-	vMesh.calcModelPlaneAxis(XY, Height);     
-	Eigen::Vector3f HeightAxis = { 0.0f ,0.0f, 0.0f };
-	HeightAxis.data()[Height] = 1.0f;      
+	std::pair<int, int> XY; 
+	Eigen::Vector3f HeightAxis = { 0.0f ,0.0f, 1.0f };     
 	std::vector<Eigen::Vector3f> VertexNormals(vMesh.m_Vertices.size(), { 0.0f, 0.0f, 0.0f });
 	std::vector<int> NumNormals(vMesh.m_Vertices.size(), 0);
 	for (auto& Face : vMesh.m_Faces)
@@ -69,7 +66,7 @@ void CPoissonSurfaceReconstructor::__removeIsolatedPieces(CMesh& vioMesh)
 {
 	CVcgMesh VcgMesh;
 	toVcgMesh(vioMesh, VcgMesh);
-	vcg::tri::Clean<CVcgMesh>::RemoveSmallConnectedComponentsDiameter(VcgMesh, 200);
+	vcg::tri::Clean<CVcgMesh>::RemoveSmallConnectedComponentsDiameter(VcgMesh, 25);
 	vcg::tri::Clean<CVcgMesh>::RemoveUnreferencedVertex(VcgMesh);
 	vcg::tri::Allocator<CVcgMesh>::CompactFaceVector(VcgMesh);
 	vcg::tri::Allocator<CVcgMesh>::CompactVertexVector(VcgMesh);
