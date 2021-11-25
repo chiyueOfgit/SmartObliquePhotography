@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include <tinytiffreader.h>
 
 namespace hiveObliquePhotography
 {
@@ -8,21 +9,67 @@ namespace hiveObliquePhotography
 	{
 	public:
 		CImage() = default;
+		CImage(TinyTIFFReaderFile* vTiff, std::size_t vFrameNum = 1)
+		{
+			__initByTiff(vTiff, vFrameNum);
+		}
+
 		~CImage() = default;
 
 		[[nodiscard]] auto getHeight() const { return m_Data.rows(); }
 		[[nodiscard]] auto getWidth() const { return m_Data.cols(); }
-		
+
 		[[nodiscard]] TColor& fetchColor(unsigned vRowId, unsigned vColId) { return m_Data(vRowId, vColId); }
 		[[nodiscard]] const TColor& getColor(unsigned vRowId, unsigned vColId) const { return m_Data(vRowId, vColId); }
-		
-		void fillColor(unsigned vHeight, unsigned vWidth, TColor* vBuffer)
+
+		void fillColor(unsigned vHeight, unsigned vWidth, TColor* vBuffer, bool vIsRowMajor = false)
 		{
-			m_Data = Eigen::Map<decltype(m_Data)>(vBuffer, vHeight, vWidth);
+			if (vIsRowMajor)
+			{
+				Eigen::Matrix<TColor, -1, -1, Eigen::RowMajor> Data;
+				Data = Eigen::Map<decltype(Data)>(vBuffer, vHeight, vWidth);
+				m_Data = std::move(Data);
+			}
+			else
+				m_Data = Eigen::Map<decltype(m_Data)>(vBuffer, vHeight, vWidth);
 		}
-	
+
 	private:
 		Eigen::Matrix<TColor, -1, -1> m_Data;
+
+		int __initByTiff(TinyTIFFReaderFile* vTiff, std::size_t vFrameNum = 1)
+		{
+			if (vTiff == nullptr) return 1;
+
+			uint32_t FramesCount = TinyTIFFReader_countFrames(vTiff);
+			if (TinyTIFFReader_wasError(vTiff)) return 3;
+			if (vFrameNum > FramesCount) return 2;
+
+			for (uint32_t i = 1; i < vFrameNum; i++)
+			{
+				TinyTIFFReader_readNext(vTiff);
+			}
+
+			const uint32_t Width = TinyTIFFReader_getWidth(vTiff);
+			const uint32_t Height = TinyTIFFReader_getHeight(vTiff);
+			const uint16_t BitsPerSample = TinyTIFFReader_getBitsPerSample(vTiff, 0);
+			uint8_t* SampleData = (uint8_t*)calloc(Width * Height, BitsPerSample / 8);
+			const uint16_t Samples = TinyTIFFReader_getSamplesPerPixel(vTiff);
+			TColor* FrameData = new TColor[Width * Height];
+			for (uint16_t i = 0; i < Samples; i++)
+			{
+				TinyTIFFReader_getSampleData(vTiff, SampleData, i);
+				if (TinyTIFFReader_wasError(vTiff)) return 3;
+				for (int k = 0; k < Width * Height; k++)
+				{
+					FrameData[k][i] = SampleData[k];
+				}
+			}
+			free(SampleData);
+			fillColor(Height, Width, FrameData, true);
+
+			return 0;
+		}
 	};
 
 	template <class T>
