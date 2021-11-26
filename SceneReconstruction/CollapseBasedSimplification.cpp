@@ -47,7 +47,6 @@ hiveObliquePhotography::CMesh CCollapseBasedSimplification::simplifyMesh()
 std::vector<Eigen::Vector3f> CCollapseBasedSimplification::__calcVertexNormal(const CMesh& vMesh)
 {
 	_ASSERTE(!vMesh.m_Vertices.empty());
-	std::pair<int, int> XY;
 	Eigen::Vector3f HeightAxis = { 0.0f ,0.0f, 1.0f };
 	std::vector<Eigen::Vector3f> VertexNormals(vMesh.m_Vertices.size(), { 0.0f, 0.0f, 0.0f });
 	std::vector<int> NumNormals(vMesh.m_Vertices.size(), 0);
@@ -70,9 +69,7 @@ std::vector<Eigen::Vector3f> CCollapseBasedSimplification::__calcVertexNormal(co
 			NumNormals[Face[i]]++;
 		}
 	}
-
 	for (int i = 0; i < VertexNormals.size(); i++)
-		VertexNormals[i] /= NumNormals[i];
-
+		VertexNormals[i] /= NumNormals[i]; 
 	return VertexNormals;
 }

@@ -32,7 +32,6 @@ void CPoissonSurfaceReconstructor::constructSurface(CMesh& voMesh)
 std::vector<Eigen::Vector3f> CPoissonSurfaceReconstructor::__calcVertexNormal(const CMesh& vMesh)
 {
 	_ASSERTE(!vMesh.m_Vertices.empty());
-	std::pair<int, int> XY; 
 	Eigen::Vector3f HeightAxis = { 0.0f ,0.0f, 1.0f };     
 	std::vector<Eigen::Vector3f> VertexNormals(vMesh.m_Vertices.size(), { 0.0f, 0.0f, 0.0f });
 	std::vector<int> NumNormals(vMesh.m_Vertices.size(), 0);
