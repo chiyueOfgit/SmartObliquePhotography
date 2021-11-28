@@ -117,7 +117,7 @@ void CBasicMeshSuture::__connectVerticesWithMesh(const std::vector<int>& vDissoc
 
 	std::vector<int> PublicIndices;
 	PublicIndices.reserve(vPublicVertices.size());
-	for (int i = vioMesh.m_Vertices.size(); const auto& Vertex : vPublicVertices)
+	for (int i = vioMesh.m_Vertices.size(); const auto & Vertex : vPublicVertices)
 	{
 		vioMesh.m_Vertices.push_back(Vertex);
 		PublicIndices.push_back(i++);
@@ -128,60 +128,48 @@ void CBasicMeshSuture::__connectVerticesWithMesh(const std::vector<int>& vDissoc
 	__serializeIndices(PublicIndices, "Model_" + std::to_string(Count++) + "_PublicPoints.txt");
 #endif
 
-	auto Up = __calcUpVector(vioMesh);
-	auto calcOrder = [&](const SFace& vFace) -> bool
-	{
-		const auto& A = vioMesh.m_Vertices[vFace.a];
-		const auto& B = vioMesh.m_Vertices[vFace.b];
-		const auto& C = vioMesh.m_Vertices[vFace.c];
-
-		return (B.xyz() - A.xyz()).cross(C.xyz() - B.xyz()).dot(Up) > 0;
-	};
-
-	bool ModelOrder = calcOrder(vioMesh.m_Faces.front());
-	auto Order = true;
-	std::vector<SFace> ConnectionFaceSet;
-	do
-	{
-		Order = !Order;
-		ConnectionFaceSet = __genConnectionFace(vioMesh, vDissociatedIndices, PublicIndices, Order);	// order is heuristic
-
-	} while (calcOrder(ConnectionFaceSet.front()) != ModelOrder);
-
+	std::vector<SFace> ConnectionFaceSet = __genConnectionFace(vioMesh, vDissociatedIndices, PublicIndices);
 	vioMesh.m_Faces.insert(vioMesh.m_Faces.end(), ConnectionFaceSet.begin(), ConnectionFaceSet.end());
 }
 
 //*****************************************************************
 //FUNCTION: 
-std::vector<SFace> CBasicMeshSuture::__genConnectionFace(const CMesh& vMesh, const std::vector<int>& vLeft, const std::vector<int>& vRight, bool vIsClockwise)
+std::vector<SFace> CBasicMeshSuture::__genConnectionFace(const CMesh& vMesh, const std::vector<int>& vIndexListOne, const std::vector<int>& vIndexListTwo)
 {
-	if (!vIsClockwise)
-		return __genConnectionFace(vMesh, vRight, vLeft, !vIsClockwise);
-
 	auto SignedDirection = m_Direction;
 	auto calcDistance = [&](int vVertexIndex)
 	{
 		return vMesh.m_Vertices[vVertexIndex].xyz().dot(SignedDirection);
 	};
-	if (calcDistance(vLeft.front()) > calcDistance(vLeft.back()))
+	if (calcDistance(vIndexListOne.front()) > calcDistance(vIndexListOne.back()))
 		SignedDirection = -SignedDirection;
 
+	auto Up = __calcUpVector(vMesh);
 	std::vector<SFace> ConnectionFaceSet;
 	std::pair<size_t, size_t> FromTo[] =
 	{
-		{ 0, vLeft.size() },
-		{ 0, vRight.size() },
+		{ 0, vIndexListOne.size() },
+		{ 0, vIndexListTwo.size() },
 	};
+
 	while (true)
 	{
-		bool LeftAsBase = calcDistance(vLeft[FromTo[0].first]) < calcDistance(vRight[FromTo[1].first]);
-		size_t Index = LeftAsBase ? 0 : 1;
+		bool ListOneFirst = calcDistance(vIndexListOne[FromTo[0].first]) < calcDistance(vIndexListTwo[FromTo[1].first]);
+		size_t Index = ListOneFirst ? 0 : 1;
 
 		if (FromTo[Index].first + 1 >= FromTo[Index].second)
 			break;
 
-		auto NextVertex = LeftAsBase ? vLeft[FromTo[0].first + 1] : vRight[FromTo[1].first + 1];
-		ConnectionFaceSet.emplace_back(vLeft[FromTo[0].first], vRight[FromTo[1].first], NextVertex);
+		auto NextVertex = ListOneFirst ? vIndexListOne[FromTo[0].first + 1] : vIndexListTwo[FromTo[1].first + 1];
+
+		if (__isCCW(vMesh.m_Vertices[vIndexListOne[FromTo[0].first]].xyz(), vMesh.m_Vertices[vIndexListTwo[FromTo[1].first]].xyz(), vMesh.m_Vertices[NextVertex].xyz(), Up))
+		{
+			ConnectionFaceSet.emplace_back(vIndexListOne[FromTo[0].first], vIndexListTwo[FromTo[1].first], NextVertex);
+		}
+		else
+		{
+			ConnectionFaceSet.emplace_back(vIndexListOne[FromTo[0].first], NextVertex, vIndexListTwo[FromTo[1].first]);
+		}
 
 		++FromTo[Index].first;
 	}
