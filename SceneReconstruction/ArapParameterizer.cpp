@@ -20,7 +20,7 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 
 //*****************************************************************
 //FUNCTION: 
- bool CArapParameterizer::execute(Eigen::MatrixXd& voUV)
+bool CArapParameterizer::execute(Eigen::MatrixXd& voUV)
 {
 	buildHalfEdge();//根据m_mesh初始化m_HalfEdgeTable
 	auto BoundarySet = findBoundaryPoint();//找到边界点的索引

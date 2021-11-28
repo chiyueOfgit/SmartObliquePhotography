@@ -1017,7 +1017,6 @@ void CQTInterface::onChangeLanguage()
     m_UI.retranslateUi(this);
 }
 
-
 void CQTInterface::keyPressEvent(QKeyEvent* vEvent)
 {
     switch (vEvent->key())

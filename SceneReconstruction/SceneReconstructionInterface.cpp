@@ -45,12 +45,27 @@ void hiveObliquePhotography::SceneReconstruction::hiveSutureMesh(CMesh& vioMeshO
 //FUNCTION: 
 bool hiveObliquePhotography::SceneReconstruction::hiveMeshParameterization(CMesh& vioMesh)
 {
-	_ASSERTE(!vioMesh.m_Vertices.empty());
+	if (vioMesh.m_Vertices.empty())
+	{
+		hiveEventLogger::hiveOutputEvent("Parameterization: Size of Vertices in mesh: 0.");
+		return false;
+	}
+		
 	auto pParameterizater = hiveDesignPattern::hiveCreateProduct<CArapParameterizer>(KEYWORD::ARAP_MESH_PARAMETERIZATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("Parameterization"), vioMesh);
-	_ASSERTE(pParameterizater);
+	//_ASSERTE(pParameterizater);
+
+	if (pParameterizater == nullptr)
+	{
+		hiveEventLogger::hiveOutputEvent("Parameterization: Create product error.");
+		return false;
+	}
 
 	Eigen::MatrixXd UV;
-	if (!(pParameterizater->execute(UV))) return false;
+	if (!(pParameterizater->execute(UV)))
+	{
+		hiveEventLogger::hiveOutputEvent("Parameterization: Failed to solve the equation.");
+		return false;
+	}
 
 	_ASSERTE(UV.rows() == vioMesh.m_Vertices.size());
 	for (int i = 0; i < UV.rows(); i++)
