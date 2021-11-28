@@ -72,6 +72,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

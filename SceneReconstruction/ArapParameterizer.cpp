@@ -82,6 +82,25 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 	std::vector<int> Boundary;
 	igl::boundary_loop(F, Boundary);//根据矩阵计算出所有边界点
 
+	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
+	std::set<int> BoundarySet;
+	std::vector<int> ValidSet;
+	for(auto& HalfEdge : m_HalfEdgeTable)
+	{
+		if(HalfEdge._Conj < 0)
+		{
+			BoundarySet.insert(HalfEdge._VertexId);
+			BoundarySet.insert(m_HalfEdgeTable[HalfEdge._Next]._VertexId);
+		}
+	}
+
+ 	
+	const std::string vPath = "boundary.txt";
+	std::ofstream file(vPath.c_str());
+	boost::archive::text_oarchive oa(file);
+	oa& BOOST_SERIALIZATION_NVP(BoundarySet);
+	file.close();
+ 	
 	return Boundary;
 }
 
