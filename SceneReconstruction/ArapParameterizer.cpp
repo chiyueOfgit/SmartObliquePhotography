@@ -82,9 +82,9 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 	std::vector<int> Boundary;
 	igl::boundary_loop(F, Boundary);//根据矩阵计算出所有边界点
 
-	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
 	std::set<int> BoundarySet;
-	std::vector<int> ValidSet;
+	std::vector<int> validSet;
+	std::vector<int> OutputSet;
 	for(auto& HalfEdge : m_HalfEdgeTable)
 	{
 		if(HalfEdge._Conj < 0)
@@ -93,15 +93,98 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 			BoundarySet.insert(m_HalfEdgeTable[HalfEdge._Next]._VertexId);
 		}
 	}
+	validSet.assign(BoundarySet.begin(), BoundarySet.end());
+ 	
+	auto Box = m_Mesh.calcAABB();
+	int MinX = std::floor(Box.first.x()); int MaxX = std::ceil(Box.second.x());
+	int MinY = std::floor(Box.first.y()); int MaxY = std::ceil(Box.second.y());
+	std::vector<std::vector<std::vector<int>>> DistinSet;
+	DistinSet.resize((MaxY - MinY + 1)/4 + 1, std::vector<std::vector<int>>((MaxX - MinX + 1)/4 + 1));
+ 	for(int i = 0; i < BoundarySet.size(); i++)
+ 	{
+		auto Pos = m_Mesh.m_Vertices[validSet[i]].xyz();
+		DistinSet[(Pos.y() - MinY)/4][(Pos.x() - MinX)/4].push_back(validSet[i]);
+ 	}
 
+ 	for(int i = 0; i < (MaxY - MinY + 1)/4; i++)
+ 	{
+		int j = 0;
+ 		for ( ; j < (MaxX - MinX + 1)/4; j++)
+			if (DistinSet[i][j].size())
+				break;
+		if (j == (MaxX - MinX + 1)/4) continue;
+		float Min = FLT_MAX;
+		int MinFlag = 0;
+ 		for(auto Index: DistinSet[i][j])
+ 		{
+ 			if(m_Mesh.m_Vertices[Index].x < Min)
+ 			{
+				Min = m_Mesh.m_Vertices[Index].x;
+				MinFlag = Index;
+ 			}
+			OutputSet.push_back(MinFlag);
+ 		}
+
+		int k = (MaxX - MinX)/4;
+		for (; k > 0; k--)
+			if (DistinSet[i][k].size())
+				break;
+		float Max = - FLT_MAX;
+		int MaxFlag = 0;
+		for (auto Index : DistinSet[i][k])
+		{
+			if (m_Mesh.m_Vertices[Index].x > Max)
+			{
+				Max = m_Mesh.m_Vertices[Index].x;
+				MaxFlag = Index;
+			}
+			OutputSet.push_back(MaxFlag);
+		}
+ 	}
+
+	for (int i = 0; i < (MaxX - MinX + 1)/4; i++)
+	{
+		int j = 0;
+		for (; j < (MaxY - MinY + 1)/4; j++)
+			if (DistinSet[j][i].size())
+				break;
+		if (j == (MaxY - MinY + 1)/4) continue;
+		float Min = FLT_MAX;
+		int MinFlag = 0;
+		for (auto Index : DistinSet[j][i])
+		{
+			if (m_Mesh.m_Vertices[Index].y < Min)
+			{
+				Min = m_Mesh.m_Vertices[Index].y;
+				MinFlag = Index;
+			}
+			OutputSet.push_back(MinFlag);
+		}
+
+		int k = (MaxY - MinY)/4;
+		for (; k > 0; k--)
+			if (DistinSet[k][i].size())
+				break;
+		float Max = - FLT_MAX;
+		int MaxFlag = 0;
+		for (auto Index : DistinSet[k][i])
+		{
+			if (m_Mesh.m_Vertices[Index].y > Max)
+			{
+				Max = m_Mesh.m_Vertices[Index].y;
+				MaxFlag = Index;
+			}
+			OutputSet.push_back(MaxFlag);
+		}
+	}
  	
 	const std::string vPath = "boundary.txt";
 	std::ofstream file(vPath.c_str());
 	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(BoundarySet);
+	oa& BOOST_SERIALIZATION_NVP(OutputSet);
 	file.close();
  	
-	return Boundary;
+	return OutputSet;
 }
 
 //*****************************************************************
