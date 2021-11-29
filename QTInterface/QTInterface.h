@@ -56,7 +56,7 @@ namespace hiveObliquePhotography
             QCheckBox* m_pAreaPickingCullingBox = nullptr;
             std::string m_CurrentCloud = "";
             std::string m_CloudOpenPath = "../Models";
-            std::string m_MeshOpenPath = "../UnitTests/TestData/Test026_Model";
+            std::string m_MeshOpenPath = "";
             int m_PointSize = 3;             // magic
 
             STileSet m_TileSet;
