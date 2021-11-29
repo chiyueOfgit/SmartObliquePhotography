@@ -56,7 +56,8 @@ void CArapParameterizer::buildHalfEdge()
 			HalfEdge._VertexId = Face[i];
 			HalfEdge._Face = FaceId;
 			auto Index = m_HalfEdgeTable.size();
-			m_VertexInfoTable[Face[i]].push_back(Index);//二维vector，存储着每个顶点在被多次访问的时候当前以建立半边的数目
+			m_VertexInfoTable[Face[i]].push_back(Index);//二维vector，存储着每个顶点在被多次访问的时候当前已建立半边的数目
+			HalfEdge._Curr = Index;
 			HalfEdge._Prev = Index + ((i == 0) ? (2) : (-1));
 			HalfEdge._Next = Index + ((i == 2) ? (-2) : (1));
 			if(Traversed[Face[i]] && Traversed[Face[(i + 1) % 3]])  
@@ -76,32 +77,68 @@ void CArapParameterizer::buildHalfEdge()
 
 //*****************************************************************
 //FUNCTION:
-std::vector<int> CArapParameterizer::findBoundaryPoint()
+std::set<int> CArapParameterizer::findBoundaryPoint()
 {
-	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();//获取mesh所有顶点的坐标存为一个矩阵
-	std::vector<int> Boundary;
-	igl::boundary_loop(F, Boundary);//根据矩阵计算出所有边界点
-
-	std::vector<bool> OutPutSet(m_Mesh.m_Vertices.size(), false);
-	std::set<int> BoundarySet;
-	std::vector<int> ValidSet;
-	for(auto& HalfEdge : m_HalfEdgeTable)
+	std::set<int> ValidSet;
+	std::vector<int> BoundaryHalfEdgeSet;
+	float Xmin = FLT_MAX;
+	int StartHalfEdgeIndex = -1;
+	SHalfEdge CurrentHalfEdge, NextHalfEdge;
+	for (auto& HalfEdge : m_HalfEdgeTable)
 	{
-		if(HalfEdge._Conj < 0)
+		if (HalfEdge._Conj < 0)
 		{
-			BoundarySet.insert(HalfEdge._VertexId);
-			BoundarySet.insert(m_HalfEdgeTable[HalfEdge._Next]._VertexId);
+			BoundaryHalfEdgeSet.push_back(HalfEdge._Curr);
+			auto X = m_Mesh.m_Vertices[HalfEdge._VertexId].x;
+			if (Xmin > X)
+			{
+				Xmin = X;
+				StartHalfEdgeIndex = BoundaryHalfEdgeSet.size() - 1;
+			}
 		}
 	}
 
+	NextHalfEdge = m_HalfEdgeTable[BoundaryHalfEdgeSet[StartHalfEdgeIndex]];
+	std::vector<bool> Traversed(BoundaryHalfEdgeSet.size(), false);
+	Traversed[StartHalfEdgeIndex] = true;
+
+	while (true)
+	{
+		CurrentHalfEdge = NextHalfEdge;
+		ValidSet.insert(CurrentHalfEdge._VertexId);
+		if (m_HalfEdgeTable[CurrentHalfEdge._Next]._VertexId == m_HalfEdgeTable[BoundaryHalfEdgeSet[StartHalfEdgeIndex]]._VertexId)
+			break;
+
+		int a = 1;
+		for (int i = 0; i < BoundaryHalfEdgeSet.size(); i++)
+		{
+			if ((m_HalfEdgeTable[BoundaryHalfEdgeSet[i]]._VertexId == m_HalfEdgeTable[CurrentHalfEdge._Next]._VertexId))
+				a = 1;
+			if ((m_HalfEdgeTable[BoundaryHalfEdgeSet[i]]._VertexId == m_HalfEdgeTable[CurrentHalfEdge._Next]._VertexId) && Traversed[i] == false)
+			{
+				NextHalfEdge = m_HalfEdgeTable[BoundaryHalfEdgeSet[i]];
+				Traversed[i] = true;
+				break;
+			}
+
+			if (i == BoundaryHalfEdgeSet.size() - 1)
+			{
+				a = 0;
+				break;
+			}
+		}
+
+		if (a == 0)
+			break;
+	}
+
+	const std::string Path = "boundary.txt";
+	std::ofstream File(Path.c_str());
+	boost::archive::text_oarchive Oarchive(File);
+	Oarchive& BOOST_SERIALIZATION_NVP(ValidSet);
+	File.close();
  	
-	const std::string vPath = "boundary.txt";
-	std::ofstream file(vPath.c_str());
-	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(BoundarySet);
-	file.close();
- 	
-	return Boundary;
+	return ValidSet;
 }
 
 //*****************************************************************

@@ -9,6 +9,7 @@ namespace hiveObliquePhotography
 		struct SHalfEdge
 		{
 			int _VertexId;
+			int _Curr;
 			int _Prev;
 			int _Next;
 			int _Conj = -1;
@@ -24,7 +25,7 @@ namespace hiveObliquePhotography
 			bool execute(Eigen::MatrixXd& voUV) override;
 
 			void buildHalfEdge();
-			std::vector<int> findBoundaryPoint();
+			std::set<int> findBoundaryPoint();
 			
 			bool calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus, Eigen::MatrixXd& voUV);
 #ifdef _UNIT_TEST
