@@ -35,6 +35,8 @@ namespace hiveObliquePhotography
 			void __fillTutteSolveVectors(Eigen::VectorXd& vVectorX, Eigen::VectorXd& vVectorY, const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus);
 			bool __solveSparseMatrix(const Eigen::SparseMatrix<double, Eigen::ColMajor>& vMatrix, const Eigen::VectorXd& vVector, Eigen::VectorXd& voAnswer);
 			Eigen::MatrixXd __switch2UVMatrix(const CMesh& vMesh, const Eigen::VectorXd& vX, const Eigen::VectorXd& vY);
+			void __filterBoundaryByGrid(std::vector<int>& vOriginSet, int vGridSize, std::vector<int>& vioFilteredSet);
+			void __filterOneDirection(std::vector<std::vector<std::vector<int>>>& vDistributionSet, bool vMainDirection, std::vector<int>& vioFilteredSet);
 			int __findTwinRef(int vStartIndex, int vEndIndex);
 			
 			std::vector<SHalfEdge> m_HalfEdgeTable;
