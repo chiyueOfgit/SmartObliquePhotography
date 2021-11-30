@@ -146,12 +146,13 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <DisableSpecificWarnings>4819;</DisableSpecificWarnings>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;..\TextureSynthesizer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -162,11 +163,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\PointCloudRetouch\AutoHoleRepairer.h" />
     <ClInclude Include="..\PointCloudRetouch\BoundaryDetector.h" />
     <ClInclude Include="..\PointCloudRetouch\ColorFeature.h" />
+    <ClInclude Include="..\PointCloudRetouch\ElevationMapGenerator.h" />
     <ClInclude Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.h" />
     <ClInclude Include="..\PointCloudRetouch\Feature.h" />
     <ClInclude Include="..\PointCloudRetouch\framework.h" />
+    <ClInclude Include="..\PointCloudRetouch\GroundObjectExtractor.h" />
     <ClInclude Include="..\PointCloudRetouch\HoleRepairer.h" />
     <ClInclude Include="..\PointCloudRetouch\InitialClusterCreator.h" />
     <ClInclude Include="..\PointCloudRetouch\MipmapGenerator.h" />
@@ -197,12 +201,17 @@
     <ClInclude Include="..\PointCloudRetouch\stb_image_write.h" />
     <ClInclude Include="..\PointCloudRetouch\TextureSynthesizer.h" />
     <ClInclude Include="..\PointCloudRetouch\TreeBasedTextureSynthesizer.h" />
+    <ClInclude Include="..\TextureSynthesizer\NewGaussianBlur.h" />
+    <ClInclude Include="..\TextureSynthesizer\NewMipmapGenerator.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\PointCloudRetouch\AutoHoleRepairer.cpp" />
     <ClCompile Include="..\PointCloudRetouch\BoundaryDetector.cpp" />
     <ClCompile Include="..\PointCloudRetouch\ColorFeature.cpp" />
     <ClCompile Include="..\PointCloudRetouch\dllmain.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\ElevationMapGenerator.cpp" />
     <ClCompile Include="..\PointCloudRetouch\EuclideanNeighborhoodBuilder.cpp" />
+    <ClCompile Include="..\PointCloudRetouch\GroundObjectExtractor.cpp" />
     <ClCompile Include="..\PointCloudRetouch\HoleRepairer.cpp" />
     <ClCompile Include="..\PointCloudRetouch\InitialClusterCreator.cpp" />
     <ClCompile Include="..\PointCloudRetouch\MipmapGenerator.cpp" />

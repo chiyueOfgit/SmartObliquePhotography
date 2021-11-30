@@ -19,7 +19,7 @@ private:
     int m_PointSize = 3;             // magic
     std::vector<std::string> m_FilePathList;
     std::string m_CloudPath = "../TestModel/General";
-    PointCloud_t::Ptr m_pCloud = nullptr;
+    std::vector<PointCloud_t::Ptr> m_pCloud;
 
     hiveObliquePhotography::Visualization::CVisualizationConfig* m_pVisualizationConfig = nullptr;
     hiveConfig::CHiveConfig* m_pPointCloudRetouchConfig = nullptr;

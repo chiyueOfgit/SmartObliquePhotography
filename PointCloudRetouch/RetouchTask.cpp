@@ -82,6 +82,8 @@ bool CRetouchTask::execute(const CPointCluster* vUserSpecifiedCluster) const
 		m_pPointClusterExpander->execute<CPointClusterExpanderMultithread>(vUserSpecifiedCluster);
 	else if (_IS_STR_IDENTICAL(m_pPointClusterExpander->getProductSig(), std::string("CLUSTER_EXPANDER")))
 		m_pPointClusterExpander->execute<CPointClusterExpander>(vUserSpecifiedCluster);
+	else if (_IS_STR_IDENTICAL(m_pPointClusterExpander->getProductSig(), std::string("CLUSTER_EXPANDER")))
+		m_pPointClusterExpander->execute<CPointClusterExpander>(vUserSpecifiedCluster);
 
 	return m_pPointClusterExpander->getExpandedPointSet().size();  //FIXME-010：不要强制去把一个整型转换为bool，可读性不好
 //FIMXE：返回值有点奇怪，如果聚类没有被扩展，会返回一个false？

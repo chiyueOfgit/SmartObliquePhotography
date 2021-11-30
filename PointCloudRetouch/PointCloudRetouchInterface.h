@@ -19,6 +19,8 @@ namespace hiveObliquePhotography
 		RETOUCH_DECLSPEC void hiveRepairHoleSetRepairRegion(std::vector<pcl::index_t>& vRepairRegion);
 		RETOUCH_DECLSPEC void hiveRepairHoleSetReferenceRegion(std::vector<pcl::index_t>& vReferenceRegion);
 		RETOUCH_DECLSPEC void hiveRepairHole(std::vector<pcl::PointXYZRGBNormal>& voNewPoints);
+		RETOUCH_DECLSPEC void hiveAutoMarkLitter();
+		RETOUCH_DECLSPEC void hiveAutoHolerepair(std::vector<pcl::PointXYZRGBNormal>& voNewPointSet);
 		
 		RETOUCH_DECLSPEC bool hiveDumpPointCloudtoSave(PointCloud_t::Ptr voPointCloud);
 		RETOUCH_DECLSPEC bool hiveDumpPointLabel(std::vector<std::size_t>& voPointLabel);
