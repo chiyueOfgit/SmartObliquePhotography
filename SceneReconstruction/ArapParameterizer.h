@@ -38,6 +38,7 @@ namespace hiveObliquePhotography
 			void __filterBoundaryByGrid(std::vector<int>& vOriginSet, int vGridSize, std::vector<int>& vioFilteredSet);
 			void __filterOneDirection(std::vector<std::vector<std::vector<int>>>& vDistributionSet, bool vMainDirection, std::vector<int>& vioFilteredSet);
 			int __findTwinRef(int vStartIndex, int vEndIndex);
+			void __executeProcessing(CMesh& vioMesh);
 			
 			std::vector<SHalfEdge> m_HalfEdgeTable;
 			std::vector<std::vector<int>> m_VertexInfoTable;

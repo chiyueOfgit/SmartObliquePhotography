@@ -8,9 +8,10 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/vector.hpp>
-#include <iomanip>
 #include <Eigen/IterativeLinearSolvers>
 
+#include <vcg/complex/algorithms/clean.h>
+#include "VcgMesh.hpp"
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -22,7 +23,8 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 //FUNCTION: 
  bool CArapParameterizer::execute(Eigen::MatrixXd& voUV)
 {
-	buildHalfEdge();//根据m_mesh初始化m_HalfEdgeTable
+	//__executeProcessing(m_Mesh);
+ 	buildHalfEdge();//根据m_mesh初始化m_HalfEdgeTable
 	auto BoundarySet = findBoundaryPoint();//找到边界点的索引
 	std::vector<bool> BoundaryStatus(m_Mesh.m_Vertices.size(), false);
 	for (auto& Index : BoundarySet)//建立辅助vector，将所有边界点置为true
@@ -95,12 +97,12 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 	}
 	ValidSet.assign(BoundarySet.begin(), BoundarySet.end());
  	
-	__filterBoundaryByGrid(ValidSet, 4, FilteredSet);
+	//__filterBoundaryByGrid(ValidSet, 4, FilteredSet);
  	
-	const std::string vPath = "Boundary.txt";
+	const std::string vPath = "Boundary25.txt";
 	std::ofstream file(vPath.c_str());
 	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(FilteredSet);
+	oa& BOOST_SERIALIZATION_NVP(ValidSet);
 	file.close();
  	
 	return FilteredSet;
@@ -337,38 +339,58 @@ void CArapParameterizer::__filterOneDirection(std::vector<std::vector<std::vecto
  	for (int i = 0; i < MainSize; i++)
 	{
 		int j = 0;
-		std::vector<int> TempMinSet = vMainDirection ? vDistributionSet[i][j] : vDistributionSet[j][i];
+		std::vector<int> TempMinSet;
 		for (; j < OtherSize; j++)
+		{
+			TempMinSet = vMainDirection ? vDistributionSet[i][j] : vDistributionSet[j][i];
 			if (TempMinSet.size())
 				break;
+		}
 		if (j == OtherSize) continue;
 		float Min = FLT_MAX;
 		int MinFlag = 0;
 		for (auto Index : TempMinSet)
 		{
-			if (m_Mesh.m_Vertices[Index].x < Min)
+			auto MinTemp = vMainDirection ? m_Mesh.m_Vertices[Index].x : m_Mesh.m_Vertices[Index].y;
+			if (MinTemp < Min)
 			{
-				Min = m_Mesh.m_Vertices[Index].x;
+				Min = MinTemp;
 				MinFlag = Index;
 			}
-			vioFilteredSet.push_back(MinFlag);
 		}
-
+        vioFilteredSet.push_back(MinFlag);
+ 		
 		int k = OtherSize - 1;
-		std::vector<int> TempMaxSet = vMainDirection ? vDistributionSet[i][k] : vDistributionSet[k][i];
-		for (; k > 0; k--)
+		std::vector<int> TempMaxSet;
+		for (; k >= 0; k--)
+		{
+			TempMaxSet = vMainDirection ? vDistributionSet[i][k] : vDistributionSet[k][i];
 			if (TempMaxSet.size())
 				break;
+		}
 		float Max = -FLT_MAX;
 		int MaxFlag = 0;
 		for (auto Index : TempMaxSet)
 		{
-			if (m_Mesh.m_Vertices[Index].x > Max)
+			auto MaxTemp = vMainDirection ? m_Mesh.m_Vertices[Index].x : m_Mesh.m_Vertices[Index].y;
+			if (MaxTemp > Max)
 			{
-				Max = m_Mesh.m_Vertices[Index].x;
+				Max = MaxTemp;
 				MaxFlag = Index;
 			}
-			vioFilteredSet.push_back(MaxFlag);
 		}
+ 		vioFilteredSet.push_back(MaxFlag);
 	}
+ }
+
+void CArapParameterizer::__executeProcessing(CMesh& vioMesh)
+ {
+	CVcgMesh VcgMesh;
+	toVcgMesh(vioMesh, VcgMesh);
+	vcg::tri::Clean<CVcgMesh>::RemoveFaceOutOfRangeArea(VcgMesh, 0);
+	vcg::tri::Clean<CVcgMesh>::RemoveDuplicateVertex(VcgMesh);
+	vcg::tri::Clean<CVcgMesh>::RemoveUnreferencedVertex(VcgMesh);
+	vcg::tri::Allocator<CVcgMesh>::CompactFaceVector(VcgMesh);
+	vcg::tri::Allocator<CVcgMesh>::CompactVertexVector(VcgMesh);
+	fromVcgMesh(VcgMesh, vioMesh);
  }

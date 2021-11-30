@@ -20,9 +20,9 @@ void hiveObliquePhotography::SceneReconstruction::hiveSurfaceReconstruction(Poin
 	auto pPoisson = hiveDesignPattern::hiveCreateProduct<ISurfaceReconstructor>(KEYWORD::POISSON_RECONSTRUCTOR, CSceneReconstructionConfig::getInstance()->getSubConfigByName("PoissonReconstruction"), vSceneCloud);
 	_ASSERTE(pPoisson);
 	pPoisson->constructSurface(voMesh);
-	auto pSimplifier = hiveDesignPattern::hiveCreateProduct<IMeshSimplifacation>(KEYWORD::COLLAPSE_BASED_SIMPLIFICATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("PoissonReconstruction"), voMesh);
+	/*auto pSimplifier = hiveDesignPattern::hiveCreateProduct<IMeshSimplifacation>(KEYWORD::COLLAPSE_BASED_SIMPLIFICATION, CSceneReconstructionConfig::getInstance()->getSubConfigByName("PoissonReconstruction"), voMesh);
 	_ASSERTE(pSimplifier);
-	//voMesh = pSimplifier->simplifyMesh();
+	voMesh = pSimplifier->simplifyMesh();*/
 }
 
 void hiveObliquePhotography::SceneReconstruction::hiveMeshSimplication(CMesh& vioMesh)
