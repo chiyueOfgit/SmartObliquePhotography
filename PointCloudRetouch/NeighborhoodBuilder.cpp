@@ -24,7 +24,7 @@ bool INeighborhoodBuilder::onProductCreatedV(const hiveConfig::CHiveConfig* vCon
 		m_NumPoints += m_TileSet[i]->size();
 	}
 
-	reset();
+	//reset();
 
 	__extraInitV(vConfig);
 	return true;

@@ -461,7 +461,7 @@ void CPointCloudRetouchManager::executeAutoMarker()
 	for (auto Index : OutPutIndices)
 		tagPointLabel(Index, EPointLabel::KEPT, 0, 1.0);
 	
-	/*CPointCluster* pInitialCluster = new CPointCluster;
+	CPointCluster* pInitialCluster = new CPointCluster;
     const hiveConfig::CHiveConfig* pClusterConfig = m_BackgroundMarker.getClusterConfig();
 	CPointClusterExpanderMultithread* pPointClusterExpander = dynamic_cast<CPointClusterExpanderMultithread*>(hiveDesignPattern::hiveCreateProduct<IPointClassifier>("CLUSTER_EXPANDER_MULTITHREAD"));
 	for(auto& EdgeSet: EdgeIndices)
@@ -476,7 +476,7 @@ void CPointCloudRetouchManager::executeAutoMarker()
 			pInitialCluster->init(pClusterConfig, 0, EPointLabel::KEPT, EdgeSet, ValidationSet, addAndGetTimestamp());
 			pPointClusterExpander->runV(pInitialCluster);
 		}
-	}*/
+	}
 	switchLabel(EPointLabel::UNWANTED, EPointLabel::UNDETERMINED);
 	recoverMarkedPoints2Undetermined(EPointLabel::KEPT);
 }
