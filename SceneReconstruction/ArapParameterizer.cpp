@@ -23,7 +23,7 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 //FUNCTION: 
  bool CArapParameterizer::execute(Eigen::MatrixXd& voUV)
 {
-	//__executeProcessing(m_Mesh);
+	//__executeProcessing(m_Mesh); //前处理暂时不做
  	buildHalfEdge();//根据m_mesh初始化m_HalfEdgeTable
 	auto BoundarySet = findBoundaryPoint();//找到边界点的索引
 	std::vector<bool> BoundaryStatus(m_Mesh.m_Vertices.size(), false);
@@ -97,12 +97,12 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 	}
 	ValidSet.assign(BoundarySet.begin(), BoundarySet.end());
  	
-	//__filterBoundaryByGrid(ValidSet, 4, FilteredSet);
+	__filterBoundaryByGrid(ValidSet, 4, FilteredSet);
  	
 	const std::string vPath = "Boundary25.txt";
 	std::ofstream file(vPath.c_str());
 	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(ValidSet);
+	oa& BOOST_SERIALIZATION_NVP(FilteredSet);
 	file.close();
  	
 	return FilteredSet;
@@ -388,7 +388,7 @@ void CArapParameterizer::__executeProcessing(CMesh& vioMesh)
 	CVcgMesh VcgMesh;
 	toVcgMesh(vioMesh, VcgMesh);
 	vcg::tri::Clean<CVcgMesh>::RemoveFaceOutOfRangeArea(VcgMesh, 0);
-	vcg::tri::Clean<CVcgMesh>::RemoveDuplicateVertex(VcgMesh);
+	//vcg::tri::Clean<CVcgMesh>::RemoveDuplicateVertex(VcgMesh);
 	vcg::tri::Clean<CVcgMesh>::RemoveUnreferencedVertex(VcgMesh);
 	vcg::tri::Allocator<CVcgMesh>::CompactFaceVector(VcgMesh);
 	vcg::tri::Allocator<CVcgMesh>::CompactVertexVector(VcgMesh);
