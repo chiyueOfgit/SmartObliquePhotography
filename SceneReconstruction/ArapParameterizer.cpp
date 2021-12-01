@@ -8,9 +8,10 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/vector.hpp>
-#include <iomanip>
 #include <Eigen/IterativeLinearSolvers>
 
+#include <vcg/complex/algorithms/clean.h>
+#include "VcgMesh.hpp"
 
 using namespace hiveObliquePhotography::SceneReconstruction;
 
@@ -22,7 +23,8 @@ using namespace hiveObliquePhotography::SceneReconstruction;
 //FUNCTION: 
 bool CArapParameterizer::execute(Eigen::MatrixXd& voUV)
 {
-	buildHalfEdge();//根据m_mesh初始化m_HalfEdgeTable
+	//__executeProcessing(m_Mesh); //前处理暂时不做
+ 	buildHalfEdge();//根据m_mesh初始化m_HalfEdgeTable
 	auto BoundarySet = findBoundaryPoint();//找到边界点的索引
 	std::vector<bool> BoundaryStatus(m_Mesh.m_Vertices.size(), false);
 	for (auto& Index : BoundarySet)//建立辅助vector，将所有边界点置为true
@@ -79,13 +81,13 @@ void CArapParameterizer::buildHalfEdge()
 //FUNCTION:
 std::vector<int> CArapParameterizer::findBoundaryPoint()
 {
-	Eigen::MatrixXi F = m_Mesh.getFacesMatrix();//获取mesh所有顶点的坐标存为一个矩阵
-	std::vector<int> Boundary;
-	igl::boundary_loop(F, Boundary);//根据矩阵计算出所有边界点
+ 	//Eigen::MatrixXi F = m_Mesh.getFacesMatrix();//获取mesh所有顶点的坐标存为一个矩阵
+	//std::vector<int> Boundary;
+	//igl::boundary_loop(F, Boundary);//根据矩阵计算出所有边界点
 
 	std::set<int> BoundarySet;
-	std::vector<int> validSet;
-	std::vector<int> OutputSet;
+	std::vector<int> ValidSet;
+	std::vector<int> FilteredSet;
 	for(auto& HalfEdge : m_HalfEdgeTable)
 	{
 		if(HalfEdge._Conj < 0)
@@ -94,98 +96,17 @@ std::vector<int> CArapParameterizer::findBoundaryPoint()
 			BoundarySet.insert(m_HalfEdgeTable[HalfEdge._Next]._VertexId);
 		}
 	}
-	validSet.assign(BoundarySet.begin(), BoundarySet.end());
+	ValidSet.assign(BoundarySet.begin(), BoundarySet.end());
  	
-	auto Box = m_Mesh.calcAABB();
-	int MinX = std::floor(Box.first.x()); int MaxX = std::ceil(Box.second.x());
-	int MinY = std::floor(Box.first.y()); int MaxY = std::ceil(Box.second.y());
-	std::vector<std::vector<std::vector<int>>> DistinSet;
-	DistinSet.resize((MaxY - MinY + 1)/4 + 1, std::vector<std::vector<int>>((MaxX - MinX + 1)/4 + 1));
- 	for(int i = 0; i < BoundarySet.size(); i++)
- 	{
-		auto Pos = m_Mesh.m_Vertices[validSet[i]].xyz();
-		DistinSet[(Pos.y() - MinY)/4][(Pos.x() - MinX)/4].push_back(validSet[i]);
- 	}
-
- 	for(int i = 0; i < (MaxY - MinY + 1)/4; i++)
- 	{
-		int j = 0;
- 		for ( ; j < (MaxX - MinX + 1)/4; j++)
-			if (DistinSet[i][j].size())
-				break;
-		if (j == (MaxX - MinX + 1)/4) continue;
-		float Min = FLT_MAX;
-		int MinFlag = 0;
- 		for(auto Index: DistinSet[i][j])
- 		{
- 			if(m_Mesh.m_Vertices[Index].x < Min)
- 			{
-				Min = m_Mesh.m_Vertices[Index].x;
-				MinFlag = Index;
- 			}
-			OutputSet.push_back(MinFlag);
- 		}
-
-		int k = (MaxX - MinX)/4;
-		for (; k > 0; k--)
-			if (DistinSet[i][k].size())
-				break;
-		float Max = - FLT_MAX;
-		int MaxFlag = 0;
-		for (auto Index : DistinSet[i][k])
-		{
-			if (m_Mesh.m_Vertices[Index].x > Max)
-			{
-				Max = m_Mesh.m_Vertices[Index].x;
-				MaxFlag = Index;
-			}
-			OutputSet.push_back(MaxFlag);
-		}
- 	}
-
-	for (int i = 0; i < (MaxX - MinX + 1)/4; i++)
-	{
-		int j = 0;
-		for (; j < (MaxY - MinY + 1)/4; j++)
-			if (DistinSet[j][i].size())
-				break;
-		if (j == (MaxY - MinY + 1)/4) continue;
-		float Min = FLT_MAX;
-		int MinFlag = 0;
-		for (auto Index : DistinSet[j][i])
-		{
-			if (m_Mesh.m_Vertices[Index].y < Min)
-			{
-				Min = m_Mesh.m_Vertices[Index].y;
-				MinFlag = Index;
-			}
-			OutputSet.push_back(MinFlag);
-		}
-
-		int k = (MaxY - MinY)/4;
-		for (; k > 0; k--)
-			if (DistinSet[k][i].size())
-				break;
-		float Max = - FLT_MAX;
-		int MaxFlag = 0;
-		for (auto Index : DistinSet[k][i])
-		{
-			if (m_Mesh.m_Vertices[Index].y > Max)
-			{
-				Max = m_Mesh.m_Vertices[Index].y;
-				MaxFlag = Index;
-			}
-			OutputSet.push_back(MaxFlag);
-		}
-	}
+	__filterBoundaryByGrid(ValidSet, 4, FilteredSet);
  	
-	const std::string vPath = "boundary.txt";
+	const std::string vPath = "Boundary25.txt";
 	std::ofstream file(vPath.c_str());
 	boost::archive::text_oarchive oa(file);
-	oa& BOOST_SERIALIZATION_NVP(OutputSet);
+	oa& BOOST_SERIALIZATION_NVP(FilteredSet);
 	file.close();
  	
-	return OutputSet;
+	return FilteredSet;
 }
 //std::set<int> CArapParameterizer::findBoundaryPoint()
 //{
@@ -456,3 +377,84 @@ int CArapParameterizer::__findTwinRef(int vStartIndex, int vEndIndex)
 			return EdgeIndex;
 	return -1;
 }
+
+void CArapParameterizer::__filterBoundaryByGrid(std::vector<int>& vOriginSet, int vGridSize, std::vector<int>& vioFilteredSet)
+ {
+	auto Box = m_Mesh.calcAABB();
+	int MinX = std::floor(Box.first.x()); int MaxX = std::ceil(Box.second.x());
+	int MinY = std::floor(Box.first.y()); int MaxY = std::ceil(Box.second.y());
+
+	std::vector<std::vector<std::vector<int>>> DistributionSet;
+	DistributionSet.resize((MaxY - MinY) / vGridSize + 1, std::vector<std::vector<int>>((MaxX - MinX) / vGridSize + 1));
+	for (auto Index: vOriginSet)
+	{
+		auto Pos = m_Mesh.m_Vertices[Index].xyz();
+		DistributionSet[(Pos.y() - MinY) / vGridSize][(Pos.x() - MinX) / vGridSize].push_back(Index);
+	}
+	__filterOneDirection(DistributionSet, true, vioFilteredSet);
+	__filterOneDirection(DistributionSet, false, vioFilteredSet);
+ }
+
+void CArapParameterizer::__filterOneDirection(std::vector<std::vector<std::vector<int>>>& vDistributionSet, bool vMainDirection, std::vector<int>& vioFilteredSet)
+ {
+	int MainSize = vMainDirection ? vDistributionSet.size() : vDistributionSet[0].size();
+	int OtherSize = vMainDirection ? vDistributionSet[0].size() : vDistributionSet.size();
+ 	
+ 	for (int i = 0; i < MainSize; i++)
+	{
+		int j = 0;
+		std::vector<int> TempMinSet;
+		for (; j < OtherSize; j++)
+		{
+			TempMinSet = vMainDirection ? vDistributionSet[i][j] : vDistributionSet[j][i];
+			if (TempMinSet.size())
+				break;
+		}
+		if (j == OtherSize) continue;
+		float Min = FLT_MAX;
+		int MinFlag = 0;
+		for (auto Index : TempMinSet)
+		{
+			auto MinTemp = vMainDirection ? m_Mesh.m_Vertices[Index].x : m_Mesh.m_Vertices[Index].y;
+			if (MinTemp < Min)
+			{
+				Min = MinTemp;
+				MinFlag = Index;
+			}
+		}
+        vioFilteredSet.push_back(MinFlag);
+ 		
+		int k = OtherSize - 1;
+		std::vector<int> TempMaxSet;
+		for (; k >= 0; k--)
+		{
+			TempMaxSet = vMainDirection ? vDistributionSet[i][k] : vDistributionSet[k][i];
+			if (TempMaxSet.size())
+				break;
+		}
+		float Max = -FLT_MAX;
+		int MaxFlag = 0;
+		for (auto Index : TempMaxSet)
+		{
+			auto MaxTemp = vMainDirection ? m_Mesh.m_Vertices[Index].x : m_Mesh.m_Vertices[Index].y;
+			if (MaxTemp > Max)
+			{
+				Max = MaxTemp;
+				MaxFlag = Index;
+			}
+		}
+ 		vioFilteredSet.push_back(MaxFlag);
+	}
+ }
+
+void CArapParameterizer::__executeProcessing(CMesh& vioMesh)
+ {
+	CVcgMesh VcgMesh;
+	toVcgMesh(vioMesh, VcgMesh);
+	vcg::tri::Clean<CVcgMesh>::RemoveFaceOutOfRangeArea(VcgMesh, 0);
+	//vcg::tri::Clean<CVcgMesh>::RemoveDuplicateVertex(VcgMesh);
+	vcg::tri::Clean<CVcgMesh>::RemoveUnreferencedVertex(VcgMesh);
+	vcg::tri::Allocator<CVcgMesh>::CompactFaceVector(VcgMesh);
+	vcg::tri::Allocator<CVcgMesh>::CompactVertexVector(VcgMesh);
+	fromVcgMesh(VcgMesh, vioMesh);
+ }

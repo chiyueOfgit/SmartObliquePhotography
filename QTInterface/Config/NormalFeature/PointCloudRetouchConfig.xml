@@ -37,8 +37,8 @@
       <FEATURE>
         PlanarFeature
         <SIG> PLANARITY_FEATURE </SIG>
-        <DISTANCE_THRESHOLD> 2.0 </DISTANCE_THRESHOLD>
-        <DISTANCE_TOLERANCE> 0.2 </DISTANCE_TOLERANCE>
+        <DISTANCE_THRESHOLD> 3 </DISTANCE_THRESHOLD>
+        <DISTANCE_TOLERANCE> 0.5 </DISTANCE_TOLERANCE>
       </FEATURE>
       <FEATURE>
         NormalComplexityFeature
@@ -50,6 +50,10 @@
       ClusterExpander
       <SIG> CLUSTER_EXPANDER_MULTITHREAD </SIG>
     </CLASSIFIER>
+  </TASK>
+  <TASK>
+    AutoMarker
+    <AUTOMARKER_RESOLUTION> 1024 1024 </AUTOMARKER_RESOLUTION>
   </TASK>
   <OUTLIER> 
     Outlier

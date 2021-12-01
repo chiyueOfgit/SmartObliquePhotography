@@ -126,6 +126,21 @@
     <ClInclude Include="GroundObjectExtractor.h">
       <Filter>Operation\GroundobjectExtract</Filter>
     </ClInclude>
+    <ClInclude Include="AutoHoleRepairer.h">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TextureSynthesizer\NewGaussianBlur.h">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TextureSynthesizer\NewMipmapGenerator.h">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClInclude>
+    <ClInclude Include="ElevationMapGenerator.h">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PointCluster.cpp">
@@ -207,6 +222,15 @@
     </ClCompile>
     <ClCompile Include="GroundObjectExtractor.cpp">
       <Filter>Operation\GroundobjectExtract</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoHoleRepairer.cpp">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClCompile>
+    <ClCompile Include="ElevationMapGenerator.cpp">
+      <Filter>Operation\GroundobjectExtract</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility.cpp">
+      <Filter>Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

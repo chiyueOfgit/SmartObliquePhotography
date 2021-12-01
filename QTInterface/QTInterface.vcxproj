@@ -151,9 +151,9 @@
     <QtMoc Include="SliderSizeDockWidget.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\Configs\AutoRetouchConfig.xml" />
     <Xml Include="..\Configs\QTInterfaceConfig.xml" />
     <Xml Include="..\Configs\VisualizationConfig.xml" />
+    <Xml Include="Config\NormalFeature\PointCloudRetouchConfig.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ObliquePhotographyData\ObliquePhotographyData.vcxproj">

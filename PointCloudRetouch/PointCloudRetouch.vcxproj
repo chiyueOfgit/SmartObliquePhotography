@@ -126,6 +126,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>4819;</DisableSpecificWarnings>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>..\ObliquePhotographyData;..\TinyTiff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -151,6 +152,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <OpenMPSupport>true</OpenMPSupport>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\ObliquePhotographyData;..\TextureSynthesizer;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>..\ObliquePhotographyData;..\TinyTiff\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -162,7 +164,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\TextureSynthesizer\NewGaussianBlur.h" />
+    <ClInclude Include="..\TextureSynthesizer\NewMipmapGenerator.h" />
+    <ClInclude Include="AutoHoleRepairer.h" />
     <ClInclude Include="BoundaryDetector.h" />
+    <ClInclude Include="ElevationMapGenerator.h" />
     <ClInclude Include="GroundObjectExtractor.h" />
     <ClInclude Include="ColorFeature.h" />
     <ClInclude Include="EuclideanNeighborhoodBuilder.h" />
@@ -199,11 +205,14 @@
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="TextureSynthesizer.h" />
     <ClInclude Include="TreeBasedTextureSynthesizer.h" />
+    <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoHoleRepairer.cpp" />
     <ClCompile Include="BoundaryDetector.cpp" />
     <ClCompile Include="ColorFeature.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="ElevationMapGenerator.cpp" />
     <ClCompile Include="EuclideanNeighborhoodBuilder.cpp" />
     <ClCompile Include="GroundObjectExtractor.cpp" />
     <ClCompile Include="HoleRepairer.cpp" />
@@ -236,6 +245,7 @@
     <ClCompile Include="RetouchTask.cpp" />
     <ClCompile Include="TextureSynthesizer.cpp" />
     <ClCompile Include="TreeBasedTextureSynthesizer.cpp" />
+    <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

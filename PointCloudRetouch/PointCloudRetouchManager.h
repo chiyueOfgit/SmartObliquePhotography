@@ -6,6 +6,7 @@
 #include "InitialClusterCreator.h"
 #include "PointSetPreprocessor.h"
 #include "HoleRepairer.h"
+#include "GroundObjectExtractor.h"
 #include "PrecomputeManager.h"
 
 namespace hiveObliquePhotography
@@ -43,6 +44,8 @@ namespace hiveObliquePhotography
 			void executeHoleRepairerSetRegion(const std::vector<pcl::index_t>& vHoleRegion);
 			void executeHoleRepairerSetInput(const std::vector<pcl::index_t>& vInput);
 			void executeHoleRepairer(std::vector<pcl::PointXYZRGBNormal>& voNewPoints);
+			void executeAutoMarker();
+			void executeAutoHoleRepair(std::vector<pcl::PointXYZRGBNormal>& voNewPointSet);
 			void recordCurrentStatus();
 			bool undo();
 			bool reset();
@@ -101,6 +104,7 @@ namespace hiveObliquePhotography
 			INeighborhoodBuilder    *m_pNeighborhoodBuilder = nullptr;
 			const hiveConfig::CHiveConfig* m_pConfig = nullptr;
 			const hiveConfig::CHiveConfig* m_pOutlierConfig = nullptr;
+			const hiveConfig::CHiveConfig* m_pAutoMarkerConfig = nullptr;
 			
 			std::deque<std::pair<CPointLabelSet, std::uint32_t>> m_StatusQueue;
 			
