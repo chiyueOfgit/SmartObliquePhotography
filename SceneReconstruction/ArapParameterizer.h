@@ -25,7 +25,7 @@ namespace hiveObliquePhotography
 			bool execute(Eigen::MatrixXd& voUV) override;
 
 			void buildHalfEdge();
-			std::set<int> findBoundaryPoint();
+			std::vector<int> findBoundaryPoint();
 			
 			bool calcInitialUV(const CMesh& vMesh, const std::vector<bool>& vBoundaryStatus, Eigen::MatrixXd& voUV);
 #ifdef _UNIT_TEST
