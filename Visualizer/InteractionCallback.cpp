@@ -290,6 +290,13 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->areaPick(LeftUp.x(), LeftUp.y(), m_PosX, m_PosY, PickedIndices);	//rectangle
 			m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->switchMode(false);
 
+			auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
+			{
+					return -1;
+			};
+			
+			if(m_pVisualizationConfig->getAttribute<bool>(Visualization::AREA_PICK_CULLING).value())
+				PointCloudRetouch::hivePreprocessSelected(PickedIndices, PV, DistanceFunc, ViewPos);
 			if (PickedIndices.empty())
 				return;
 
