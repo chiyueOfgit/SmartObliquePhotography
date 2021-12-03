@@ -9,6 +9,7 @@ namespace hiveObliquePhotography
 		struct SHalfEdge
 		{
 			int _VertexId;
+			int _Curr;
 			int _Prev;
 			int _Next;
 			int _Conj = -1;

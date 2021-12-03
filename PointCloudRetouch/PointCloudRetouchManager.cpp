@@ -284,7 +284,7 @@ bool CPointCloudRetouchManager::executeMarker(const std::vector<pcl::index_t>& v
 		_ASSERTE(pInitCluster);
 		m_PointClusterSet.addCluster(pInitCluster);
 		//m_pNeighborhoodBuilder->reset();
-		//m_PointLabelSet.tagCoreRegion4Cluster(pInitCluster->getCoreRegion(), vTargetLabel, pInitCluster->getClusterIndex());
+		m_PointLabelSet.tagCoreRegion4Cluster(pInitCluster->getCoreRegion(), vTargetLabel, pInitCluster->getClusterIndex());
 
 		if (vTargetLabel == EPointLabel::UNWANTED)
 		{
@@ -369,7 +369,7 @@ void CPointCloudRetouchManager::recoverMarkedPoints2Undetermined(EPointLabel vLa
 	dumpIndicesByLabel(Indices, vLabel);
 	for (auto Index : Indices)
 		tagPointLabel(Index, EPointLabel::UNDETERMINED, 0, 0);
-	m_pNeighborhoodBuilder->reset();
+	//m_pNeighborhoodBuilder->reset();
 	m_PointClusterSet.removeClustersByLabel(vLabel);
 	recordCurrentStatus();
 }
