@@ -220,13 +220,13 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 
 		Eigen::Vector3f PickWorldPos{};
 		m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->singlePick(m_PosX, m_PosY, PickWorldPos.x(), PickWorldPos.y(), PickWorldPos.z());
-		int WhichTile = 0;
-		for (; WhichTile < m_pVisualizer->m_TileBoxSet.size(); WhichTile++)
-			if (isInAABB(PickWorldPos, m_pVisualizer->m_TileBoxSet[WhichTile]))
+		int TileIndex = 0;
+		for (; TileIndex < m_pVisualizer->m_TileBoxSet.size(); TileIndex++)
+			if (isInAABB(PickWorldPos, m_pVisualizer->m_TileBoxSet[TileIndex]))
 				break;
-		_ASSERTE(WhichTile < m_pVisualizer->m_TileSet.size());
+		_ASSERTE(TileIndex < m_pVisualizer->m_TileSet.size());
 		for (auto& Index : PickedIndices)
-			Index += m_pVisualizer->m_OffsetSet[WhichTile];
+			Index += m_pVisualizer->m_OffsetSet[TileIndex];
 
 		auto DistanceFunc = [&](const Eigen::Vector2d& vPos) -> double
 		{
@@ -268,8 +268,8 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 		if (m_IsRefreshImmediately)
 		{
 			std::vector<std::size_t> PointLabel;
-			PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
-			m_pVisualizer->refresh(WhichTile, PointLabel);
+			PointCloudRetouch::hiveDumpTileLabel(TileIndex, PointLabel);
+			m_pVisualizer->refresh(TileIndex, PointLabel);
 		}
 	}
 
@@ -297,18 +297,20 @@ void CInteractionCallback::mouseCallback(const pcl::visualization::MouseEvent& v
 			{
 				Eigen::Vector3f PickWorldPos{};
 				m_pVisualizer->m_pPCLVisualizer->getInteractorStyle()->singlePick(m_PosX, m_PosY, PickWorldPos.x(), PickWorldPos.y(), PickWorldPos.z());
-				int WhichTile = 0;
-				for (; WhichTile < m_pVisualizer->m_TileBoxSet.size(); WhichTile++)
-					if (isInAABB(PickWorldPos, m_pVisualizer->m_TileBoxSet[WhichTile]))
+				int TileIndex = 0;
+				for (; TileIndex < m_pVisualizer->m_TileBoxSet.size(); TileIndex++)
+					if (isInAABB(PickWorldPos, m_pVisualizer->m_TileBoxSet[TileIndex]))
 						break;
-				_ASSERTE(WhichTile < m_pVisualizer->m_TileSet.size());
+						
+				if (TileIndex >= m_pVisualizer->m_TileSet.size()) return;
+
 				for (auto& Index : PickedIndices)
-					Index += m_pVisualizer->m_OffsetSet[WhichTile];
+					Index += m_pVisualizer->m_OffsetSet[TileIndex];
 
 				PointCloudRetouch::hiveTagLabel(PickedIndices, m_UnwantedMode);
 				std::vector<std::size_t> PointLabel;
-				PointCloudRetouch::hiveDumpTileLabel(WhichTile, PointLabel);
-				m_pVisualizer->refresh(WhichTile, PointLabel);
+				PointCloudRetouch::hiveDumpTileLabel(TileIndex, PointLabel);
+				m_pVisualizer->refresh(TileIndex, PointLabel);
 			}
 			else
 			{

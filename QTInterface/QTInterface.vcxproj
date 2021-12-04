@@ -152,8 +152,8 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\Configs\QTInterfaceConfig.xml" />
-    <Xml Include="..\Configs\VisualizationConfig.xml" />
     <Xml Include="Config\NormalFeature\PointCloudRetouchConfig.xml" />
+    <Xml Include="Config\VisualizationConfig.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ObliquePhotographyData\ObliquePhotographyData.vcxproj">

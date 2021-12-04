@@ -10,7 +10,7 @@ using namespace hiveObliquePhotography;
 //FUNCTION: 
 std::vector<PointCloud_t::Ptr> hiveObliquePhotography::hiveInitPointCloudScene(const std::vector<std::string>& vFileNameSet)
 {
-	_ASSERTE(!vFileNameSet.empty());
+	if (vFileNameSet.empty()) return {};
 
 	return CPointCloudScene::getInstance()->loadScene(vFileNameSet);
 }

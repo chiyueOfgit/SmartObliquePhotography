@@ -17,9 +17,9 @@
 
 using namespace hiveObliquePhotography::Visualization;
 
-void hiveObliquePhotography::Visualization::hiveInitVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt)
+bool hiveObliquePhotography::Visualization::hiveInitVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt)
 {
-	CPointCloudVisualizer::getInstance()->init(vTileSet, vIsInQt);
+	return CPointCloudVisualizer::getInstance()->init(vTileSet, vIsInQt);
 }
 
 void hiveObliquePhotography::Visualization::hiveResetVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt)

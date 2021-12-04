@@ -32,10 +32,12 @@ namespace hiveObliquePhotography
 		private:
 			std::vector<SPointLabel> m_LabelSet;
 
-			inline void __throwLabelIndexOutOfRange(std::size_t vIndex) const
+			inline bool __throwLabelIndexOutOfRange(std::size_t vIndex) const
 			{
 				if (vIndex < 0 || vIndex >= m_LabelSet.size())
-					_THROW_RUNTIME_ERROR("Label index is out of range");
+					//_THROW_RUNTIME_ERROR("Label index is out of range");
+					return true;
+				return false;
 			}
 		};
 	}

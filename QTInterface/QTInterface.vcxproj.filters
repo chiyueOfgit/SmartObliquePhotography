@@ -117,10 +117,10 @@
     <Xml Include="..\Configs\QTInterfaceConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="..\Configs\VisualizationConfig.xml">
+    <Xml Include="Config\NormalFeature\PointCloudRetouchConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
-    <Xml Include="Config\NormalFeature\PointCloudRetouchConfig.xml">
+    <Xml Include="Config\VisualizationConfig.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>

@@ -377,7 +377,7 @@ void CQTInterface::onActionAreaPicking()
 
 void CQTInterface::onActionOpen()
 {
-    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud or Mesh"), QString::fromStdString(m_CloudOpenPath), tr("PointCloud Files(*.pcd *.ply);;" "OBJ files(*.obj)"));
+    QStringList FilePathList = QFileDialog::getOpenFileNames(this, tr("Open PointCloud or Mesh"), QString::fromStdString(m_CloudOpenPath), tr("PointCloud Files(*.pcd *.ply);;"));
     if (FilePathList.empty())
         return;
 
@@ -391,7 +391,7 @@ void CQTInterface::onActionOpen()
         m_CloudOpenPath = __getDirectory(FilePathSet.back());
 
         PointCloudRetouch::hiveInit(m_TileSet.TileSet, m_pPointCloudRetouchConfig);
-        Visualization::hiveInitVisualizer(m_TileSet.TileSet, true);
+        if (Visualization::hiveInitVisualizer(m_TileSet.TileSet, true) == false) return;
         CQTInterface::__initialVTKWidget();
         std::vector<std::size_t> PointLabel;
         PointCloudRetouch::hiveDumpPointLabel(PointLabel);

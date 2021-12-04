@@ -9,7 +9,8 @@ void CPointLabelSet::tagCoreRegion4Cluster(const std::vector<pcl::index_t>& vTar
 {
 	for (auto e : vTargetPointSet)
 	{
-		__throwLabelIndexOutOfRange(e);
+		if (__throwLabelIndexOutOfRange(e)) 
+			break;
 		
 		m_LabelSet[e].ClusterIndex = vClusterIndex;
 		m_LabelSet[e].PointLabel   = vTargetLabel;
@@ -44,10 +45,10 @@ void CPointLabelSet::reset()
 //FUNCTION: 
 void CPointLabelSet::tagPointLabel(pcl::index_t vPoint, EPointLabel vTargetLabel, std::uint32_t vClusterIndex, double vClusterBelongingProbability)
 {
-	__throwLabelIndexOutOfRange(vPoint);
+	if (__throwLabelIndexOutOfRange(vPoint)) return;
 	if (vClusterBelongingProbability < 0)
-		_THROW_RUNTIME_ERROR("Illegal probability input");
-	
+		//_THROW_RUNTIME_ERROR("Illegal probability input");	// 
+		return;
 	m_LabelSet[vPoint].PointLabel = vTargetLabel;
 	m_LabelSet[vPoint].ClusterIndex = vClusterIndex;
 	m_LabelSet[vPoint].Probability = vClusterBelongingProbability;

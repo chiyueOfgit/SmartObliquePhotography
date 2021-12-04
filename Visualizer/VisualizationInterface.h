@@ -8,7 +8,7 @@ namespace hiveObliquePhotography
 {
 	namespace Visualization
 	{
-		VISUALIZATION_DECLSPEC void hiveInitVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt = true);
+		VISUALIZATION_DECLSPEC bool hiveInitVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt = true);
 
 		VISUALIZATION_DECLSPEC void hiveResetVisualizer(const std::vector<RetouchCloud_t::Ptr>& vTileSet, bool vIsInQt = true);
 
