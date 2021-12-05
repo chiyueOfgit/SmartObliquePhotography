@@ -224,6 +224,7 @@ std::vector<pcl::PointXYZRGBNormal> CAutoHoleRepairer::__generateNewPoint(const 
 		float MaxZ = -FLT_MAX;
 		int Pos = 0;
 		auto Indices = m_PointDistributionSet[HolePos.y()][HolePos.x()];
+		if (Indices.empty()) continue;
 		for (auto Index : Indices)
 		{
 			auto TempZ = pManager->getScene().getPositionAt(Index).z();
