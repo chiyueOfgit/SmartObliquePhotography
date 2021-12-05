@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>452</width>
+    <width>472</width>
     <height>300</height>
    </rect>
   </property>
@@ -34,8 +34,11 @@
    </item>
    <item row="0" column="0" colspan="2">
     <widget class="QTabWidget" name="DisplayOptionsSettingTabWidget">
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="SelectFeaturesTab">
       <attribute name="title">
@@ -84,6 +87,9 @@
        <property name="text">
         <string>Surfel Radius</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
       </widget>
       <widget class="QLabel" name="label_3">
        <property name="geometry">
@@ -96,6 +102,9 @@
        </property>
        <property name="text">
         <string>Sample Number</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="label_2">
@@ -110,6 +119,9 @@
        <property name="text">
         <string>Octree Depth</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
       </widget>
       <widget class="QLabel" name="label_5">
        <property name="geometry">
@@ -122,6 +134,9 @@
        </property>
        <property name="text">
         <string>Resolution</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QLabel" name="label_6">
@@ -136,11 +151,23 @@
        <property name="text">
         <string>Search Radius</string>
        </property>
+       <property name="scaledContents">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <property name="indent">
+        <number>0</number>
+       </property>
       </widget>
       <widget class="QLabel" name="label_7">
        <property name="geometry">
         <rect>
-         <x>30</x>
+         <x>33</x>
          <y>160</y>
          <width>111</width>
          <height>20</height>
@@ -149,18 +176,27 @@
        <property name="text">
         <string>Distance Threshold</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
       </widget>
       <widget class="QLabel" name="label_8">
        <property name="geometry">
         <rect>
          <x>40</x>
          <y>190</y>
-         <width>111</width>
+         <width>104</width>
          <height>20</height>
         </rect>
        </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
        <property name="text">
         <string>Weight Coefficent</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
       <widget class="QSpinBox" name="OctreeDepth">

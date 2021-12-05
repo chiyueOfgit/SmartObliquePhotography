@@ -6,72 +6,72 @@
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>设置</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="22"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>确定</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="29"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>取消</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="42"/>
         <source>SelectFeatures</source>
-        <translation type="unfinished"></translation>
+        <translation>选择特征</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="54"/>
         <source>Additional Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>传统模式</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="67"/>
         <source>Standard Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>标准模式</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="73"/>
         <source>SceneReconstruction</source>
-        <translation type="unfinished"></translation>
+        <translation>场景重构</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="85"/>
         <source>Surfel Radius</source>
-        <translation type="unfinished"></translation>
+        <translation>面元半径</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="98"/>
         <source>Sample Number</source>
-        <translation type="unfinished"></translation>
+        <translation>样例数目</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="111"/>
         <source>Octree Depth</source>
-        <translation type="unfinished"></translation>
+        <translation>八叉树深度</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="124"/>
         <source>Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>分辨率</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="137"/>
         <source>Search Radius</source>
-        <translation type="unfinished"></translation>
+        <translation>查找半径</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="150"/>
         <source>Distance Threshold</source>
-        <translation type="unfinished"></translation>
+        <translation>距离阈值</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="163"/>
         <source>Weight Coefficent</source>
-        <translation type="unfinished"></translation>
+        <translation>权重系数</translation>
     </message>
 </context>
 <context>
@@ -79,7 +79,7 @@
     <message>
         <location filename="InstructionsDialog.ui" line="19"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">设置</translation>
     </message>
     <message>
         <location filename="InstructionsDialog.ui" line="33"/>
@@ -89,7 +89,7 @@
     <message>
         <location filename="InstructionsDialog.ui" line="45"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">确定</translation>
     </message>
 </context>
 <context>
@@ -319,74 +319,70 @@
 <context>
     <name>hiveObliquePhotography::QTInterface::CQTInterface</name>
     <message>
-        <location filename="QTInterface.cpp" line="340"/>
-        <location filename="QTInterface.cpp" line="762"/>
+        <location filename="QTInterface.cpp" line="380"/>
+        <location filename="QTInterface.cpp" line="803"/>
         <source>Open PointCloud or Mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="340"/>
-        <source>PointCloud Files(*.pcd *.ply);;OBJ files(*.obj)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QTInterface.cpp" line="407"/>
+        <location filename="QTInterface.cpp" line="447"/>
         <source>Save PointCloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="407"/>
+        <location filename="QTInterface.cpp" line="447"/>
         <source>PLY files(*.ply);;PCD files(*.pcd)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="565"/>
-        <location filename="QTInterface.cpp" line="668"/>
-        <location filename="QTInterface.cpp" line="825"/>
+        <location filename="QTInterface.cpp" line="603"/>
+        <location filename="QTInterface.cpp" line="709"/>
+        <location filename="QTInterface.cpp" line="854"/>
         <source>Save Mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="565"/>
-        <location filename="QTInterface.cpp" line="586"/>
-        <location filename="QTInterface.cpp" line="668"/>
-        <location filename="QTInterface.cpp" line="735"/>
-        <location filename="QTInterface.cpp" line="825"/>
+        <location filename="QTInterface.cpp" line="603"/>
+        <location filename="QTInterface.cpp" line="627"/>
+        <location filename="QTInterface.cpp" line="709"/>
+        <location filename="QTInterface.cpp" line="776"/>
+        <location filename="QTInterface.cpp" line="854"/>
         <source>OBJ files(*.obj)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="586"/>
+        <location filename="QTInterface.cpp" line="627"/>
         <source>Open Mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="660"/>
+        <location filename="QTInterface.cpp" line="701"/>
         <source>Open Indices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="660"/>
+        <location filename="QTInterface.cpp" line="701"/>
         <source>Indices files(*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="691"/>
+        <location filename="QTInterface.cpp" line="732"/>
         <source>Save Texture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="691"/>
+        <location filename="QTInterface.cpp" line="732"/>
         <source>PNG files(*.png)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="735"/>
+        <location filename="QTInterface.cpp" line="776"/>
         <source>SaveMesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="762"/>
+        <location filename="QTInterface.cpp" line="380"/>
+        <location filename="QTInterface.cpp" line="803"/>
         <source>PointCloud Files(*.pcd *.ply);;</source>
         <translation type="unfinished"></translation>
     </message>

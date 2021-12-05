@@ -6,72 +6,72 @@
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialog</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="22"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="29"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="42"/>
         <source>SelectFeatures</source>
-        <translation type="unfinished"></translation>
+        <translation>SelectFeatures</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="54"/>
         <source>Additional Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Additional Mode</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="67"/>
         <source>Standard Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard Mode</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="73"/>
         <source>SceneReconstruction</source>
-        <translation type="unfinished"></translation>
+        <translation>SceneReconstruction</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="85"/>
         <source>Surfel Radius</source>
-        <translation type="unfinished"></translation>
+        <translation>Surfel Radius</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="98"/>
         <source>Sample Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Sample Number</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="111"/>
         <source>Octree Depth</source>
-        <translation type="unfinished"></translation>
+        <translation>Octree Depth</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="124"/>
         <source>Resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Resolution</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="137"/>
         <source>Search Radius</source>
-        <translation type="unfinished"></translation>
+        <translation>Search Radius</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="150"/>
         <source>Distance Threshold</source>
-        <translation type="unfinished"></translation>
+        <translation>Distance Threshold</translation>
     </message>
     <message>
         <location filename="DisplayOptionsSettingDialog.ui" line="163"/>
         <source>Weight Coefficent</source>
-        <translation type="unfinished"></translation>
+        <translation>Weight Coefficent</translation>
     </message>
 </context>
 <context>
@@ -79,7 +79,7 @@
     <message>
         <location filename="InstructionsDialog.ui" line="19"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dialog</translation>
     </message>
     <message>
         <location filename="InstructionsDialog.ui" line="33"/>
@@ -89,7 +89,7 @@
     <message>
         <location filename="InstructionsDialog.ui" line="45"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">OK</translation>
     </message>
 </context>
 <context>
@@ -318,74 +318,70 @@
 <context>
     <name>hiveObliquePhotography::QTInterface::CQTInterface</name>
     <message>
-        <location filename="QTInterface.cpp" line="342"/>
-        <location filename="QTInterface.cpp" line="764"/>
+        <location filename="QTInterface.cpp" line="380"/>
+        <location filename="QTInterface.cpp" line="803"/>
         <source>Open PointCloud or Mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="342"/>
-        <source>PointCloud Files(*.pcd *.ply);;OBJ files(*.obj)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="QTInterface.cpp" line="409"/>
+        <location filename="QTInterface.cpp" line="447"/>
         <source>Save PointCloud</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="409"/>
+        <location filename="QTInterface.cpp" line="447"/>
         <source>PLY files(*.ply);;PCD files(*.pcd)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="567"/>
-        <location filename="QTInterface.cpp" line="670"/>
-        <location filename="QTInterface.cpp" line="827"/>
+        <location filename="QTInterface.cpp" line="603"/>
+        <location filename="QTInterface.cpp" line="709"/>
+        <location filename="QTInterface.cpp" line="854"/>
         <source>Save Mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="567"/>
-        <location filename="QTInterface.cpp" line="588"/>
-        <location filename="QTInterface.cpp" line="670"/>
-        <location filename="QTInterface.cpp" line="737"/>
-        <location filename="QTInterface.cpp" line="827"/>
+        <location filename="QTInterface.cpp" line="603"/>
+        <location filename="QTInterface.cpp" line="627"/>
+        <location filename="QTInterface.cpp" line="709"/>
+        <location filename="QTInterface.cpp" line="776"/>
+        <location filename="QTInterface.cpp" line="854"/>
         <source>OBJ files(*.obj)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="588"/>
+        <location filename="QTInterface.cpp" line="627"/>
         <source>Open Mesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="662"/>
+        <location filename="QTInterface.cpp" line="701"/>
         <source>Open Indices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="662"/>
+        <location filename="QTInterface.cpp" line="701"/>
         <source>Indices files(*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="693"/>
+        <location filename="QTInterface.cpp" line="732"/>
         <source>Save Texture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="693"/>
+        <location filename="QTInterface.cpp" line="732"/>
         <source>PNG files(*.png)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="737"/>
+        <location filename="QTInterface.cpp" line="776"/>
         <source>SaveMesh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="QTInterface.cpp" line="764"/>
+        <location filename="QTInterface.cpp" line="380"/>
+        <location filename="QTInterface.cpp" line="803"/>
         <source>PointCloud Files(*.pcd *.ply);;</source>
         <translation type="unfinished"></translation>
     </message>
