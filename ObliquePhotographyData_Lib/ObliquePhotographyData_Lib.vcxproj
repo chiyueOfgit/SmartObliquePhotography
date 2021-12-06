@@ -197,6 +197,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4819;</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\TinyTiff\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
