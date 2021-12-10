@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_Lib|Win32">
+      <Configuration>Debug_Lib</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_Lib|x64">
+      <Configuration>Debug_Lib</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -33,6 +41,12 @@
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -41,6 +55,12 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
@@ -61,10 +81,16 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -74,6 +100,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -81,10 +110,31 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);NOMINMAX;VISUALIZER_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>../visualization/include</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -123,6 +173,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NOMINMAX;_DEBUG;VISUALIZATION_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>../visualization/include;../PointCloudRetouch;../ObliquePhotographyData;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4819;</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>

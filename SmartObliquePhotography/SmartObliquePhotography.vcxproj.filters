@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Point Cloud Scene">
+      <UniqueIdentifier>{c05784d3-c53f-4e4e-b36b-ff609b782aac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SmartOPCommon.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartOPInterface.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="OverallConfig.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiLayeredPointCloud.h">
+      <Filter>Point Cloud Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudBlock.h">
+      <Filter>Point Cloud Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudFileLoader.h">
+      <Filter>Point Cloud Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="UnorganziedPointCloud2MultiLayeredConverter.h">
+      <Filter>Point Cloud Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="SmartOPExport.h" />
+    <ClInclude Include="UserDefinedCategoryMap.h">
+      <Filter>Point Cloud Scene</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MultiLayeredPointCloud.cpp">
+      <Filter>Point Cloud Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudBlock.cpp">
+      <Filter>Point Cloud Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="UnorganziedPointCloud2MultiLayeredConverter.cpp">
+      <Filter>Point Cloud Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="OverallConfig.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartOPInterface.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudFileLoader.cpp">
+      <Filter>Point Cloud Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="UserDefinedCategoryMap.cpp">
+      <Filter>Point Cloud Scene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
