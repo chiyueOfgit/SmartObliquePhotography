@@ -6,6 +6,8 @@
 
 namespace hiveObliquePhotography
 {
+	class CPCLPointCloudWrapper;
+
 	class CPointCloudBlock
 	{
 	public:
@@ -18,8 +20,10 @@ namespace hiveObliquePhotography
 		void save();  //make sure this function is executed in async way
 		void resetPointCategory();
 		void unload();
+		void destroyPCLPointCloud();
 
-		[[nodiscard]] bool load();   //make sure this function is executed in async way
+		[[nodiscard]] bool buildPCLPointCloud(std::uint8_t vBuildFlag, bool vDestroyOriginalData);
+		[[nodiscard]] bool load(std::uint8_t vLoadFlag);   //make sure this function is executed in async way
 
 	private:
 		bool m_IsPointSorted = false;
@@ -29,6 +33,7 @@ namespace hiveObliquePhotography
 		std::uint32_t m_CellDimY = 0;
 		float m_CellScale;
 		unsigned short m_BlockCategory;  //用于标记当前block的点云有哪些类型 （参见EPointCategory）
+		CPCLPointCloudWrapper* m_pPCLPointCloud = nullptr;
 		std::vector<Eigen::Vector3f> m_PointPositionSet;
 		std::vector<Eigen::Vector3f> m_PointNormalSet;
 		std::vector<SPointColor>     m_PointColorSet;
@@ -36,7 +41,6 @@ namespace hiveObliquePhotography
 		std::vector<std::uint32_t>   m_FirstPointIndexInEachCell;  //same size as number of cells
 		
 		std::string __generatePointBlockFileName();
-		std::string __generatePointExtraInfoBlockFileName();
 
 		std::pair<std::uint32_t, std::uint32_t> __computeCellIndex(const Eigen::Vector3f& vPos) const;
 

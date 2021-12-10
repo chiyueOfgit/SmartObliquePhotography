@@ -37,6 +37,9 @@
     <ClInclude Include="UserDefinedCategoryMap.h">
       <Filter>Point Cloud Scene</Filter>
     </ClInclude>
+    <ClInclude Include="PCLPointCloudWrapper.h">
+      <Filter>Point Cloud Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiLayeredPointCloud.cpp">
@@ -60,6 +63,9 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="UserDefinedCategoryMap.cpp">
+      <Filter>Point Cloud Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="PCLPointCloudWrapper.cpp">
       <Filter>Point Cloud Scene</Filter>
     </ClCompile>
   </ItemGroup>
