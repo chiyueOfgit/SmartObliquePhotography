@@ -4,6 +4,10 @@
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_Lib|x64">
+      <Configuration>Debug_Lib</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -27,6 +31,11 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
@@ -42,9 +51,13 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pcl_visualizationd</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'">pcl_visualizationd</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'">true</GenerateManifest>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
@@ -53,6 +66,53 @@
     <TargetName>pcl_visualization</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4800;4521;4251;4275;4305;4355;4819;4996</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
+      <Optimization>Disabled</Optimization>
+      <ProcessorNumber>6</ProcessorNumber>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;NOMINMAX;BOOST_ALL_NO_LIB;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;PCL_ONLY_CORE_POINT_TYPES;__SSSE3__;__SSE2__;__SSE__;vtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL2);vtkRenderingCore_INCLUDE="pcl\visualization\vtk\vtkRenderingCore_AUTOINIT_vtkInteractionStyle_vtkRenderingFreeType_vtkRenderingOpenGL2.h";BOOST_LIB_DIAGNOSTIC;_ENABLE_EXTENDED_ALIGNED_STORAGE;LZ4_DLL_IMPORT=1;CMAKE_INTDIR="Release";PCLAPI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;BOOST_ALL_NO_LIB;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;NOMINMAX;PCL_ONLY_CORE_POINT_TYPES;__SSSE3__;__SSE2__;__SSE__;vtkRenderingContext2D_AUTOINIT=1(vtkRenderingContextOpenGL2);vtkRenderingCore_INCLUDE=\"E:/pcl-pcl-1.11.1/build/CMakeFiles/vtkRenderingCore_AUTOINIT_vtkInteractionStyle_vtkRenderingFreeType_vtkRenderingOpenGL2.h\";BOOST_LIB_DIAGNOSTIC;_ENABLE_EXTENDED_ALIGNED_STORAGE;LZ4_DLL_IMPORT=1;CMAKE_INTDIR=\"Debug\";PCLAPI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\pcl-pcl-1.11.1\build\include;E:\pcl-pcl-1.11.1\visualization\include;E:\pcl-pcl-1.11.1\common\include;E:\pcl-pcl-1.11.1\io\include;E:\pcl-pcl-1.11.1\kdtree\include;E:\pcl-pcl-1.11.1\geometry\include;E:\pcl-pcl-1.11.1\search\include;E:\pcl-pcl-1.11.1\octree\include;E:\pcl-pcl-1.11.1\openni\include;E:\pcl-pcl-1.11.1\openni2\include;E:\pcl-pcl-1.11.1\ensenso\include;E:\pcl-pcl-1.11.1\davidSDK\include;E:\pcl-pcl-1.11.1\dssdk\include;E:\pcl-pcl-1.11.1\rssdk\include;D:\vc_packages\Eigen3.3.3.9\lib\native\include;D:\vc_packages\OpenNI2.2.2.0\build\native\include;E:\pcl-pcl-1.11.1\recognition\include\pcl\recognition\3rdparty;D:\vc_packages\VTK\include\vtk-8.2;D:\vc_packages\Boost\include\boost-1_74;D:\vc_packages\FLANN.1.9.1\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>E:\pcl-pcl-1.11.1\build\include;E:\pcl-pcl-1.11.1\visualization\include;E:\pcl-pcl-1.11.1\common\include;E:\pcl-pcl-1.11.1\io\include;E:\pcl-pcl-1.11.1\kdtree\include;E:\pcl-pcl-1.11.1\geometry\include;E:\pcl-pcl-1.11.1\search\include;E:\pcl-pcl-1.11.1\octree\include;E:\pcl-pcl-1.11.1\openni\include;E:\pcl-pcl-1.11.1\openni2\include;E:\pcl-pcl-1.11.1\ensenso\include;E:\pcl-pcl-1.11.1\davidSDK\include;E:\pcl-pcl-1.11.1\dssdk\include;E:\pcl-pcl-1.11.1\rssdk\include;D:\vc_packages\Eigen3.3.3.9\lib\native\include;D:\vc_packages\OpenNI2.2.2.0\build\native\include;E:\pcl-pcl-1.11.1\recognition\include\pcl\recognition\3rdparty;D:\vc_packages\VTK\include\vtk-8.2;D:\vc_packages\Boost\include\boost-1_74;D:\vc_packages\FLANN.1.9.1\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>D:\vc_packages\boost_filesystem-vc142.1.76.0.0\lib\native\libboost_filesystem-vc142-mt-gd-x64-1_76.lib;D:\vc_packages\boost_system-vc142.1.76.0.0\lib\native\libboost_system-vc142-mt-gd-x64-1_76.lib;D:\vc_packages\boost_regex-vc142.1.76.0.0\lib\native\libboost_regex-vc142-mt-gd-x64-1_76.lib</AdditionalDependencies>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DelayLoadDLLs>VCOMP140D.dll</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ImportLibrary>
+      </ImportLibrary>
+      <ProgramDataBaseFile>
+      </ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Lib|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
