@@ -350,7 +350,7 @@ void CQTInterface::onActionAreaPicking()
                         }
                     );
                 }
-
+                
                 m_UI.actionPointPicking->setChecked(false);
                 if (m_pVisualizationConfig)
                     m_pVisualizationConfig->overwriteAttribute(Visualization::CIRCLE_MODE, false);
