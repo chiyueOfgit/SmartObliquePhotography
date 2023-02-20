@@ -10,7 +10,7 @@ html <div align="center">
 
 </div>
 
-<center style="color:#000000">软件效果演示视频。原场景为不可编辑的OSGB模型。编辑后场景为剔除杂物后，仅保留地势地貌的obj模型。</center>
+<center style="color:#000000">软件效果演示。原场景为不可编辑的OSGB模型。编辑后场景为剔除杂物后，仅保留地势地貌的obj模型。</center>
 
 倾斜摄影模型编辑软件的**功能架构**如下图所示：
 
