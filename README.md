@@ -4,7 +4,7 @@
 
 通过倾斜摄影模型编辑软件，将复杂冗余、不可编辑的OSGB模型，处理为易于使用、只保持地势地貌的obj网格模型。软件效果演示视频如下：
 
-<video id="video" controls="" preload="none"> <source id="mp4" src="Docs\README Pictures\软件效果演示.mp4" type="video/mp4"> </video>
+<img src="\Docs\README Pictures\软件效果演示.gif" style="zoom:100%;" />
 
 <center style="color:#000000">软件效果演示视频。原场景为不可编辑的OSGB模型。编辑后场景为剔除杂物后，仅保留地势地貌的obj模型。</center>
 
