@@ -2,15 +2,15 @@
 
 # 功能一览
 
-通过倾斜摄影模型编辑软件，将复杂冗余、不可编辑的OSGB模型，处理为易于使用、只保持地势地貌的obj网格模型。软件效果演示视频如下：
+通过倾斜摄影模型编辑软件，将复杂冗余、不可编辑的OSGB模型，处理为易于使用、只保持地势地貌的obj网格模型。软件效果演示如下图：
 
-<img src="\Docs\README Pictures\软件效果演示.gif" style="zoom:100%;" />
+<img src="Docs\README Pictures\软件效果演示.gif" style="zoom:100%;" />
 
 <center style="color:#000000">软件效果演示视频。原场景为不可编辑的OSGB模型。编辑后场景为剔除杂物后，仅保留地势地貌的obj模型。</center>
 
 倾斜摄影模型编辑软件的**功能架构**如下图所示：
 
-<img src="\Docs\README Pictures\架构.png" style="zoom:100%;" />
+<img src="Docs\README Pictures\架构.png" style="zoom:100%;" />
 
 <center style="color:#000000">“倾斜摄影模型编辑软件”功能架构。</center>
 
@@ -34,7 +34,7 @@
 
 基于泊松方程的网格重建。
 
-<img src="\Docs\README Pictures\网格重建.png" style="zoom:100%;" />
+<img src="Docs\README Pictures\网格重建.png" style="zoom:100%;" />
 
 <center style="color:#000000">左侧：点云。右侧：网格。将点云重建为网格。重建过程中颜色信息丢失。</center>
 
@@ -42,5 +42,5 @@
 
 基于**图特方法**的网格参数化与基于**光线投射**的纹理烘焙。
 
-<img src="\Docs\README Pictures\纹理烘焙.png" style="zoom:100%;" />
+<img src="Docs\README Pictures\纹理烘焙.png" style="zoom:100%;" />
 
