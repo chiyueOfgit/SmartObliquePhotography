@@ -4,7 +4,7 @@
 
 通过倾斜摄影模型编辑软件，将复杂冗余、不可编辑的OSGB模型，处理为易于使用、只保持地势地貌的obj网格模型。软件效果演示如下图：
 
-html <div align="center">
+<div align="center">
 
 <img src="Docs\README Pictures\软件效果演示.gif" style="zoom:100%;" />
 
@@ -22,7 +22,7 @@ html <div align="center">
 
 根据选择区域的多种特征，使用**区域生长**的方式探索场景，以达到前景与背景的分离。
 
-html <div align="center">
+ <div align="center">
 
 <img src="Docs\README Pictures\杂物去除.gif" style="zoom:150%;" />
 
