@@ -26,7 +26,7 @@ html <div align="center">
 
 <img src="Docs\README Pictures\杂物去除.gif" style="zoom:150%;" />
 
-<center style="color:#000000">杂物去除效果演示。</center>
+<center style="color:#C0C0C0">杂物去除效果演示。</center>
 
 </div>
 
@@ -36,7 +36,7 @@ html <div align="center">
 
 <img src="Docs\README Pictures\空洞填补.gif" alt="1" style="zoom:150%;" />
 
-<center style="color:#000000">空洞填补效果演示。</center>
+<center style="color:#C0C0C0">空洞填补效果演示。</center>
 
 ## 网格重建
 
@@ -44,7 +44,7 @@ html <div align="center">
 
 <img src="Docs\README Pictures\网格重建.png" style="zoom:100%;" />
 
-<center style="color:#000000">左侧：点云。右侧：网格。将点云重建为网格。重建过程中颜色信息丢失。</center>
+<center style="color:#C0C0C0">左侧：点云。右侧：网格。将点云重建为网格。重建过程中颜色信息丢失。</center>
 
 ## 网格参数化与纹理烘焙
 
@@ -52,3 +52,4 @@ html <div align="center">
 
 <img src="Docs\README Pictures\纹理烘焙.png" style="zoom:100%;" />
 
+首先使用网格参数化方法生成网格的UV坐标，随后使用纹理烘焙得到纹理图片。最后张贴纹理至obj网格。
